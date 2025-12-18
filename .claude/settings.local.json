@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(npm install:*)",
+      "Bash(openspec --version:*)",
+      "Bash(openspec init:*)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --no-turbopack --import-alias \"@/*\" --yes)",
+      "Bash(dir:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)",
+      "Bash(git add:*)",
+      "WebFetch(domain:zaiko.io)",
+      "Bash(git reset:*)",
+      "Bash(vercel --version:*)",
+      "Bash(npm i:*)",
+      "Bash(vercel)",
+      "Bash(vercel login)",
+      "Bash(vercel --yes:*)",
+      "Bash(vercel --prod --yes)",
+      "Bash(vercel ls:*)",
+      "Bash(vercel domains:*)",
+      "Bash(vercel project:*)",
+      "Bash(vercel inspect:*)",
+      "Bash(git push:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\n新增完整功能：reCAPTCHA、Supabase、OAuth、多語系翻譯\n\n- 新增 reCAPTCHA v3 防機器人驗證\n- 新增 Supabase 資料庫連接與完整 schema\n- 新增 Auth.js (NextAuth) Google/LINE OAuth 登入\n- 新增隱私權政策和使用條款頁面\n- 完成發布頁面的多語系翻譯（繁中/簡中/英文/日文）\n- 新增穿著快速標籤的完整翻譯\n- 修正探索頁面的藝人/團體標籤翻譯\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "WebFetch(domain:ticketticket.live)",
+      "WebFetch(domain:vercel.com)",
+      "WebFetch(domain:supabase.com)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nV6: 完成所有 MVP 後續功能\n\n新增功能：\n- 評價系統：API 路由、ReviewCard、ReviewModal 元件\n- 個人檔案頁面：顯示收到的評價、自訂頭像支援\n- 個人設定頁面：名稱更改、頭像上傳、LINE/Discord 連結\n- 即時訊息：Supabase Realtime 整合\n- 頁尾法律連結：桌面版 LegalFooter 元件\n\n修復：\n- 管理員活動 RLS 問題：新增 supabaseAdmin 客戶端繞過 RLS\n- 需要環境變數 SUPABASE_SERVICE_ROLE_KEY\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit -m \"$(cat <<''EOF''\n修正管理員活動表單 async 處理問題\n\n- EventForm 改為 async 提交，正確 await onSubmit\n- 新增提交中狀態避免重複送出\n- 編輯活動頁面也修正為 async\n- 按鈕顯示載入狀態\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit -m \"$(cat <<''EOF''\n統一資料庫操作：全面使用 supabaseAdmin\n\n問題根因：\n- 本專案使用 NextAuth 認證，而非 Supabase Auth\n- RLS 政策依賴 auth.uid()（Supabase Auth），但在 NextAuth 下永遠是 NULL\n- 導致所有需要 auth.uid() 的 INSERT/UPDATE/DELETE 操作都會失敗\n\n解決方案：\n- 所有 API 路由統一使用 supabaseAdmin（service role key）\n- 認證授權在 API 層由 NextAuth 處理\n- RLS 被 service role key 繞過\n\n修改檔案：\n- src/lib/supabase.ts: 新增警告訊息，說明架構決策\n- src/auth.ts: 使用 supabaseAdmin 建立/更新用戶\n- 所有 API 路由: 統一改用 supabaseAdmin\n\n⚠️ 重要：必須在 .env.local 和 Vercel 設定 SUPABASE_SERVICE_ROLE_KEY\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(vercel logs:*)",
+      "Bash(git commit:*)",
+      "Bash(git remote:*)",
+      "Bash(git init:*)"
+    ]
+  }
+}
