@@ -292,7 +292,9 @@
       "itaBag": "痛包",
       "merchandise": "應援物",
       "penlight": "手燈"
-    }
+    },
+    "maxListingsPerEvent": "同一活動最多只能刊登 {max} 個",
+    "alreadyMaxListings": "您已達到此活動的刊登上限（{current}/{max}）"
   },
   "ticketType": {
     "findCompanion": "尋找同行者",
@@ -599,5 +601,10 @@
     "applicationAccepted": "您的申請已通過",
     "applicationRejected": "您的申請已駁回",
     "newMessage": "您有新消息"
+  },
+  "userProfile": {
+    "reviews": "則評價",
+    "successfulMeetups": "次成功同行",
+    "linkedAccounts": "已連結帳號"
   }
 }

@@ -292,7 +292,9 @@
       "itaBag": "痛バッグ",
       "merchandise": "グッズ",
       "penlight": "ペンライト"
-    }
+    },
+    "maxListingsPerEvent": "同じイベントに最大 {max} 件まで投稿可能",
+    "alreadyMaxListings": "このイベントの投稿上限に達しました（{current}/{max}）"
   },
   "ticketType": {
     "findCompanion": "同行者募集",
@@ -599,5 +601,10 @@
     "applicationAccepted": "申請が承認されました",
     "applicationRejected": "申請が却下されました",
     "newMessage": "新しいメッセージがあります"
+  },
+  "userProfile": {
+    "reviews": "件のレビュー",
+    "successfulMeetups": "回の同行成功",
+    "linkedAccounts": "連携アカウント"
   }
 }

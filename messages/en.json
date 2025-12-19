@@ -292,7 +292,9 @@
       "itaBag": "Ita-bag",
       "merchandise": "Merchandise",
       "penlight": "Penlight"
-    }
+    },
+    "maxListingsPerEvent": "Maximum {max} listings per event",
+    "alreadyMaxListings": "You have reached the listing limit for this event ({current}/{max})"
   },
   "ticketType": {
     "findCompanion": "Find Companion",
@@ -599,5 +601,10 @@
     "applicationAccepted": "Your application has been accepted",
     "applicationRejected": "Your application has been rejected",
     "newMessage": "You have a new message"
+  },
+  "userProfile": {
+    "reviews": "reviews",
+    "successfulMeetups": "successful meetups",
+    "linkedAccounts": "Linked Accounts"
   }
 }

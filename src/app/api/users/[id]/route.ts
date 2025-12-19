@@ -9,9 +9,10 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const { data, error } = await supabaseAdmin
+    // 獲取用戶基本資訊
+    const { data: user, error } = await supabaseAdmin
       .from('users')
-      .select('id, username, avatar_url, rating, review_count, is_verified, created_at')
+      .select('id, username, avatar_url, custom_avatar_url, rating, review_count, is_verified, created_at, line_id, discord_id, show_line, show_discord')
       .eq('id', id)
       .single();
 
@@ -20,7 +21,38 @@ export async function GET(
       return NextResponse.json({ error: error.message }, { status: 404 });
     }
 
-    return NextResponse.json(data);
+    // 計算成功同行次數（作為主辦方已完成的配對 + 作為申請者已接受的申請）
+    // 方式：計算狀態為 closed 的 listings 數量（作為主辦方）
+    const { count: hostMeetups } = await supabaseAdmin
+      .from('listings')
+      .select('*', { count: 'exact', head: true })
+      .eq('host_id', id)
+      .eq('status', 'closed');
+
+    // 計算作為申請者已被接受並且活動已結束的數量
+    const { count: guestMeetups } = await supabaseAdmin
+      .from('applications')
+      .select('*, listing:listings!listing_id(event_date, status)', { count: 'exact', head: true })
+      .eq('guest_id', id)
+      .eq('status', 'accepted');
+
+    const successfulMeetups = (hostMeetups || 0) + (guestMeetups || 0);
+
+    return NextResponse.json({
+      id: user.id,
+      username: user.username,
+      avatarUrl: user.avatar_url,
+      customAvatarUrl: user.custom_avatar_url,
+      rating: user.rating,
+      reviewCount: user.review_count,
+      isVerified: user.is_verified,
+      createdAt: user.created_at,
+      lineId: user.line_id,
+      discordId: user.discord_id,
+      showLine: user.show_line,
+      showDiscord: user.show_discord,
+      successfulMeetups,
+    });
   } catch (error) {
     console.error('Error in GET /api/users/[id]:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

@@ -293,12 +293,16 @@ export default function CreateListingPage() {
         setTimeout(() => {
           router.push('/');
         }, 2000);
-      } else {
-        alert(tCommon('publishFailed'));
       }
     } catch (error) {
       console.error('Error creating listing:', error);
-      alert(tCommon('publishFailed'));
+      // 處理特定錯誤類型
+      const err = error as Error & { code?: string; current?: number; max?: number };
+      if (err.code === 'MAX_LISTINGS_REACHED') {
+        alert(t('alreadyMaxListings', { current: err.current || 2, max: err.max || 2 }));
+      } else {
+        alert(tCommon('publishFailed'));
+      }
     } finally {
       setIsSubmitting(false);
     }

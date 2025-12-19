@@ -204,13 +204,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setListings((prev) => [newListing, ...prev]);
         return newListing;
       } else {
-        const error = await response.json();
-        console.error('Failed to create listing:', error);
-        return null;
+        const errorData = await response.json();
+        console.error('Failed to create listing:', errorData);
+        // 拋出帶有錯誤類型的錯誤
+        const error = new Error(errorData.message || 'Failed to create listing');
+        (error as Error & { code?: string; current?: number; max?: number }).code = errorData.error;
+        (error as Error & { code?: string; current?: number; max?: number }).current = errorData.current;
+        (error as Error & { code?: string; current?: number; max?: number }).max = errorData.max;
+        throw error;
       }
     } catch (error) {
       console.error('Error creating listing:', error);
-      return null;
+      throw error;
     }
   };
 

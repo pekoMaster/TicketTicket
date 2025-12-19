@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -8,6 +9,7 @@ import Card from '@/components/ui/Card';
 import { TicketTypeTag } from '@/components/ui/Tag';
 import Avatar from '@/components/ui/Avatar';
 import StarRating from '@/components/ui/StarRating';
+import UserProfileModal from '@/components/ui/UserProfileModal';
 import { Listing, User } from '@/types';
 
 interface ListingCardProps {
@@ -18,6 +20,7 @@ interface ListingCardProps {
 export default function ListingCard({ listing, host }: ListingCardProps) {
   const t = useTranslations('listing');
   const { locale } = useLanguage();
+  const [showUserModal, setShowUserModal] = useState(false);
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString(locale, {
@@ -40,11 +43,14 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
   };
 
   return (
-    <Link href={`/listing/${listing.id}`}>
-      <Card hoverable className="animate-fade-in">
-        {/* 主辦方資訊 - 移到頂部 */}
+    <>
+      <Card className="animate-fade-in">
+        {/* 主辦方資訊 - 移到頂部，可點擊顯示用戶資訊 */}
         {host && (
-          <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100 dark:border-gray-700">
+          <div
+            className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 -mx-4 -mt-4 px-4 pt-4 rounded-t-xl transition-colors"
+            onClick={() => setShowUserModal(true)}
+          >
             <Avatar src={getDisplayAvatar(host)} size="sm" />
             <span className="text-sm font-medium text-gray-700 dark:text-gray-200 flex-1">{host.username}</span>
             <StarRating
@@ -57,11 +63,11 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
           </div>
         )}
 
-        {/* 標籤 */}
+        {/* 標籤 - 移除警告圖示 */}
         <div className="mb-3 flex flex-wrap gap-2">
           <TicketTypeTag
             type={listing.ticketType}
-            showWarning={true}
+            showWarning={false}
           />
         </div>
 
@@ -107,12 +113,24 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
               ¥{listing.askingPriceJPY.toLocaleString()}
             </p>
           </div>
-          <div className="flex items-center gap-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors">
+          <Link
+            href={`/listing/${listing.id}`}
+            className="flex items-center gap-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+          >
             <Eye className="w-4 h-4" />
             <span>{t('view')}</span>
-          </div>
+          </Link>
         </div>
       </Card>
-    </Link>
+
+      {/* 用戶資訊浮動視窗 */}
+      {host && (
+        <UserProfileModal
+          user={host}
+          isOpen={showUserModal}
+          onClose={() => setShowUserModal(false)}
+        />
+      )}
+    </>
   );
 }
