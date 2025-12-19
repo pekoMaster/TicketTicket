@@ -35,7 +35,8 @@
       "Bash(git commit:*)",
       "Bash(git remote:*)",
       "Bash(git init:*)",
-      "Bash(git branch:*)"
+      "Bash(git branch:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\n優化：翻譯按鈕移至對話框外側\n\n- 接收方訊息：翻譯按鈕移至對話框右側外部\n- 發送方訊息：移除翻譯按鈕（自己不需要翻譯）\n- 按鈕樣式優化為圓形\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }

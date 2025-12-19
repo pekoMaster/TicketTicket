@@ -404,7 +404,7 @@ export default function ChatPage() {
               return (
                 <div
                   key={msg.id}
-                  className={`flex gap-2 ${isMe ? 'flex-row-reverse' : ''}`}
+                  className={`flex items-end gap-2 ${isMe ? 'flex-row-reverse' : ''}`}
                 >
                   {!isMe && <Avatar src={sender?.avatar_url} size="sm" />}
 
@@ -426,28 +426,30 @@ export default function ChatPage() {
                         <p className="text-sm whitespace-pre-wrap">{translations[msg.id]}</p>
                       </div>
                     )}
-                    <div className={`flex items-center justify-between mt-1 ${isMe ? 'text-indigo-200' : 'text-gray-400'}`}>
-                      <p className="text-xs">{formatTime(msg.created_at)}</p>
-                      {/* 翻譯按鈕 */}
-                      {!translations[msg.id] && (
-                        <button
-                          onClick={() => handleTranslate(msg.id, msg.content)}
-                          disabled={translatingIds.has(msg.id)}
-                          className={`
-                            p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 transition-colors
-                            ${translatingIds.has(msg.id) ? 'opacity-50' : ''}
-                          `}
-                          title={tChat('translate')}
-                        >
-                          {translatingIds.has(msg.id) ? (
-                            <Loader2 className="w-3 h-3 animate-spin" />
-                          ) : (
-                            <Languages className="w-3 h-3" />
-                          )}
-                        </button>
-                      )}
-                    </div>
+                    <p className={`text-xs mt-1 ${isMe ? 'text-indigo-200' : 'text-gray-400'}`}>
+                      {formatTime(msg.created_at)}
+                    </p>
                   </div>
+
+                  {/* 翻譯按鈕 - 只有接收方才顯示，放在對話框外右側 */}
+                  {!isMe && !translations[msg.id] && (
+                    <button
+                      onClick={() => handleTranslate(msg.id, msg.content)}
+                      disabled={translatingIds.has(msg.id)}
+                      className={`
+                        p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors
+                        text-gray-400 hover:text-gray-600 dark:hover:text-gray-300
+                        ${translatingIds.has(msg.id) ? 'opacity-50' : ''}
+                      `}
+                      title={tChat('translate')}
+                    >
+                      {translatingIds.has(msg.id) ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Languages className="w-4 h-4" />
+                      )}
+                    </button>
+                  )}
                 </div>
               );
             })
