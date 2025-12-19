@@ -16,6 +16,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const isAdminPage = pathname.startsWith('/admin');
   const isLoginPage = pathname === '/login';
   const isLegalPage = pathname.startsWith('/legal');
+  const isHomePage = pathname === '/';
 
   // Admin pages have their own layout
   if (isAdminPage) {
@@ -48,9 +49,12 @@ export default function MainLayout({ children }: MainLayoutProps) {
             </div>
           </main>
           {/* Desktop-only footer (mobile uses profile page for legal links) */}
-          <div className="hidden lg:block">
-            <LegalFooter />
-          </div>
+          {/* Skip on home page since it has its own footer */}
+          {!isHomePage && (
+            <div className="hidden lg:block">
+              <LegalFooter />
+            </div>
+          )}
         </div>
       </div>
       <BottomNav />
