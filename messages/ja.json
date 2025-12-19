@@ -347,7 +347,19 @@
     "translate": "翻訳",
     "translated": "翻訳結果",
     "translating": "翻訳中...",
-    "notFound": "会話が見つかりません"
+    "notFound": "会話が見つかりません",
+    "expectedPrice": "希望価格",
+    "ticketCount": {
+      "solo": "1人用チケット",
+      "duo": "2人用チケット",
+      "family": "ファミリーチケット"
+    },
+    "listingType": {
+      "find_companion": "同行者募集",
+      "main_ticket_transfer": "親チケット譲渡",
+      "sub_ticket_transfer": "子チケット譲渡",
+      "ticket_exchange": "チケット交換"
+    }
   },
   "profile": {
     "title": "マイページ",

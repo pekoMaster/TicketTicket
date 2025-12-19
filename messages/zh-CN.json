@@ -347,7 +347,19 @@
     "translated": "翻译结果",
     "translating": "翻译中...",
     "startConversation": "开始对话吧！",
-    "notFound": "找不到此对话"
+    "notFound": "找不到此对话",
+    "expectedPrice": "期望费用",
+    "ticketCount": {
+      "solo": "单人票",
+      "duo": "双人票",
+      "family": "家庭票"
+    },
+    "listingType": {
+      "find_companion": "寻找同行",
+      "main_ticket_transfer": "母票转让",
+      "sub_ticket_transfer": "子票转让",
+      "ticket_exchange": "换票"
+    }
   },
   "profile": {
     "title": "我的",

@@ -8,7 +8,8 @@ import Header from '@/components/layout/Header';
 import SafetyBanner from '@/components/ui/SafetyBanner';
 import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
-import { Send, Calendar, MapPin, Loader2, Languages } from 'lucide-react';
+import Tag from '@/components/ui/Tag';
+import { Send, Calendar, MapPin, Clock, Ticket, Tag as TagIcon, Banknote, Loader2, Languages } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -36,6 +37,9 @@ interface Listing {
   venue: string;
   asking_price_jpy: number;
   meeting_location: string;
+  meeting_time: string;
+  ticket_type: string;
+  ticket_count_type: string;
   status: string;
 }
 
@@ -324,21 +328,63 @@ export default function ChatPage() {
           <SafetyBanner variant="chat" />
         </div>
 
-        {/* 活動資訊摘要 */}
-        <div className="px-4 py-3 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-300">
-            <div className="flex items-center gap-1">
-              <Calendar className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-              <span>{formatDate(listing.event_date)}</span>
+        {/* 交易資訊區塊 */}
+        <div className="px-4 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 border-b border-indigo-100 dark:border-indigo-800">
+          {/* 活動名稱 */}
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
+            <Ticket className="w-4 h-4 text-indigo-500" />
+            {listing.event_name}
+          </h3>
+
+          {/* 詳細資訊 */}
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            {/* 集合時間 */}
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+              <Clock className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+              <span className="truncate">{listing.meeting_time || formatDate(listing.event_date)}</span>
             </div>
-            <div className="flex items-center gap-1">
-              <MapPin className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+
+            {/* 集合地點 */}
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+              <MapPin className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
               <span className="truncate">{listing.meeting_location}</span>
             </div>
-            <div className="flex items-center gap-1">
-              <span className="text-gray-400 dark:text-gray-500 font-medium">¥</span>
-              <span>{listing.asking_price_jpy?.toLocaleString()}{tListing('perPerson')}</span>
+
+            {/* 票種類型 */}
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+              <TagIcon className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+              <Tag
+                variant={listing.ticket_count_type === 'solo' ? 'default' : listing.ticket_count_type === 'duo' ? 'info' : 'purple'}
+                size="sm"
+              >
+                {tChat(`ticketCount.${listing.ticket_count_type || 'duo'}`)}
+              </Tag>
             </div>
+
+            {/* 刊登類型 */}
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+              <Ticket className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+              <Tag
+                variant={
+                  listing.ticket_type === 'find_companion' ? 'success' :
+                  listing.ticket_type === 'ticket_exchange' ? 'warning' : 'info'
+                }
+                size="sm"
+              >
+                {tChat(`listingType.${listing.ticket_type || 'find_companion'}`)}
+              </Tag>
+            </div>
+          </div>
+
+          {/* 希望費用 */}
+          <div className="mt-3 pt-3 border-t border-indigo-100 dark:border-indigo-800 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+              <Banknote className="w-4 h-4 text-green-500" />
+              <span className="text-sm">{tChat('expectedPrice')}</span>
+            </div>
+            <span className="font-bold text-lg text-indigo-600 dark:text-indigo-400">
+              ¥{listing.asking_price_jpy?.toLocaleString() || 0}
+            </span>
           </div>
         </div>
 

@@ -347,7 +347,19 @@
     "translate": "Translate",
     "translated": "Translated",
     "translating": "Translating...",
-    "notFound": "Conversation not found"
+    "notFound": "Conversation not found",
+    "expectedPrice": "Expected Price",
+    "ticketCount": {
+      "solo": "Solo Ticket",
+      "duo": "Duo Ticket",
+      "family": "Family Ticket"
+    },
+    "listingType": {
+      "find_companion": "Find Companion",
+      "main_ticket_transfer": "Main Ticket Transfer",
+      "sub_ticket_transfer": "Sub Ticket Transfer",
+      "ticket_exchange": "Ticket Exchange"
+    }
   },
   "profile": {
     "title": "Profile",

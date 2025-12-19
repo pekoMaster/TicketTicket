@@ -21,7 +21,10 @@ export async function GET(
       .from('conversations')
       .select(`
         *,
-        listing:listings!listing_id(id, event_name, event_date, venue, asking_price_jpy, status),
+        listing:listings!listing_id(
+          id, event_name, event_date, venue, asking_price_jpy, status,
+          ticket_type, ticket_count_type, meeting_time, meeting_location
+        ),
         host:users!host_id(id, username, avatar_url, rating, review_count),
         guest:users!guest_id(id, username, avatar_url, rating, review_count)
       `)
