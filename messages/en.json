@@ -142,6 +142,7 @@
     "venue": "Venue",
     "meetingTime": "Meeting Time",
     "meetingLocation": "Meeting Location",
+    "view": "View",
     "price": "Cost",
     "perPerson": "/person",
     "availableSlots": "Available Slots",

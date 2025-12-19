@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Calendar, Clock } from 'lucide-react';
+import { Calendar, Clock, Eye } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import { TicketTypeTag } from '@/components/ui/Tag';
 import Avatar from '@/components/ui/Avatar';
@@ -100,11 +100,17 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
           </div>
         </div>
 
-        {/* 價格 */}
-        <div className="bg-indigo-50 dark:bg-indigo-900/30 rounded-lg py-2 px-3 text-center">
-          <p className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
-            ¥{listing.askingPriceJPY.toLocaleString()}
-          </p>
+        {/* 價格與查看按鈕 */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg py-2 px-3 text-center">
+            <p className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
+              ¥{listing.askingPriceJPY.toLocaleString()}
+            </p>
+          </div>
+          <div className="flex items-center gap-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors">
+            <Eye className="w-4 h-4" />
+            <span>{t('view')}</span>
+          </div>
         </div>
       </Card>
     </Link>
