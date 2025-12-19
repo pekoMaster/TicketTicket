@@ -48,46 +48,46 @@ export default function DisclaimerModal() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-4">
             <Ticket className="w-8 h-8 text-indigo-500" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">TicketTicket</h1>
-          <p className="text-gray-500 mt-1">{t('title')}</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">TicketTicket</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">{t('title')}</p>
         </div>
 
         {/* VTuber 粉絲專屬 & 非商用 */}
         <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="bg-pink-50 border border-pink-200 rounded-lg p-3">
-            <div className="flex items-center gap-2 text-pink-700 font-semibold mb-1">
+          <div className="bg-pink-50 dark:bg-pink-900/30 border border-pink-200 dark:border-pink-800 rounded-lg p-3">
+            <div className="flex items-center gap-2 text-pink-700 dark:text-pink-300 font-semibold mb-1">
               <Heart className="w-4 h-4" />
               <span className="text-sm">{t('vtuberOnly')}</span>
             </div>
-            <p className="text-pink-600 text-xs">
+            <p className="text-pink-600 dark:text-pink-400 text-xs">
               {t('vtuberOnlyDesc')}
             </p>
           </div>
-          <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-            <div className="flex items-center gap-2 text-green-700 font-semibold mb-1">
+          <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-3">
+            <div className="flex items-center gap-2 text-green-700 dark:text-green-300 font-semibold mb-1">
               <Gift className="w-4 h-4" />
               <span className="text-sm">{t('nonCommercial')}</span>
             </div>
-            <p className="text-green-600 text-xs">
+            <p className="text-green-600 dark:text-green-400 text-xs">
               {t('nonCommercialDesc')}
             </p>
           </div>
         </div>
 
         {/* 重要聲明區塊 */}
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-          <div className="flex items-center gap-2 text-red-700 font-semibold mb-2">
+        <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
+          <div className="flex items-center gap-2 text-red-700 dark:text-red-300 font-semibold mb-2">
             <AlertTriangle className="w-5 h-5" />
             <span>{t('important')}</span>
           </div>
-          <p className="text-red-600 text-sm">
+          <p className="text-red-600 dark:text-red-400 text-sm">
             {t('importantDesc')}
           </p>
         </div>
 
         {/* 可滾動的條款區域 */}
         <div
-          className="bg-gray-50 rounded-lg p-4 h-64 overflow-y-auto mb-4"
+          className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 h-64 overflow-y-auto mb-4"
           onScroll={handleScroll}
         >
           <div className="space-y-6">
@@ -95,9 +95,9 @@ export default function DisclaimerModal() {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Users className="w-5 h-5 text-indigo-500" />
-                <h3 className="font-semibold text-gray-900">{t('section1Title')}</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('section1Title')}</h3>
               </div>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                 {t('section1Content')}
               </p>
             </div>
@@ -106,9 +106,9 @@ export default function DisclaimerModal() {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Handshake className="w-5 h-5 text-indigo-500" />
-                <h3 className="font-semibold text-gray-900">{t('section2Title')}</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('section2Title')}</h3>
               </div>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                 {t('section2Content')}
               </p>
             </div>
@@ -117,9 +117,9 @@ export default function DisclaimerModal() {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <AlertTriangle className="w-5 h-5 text-indigo-500" />
-                <h3 className="font-semibold text-gray-900">{t('section3Title')}</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('section3Title')}</h3>
               </div>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                 {t('section3Content')}
               </p>
             </div>
@@ -128,9 +128,9 @@ export default function DisclaimerModal() {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Shield className="w-5 h-5 text-indigo-500" />
-                <h3 className="font-semibold text-gray-900">{t('section4Title')}</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('section4Title')}</h3>
               </div>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                 {t('section4Content')}
               </p>
             </div>
@@ -139,16 +139,16 @@ export default function DisclaimerModal() {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Shield className="w-5 h-5 text-indigo-500" />
-                <h3 className="font-semibold text-gray-900">{t('section5Title')}</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('section5Title')}</h3>
               </div>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                 {t('section5Content')}
               </p>
             </div>
 
             {/* 最終聲明 */}
-            <div className="bg-white border border-gray-200 rounded-lg p-4 mt-4">
-              <p className="text-sm text-gray-700 leading-relaxed">
+            <div className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 mt-4">
+              <p className="text-sm text-gray-700 dark:text-gray-200 leading-relaxed">
                 {t('finalNote')}
               </p>
             </div>

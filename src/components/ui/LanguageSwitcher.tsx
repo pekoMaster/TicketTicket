@@ -35,14 +35,14 @@ export default function LanguageSwitcher({ variant = 'button' }: LanguageSwitche
       <>
         <button
           onClick={handleOpen}
-          className="w-full flex items-center gap-3 px-4 py-3.5 border-b border-gray-100 text-gray-700 hover:bg-gray-50 transition-colors"
+          className="w-full flex items-center gap-3 px-4 py-3.5 border-b border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
         >
           <span className="text-xl">{localeFlags[locale]}</span>
           <span className="flex-1 text-left font-medium">Language</span>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-gray-500 dark:text-gray-400">
             {localeNames[locale]}
           </span>
-          <ChevronRight className="w-5 h-5 text-gray-400" />
+          <ChevronRight className="w-5 h-5 text-gray-400 dark:text-gray-500" />
         </button>
 
         <LanguageModal
@@ -60,10 +60,10 @@ export default function LanguageSwitcher({ variant = 'button' }: LanguageSwitche
     <>
       <button
         onClick={handleOpen}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+        className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
       >
         <span className="text-lg">{localeFlags[locale]}</span>
-        <span className="text-sm font-medium text-gray-700">Language</span>
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Language</span>
       </button>
 
       <LanguageModal
@@ -100,12 +100,12 @@ function LanguageModal({ isOpen, onClose, selectedLocale, onSelectLocale, onConf
               className={`
                 w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all
                 ${selectedLocale === loc
-                  ? 'border-indigo-500 bg-indigo-50'
-                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}
+                  ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30'
+                  : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700'}
               `}
             >
               <span className="text-2xl">{localeFlags[loc]}</span>
-              <span className="flex-1 text-left font-medium text-gray-900">
+              <span className="flex-1 text-left font-medium text-gray-900 dark:text-gray-100">
                 {localeNames[loc]}
               </span>
               {selectedLocale === loc && (

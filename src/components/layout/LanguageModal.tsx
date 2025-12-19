@@ -28,8 +28,8 @@ export default function LanguageModal() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-4">
             <Globe className="w-8 h-8 text-indigo-500" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900">Select Language</h1>
-          <p className="text-gray-500 text-sm mt-1">選擇語言 / 言語を選択 / 选择语言</p>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Select Language</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">選擇語言 / 言語を選択 / 选择语言</p>
         </div>
 
         {/* Language Options */}
@@ -41,12 +41,12 @@ export default function LanguageModal() {
               className={`
                 w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all
                 ${selectedLocale === loc
-                  ? 'border-indigo-500 bg-indigo-50'
-                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}
+                  ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30'
+                  : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700'}
               `}
             >
               <span className="text-2xl">{localeFlags[loc]}</span>
-              <span className="flex-1 text-left font-medium text-gray-900">
+              <span className="flex-1 text-left font-medium text-gray-900 dark:text-gray-100">
                 {localeNames[loc]}
               </span>
               {selectedLocale === loc && (

@@ -15,31 +15,31 @@ export default function TermsOfServicePage() {
         <div className="space-y-4">
           {/* Title */}
           <Card>
-            <h1 className="text-xl font-bold text-gray-900 mb-2">{t('title')}</h1>
-            <p className="text-sm text-gray-500">{t('lastUpdated')}: 2025-01-01</p>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">{t('title')}</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('lastUpdated')}: 2025-01-01</p>
           </Card>
 
           {/* Introduction */}
           <Card>
-            <p className="text-gray-700">{t('intro')}</p>
+            <p className="text-gray-700 dark:text-gray-300">{t('intro')}</p>
           </Card>
 
           {/* Section 1: Service Description */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('section1Title')}</h2>
-            <p className="text-gray-700">{t('section1Content')}</p>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('section1Title')}</h2>
+            <p className="text-gray-700 dark:text-gray-300">{t('section1Content')}</p>
           </Card>
 
           {/* Section 2: User Eligibility */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('section2Title')}</h2>
-            <p className="text-gray-700">{t('section2Content')}</p>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('section2Title')}</h2>
+            <p className="text-gray-700 dark:text-gray-300">{t('section2Content')}</p>
           </Card>
 
           {/* Section 3: User Responsibilities */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('section3Title')}</h2>
-            <div className="space-y-2 text-gray-700">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('section3Title')}</h2>
+            <div className="space-y-2 text-gray-700 dark:text-gray-300">
               <p>{t('section3Content1')}</p>
               <ul className="list-disc list-inside space-y-1 ml-2">
                 <li>{t('section3Item1')}</li>
@@ -53,8 +53,8 @@ export default function TermsOfServicePage() {
 
           {/* Section 4: Prohibited Activities */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('section4Title')}</h2>
-            <div className="space-y-2 text-gray-700">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('section4Title')}</h2>
+            <div className="space-y-2 text-gray-700 dark:text-gray-300">
               <p>{t('section4Content1')}</p>
               <ul className="list-disc list-inside space-y-1 ml-2">
                 <li>{t('section4Item1')}</li>
@@ -68,14 +68,14 @@ export default function TermsOfServicePage() {
 
           {/* Section 5: Transactions */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('section5Title')}</h2>
-            <p className="text-gray-700">{t('section5Content')}</p>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('section5Title')}</h2>
+            <p className="text-gray-700 dark:text-gray-300">{t('section5Content')}</p>
           </Card>
 
           {/* Section 6: Disclaimer */}
-          <Card className="bg-orange-50 border border-orange-200">
-            <h2 className="text-lg font-semibold text-orange-800 mb-3">{t('section6Title')}</h2>
-            <div className="space-y-2 text-orange-700">
+          <Card className="bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800">
+            <h2 className="text-lg font-semibold text-orange-800 dark:text-orange-300 mb-3">{t('section6Title')}</h2>
+            <div className="space-y-2 text-orange-700 dark:text-orange-300">
               <p>{t('section6Content1')}</p>
               <ul className="list-disc list-inside space-y-1 ml-2">
                 <li>{t('section6Item1')}</li>
@@ -88,19 +88,19 @@ export default function TermsOfServicePage() {
           {/* Section 7: Account Termination */}
           <Card>
             <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('section7Title')}</h2>
-            <p className="text-gray-700">{t('section7Content')}</p>
+            <p className="text-gray-700 dark:text-gray-300">{t('section7Content')}</p>
           </Card>
 
           {/* Section 8: Changes to Terms */}
           <Card>
             <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('section8Title')}</h2>
-            <p className="text-gray-700">{t('section8Content')}</p>
+            <p className="text-gray-700 dark:text-gray-300">{t('section8Content')}</p>
           </Card>
 
           {/* Section 9: Contact */}
           <Card>
             <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('section9Title')}</h2>
-            <p className="text-gray-700">{t('section9Content')}</p>
+            <p className="text-gray-700 dark:text-gray-300">{t('section9Content')}</p>
           </Card>
         </div>
       </div>

@@ -161,6 +161,10 @@ export default function CreateListingPage() {
     if (ticketType === 'find_companion' && ticketCountType !== 'duo') {
       setTicketType('');
     }
+    // 如果選了轉讓子票但是一人票，清除選擇（一人票無子票可轉讓）
+    if (ticketType === 'sub_ticket_transfer' && ticketCountType === 'solo') {
+      setTicketType('');
+    }
   }, [ticketCountType, ticketType]);
 
   // 是否為換票模式
@@ -519,7 +523,9 @@ export default function CreateListingPage() {
                     const isFindCompanionDisabled = type === 'find_companion' && ticketCountType !== 'duo';
                     // 母票轉讓暫時停用
                     const isMainTicketDisabled = info.disabled === true;
-                    const isDisabled = isFindCompanionDisabled || isMainTicketDisabled;
+                    // 轉讓子票只有二人以上票可選（一人票無子票可轉讓）
+                    const isSubTicketDisabled = type === 'sub_ticket_transfer' && ticketCountType === 'solo';
+                    const isDisabled = isFindCompanionDisabled || isMainTicketDisabled || isSubTicketDisabled;
 
                     // 使用翻譯或預設標籤
                     const label = t(`ticketTypes.${type}`, { defaultValue: info.label });

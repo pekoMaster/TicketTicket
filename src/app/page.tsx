@@ -32,7 +32,9 @@ export default function HomePage() {
   const t = useTranslations('home');
   const tFilter = useTranslations('filter');
   const tTicket = useTranslations('ticketType');
-  const tLegal = useTranslations('legal');
+  const tPrivacy = useTranslations('privacy');
+  const tTerms = useTranslations('terms');
+  const tTokushoho = useTranslations('tokushoho');
 
   // 搜尋和篩選狀態
   const [searchQuery, setSearchQuery] = useState('');
@@ -481,21 +483,26 @@ export default function HomePage() {
               <Ticket className="w-5 h-5 text-indigo-500" />
               <span className="text-sm font-medium text-gray-700 dark:text-gray-200">TicketTicket</span>
             </div>
-            <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-              <Link href="/legal/privacy" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                {tLegal('privacyTitle')}
-              </Link>
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
               <Link href="/legal/terms" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                {tLegal('termsTitle')}
+                {tTerms('title')}
               </Link>
+              <span className="text-gray-300 dark:text-gray-600">|</span>
+              <Link href="/legal/privacy" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                {tPrivacy('title')}
+              </Link>
+              <span className="text-gray-300 dark:text-gray-600">|</span>
               <Link href="/legal/tokushoho" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                {tLegal('tokushohoTitle')}
+                {tTokushoho('title')}
               </Link>
             </div>
-            <p className="text-xs text-gray-400 dark:text-gray-500">
-              © 2025 TicketTicket. All rights reserved.
-            </p>
           </div>
+          <p className="text-xs text-gray-400 dark:text-gray-500 text-center mt-4">
+            {tTokushoho('subtitle')}
+          </p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 text-center mt-2">
+            © 2025 TicketTicket. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>

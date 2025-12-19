@@ -39,7 +39,7 @@ export default function ReviewCard({ review, showEvent = true }: ReviewCardProps
   };
 
   return (
-    <div className="bg-white rounded-xl p-4 border border-gray-100">
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
       <div className="flex items-start gap-3">
         <Avatar
           src={review.reviewer.custom_avatar_url || review.reviewer.avatar_url}
@@ -47,17 +47,17 @@ export default function ReviewCard({ review, showEvent = true }: ReviewCardProps
         />
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
-            <p className="font-medium text-gray-900">{review.reviewer.username}</p>
-            <p className="text-xs text-gray-400">{formatDate(review.created_at)}</p>
+            <p className="font-medium text-gray-900 dark:text-gray-100">{review.reviewer.username}</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500">{formatDate(review.created_at)}</p>
           </div>
           <StarRating value={review.rating} readonly size="sm" />
           {showEvent && review.listing && (
-            <p className="text-xs text-gray-500 mt-1 truncate">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
               {review.listing.event_name}
             </p>
           )}
           {review.comment && (
-            <p className="text-sm text-gray-600 mt-2 whitespace-pre-wrap">
+            <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 whitespace-pre-wrap">
               {review.comment}
             </p>
           )}
