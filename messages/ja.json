@@ -330,7 +330,13 @@
     "waiting": "待機中",
     "imHost": "主催者",
     "imGuest": "参加者",
-    "enterChat": "チャットへ"
+    "enterChat": "チャットへ",
+    "withdraw": "申請を取り消す",
+    "cancelled": "取り消し済み",
+    "withdrawConfirmTitle": "取り消しの確認",
+    "withdrawConfirmMessage": "この申請を取り消してもよろしいですか？取り消し後は元に戻せません。",
+    "cancel": "キャンセル",
+    "confirmWithdraw": "取り消しを確認"
   },
   "chat": {
     "title": "{name}とチャット",
@@ -417,6 +423,7 @@
   "safety": {
     "chatWarning": "安全のお知らせ：入場には主催者の同席が必要です。オンラインでの送金はお控えください。会場でお会いしましょう。",
     "transactionTitle": "取引の安全に関するお知らせ",
+    "scamWarning": "見知らぬ人へのオンライン送金や金銭取引は詐欺の恐れがあります！",
     "tip1": "支払いは対面で行います",
     "tip2": "約束の場所に時間通りにお越しください",
     "tip3": "詳細はマッチング後に主催者と確認してください"
@@ -484,6 +491,7 @@
   "tokushoho": {
     "title": "特定商取引法に基づく表示",
     "titleZh": "特定商取引法情報公示",
+    "subtitle": "当プラットフォームは日本の特定商取引法及び関連法規を遵守しています",
     "businessName": "事業者名",
     "businessNameValue": "TicketTicket Platform",
     "representative": "責任者",

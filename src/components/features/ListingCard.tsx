@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Calendar, MapPin, Users } from 'lucide-react';
+import { Calendar, Clock } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import { TicketTypeTag } from '@/components/ui/Tag';
 import Avatar from '@/components/ui/Avatar';
@@ -27,9 +27,36 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
     });
   };
 
+  const formatTime = (date: Date) => {
+    return new Date(date).toLocaleTimeString(locale, {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  // 頭像優先顯示自訂頭像，沒有才顯示 OAuth 頭像
+  const getDisplayAvatar = (user: User) => {
+    return user.customAvatarUrl || user.avatarUrl;
+  };
+
   return (
     <Link href={`/listing/${listing.id}`}>
       <Card hoverable className="animate-fade-in">
+        {/* 主辦方資訊 - 移到頂部 */}
+        {host && (
+          <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100 dark:border-gray-700">
+            <Avatar src={getDisplayAvatar(host)} size="sm" />
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-200 flex-1">{host.username}</span>
+            <StarRating
+              value={host.rating}
+              readonly
+              size="sm"
+              showValue
+              totalReviews={host.reviewCount}
+            />
+          </div>
+        )}
+
         {/* 標籤 */}
         <div className="mb-3 flex flex-wrap gap-2">
           <TicketTypeTag
@@ -68,44 +95,17 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
             <span>{formatDate(listing.eventDate)}</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-            <MapPin className="w-4 h-4" />
-            <span className="line-clamp-1">{listing.venue}</span>
+            <Clock className="w-4 h-4" />
+            <span>{t('meetingTime')}: {formatTime(listing.meetingTime)}</span>
           </div>
         </div>
 
-        {/* 價格和名額 */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className="flex-1 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg py-2 px-3 text-center">
-            <p className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
-              ¥{listing.askingPriceJPY.toLocaleString()}
-            </p>
-            <p className="text-xs text-indigo-400 dark:text-indigo-500">{t('perPerson')}</p>
-          </div>
-          <div className="flex-1 bg-gray-50 dark:bg-gray-700 rounded-lg py-2 px-3 text-center">
-            <div className="flex items-center justify-center gap-1">
-              <Users className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-              <span className="text-lg font-bold text-gray-700 dark:text-gray-200">
-                {listing.availableSlots}/{listing.totalSlots}
-              </span>
-            </div>
-            <p className="text-xs text-gray-400 dark:text-gray-500">{t('slots')}</p>
-          </div>
+        {/* 價格 */}
+        <div className="bg-indigo-50 dark:bg-indigo-900/30 rounded-lg py-2 px-3 text-center">
+          <p className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
+            ¥{listing.askingPriceJPY.toLocaleString()}
+          </p>
         </div>
-
-        {/* 主辦方資訊 */}
-        {host && (
-          <div className="flex items-center gap-2 pt-3 border-t border-gray-100 dark:border-gray-700">
-            <Avatar src={host.avatarUrl} size="sm" />
-            <span className="text-sm text-gray-600 dark:text-gray-300 flex-1">{host.username}</span>
-            <StarRating
-              value={host.rating}
-              readonly
-              size="sm"
-              showValue
-              totalReviews={host.reviewCount}
-            />
-          </div>
-        )}
       </Card>
     </Link>
   );

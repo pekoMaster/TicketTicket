@@ -381,23 +381,11 @@ export default function ListingDetailPage() {
             ) : (
               /* 一般模式：價格資訊 */
               <>
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('price')}</p>
-                    <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
-                      ¥{listing.askingPriceJPY.toLocaleString()}
-                      <span className="text-base font-normal text-gray-500 dark:text-gray-400">{t('perPerson')}</span>
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('availableSlots')}</p>
-                    <div className="flex items-center gap-1">
-                      <Users className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-                      <span className="text-2xl font-bold text-gray-700 dark:text-gray-200">
-                        {listing.availableSlots}/{listing.totalSlots}
-                      </span>
-                    </div>
-                  </div>
+                <div className="mb-4">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('price')}</p>
+                  <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
+                    ¥{listing.askingPriceJPY.toLocaleString()}
+                  </p>
                 </div>
 
                 <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-sm text-gray-600 dark:text-gray-300">
@@ -571,7 +559,7 @@ export default function ListingDetailPage() {
               {listing.eventName}
             </p>
             <p className="text-gray-600 dark:text-gray-300 text-sm">
-              {t('price')}: ¥{listing.askingPriceJPY.toLocaleString()}{t('perPerson')}
+              {t('price')}: ¥{listing.askingPriceJPY.toLocaleString()}
             </p>
           </div>
 
@@ -608,7 +596,7 @@ export default function ListingDetailPage() {
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Check className="w-8 h-8 text-green-500" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">{tApply('success')}</h3>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">{tApply('success')}</h3>
           <p className="text-gray-500 mb-6">
             {tApply('successMessage')}
           </p>

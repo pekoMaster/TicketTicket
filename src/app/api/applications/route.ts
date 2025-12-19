@@ -36,18 +36,32 @@ export async function GET() {
     }
 
     // 獲取用戶收到的申請（針對自己的刊登）
-    const { data: receivedApplications, error: receivedError } = await supabaseAdmin
-      .from('applications')
-      .select(`
-        *,
-        guest:users!guest_id(id, username, avatar_url, rating, review_count),
-        listing:listings!listing_id(id, event_name, event_date, venue)
-      `)
-      .eq('listing.host_id', userId)
-      .order('created_at', { ascending: false });
+    // 先獲取用戶的所有刊登 ID
+    const { data: userListings } = await supabaseAdmin
+      .from('listings')
+      .select('id')
+      .eq('host_id', userId);
 
-    if (receivedError) {
-      console.error('Error fetching received applications:', receivedError);
+    const listingIds = userListings?.map(l => l.id) || [];
+
+    let receivedApplications: typeof sentApplications = [];
+    if (listingIds.length > 0) {
+      const { data: received, error: receivedError } = await supabaseAdmin
+        .from('applications')
+        .select(`
+          *,
+          guest:users!guest_id(id, username, avatar_url, rating, review_count),
+          listing:listings!listing_id(id, event_name, event_date, venue, host_id)
+        `)
+        .in('listing_id', listingIds)
+        .neq('guest_id', userId)  // 排除自己申請自己的情況
+        .order('created_at', { ascending: false });
+
+      if (receivedError) {
+        console.error('Error fetching received applications:', receivedError);
+      } else {
+        receivedApplications = received || [];
+      }
     }
 
     return NextResponse.json({

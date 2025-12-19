@@ -330,7 +330,13 @@
     "waiting": "Waiting",
     "imHost": "I'm Host",
     "imGuest": "I'm Guest",
-    "enterChat": "Enter Chat"
+    "enterChat": "Enter Chat",
+    "withdraw": "Withdraw Application",
+    "cancelled": "Withdrawn",
+    "withdrawConfirmTitle": "Confirm Withdrawal",
+    "withdrawConfirmMessage": "Are you sure you want to withdraw this application? This action cannot be undone.",
+    "cancel": "Cancel",
+    "confirmWithdraw": "Confirm Withdrawal"
   },
   "chat": {
     "title": "Chat with {name}",
@@ -417,6 +423,7 @@
   "safety": {
     "chatWarning": "Safety Reminder: Host must be present for entry. Do not transfer money online. Meet at the venue.",
     "transactionTitle": "Transaction Safety Reminder",
+    "scamWarning": "Never transfer money online to strangers to avoid being scammed!",
     "tip1": "Payment will be made in person",
     "tip2": "Please arrive on time at the agreed location",
     "tip3": "Confirm details with the host after matching"
@@ -484,6 +491,7 @@
   "tokushoho": {
     "title": "Disclosure under the Act on Specified Commercial Transactions",
     "titleZh": "Commercial Transaction Disclosure",
+    "subtitle": "This platform complies with Japan's Act on Specified Commercial Transactions",
     "businessName": "Business Name",
     "businessNameValue": "TicketTicket Platform",
     "representative": "Representative",

@@ -8,7 +8,8 @@ import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
 import Tag from '@/components/ui/Tag';
 import Button from '@/components/ui/Button';
-import { MessageCircle, Users, Clock, Check, X, Loader2 } from 'lucide-react';
+import Modal from '@/components/ui/Modal';
+import { MessageCircle, Users, Clock, Check, X, Loader2, Undo2 } from 'lucide-react';
 import Link from 'next/link';
 
 interface User {
@@ -59,6 +60,9 @@ export default function MessagesPage() {
   const [sentApplications, setSentApplications] = useState<Application[]>([]);
   const [receivedApplications, setReceivedApplications] = useState<Application[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [withdrawingId, setWithdrawingId] = useState<string | null>(null);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [selectedWithdrawApp, setSelectedWithdrawApp] = useState<Application | null>(null);
 
   const currentUserId = session?.user?.dbId;
 
@@ -135,6 +139,30 @@ export default function MessagesPage() {
       }
     } catch (error) {
       console.error('Error rejecting application:', error);
+    }
+  };
+
+  // 處理撤回申請
+  const handleWithdraw = async () => {
+    if (!selectedWithdrawApp) return;
+
+    setWithdrawingId(selectedWithdrawApp.id);
+    try {
+      const response = await fetch(`/api/applications/${selectedWithdrawApp.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'cancelled' }),
+      });
+
+      if (response.ok) {
+        await fetchData();
+        setShowWithdrawModal(false);
+        setSelectedWithdrawApp(null);
+      }
+    } catch (error) {
+      console.error('Error withdrawing application:', error);
+    } finally {
+      setWithdrawingId(null);
     }
   };
 
@@ -286,19 +314,76 @@ export default function MessagesPage() {
                           ? 'warning'
                           : app.status === 'accepted'
                             ? 'success'
-                            : 'error'
+                            : app.status === 'cancelled'
+                              ? 'default'
+                              : 'error'
                       }
                     >
                       {app.status === 'pending' && t('waiting')}
                       {app.status === 'accepted' && t('accepted')}
                       {app.status === 'rejected' && t('rejected')}
+                      {app.status === 'cancelled' && t('cancelled')}
                     </Tag>
                   </div>
+                  {/* 撤回按鈕 - 只在 pending 狀態顯示 */}
+                  {app.status === 'pending' && (
+                    <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        fullWidth
+                        onClick={() => {
+                          setSelectedWithdrawApp(app);
+                          setShowWithdrawModal(true);
+                        }}
+                        loading={withdrawingId === app.id}
+                      >
+                        <Undo2 className="w-4 h-4 mr-1" />
+                        {t('withdraw')}
+                      </Button>
+                    </div>
+                  )}
                 </Card>
               ))}
             </div>
           </section>
         )}
+
+        {/* 撤回確認 Modal */}
+        <Modal
+          isOpen={showWithdrawModal}
+          onClose={() => {
+            setShowWithdrawModal(false);
+            setSelectedWithdrawApp(null);
+          }}
+          title={t('withdrawConfirmTitle')}
+        >
+          <div className="p-4">
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
+              {t('withdrawConfirmMessage')}
+            </p>
+            <div className="flex gap-3">
+              <Button
+                variant="secondary"
+                fullWidth
+                onClick={() => {
+                  setShowWithdrawModal(false);
+                  setSelectedWithdrawApp(null);
+                }}
+              >
+                {t('cancel')}
+              </Button>
+              <Button
+                fullWidth
+                onClick={handleWithdraw}
+                loading={withdrawingId !== null}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {t('confirmWithdraw')}
+              </Button>
+            </div>
+          </div>
+        </Modal>
       </div>
     </div>
   );

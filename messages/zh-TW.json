@@ -330,7 +330,13 @@
     "waiting": "等待中",
     "imHost": "我是主辦",
     "imGuest": "我是賓客",
-    "enterChat": "進入聊天"
+    "enterChat": "進入聊天",
+    "withdraw": "撤回申請",
+    "cancelled": "已撤回",
+    "withdrawConfirmTitle": "確認撤回",
+    "withdrawConfirmMessage": "確定要撤回這個申請嗎？撤回後將無法恢復。",
+    "cancel": "取消",
+    "confirmWithdraw": "確認撤回"
   },
   "chat": {
     "title": "與 {name} 聊天",
@@ -417,6 +423,7 @@
   "safety": {
     "chatWarning": "安全提醒：主辦方須親自在場才能入場。請勿在線上轉帳。請在場地見面。",
     "transactionTitle": "交易安全提醒",
+    "scamWarning": "請勿與陌生人進行線上轉帳或金錢交易避免遭受蒙騙！",
     "tip1": "付款將在見面時進行",
     "tip2": "請準時出現於約定地點",
     "tip3": "詳情請待配對後與主辦方確認"
@@ -484,6 +491,7 @@
   "tokushoho": {
     "title": "特定商取引法に基づく表示",
     "titleZh": "特定商取引法資訊公示",
+    "subtitle": "本平台遵循日本特定商取引法及相關法規",
     "businessName": "事業者名稱",
     "businessNameValue": "TicketTicket Platform",
     "representative": "負責人",
