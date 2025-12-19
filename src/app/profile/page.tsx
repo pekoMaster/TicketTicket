@@ -146,7 +146,11 @@ export default function ProfilePage() {
 
       if (applicationsRes.ok) {
         const applicationsData = await applicationsRes.json();
-        setMyApplications(applicationsData.sent || []);
+        // 過濾掉已撤回的申請
+        const activeApplications = (applicationsData.sent || []).filter(
+          (app: ApiApplication) => app.status !== 'cancelled'
+        );
+        setMyApplications(activeApplications);
       }
     } catch (error) {
       console.error('Error fetching user data:', error);

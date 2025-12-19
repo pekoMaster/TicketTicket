@@ -87,7 +87,11 @@ export default function MessagesPage() {
 
       if (appRes.ok) {
         const appData = await appRes.json();
-        setSentApplications(appData.sent || []);
+        // 過濾掉已撤回的申請
+        const activeSent = (appData.sent || []).filter(
+          (app: Application) => app.status !== 'cancelled'
+        );
+        setSentApplications(activeSent);
         setReceivedApplications(appData.received || []);
       }
     } catch (error) {
