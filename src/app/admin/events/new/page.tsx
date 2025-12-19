@@ -25,13 +25,13 @@ export default function NewEventPage() {
       <div className="flex items-center gap-4">
         <Link
           href="/admin/events"
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
         >
-          <ArrowLeft className="w-5 h-5 text-gray-600" />
+          <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">新增活動</h1>
-          <p className="text-gray-500 text-sm mt-1">建立新的 HOLOLIVE 活動</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">新增活動</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">建立新的 HOLOLIVE 活動</p>
         </div>
       </div>
 

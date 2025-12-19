@@ -100,7 +100,7 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex">
       {/* Desktop Sidebar - Fixed */}
       <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-gray-900">
         {/* Sidebar Header */}
@@ -237,21 +237,21 @@ export default function AdminLayout({
       {/* Main Content */}
       <div className="flex-1 lg:ml-64">
         {/* Desktop Header */}
-        <header className="hidden lg:block bg-white border-b border-gray-200 sticky top-0 z-30">
+        <header className="hidden lg:block bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30">
           <div className="flex items-center justify-between px-8 py-4">
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
               {NAV_ITEMS.find((item) => pathname.startsWith(item.href))?.label || '管理後台'}
             </h2>
             <div className="flex items-center gap-4">
               <Link
                 href="/"
-                className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
               >
                 返回前台
               </Link>
               <button
                 onClick={logout}
-                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
                 <LogOut className="w-4 h-4" />
                 登出

@@ -140,7 +140,7 @@ export default function MessagesPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Header title={t('title')} />
         <div className="pt-14 flex items-center justify-center h-[60vh]">
           <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
@@ -150,7 +150,7 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header title={t('title')} />
 
       <div className="pt-14 pb-20 px-4 py-6 space-y-6">
@@ -159,8 +159,8 @@ export default function MessagesPage() {
           <section>
             <div className="flex items-center gap-2 mb-4">
               <Clock className="w-5 h-5 text-orange-500" />
-              <h2 className="text-lg font-semibold text-gray-900">{t('pending')}</h2>
-              <span className="bg-orange-100 text-orange-600 text-xs font-medium px-2 py-0.5 rounded-full">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('pending')}</h2>
+              <span className="bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400 text-xs font-medium px-2 py-0.5 rounded-full">
                 {pendingApplications.length}
               </span>
             </div>
@@ -171,10 +171,10 @@ export default function MessagesPage() {
                   <div className="flex items-start gap-3">
                     <Avatar src={app.guest?.avatar_url} size="lg" />
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900">{app.guest?.username}</p>
-                      <p className="text-sm text-gray-500 truncate">{app.listing?.event_name}</p>
+                      <p className="font-medium text-gray-900 dark:text-gray-100">{app.guest?.username}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{app.listing?.event_name}</p>
                       {app.message && (
-                        <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 line-clamp-2">
                           「{app.message}」
                         </p>
                       )}
@@ -210,7 +210,7 @@ export default function MessagesPage() {
         <section>
           <div className="flex items-center gap-2 mb-4">
             <MessageCircle className="w-5 h-5 text-indigo-500" />
-            <h2 className="text-lg font-semibold text-gray-900">{t('conversations')}</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('conversations')}</h2>
           </div>
 
           {conversations.length > 0 ? (
@@ -223,7 +223,7 @@ export default function MessagesPage() {
                       <Avatar src={convo.otherUser?.avatar_url} size="lg" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className="font-medium text-gray-900">{convo.otherUser?.username}</p>
+                          <p className="font-medium text-gray-900 dark:text-gray-100">{convo.otherUser?.username}</p>
                           <Tag variant={isHost ? 'purple' : 'info'} size="sm">
                             {isHost ? t('imHost') : t('imGuest')}
                           </Tag>
@@ -233,14 +233,14 @@ export default function MessagesPage() {
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-500 truncate">{convo.listing?.event_name}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{convo.listing?.event_name}</p>
                         {convo.lastMessage && (
-                          <p className="text-xs text-gray-400 truncate mt-1">
+                          <p className="text-xs text-gray-400 dark:text-gray-500 truncate mt-1">
                             {convo.lastMessage.content}
                           </p>
                         )}
                       </div>
-                      <MessageCircle className="w-5 h-5 text-gray-400" />
+                      <MessageCircle className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                     </Card>
                   </Link>
                 );
@@ -248,11 +248,11 @@ export default function MessagesPage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">{t('noConversations')}</p>
+              <Users className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+              <p className="text-gray-500 dark:text-gray-400">{t('noConversations')}</p>
               <Link
-                href="/explore"
-                className="text-indigo-500 font-medium mt-2 inline-block"
+                href="/"
+                className="text-indigo-500 dark:text-indigo-400 font-medium mt-2 inline-block"
               >
                 {t('goExplore')}
               </Link>
@@ -264,8 +264,8 @@ export default function MessagesPage() {
         {sentApplications.length > 0 && (
           <section>
             <div className="flex items-center gap-2 mb-4">
-              <Users className="w-5 h-5 text-gray-500" />
-              <h2 className="text-lg font-semibold text-gray-900">{t('myApplications')}</h2>
+              <Users className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('myApplications')}</h2>
             </div>
 
             <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
@@ -273,10 +273,10 @@ export default function MessagesPage() {
                 <Card key={app.id}>
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900 truncate">
+                      <p className="font-medium text-gray-900 dark:text-gray-100 truncate">
                         {app.listing?.event_name}
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
                         {app.listing?.venue}
                       </p>
                     </div>
@@ -285,8 +285,8 @@ export default function MessagesPage() {
                         app.status === 'pending'
                           ? 'warning'
                           : app.status === 'accepted'
-                          ? 'success'
-                          : 'error'
+                            ? 'success'
+                            : 'error'
                       }
                     >
                       {app.status === 'pending' && t('waiting')}

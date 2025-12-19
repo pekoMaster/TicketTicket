@@ -28,14 +28,14 @@ export default function SideNav() {
       className="
         hidden lg:flex flex-col
         fixed left-0 top-0 bottom-0
-        w-64 bg-white border-r border-gray-200
+        w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700
         z-40
       "
     >
       {/* Logo */}
-      <div className="flex items-center gap-2 px-6 py-5 border-b border-gray-100">
+      <div className="flex items-center gap-2 px-6 py-5 border-b border-gray-100 dark:border-gray-700">
         <Ticket className="w-8 h-8 text-indigo-500" />
-        <span className="text-xl font-bold text-gray-900">TicketTicket</span>
+        <span className="text-xl font-bold text-gray-900 dark:text-gray-100">TicketTicket</span>
       </div>
 
       {/* Navigation */}
@@ -52,8 +52,8 @@ export default function SideNav() {
                     flex items-center gap-3 px-4 py-3 rounded-xl
                     transition-all duration-200
                     ${isActive
-                      ? 'bg-indigo-50 text-indigo-600 font-semibold'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
+                      ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold'
+                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100'}
                   `}
                 >
                   <Icon
@@ -69,9 +69,9 @@ export default function SideNav() {
       </nav>
 
       {/* Footer */}
-      <div className="px-4 py-4 border-t border-gray-100 space-y-3">
+      <div className="px-4 py-4 border-t border-gray-100 dark:border-gray-700 space-y-3">
         <LanguageSwitcher />
-        <p className="text-xs text-gray-400 text-center">
+        <p className="text-xs text-gray-400 dark:text-gray-500 text-center">
           TicketTicket v1.0.0
         </p>
       </div>

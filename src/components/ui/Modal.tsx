@@ -49,7 +49,7 @@ export default function Modal({
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
         <div
           className={`
-            bg-white rounded-2xl shadow-xl w-full pointer-events-auto animate-slide-up
+            bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full pointer-events-auto animate-slide-up
             max-h-[90vh] overflow-hidden flex flex-col
             ${sizeStyles[size]}
           `}
@@ -57,14 +57,14 @@ export default function Modal({
         >
           {/* Header */}
           {(title || showCloseButton) && (
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-              {title && <h2 className="text-lg font-semibold text-gray-900">{title}</h2>}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+              {title && <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h2>}
               {showCloseButton && !preventClose && onClose && (
                 <button
                   onClick={onClose}
-                  className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+                  className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 >
-                  <X className="w-5 h-5 text-gray-500" />
+                  <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                 </button>
               )}
             </div>

@@ -15,6 +15,7 @@ import { TicketTypeTag } from '@/components/ui/Tag';
 import Avatar from '@/components/ui/Avatar';
 import StarRating from '@/components/ui/StarRating';
 import SafetyBanner from '@/components/ui/SafetyBanner';
+import AgreementModal from '@/components/ui/AgreementModal';
 import { TicketType, Listing, SubsidyDirection } from '@/types';
 import {
   Calendar,
@@ -48,6 +49,7 @@ export default function ListingDetailPage() {
   const { locale } = useLanguage();
 
   const [showApplyModal, setShowApplyModal] = useState(false);
+  const [showApplyAgreement, setShowApplyAgreement] = useState(false); // 申請警告彈窗
   const [applyMessage, setApplyMessage] = useState('');
   const [isApplying, setIsApplying] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -160,7 +162,7 @@ export default function ListingDetailPage() {
 
   if (!listing) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <p className="text-gray-500">{t('detail')}</p>
       </div>
     );
@@ -241,7 +243,7 @@ export default function ListingDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header
         title={t('detail')}
         showBack
@@ -540,11 +542,22 @@ export default function ListingDetailPage() {
             {t('full')}
           </Button>
         ) : (
-          <Button fullWidth onClick={() => setShowApplyModal(true)}>
+          <Button fullWidth onClick={() => setShowApplyAgreement(true)}>
             {t('apply')}
           </Button>
         )}
       </div>
+
+      {/* 申請警告彈窗 */}
+      <AgreementModal
+        isOpen={showApplyAgreement}
+        onAgree={() => {
+          setShowApplyAgreement(false);
+          setShowApplyModal(true);
+        }}
+        onCancel={() => setShowApplyAgreement(false)}
+        variant="apply"
+      />
 
       {/* 申請 Modal */}
       <Modal

@@ -20,7 +20,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={`
-          bg-white rounded-xl shadow-sm border border-gray-100
+          bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700
           ${paddingStyles[padding]}
           ${hoverable ? 'transition-shadow duration-200 hover:shadow-md cursor-pointer' : ''}
           ${className}

@@ -331,7 +331,7 @@ export default function EditListingPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
       </div>
     );
@@ -354,30 +354,30 @@ export default function EditListingPage() {
 
   if (showSuccess) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
         <Card className="text-center max-w-sm w-full">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
             <Check className="w-8 h-8 text-green-500" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">{tEdit('updateSuccess')}</h2>
-          <p className="text-gray-500">{tEdit('updateRedirecting')}</p>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">{tEdit('updateSuccess')}</h2>
+          <p className="text-gray-500 dark:text-gray-400">{tEdit('updateRedirecting')}</p>
         </Card>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header title={tEdit('title')} showBack />
 
       <div className="pt-14 pb-24 px-4 py-6">
         <div className="space-y-6 max-w-2xl mx-auto">
 
           {/* 重要提醒 */}
-          <Card className="bg-amber-50 border-amber-200">
+          <Card className="bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800">
             <div className="flex gap-3">
-              <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-              <div className="text-sm text-amber-800">
+              <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <div className="text-sm text-amber-800 dark:text-amber-200">
                 <p className="font-medium mb-1">{t('importantReminder')}</p>
                 <p>{t('platformNotice')}</p>
               </div>
@@ -386,7 +386,7 @@ export default function EditListingPage() {
 
           {/* 活動資訊 */}
           <Card>
-            <h3 className="font-semibold text-gray-900 mb-4">{t('eventInfo')}</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('eventInfo')}</h3>
 
             <div className="space-y-4">
               <Select

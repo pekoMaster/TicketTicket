@@ -20,25 +20,25 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header title={t('login')} showBack />
 
       <div className="pt-14 pb-20 px-4 py-8 max-w-md mx-auto">
         {/* Logo and Title */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-4">
-            <Ticket className="w-8 h-8 text-indigo-600" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 dark:bg-indigo-900/50 rounded-full mb-4">
+            <Ticket className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">TicketTicket</h1>
-          <p className="text-gray-500 mt-2">{t('loginSubtitle')}</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">TicketTicket</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-2">{t('loginSubtitle')}</p>
         </div>
 
         {/* Error Message */}
         {error && (
-          <Card className="mb-6 bg-red-50 border border-red-200">
+          <Card className="mb-6 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800">
             <div className="flex items-center gap-3">
               <AlertCircle className="w-5 h-5 text-red-500" />
-              <p className="text-red-700 text-sm">{t('loginError')}</p>
+              <p className="text-red-700 dark:text-red-300 text-sm">{t('loginError')}</p>
             </div>
           </Card>
         )}
@@ -74,13 +74,13 @@ export default function LoginPage() {
         </Card>
 
         {/* Legal Links */}
-        <div className="mt-6 text-center text-sm text-gray-500">
+        <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
           <p>{t('agreeToTerms')}</p>
           <div className="flex justify-center gap-4 mt-2">
-            <Link href="/legal/terms" className="text-indigo-600 hover:underline">
+            <Link href="/legal/terms" className="text-indigo-600 dark:text-indigo-400 hover:underline">
               {t('termsOfService')}
             </Link>
-            <Link href="/legal/privacy" className="text-indigo-600 hover:underline">
+            <Link href="/legal/privacy" className="text-indigo-600 dark:text-indigo-400 hover:underline">
               {t('privacyPolicy')}
             </Link>
           </div>

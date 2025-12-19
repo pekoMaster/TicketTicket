@@ -187,25 +187,25 @@ export default function HomePage() {
   const ticketTypes: TicketType[] = ['find_companion', 'main_ticket_transfer', 'sub_ticket_transfer'];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       {/* Header - mobile only */}
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-30 lg:hidden">
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 sticky top-0 z-30 lg:hidden">
         <div className="px-4 py-4">
           <div className="flex items-center gap-2">
             <Ticket className="w-7 h-7 text-indigo-500" />
-            <h1 className="text-xl font-bold text-gray-900">TicketTicket</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">TicketTicket</h1>
           </div>
-          <p className="text-sm text-gray-500 mt-1">{t('subtitle')}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('subtitle')}</p>
         </div>
       </header>
 
       {/* Desktop Header */}
-      <header className="hidden lg:block bg-white border-b border-gray-100 px-6 py-6">
-        <h1 className="text-2xl font-bold text-gray-900">{t('subtitle')}</h1>
+      <header className="hidden lg:block bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 px-6 py-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('subtitle')}</h1>
       </header>
 
       {/* 搜尋與篩選區 */}
-      <div className="bg-white border-b border-gray-100 px-4 lg:px-6 py-4">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 px-4 lg:px-6 py-4">
         <div className="max-w-7xl mx-auto">
           {/* 搜尋列 */}
           <div className="flex gap-2">
@@ -221,7 +221,7 @@ export default function HomePage() {
               onClick={() => setShowFilters(!showFilters)}
               className={`
                 px-4 py-2.5 rounded-lg border transition-colors flex items-center gap-2
-                ${hasActiveFilters ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'}
+                ${hasActiveFilters ? 'bg-indigo-50 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-700 text-indigo-600 dark:text-indigo-400' : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'}
               `}
             >
               <Filter className="w-5 h-5" />
@@ -234,15 +234,15 @@ export default function HomePage() {
 
           {/* 篩選面板 */}
           {showFilters && (
-            <div className="mt-4 pt-4 border-t border-gray-100 space-y-4 animate-fade-in">
+            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 space-y-4 animate-fade-in">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {/* 活動篩選 */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{tFilter('event')}</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('event')}</label>
                   <select
                     value={selectedEvent}
                     onChange={(e) => setSelectedEvent(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
                   >
                     <option value="">{tFilter('allEvents')}</option>
                     {allEventNames.map((name) => (
@@ -253,11 +253,11 @@ export default function HomePage() {
 
                 {/* 日期範圍 */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{tFilter('dateRange')}</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('dateRange')}</label>
                   <select
                     value={dateFilter}
                     onChange={(e) => setDateFilter(e.target.value as DateFilter)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
                   >
                     <option value="all">{tFilter('all')}</option>
                     <option value="week">{tFilter('thisWeek')}</option>
@@ -268,11 +268,11 @@ export default function HomePage() {
 
                 {/* 票券類型 */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{tFilter('ticketType')}</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('ticketType')}</label>
                   <select
                     value={selectedTicketType}
                     onChange={(e) => setSelectedTicketType(e.target.value as TicketType | '')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
                   >
                     <option value="">{tFilter('allTypes')}</option>
                     {ticketTypes.map((type) => (
@@ -283,11 +283,11 @@ export default function HomePage() {
 
                 {/* 排序 */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{tFilter('sortBy')}</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('sortBy')}</label>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as SortOption)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
                   >
                     <option value="date">{tFilter('byDate')}</option>
                     <option value="price_asc">{tFilter('priceLowHigh')}</option>
@@ -298,45 +298,45 @@ export default function HomePage() {
 
                 {/* 價格範圍 */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{tFilter('priceRange')}</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('priceRange')}</label>
                   <div className="flex gap-2">
                     <input
                       type="number"
                       placeholder={tFilter('minPrice')}
                       value={minPrice}
                       onChange={(e) => setMinPrice(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
                     />
-                    <span className="flex items-center text-gray-400">~</span>
+                    <span className="flex items-center text-gray-400 dark:text-gray-500">~</span>
                     <input
                       type="number"
                       placeholder={tFilter('maxPrice')}
                       value={maxPrice}
                       onChange={(e) => setMaxPrice(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
                     />
                   </div>
                 </div>
 
                 {/* 主辦人名稱 */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{tFilter('hostName')}</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('hostName')}</label>
                   <input
                     type="text"
                     placeholder={tFilter('hostNamePlaceholder')}
                     value={hostNameQuery}
                     onChange={(e) => setHostNameQuery(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
                   />
                 </div>
 
                 {/* 最低評分 */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{tFilter('minRating')}</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('minRating')}</label>
                   <select
                     value={minRating}
                     onChange={(e) => setMinRating(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
                   >
                     <option value="">{tFilter('allRatings')}</option>
                     <option value="4">{tFilter('stars', { n: 4 })}</option>
@@ -348,11 +348,11 @@ export default function HomePage() {
 
                 {/* 國籍 */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{tFilter('nationality')}</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('nationality')}</label>
                   <select
                     value={selectedNationality}
                     onChange={(e) => setSelectedNationality(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
                   >
                     <option value="">{tFilter('allNationalities')}</option>
                     {NATIONALITY_OPTIONS.map((opt) => (
@@ -364,7 +364,7 @@ export default function HomePage() {
 
               {/* 語言篩選（多選） */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">{tFilter('languages')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{tFilter('languages')}</label>
                 <div className="flex flex-wrap gap-2">
                   {LANGUAGE_OPTIONS.map((lang) => (
                     <button
@@ -375,7 +375,7 @@ export default function HomePage() {
                         px-3 py-1.5 rounded-full text-sm font-medium transition-colors
                         ${selectedLanguages.includes(lang.value)
                           ? 'bg-indigo-500 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}
                       `}
                     >
                       {lang.label}
@@ -387,7 +387,7 @@ export default function HomePage() {
               {/* 清除篩選 */}
               {hasActiveFilters && (
                 <div className="flex items-center justify-between pt-2">
-                  <span className="text-sm text-indigo-600 font-medium">
+                  <span className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">
                     {tFilter('activeFilters')}
                   </span>
                   <button
@@ -404,7 +404,7 @@ export default function HomePage() {
 
           {/* 結果數量 */}
           <div className="mt-3">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               {tFilter('foundResults', { count: filteredListings.length })}
             </p>
           </div>
@@ -429,19 +429,19 @@ export default function HomePage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <Search className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">{hasActiveFilters ? tFilter('noResults') : t('noListings')}</p>
+              <Search className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+              <p className="text-gray-500 dark:text-gray-400">{hasActiveFilters ? tFilter('noResults') : t('noListings')}</p>
               {hasActiveFilters ? (
                 <button
                   onClick={clearFilters}
-                  className="text-indigo-500 font-medium mt-2"
+                  className="text-indigo-500 dark:text-indigo-400 font-medium mt-2"
                 >
                   {tFilter('clearFilters')}
                 </button>
               ) : (
                 <Link
                   href="/create"
-                  className="text-indigo-500 font-medium hover:text-indigo-600 mt-2 inline-block"
+                  className="text-indigo-500 dark:text-indigo-400 font-medium hover:text-indigo-600 dark:hover:text-indigo-300 mt-2 inline-block"
                 >
                   {t('createFirst')}
                 </Link>
@@ -451,9 +451,9 @@ export default function HomePage() {
 
           {/* 平台說明 */}
           {!hasActiveFilters && filteredListings.length > 0 && (
-            <section className="bg-indigo-50 rounded-xl p-4 lg:p-6 mt-8">
-              <h3 className="font-semibold text-indigo-900 mb-2">{t('whatIs')}</h3>
-              <ul className="text-sm text-indigo-700 space-y-2 lg:flex lg:gap-8 lg:space-y-0">
+            <section className="bg-indigo-50 dark:bg-indigo-900/30 rounded-xl p-4 lg:p-6 mt-8">
+              <h3 className="font-semibold text-indigo-900 dark:text-indigo-200 mb-2">{t('whatIs')}</h3>
+              <ul className="text-sm text-indigo-700 dark:text-indigo-300 space-y-2 lg:flex lg:gap-8 lg:space-y-0">
                 <li className="flex items-start gap-2">
                   <span className="text-indigo-400">•</span>
                   <span>{t('feature1')}</span>
@@ -473,25 +473,25 @@ export default function HomePage() {
       </div>
 
       {/* Footer with Privacy Policy */}
-      <footer className="bg-white border-t border-gray-100 px-4 py-6 mt-auto">
+      <footer className="bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-6 mt-auto">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <Ticket className="w-5 h-5 text-indigo-500" />
-              <span className="text-sm font-medium text-gray-700">TicketTicket</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-200">TicketTicket</span>
             </div>
-            <div className="flex items-center gap-4 text-sm text-gray-500">
-              <Link href="/legal/privacy" className="hover:text-indigo-600 transition-colors">
+            <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+              <Link href="/legal/privacy" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                 隱私權政策
               </Link>
-              <Link href="/legal/terms" className="hover:text-indigo-600 transition-colors">
+              <Link href="/legal/terms" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                 使用條款
               </Link>
-              <Link href="/legal/tokushoho" className="hover:text-indigo-600 transition-colors">
+              <Link href="/legal/tokushoho" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                 特定商取引法
               </Link>
             </div>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-400 dark:text-gray-500">
               © 2025 TicketTicket. All rights reserved.
             </p>
           </div>

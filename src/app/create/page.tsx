@@ -11,6 +11,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { Input, Textarea } from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
+import AgreementModal from '@/components/ui/AgreementModal';
 import {
   TicketType,
   TicketCountType,
@@ -68,6 +69,7 @@ export default function CreateListingPage() {
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showAgreement, setShowAgreement] = useState(true); // 展示創建警告彈窗
 
   // 換票專用欄位
   const [exchangeEventName, setExchangeEventName] = useState('');
@@ -303,20 +305,28 @@ export default function CreateListingPage() {
 
   if (showSuccess) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
         <Card className="text-center max-w-sm w-full">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
             <Check className="w-8 h-8 text-green-500" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('publishSuccess')}</h2>
-          <p className="text-gray-500">{t('redirecting')}</p>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">{t('publishSuccess')}</h2>
+          <p className="text-gray-500 dark:text-gray-400">{t('redirecting')}</p>
         </Card>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* 創建警告彈窗 */}
+      <AgreementModal
+        isOpen={showAgreement}
+        onAgree={() => setShowAgreement(false)}
+        onCancel={() => router.back()}
+        variant="create"
+      />
+
       <Header title={t('title')} showBack />
 
       <div className="pt-14 pb-24 px-4 py-6">

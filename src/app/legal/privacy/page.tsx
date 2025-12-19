@@ -8,7 +8,7 @@ export default function PrivacyPolicyPage() {
   const t = useTranslations('privacy');
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header title={t('title')} showBack />
 
       <div className="pt-14 pb-20 px-4 py-6 max-w-3xl mx-auto">
