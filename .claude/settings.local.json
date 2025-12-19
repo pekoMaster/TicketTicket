@@ -34,7 +34,8 @@
       "Bash(vercel logs:*)",
       "Bash(git commit:*)",
       "Bash(git remote:*)",
-      "Bash(git init:*)"
+      "Bash(git init:*)",
+      "Bash(git branch:*)"
     ]
   }
 }

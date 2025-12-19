@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   /* 主色調 */
   --primary: #6366f1;
@@ -27,6 +29,27 @@
   /* 背景與前景 */
   --background: #ffffff;
   --foreground: #111827;
+}
+
+/* 深色模式 */
+.dark {
+  --primary: #818cf8;
+  --primary-hover: #6366f1;
+  --primary-light: #312e81;
+
+  --gray-50: #111827;
+  --gray-100: #1f2937;
+  --gray-200: #374151;
+  --gray-300: #4b5563;
+  --gray-400: #6b7280;
+  --gray-500: #9ca3af;
+  --gray-600: #d1d5db;
+  --gray-700: #e5e7eb;
+  --gray-800: #f3f4f6;
+  --gray-900: #f9fafb;
+
+  --background: #0f172a;
+  --foreground: #f9fafb;
 }
 
 @theme inline {

@@ -207,7 +207,7 @@ export default function ProfileSettingsPage() {
 
   if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Header title={t('title')} showBack />
         <div className="pt-14 flex items-center justify-center h-[60vh]">
           <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
@@ -219,7 +219,7 @@ export default function ProfileSettingsPage() {
   const displayAvatarUrl = profile?.customAvatarUrl || profile?.avatarUrl;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header title={t('title')} showBack />
 
       <div className="pt-14 pb-24 px-4 py-6 max-w-2xl mx-auto space-y-6">
@@ -242,10 +242,10 @@ export default function ProfileSettingsPage() {
         )}
 
         {/* Basic Info Section */}
-        <Card>
+        <Card className="dark:bg-gray-800 dark:border-gray-700">
           <div className="flex items-center gap-2 mb-4">
             <User className="w-5 h-5 text-indigo-500" />
-            <h2 className="text-lg font-semibold text-gray-900">{t('basicInfo')}</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('basicInfo')}</h2>
           </div>
 
           {/* Avatar */}

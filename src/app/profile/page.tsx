@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { useApp } from '@/contexts/AppContext';
 import { useTranslations } from 'next-intl';
@@ -9,11 +10,14 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import Header from '@/components/layout/Header';
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
+import Button from '@/components/ui/Button';
 import StarRating from '@/components/ui/StarRating';
 import Tag from '@/components/ui/Tag';
 import { TicketTypeTag } from '@/components/ui/Tag';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
+import ThemeSwitcher from '@/components/ui/ThemeSwitcher';
 import ReviewCard from '@/components/features/ReviewCard';
+import Modal from '@/components/ui/Modal';
 import {
   Ticket,
   Calendar,
@@ -25,6 +29,10 @@ import {
   LogOut,
   Scale,
   Star,
+  Users,
+  Edit3,
+  Trash2,
+  X,
 } from 'lucide-react';
 
 interface ApiReview {
@@ -45,6 +53,25 @@ interface ApiReview {
   };
 }
 
+interface ApiApplication {
+  id: string;
+  listing_id: string;
+  status: string;
+  created_at: string;
+  listing: {
+    id: string;
+    event_name: string;
+    event_date: string;
+    venue: string;
+    status: string;
+    host: {
+      id: string;
+      username: string;
+      avatar_url?: string;
+    };
+  };
+}
+
 interface UserProfile {
   id: string;
   username: string;
@@ -58,17 +85,30 @@ interface UserProfile {
 
 export default function ProfilePage() {
   const { data: session } = useSession();
-  const { listings, applications } = useApp();
+  const router = useRouter();
+  const { listings, deleteListing } = useApp();
   const t = useTranslations('profile');
   const tStatus = useTranslations('status');
   const tLegal = useTranslations('legal');
   const tReview = useTranslations('review');
   const tCommon = useTranslations('common');
+  const tMessages = useTranslations('messages');
   const { locale } = useLanguage();
 
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [userReviews, setUserReviews] = useState<ApiReview[]>([]);
+  const [myApplications, setMyApplications] = useState<ApiApplication[]>([]);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+
+  // Delete listing modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [listingToDelete, setListingToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Withdraw application modal
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [applicationToWithdraw, setApplicationToWithdraw] = useState<string | null>(null);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
 
   // 取得用戶資料和評價
   const fetchUserData = useCallback(async () => {
@@ -78,10 +118,11 @@ export default function ProfilePage() {
     }
 
     try {
-      // 並行取得用戶資料和評價
-      const [profileRes, reviewsRes] = await Promise.all([
+      // 並行取得用戶資料、評價和申請
+      const [profileRes, reviewsRes, applicationsRes] = await Promise.all([
         fetch('/api/profile'),
         fetch(`/api/reviews?userId=${session.user.dbId}`),
+        fetch('/api/applications'),
       ]);
 
       if (profileRes.ok) {
@@ -101,6 +142,11 @@ export default function ProfilePage() {
       if (reviewsRes.ok) {
         const reviewsData = await reviewsRes.json();
         setUserReviews(reviewsData);
+      }
+
+      if (applicationsRes.ok) {
+        const applicationsData = await applicationsRes.json();
+        setMyApplications(applicationsData.sent || []);
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -131,38 +177,73 @@ export default function ProfilePage() {
     return listings.filter((l) => l.hostId === currentUser.id);
   }, [currentUser, listings]);
 
-  // 我的申請
-  const myApplications = useMemo(() => {
-    if (!currentUser) return [];
-    return applications.filter((a) => a.guestId === currentUser.id);
-  }, [currentUser, applications]);
-
-  const formatDate = (date: Date) => {
+  const formatDate = (date: Date | string) => {
     return new Date(date).toLocaleDateString(locale, {
       month: 'short',
       day: 'numeric',
     });
   };
 
+  // Handle delete listing
+  const handleDeleteListing = async () => {
+    if (!listingToDelete) return;
+
+    setIsDeleting(true);
+    const success = await deleteListing(listingToDelete);
+    setIsDeleting(false);
+
+    if (success) {
+      setShowDeleteModal(false);
+      setListingToDelete(null);
+    } else {
+      alert(tCommon('deleteFailed'));
+    }
+  };
+
+  // Handle withdraw application
+  const handleWithdrawApplication = async () => {
+    if (!applicationToWithdraw) return;
+
+    setIsWithdrawing(true);
+    try {
+      const response = await fetch(`/api/applications/${applicationToWithdraw}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setMyApplications(prev => prev.filter(app => app.id !== applicationToWithdraw));
+        setShowWithdrawModal(false);
+        setApplicationToWithdraw(null);
+      } else {
+        alert(tCommon('deleteFailed'));
+      }
+    } catch (error) {
+      console.error('Error withdrawing application:', error);
+      alert(tCommon('deleteFailed'));
+    } finally {
+      setIsWithdrawing(false);
+    }
+  };
+
   if (!currentUser) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-500">{t('title')}</p>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <p className="text-gray-500 dark:text-gray-400">{t('title')}</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header title={t('title')} />
 
       <div className="pt-14 pb-20 px-4 py-6 space-y-6">
         {/* 個人資訊卡片 */}
-        <Card>
+        <Card className="dark:bg-gray-800 dark:border-gray-700">
           <div className="flex items-center gap-4">
             <Avatar src={currentUser.customAvatarUrl || currentUser.avatarUrl} size="xl" />
             <div className="flex-1">
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 {currentUser.username}
               </h2>
               <StarRating
@@ -181,18 +262,18 @@ export default function ProfilePage() {
           </div>
 
           {/* 統計數據 */}
-          <div className="grid grid-cols-3 gap-4 mt-6 pt-4 border-t border-gray-100">
+          <div className="grid grid-cols-3 gap-4 mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
             <div className="text-center">
-              <p className="text-2xl font-bold text-indigo-600">{myListings.length}</p>
-              <p className="text-xs text-gray-500">{t('listings')}</p>
+              <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{myListings.length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{t('listings')}</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-indigo-600">{myApplications.length}</p>
-              <p className="text-xs text-gray-500">{t('applications')}</p>
+              <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{myApplications.length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{t('applications')}</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-indigo-600">{userReviews.length}</p>
-              <p className="text-xs text-gray-500">{t('reviews')}</p>
+              <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{userReviews.length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{t('reviews')}</p>
             </div>
           </div>
         </Card>
@@ -200,63 +281,183 @@ export default function ProfilePage() {
         {/* 我的刊登 */}
         <section>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-gray-900">{t('myListings')}</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('myListings')}</h3>
             {myListings.length > 0 && (
-              <span className="text-sm text-gray-500">{myListings.length}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{myListings.length}</span>
             )}
           </div>
 
           {myListings.length > 0 ? (
             <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
-              {myListings.slice(0, 3).map((listing) => (
-                <Link key={listing.id} href={`/listing/${listing.id}`}>
-                  <Card hoverable className="flex items-center gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <TicketTypeTag type={listing.ticketType} size="sm" />
-                        <Tag
-                          variant={
-                            listing.status === 'open'
-                              ? 'success'
-                              : listing.status === 'matched'
-                              ? 'info'
-                              : 'default'
-                          }
-                          size="sm"
-                        >
-                          {listing.status === 'open' && tStatus('open')}
-                          {listing.status === 'matched' && tStatus('matched')}
-                          {listing.status === 'closed' && tStatus('closed')}
-                        </Tag>
+              {myListings.map((listing) => (
+                <Card key={listing.id} className="dark:bg-gray-800 dark:border-gray-700">
+                  <Link href={`/listing/${listing.id}`}>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <TicketTypeTag type={listing.ticketType} size="sm" />
+                          <Tag
+                            variant={
+                              listing.status === 'open'
+                                ? 'success'
+                                : listing.status === 'matched'
+                                ? 'info'
+                                : 'default'
+                            }
+                            size="sm"
+                          >
+                            {listing.status === 'open' && tStatus('open')}
+                            {listing.status === 'matched' && tStatus('matched')}
+                            {listing.status === 'closed' && tStatus('closed')}
+                          </Tag>
+                        </div>
+                        <p className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                          {listing.eventName}
+                        </p>
+                        <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400 mt-1">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5" />
+                            {formatDate(listing.eventDate)}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <MapPin className="w-3.5 h-3.5" />
+                            {listing.venue}
+                          </span>
+                        </div>
                       </div>
-                      <p className="font-medium text-gray-900 truncate">
-                        {listing.eventName}
-                      </p>
-                      <div className="flex items-center gap-3 text-sm text-gray-500 mt-1">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3.5 h-3.5" />
-                          {formatDate(listing.eventDate)}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-3.5 h-3.5" />
-                          {listing.venue}
-                        </span>
-                      </div>
+                      <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
                     </div>
-                    <ChevronRight className="w-5 h-5 text-gray-400" />
-                  </Card>
-                </Link>
+                  </Link>
+
+                  {/* 管理按鈕 */}
+                  <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => router.push('/messages')}
+                      className="flex-1 text-xs"
+                    >
+                      <Users className="w-3.5 h-3.5 mr-1" />
+                      {t('manageApplications')}
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => router.push(`/listing/${listing.id}/edit`)}
+                      className="flex-1 text-xs"
+                      disabled={listing.status === 'matched'}
+                    >
+                      <Edit3 className="w-3.5 h-3.5 mr-1" />
+                      {t('editListing')}
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => {
+                        setListingToDelete(listing.id);
+                        setShowDeleteModal(true);
+                      }}
+                      className="text-xs text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                </Card>
               ))}
             </div>
           ) : (
-            <Card className="text-center py-8">
-              <Ticket className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-              <p className="text-gray-500 text-sm">{t('noListings')}</p>
+            <Card className="text-center py-8 dark:bg-gray-800 dark:border-gray-700">
+              <Ticket className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{t('noListings')}</p>
               <Link
                 href="/create"
-                className="text-indigo-500 font-medium text-sm mt-2 inline-block"
+                className="text-indigo-500 dark:text-indigo-400 font-medium text-sm mt-2 inline-block"
               >
                 {t('createFirst')}
+              </Link>
+            </Card>
+          )}
+        </section>
+
+        {/* 我的申請 */}
+        <section>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('myApplications')}</h3>
+            {myApplications.length > 0 && (
+              <span className="text-sm text-gray-500 dark:text-gray-400">{myApplications.length}</span>
+            )}
+          </div>
+
+          {myApplications.length > 0 ? (
+            <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
+              {myApplications.map((application) => (
+                <Card key={application.id} className="dark:bg-gray-800 dark:border-gray-700">
+                  <Link href={`/listing/${application.listing_id}`}>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Tag
+                            variant={
+                              application.status === 'pending'
+                                ? 'warning'
+                                : application.status === 'accepted'
+                                ? 'success'
+                                : 'default'
+                            }
+                            size="sm"
+                          >
+                            {application.status === 'pending' && tMessages('waiting')}
+                            {application.status === 'accepted' && tMessages('accepted')}
+                            {application.status === 'rejected' && tMessages('rejected')}
+                          </Tag>
+                        </div>
+                        <p className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                          {application.listing.event_name}
+                        </p>
+                        <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400 mt-1">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5" />
+                            {formatDate(application.listing.event_date)}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <MapPin className="w-3.5 h-3.5" />
+                            {application.listing.venue}
+                          </span>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                    </div>
+                  </Link>
+
+                  {/* 撤回按鈕 - 只有 pending 狀態可以撤回 */}
+                  {application.status === 'pending' && (
+                    <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => {
+                          setApplicationToWithdraw(application.id);
+                          setShowWithdrawModal(true);
+                        }}
+                        className="w-full text-xs text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+                      >
+                        <X className="w-3.5 h-3.5 mr-1" />
+                        {t('withdrawApplication')}
+                      </Button>
+                    </div>
+                  )}
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card className="text-center py-8 dark:bg-gray-800 dark:border-gray-700">
+              <Users className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{t('noApplications')}</p>
+              <Link
+                href="/"
+                className="text-indigo-500 dark:text-indigo-400 font-medium text-sm mt-2 inline-block"
+              >
+                {t('goExplore')}
               </Link>
             </Card>
           )}
@@ -265,9 +466,9 @@ export default function ProfilePage() {
         {/* 收到的評價 */}
         <section>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-gray-900">{tReview('receivedReviews')}</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">{tReview('receivedReviews')}</h3>
             {userReviews.length > 0 && (
-              <span className="text-sm text-gray-500">{userReviews.length}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{userReviews.length}</span>
             )}
           </div>
 
@@ -278,17 +479,18 @@ export default function ProfilePage() {
               ))}
             </div>
           ) : (
-            <Card className="text-center py-8">
-              <Star className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-              <p className="text-gray-500 text-sm">{tReview('noReviewsYet')}</p>
+            <Card className="text-center py-8 dark:bg-gray-800 dark:border-gray-700">
+              <Star className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{tReview('noReviewsYet')}</p>
             </Card>
           )}
         </section>
 
         {/* 設定選單 */}
         <section>
-          <h3 className="font-semibold text-gray-900 mb-3">{t('settings')}</h3>
-          <Card padding="none">
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('settings')}</h3>
+          <Card padding="none" className="dark:bg-gray-800 dark:border-gray-700">
+            <ThemeSwitcher variant="menu-item" />
             <LanguageSwitcher variant="menu-item" />
             <MenuItem
               icon={<Settings className="w-5 h-5" />}
@@ -312,7 +514,7 @@ export default function ProfilePage() {
             />
             <button
               onClick={() => signOut({ callbackUrl: '/login' })}
-              className="flex items-center gap-3 px-4 py-3.5 w-full text-left text-red-500 hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-3 px-4 py-3.5 w-full text-left text-red-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
               <LogOut className="w-5 h-5" />
               <span className="flex-1 font-medium">{t('logout')}</span>
@@ -322,10 +524,70 @@ export default function ProfilePage() {
         </section>
 
         {/* 版本資訊 */}
-        <p className="text-center text-xs text-gray-400">
+        <p className="text-center text-xs text-gray-400 dark:text-gray-500">
           TicketTicket v1.0.0 ({t('version')})
         </p>
       </div>
+
+      {/* 刪除確認 Modal */}
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        title={t('withdrawConfirmTitle')}
+      >
+        <div className="p-4">
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
+            確定要刪除此刊登嗎？此操作無法復原。
+          </p>
+          <div className="flex gap-3">
+            <Button
+              variant="secondary"
+              fullWidth
+              onClick={() => setShowDeleteModal(false)}
+            >
+              {tCommon('cancel')}
+            </Button>
+            <Button
+              fullWidth
+              onClick={handleDeleteListing}
+              loading={isDeleting}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {t('deleteListing')}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* 撤回申請確認 Modal */}
+      <Modal
+        isOpen={showWithdrawModal}
+        onClose={() => setShowWithdrawModal(false)}
+        title={t('withdrawConfirmTitle')}
+      >
+        <div className="p-4">
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
+            {t('withdrawConfirmMessage')}
+          </p>
+          <div className="flex gap-3">
+            <Button
+              variant="secondary"
+              fullWidth
+              onClick={() => setShowWithdrawModal(false)}
+            >
+              {tCommon('cancel')}
+            </Button>
+            <Button
+              fullWidth
+              onClick={handleWithdrawApplication}
+              loading={isWithdrawing}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {t('withdrawApplication')}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
@@ -344,9 +606,9 @@ function MenuItem({ icon, label, href, danger, isLast }: MenuItemProps) {
       href={href}
       className={`
         flex items-center gap-3 px-4 py-3.5
-        ${!isLast && 'border-b border-gray-100'}
-        ${danger ? 'text-red-500' : 'text-gray-700'}
-        hover:bg-gray-50 transition-colors
+        ${!isLast && 'border-b border-gray-100 dark:border-gray-700'}
+        ${danger ? 'text-red-500' : 'text-gray-700 dark:text-gray-200'}
+        hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors
       `}
     >
       {icon}

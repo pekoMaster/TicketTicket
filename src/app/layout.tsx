@@ -5,6 +5,7 @@ import './globals.css';
 import { AppProvider } from '@/contexts/AppContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { AdminProvider } from '@/contexts/AdminContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import SessionProvider from '@/components/providers/SessionProvider';
 import ReCaptchaProvider from '@/components/providers/ReCaptchaProvider';
 import MainLayout from '@/components/layout/MainLayout';
@@ -35,20 +36,22 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale}>
-      <body className="antialiased bg-gray-50">
+    <html lang={locale} suppressHydrationWarning>
+      <body className="antialiased bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         <NextIntlClientProvider messages={messages}>
           <SessionProvider>
             <ReCaptchaProvider>
-              <LanguageProvider>
-              <AppProvider>
-                <AdminProvider>
-                  <MainLayout>
-                    {children}
-                  </MainLayout>
-                </AdminProvider>
-              </AppProvider>
-              </LanguageProvider>
+              <ThemeProvider>
+                <LanguageProvider>
+                  <AppProvider>
+                    <AdminProvider>
+                      <MainLayout>
+                        {children}
+                      </MainLayout>
+                    </AdminProvider>
+                  </AppProvider>
+                </LanguageProvider>
+              </ThemeProvider>
             </ReCaptchaProvider>
           </SessionProvider>
         </NextIntlClientProvider>

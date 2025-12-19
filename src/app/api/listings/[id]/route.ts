@@ -45,10 +45,13 @@ export async function PATCH(
     const { id } = await params;
     const body = await request.json();
 
-    // 確認是刊登擁有者
+    // 提取 removeApplicants 標記（不要傳給資料庫）
+    const { removeApplicants, ...updates } = body;
+
+    // 確認是刊登擁有者並獲取狀態
     const { data: listing } = await supabaseAdmin
       .from('listings')
-      .select('host_id')
+      .select('host_id, status, event_name')
       .eq('id', id)
       .single();
 
@@ -56,9 +59,46 @@ export async function PATCH(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
+    // 已配對的刊登不能編輯
+    if (listing.status === 'matched') {
+      return NextResponse.json({ error: 'Cannot edit matched listing' }, { status: 400 });
+    }
+
+    // 如果需要移除申請人
+    if (removeApplicants) {
+      // 獲取所有申請人
+      const { data: applications } = await supabaseAdmin
+        .from('applications')
+        .select('id, applicant_id')
+        .eq('listing_id', id);
+
+      if (applications && applications.length > 0) {
+        // 為每個被移除的申請人創建通知
+        const notifications = applications.map(app => ({
+          user_id: app.applicant_id,
+          type: 'application_removed',
+          title: '申請已被移除',
+          message: `您對「${listing.event_name}」的申請已被移除，因為主辦方已編輯活動內容。`,
+          data: { listing_id: id, event_name: listing.event_name },
+          is_read: false,
+        }));
+
+        // 創建通知
+        await supabaseAdmin
+          .from('notifications')
+          .insert(notifications);
+
+        // 刪除所有申請
+        await supabaseAdmin
+          .from('applications')
+          .delete()
+          .eq('listing_id', id);
+      }
+    }
+
     const { data, error } = await supabaseAdmin
       .from('listings')
-      .update(body)
+      .update(updates)
       .eq('id', id)
       .select()
       .single();

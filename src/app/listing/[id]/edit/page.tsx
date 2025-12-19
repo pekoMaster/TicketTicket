@@ -21,6 +21,7 @@ import {
   NATIONALITY_OPTIONS,
   LANGUAGE_OPTIONS,
 } from '@/types';
+import Modal from '@/components/ui/Modal';
 import {
   Calendar,
   MapPin,
@@ -56,6 +57,8 @@ export default function EditListingPage() {
   // 載入狀態
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
+  const [applicantCount, setApplicantCount] = useState(0);
+  const [showWarningModal, setShowWarningModal] = useState(false);
 
   // 表單狀態
   const [eventName, setEventName] = useState('');
@@ -92,6 +95,24 @@ export default function EditListingPage() {
       setLoadError('Forbidden');
       setIsLoading(false);
       return;
+    }
+
+    // 檢查是否已配對 - 不允許編輯
+    if (listing.status === 'matched') {
+      setLoadError('Matched');
+      setIsLoading(false);
+      return;
+    }
+
+    // 獲取申請人數量
+    try {
+      const res = await fetch(`/api/listings/${listing.id}/applications`);
+      if (res.ok) {
+        const data = await res.json();
+        setApplicantCount(data.length || 0);
+      }
+    } catch (e) {
+      console.error('Error fetching applicants:', e);
     }
 
     // 填入表單
@@ -242,7 +263,16 @@ export default function EditListingPage() {
     }
   };
 
+  const handleEditClick = () => {
+    if (applicantCount > 0) {
+      setShowWarningModal(true);
+    } else {
+      handleSubmit();
+    }
+  };
+
   const handleSubmit = async () => {
+    setShowWarningModal(false);
     if (!session?.user?.dbId || !isFormValid || !listing) return;
 
     setIsSubmitting(true);
@@ -271,7 +301,10 @@ export default function EditListingPage() {
       const response = await fetch(`/api/listings/${listing.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates),
+        body: JSON.stringify({
+          ...updates,
+          removeApplicants: applicantCount > 0,
+        }),
       });
 
       if (response.ok) {
@@ -306,11 +339,13 @@ export default function EditListingPage() {
 
   if (loadError || !listing) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <Card className="text-center max-w-sm w-full">
-          <p className="text-gray-500">{tEdit('notFound')}</p>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
+        <Card className="text-center max-w-sm w-full dark:bg-gray-800">
+          <p className="text-gray-500 dark:text-gray-400">
+            {loadError === 'Matched' ? tEdit('cannotEditMatched') : tEdit('notFound')}
+          </p>
           <Button className="mt-4" onClick={() => router.push('/profile')}>
-            返回
+            {tCommon('back')}
           </Button>
         </Card>
       </div>
@@ -751,11 +786,11 @@ export default function EditListingPage() {
       </div>
 
       {/* 底部提交按鈕 */}
-      <div className="fixed bottom-16 left-0 right-0 lg:left-64 lg:bottom-0 bg-white border-t border-gray-100 px-4 py-3 safe-area-bottom">
+      <div className="fixed bottom-16 left-0 right-0 lg:left-64 lg:bottom-0 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-3 safe-area-bottom">
         <div className="max-w-2xl mx-auto">
           <Button
             fullWidth
-            onClick={handleSubmit}
+            onClick={handleEditClick}
             disabled={!isFormValid}
             loading={isSubmitting}
           >
@@ -763,6 +798,39 @@ export default function EditListingPage() {
           </Button>
         </div>
       </div>
+
+      {/* 編輯警告 Modal */}
+      <Modal
+        isOpen={showWarningModal}
+        onClose={() => setShowWarningModal(false)}
+        title={tEdit('warningTitle')}
+      >
+        <div className="p-4">
+          <div className="flex items-start gap-3 mb-4">
+            <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0 mt-0.5" />
+            <p className="text-gray-600 dark:text-gray-300">
+              {tEdit('warningMessage')}
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <Button
+              variant="secondary"
+              fullWidth
+              onClick={() => setShowWarningModal(false)}
+            >
+              {tCommon('cancel')}
+            </Button>
+            <Button
+              fullWidth
+              onClick={handleSubmit}
+              loading={isSubmitting}
+              className="bg-amber-600 hover:bg-amber-700"
+            >
+              {tEdit('continueEdit')}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

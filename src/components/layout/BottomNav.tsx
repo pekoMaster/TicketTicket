@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Home, Search, PlusCircle, MessageCircle, User } from 'lucide-react';
+import { Home, PlusCircle, MessageCircle, User } from 'lucide-react';
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -11,7 +11,6 @@ export default function BottomNav() {
 
   const navItems = [
     { href: '/', label: t('home'), icon: Home },
-    { href: '/explore', label: t('explore'), icon: Search },
     { href: '/create', label: t('create'), icon: PlusCircle },
     { href: '/messages', label: t('messages'), icon: MessageCircle },
     { href: '/profile', label: t('profile'), icon: User },
