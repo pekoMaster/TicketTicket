@@ -593,7 +593,10 @@ export default function EditListingPage() {
                   {ticketTypes.map((type) => {
                     const info = TICKET_TYPE_INFO[type];
                     // 尋找同行者只有二人票可選
-                    const isDisabled = type === 'find_companion' && ticketCountType !== 'duo';
+                    const isFindCompanionDisabled = type === 'find_companion' && ticketCountType !== 'duo';
+                    // 轉讓母票暫時禁用
+                    const isMainTicketDisabled = type === 'main_ticket_transfer';
+                    const isDisabled = isFindCompanionDisabled || isMainTicketDisabled;
 
                     return (
                       <label
@@ -617,7 +620,14 @@ export default function EditListingPage() {
                           className="mt-0.5"
                         />
                         <div className="flex-1">
-                          <p className="font-medium text-gray-900 text-sm">{info.label}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium text-gray-900 text-sm">{info.label}</p>
+                            {isMainTicketDisabled && (
+                              <span className="px-1.5 py-0.5 text-xs bg-gray-200 text-gray-500 rounded">
+                                {tCommon('comingSoon')}
+                              </span>
+                            )}
+                          </div>
                           <p className="text-xs text-gray-500">{info.description}</p>
                           {info.warning && (
                             <div className="flex items-center gap-1 mt-1 text-xs text-orange-600">
