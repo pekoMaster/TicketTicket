@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.87.3",
+    "deepl-node": "^1.24.0",
+    "google-translate-api-x": "^10.7.2",
     "lucide-react": "^0.561.0",
     "next": "16.0.10",
     "next-auth": "^5.0.0-beta.30",

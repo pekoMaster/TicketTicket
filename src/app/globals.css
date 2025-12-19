@@ -138,3 +138,17 @@ body {
   transform: scale(0.98);
   opacity: 0.9;
 }
+
+/* Toast 進度條動畫 */
+@keyframes shrink {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+.animate-shrink {
+  animation: shrink linear forwards;
+}

@@ -6,6 +6,7 @@ import SideNav from '@/components/layout/SideNav';
 import DisclaimerModal from '@/components/layout/DisclaimerModal';
 import LanguageModal from '@/components/layout/LanguageModal';
 import LegalFooter from '@/components/layout/LegalFooter';
+import ToastNotification from '@/components/ui/ToastNotification';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -17,6 +18,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const isLoginPage = pathname === '/login';
   const isLegalPage = pathname.startsWith('/legal');
   const isHomePage = pathname === '/';
+  const isChatPage = pathname.startsWith('/chat');
 
   // Admin pages have their own layout
   if (isAdminPage) {
@@ -40,6 +42,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     <>
       <LanguageModal />
       <DisclaimerModal />
+      <ToastNotification />
       <div className="flex min-h-screen">
         <SideNav />
         <div className="flex-1 flex flex-col lg:ml-64">
@@ -49,8 +52,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
             </div>
           </main>
           {/* Desktop-only footer (mobile uses profile page for legal links) */}
-          {/* Skip on home page since it has its own footer */}
-          {!isHomePage && (
+          {/* Skip on home page and chat page since they have their own layouts */}
+          {!isHomePage && !isChatPage && (
             <div className="hidden lg:block">
               <LegalFooter />
             </div>

@@ -249,7 +249,7 @@
     "ticketTypes": {
       "find_companion": "寻找同行者",
       "find_companionDesc": "寻找一起入场的伙伴，费用均摊",
-      "find_companionWarning": "必须选择二人票，价格为票价的一半",
+      "find_companionWarning": "必须选择二人票",
       "main_ticket_transfer": "母票转让",
       "main_ticket_transferDesc": "转让主票，需提供持票账号或借出手机",
       "main_ticket_transferWarning": "须提供 ZAIKO 账号或现场借出手机入场",
@@ -297,7 +297,7 @@
   "ticketType": {
     "findCompanion": "寻找同行者",
     "findCompanionDesc": "寻找一起入场的伙伴，费用均摊",
-    "findCompanionWarning": "必须选择二人票，价格为票价的一半",
+    "findCompanionWarning": "必须选择二人票",
     "mainTicketTransfer": "母票转让",
     "mainTicketTransferDesc": "转让主票，需提供持票账号或借出手机",
     "mainTicketTransferWarning": "须提供 ZAIKO 账号或现场借出手机入场",
@@ -343,6 +343,9 @@
     "title": "与 {name} 聊天",
     "inputPlaceholder": "输入消息...",
     "send": "发送",
+    "translate": "翻译",
+    "translated": "翻译结果",
+    "translating": "翻译中...",
     "startConversation": "开始对话吧！",
     "notFound": "找不到此对话"
   },
@@ -576,6 +579,13 @@
     "section8Title": "8. 条款变更",
     "section8Content": "我们可能会不时更新本使用条款。变更后继续使用本平台即表示您接受更新后的条款。",
     "section9Title": "9. 联系我们",
-    "section9Content": "如果您对本使用条款有任何问题，请通过应用内的客服功能联系我们。"
+    "section9Content": "如果您对本使用条款有任何问题，请通过应用程式内的客服功能联系我们。"
+  },
+  "notification": {
+    "title": "通知",
+    "newApplication": "您有新的申请",
+    "applicationAccepted": "您的申请已通过",
+    "applicationRejected": "您的申请已驳回",
+    "newMessage": "您有新消息"
   }
 }

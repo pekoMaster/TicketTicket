@@ -8,8 +8,9 @@ import Header from '@/components/layout/Header';
 import SafetyBanner from '@/components/ui/SafetyBanner';
 import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
-import { Send, Calendar, MapPin, Loader2 } from 'lucide-react';
+import { Send, Calendar, MapPin, Loader2, Languages } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Message {
   id: string;
@@ -66,7 +67,10 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [inputMessage, setInputMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [translations, setTranslations] = useState<Record<string, string>>({});
+  const [translatingIds, setTranslatingIds] = useState<Set<string>>(new Set());
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { locale } = useLanguage();
 
   // 獲取對話資料
   const fetchConversation = useCallback(async () => {
@@ -90,7 +94,9 @@ export default function ChatPage() {
 
   // Supabase Realtime 訂閱
   useEffect(() => {
-    if (!conversationId) return;
+    if (!conversationId || !session?.user?.dbId) return;
+
+    const currentUserId = session.user.dbId;
 
     // 訂閱此對話的新訊息
     const channel = supabase
@@ -106,9 +112,39 @@ export default function ChatPage() {
         (payload) => {
           // 收到新訊息時，加入到訊息列表
           const newMessage = payload.new as Message;
+
+          // 如果是自己發送的訊息，忽略（已經透過樂觀更新處理了）
+          if (newMessage.sender_id === currentUserId) {
+            // 只需要更新臨時訊息的 ID
+            setConversationData((prev) => {
+              if (!prev) return prev;
+              // 檢查是否已經有這個真實 ID
+              const existsReal = prev.messages.some((m) => m.id === newMessage.id);
+              if (existsReal) return prev;
+
+              // 找到對應的臨時訊息（相同內容且時間接近）
+              const tempIndex = prev.messages.findIndex((m) =>
+                m.id.startsWith('temp-') &&
+                m.content === newMessage.content &&
+                m.sender_id === newMessage.sender_id
+              );
+
+              if (tempIndex !== -1) {
+                // 替換臨時訊息
+                const newMessages = [...prev.messages];
+                newMessages[tempIndex] = newMessage;
+                return { ...prev, messages: newMessages };
+              }
+
+              return prev;
+            });
+            return;
+          }
+
+          // 對方發送的訊息，正常加入
           setConversationData((prev) => {
             if (!prev) return prev;
-            // 避免重複加入（自己發送的訊息已經加入了）
+            // 避免重複加入
             const exists = prev.messages.some((m) => m.id === newMessage.id);
             if (exists) return prev;
             return {
@@ -124,7 +160,7 @@ export default function ChatPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [conversationId, supabase]);
+  }, [conversationId, supabase, session?.user?.dbId]);
 
   // 滾動到底部
   const scrollToBottom = () => {
@@ -134,6 +170,34 @@ export default function ChatPage() {
   useEffect(() => {
     scrollToBottom();
   }, [conversationData?.messages]);
+
+  // 翻譯訊息
+  const handleTranslate = async (messageId: string, text: string) => {
+    if (translatingIds.has(messageId) || translations[messageId]) return;
+
+    setTranslatingIds(prev => new Set(prev).add(messageId));
+
+    try {
+      const response = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, targetLang: locale }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setTranslations(prev => ({ ...prev, [messageId]: data.translatedText }));
+      }
+    } catch (error) {
+      console.error('Translation error:', error);
+    } finally {
+      setTranslatingIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(messageId);
+        return newSet;
+      });
+    }
+  };
 
   const formatTime = (dateStr: string) => {
     return new Date(dateStr).toLocaleTimeString('zh-TW', {
@@ -307,14 +371,36 @@ export default function ChatPage() {
                     `}
                   >
                     <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                    <p
-                      className={`
-                        text-xs mt-1
-                        ${isMe ? 'text-indigo-200' : 'text-gray-400'}
-                      `}
-                    >
-                      {formatTime(msg.created_at)}
-                    </p>
+                    {/* 翻譯結果 */}
+                    {translations[msg.id] && (
+                      <div className={`mt-2 pt-2 border-t ${isMe ? 'border-indigo-400' : 'border-gray-200 dark:border-gray-600'}`}>
+                        <p className={`text-xs mb-1 ${isMe ? 'text-indigo-200' : 'text-gray-400'}`}>
+                          {tChat('translated')}
+                        </p>
+                        <p className="text-sm whitespace-pre-wrap">{translations[msg.id]}</p>
+                      </div>
+                    )}
+                    <div className={`flex items-center justify-between mt-1 ${isMe ? 'text-indigo-200' : 'text-gray-400'}`}>
+                      <p className="text-xs">{formatTime(msg.created_at)}</p>
+                      {/* 翻譯按鈕 */}
+                      {!translations[msg.id] && (
+                        <button
+                          onClick={() => handleTranslate(msg.id, msg.content)}
+                          disabled={translatingIds.has(msg.id)}
+                          className={`
+                            p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 transition-colors
+                            ${translatingIds.has(msg.id) ? 'opacity-50' : ''}
+                          `}
+                          title={tChat('translate')}
+                        >
+                          {translatingIds.has(msg.id) ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : (
+                            <Languages className="w-3 h-3" />
+                          )}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               );

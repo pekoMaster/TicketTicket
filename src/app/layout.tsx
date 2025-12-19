@@ -6,6 +6,7 @@ import { AppProvider } from '@/contexts/AppContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { AdminProvider } from '@/contexts/AdminContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { NotificationProvider } from '@/contexts/NotificationContext';
 import SessionProvider from '@/components/providers/SessionProvider';
 import ReCaptchaProvider from '@/components/providers/ReCaptchaProvider';
 import MainLayout from '@/components/layout/MainLayout';
@@ -45,9 +46,11 @@ export default async function RootLayout({
                 <LanguageProvider>
                   <AppProvider>
                     <AdminProvider>
-                      <MainLayout>
-                        {children}
-                      </MainLayout>
+                      <NotificationProvider>
+                        <MainLayout>
+                          {children}
+                        </MainLayout>
+                      </NotificationProvider>
                     </AdminProvider>
                   </AppProvider>
                 </LanguageProvider>

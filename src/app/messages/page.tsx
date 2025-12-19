@@ -11,6 +11,7 @@ import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
 import { MessageCircle, Users, Clock, Check, X, Loader2, Undo2 } from 'lucide-react';
 import Link from 'next/link';
+import { useNotification } from '@/contexts/NotificationContext';
 
 interface User {
   id: string;
@@ -55,6 +56,7 @@ interface Conversation {
 export default function MessagesPage() {
   const { data: session } = useSession();
   const t = useTranslations('messages');
+  const { markAsRead } = useNotification();
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [sentApplications, setSentApplications] = useState<Application[]>([]);
@@ -103,7 +105,9 @@ export default function MessagesPage() {
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+    // 進入消息頁面時標記為已讀
+    markAsRead();
+  }, [fetchData, markAsRead]);
 
   // 待處理的申請（收到的）
   const pendingApplications = receivedApplications.filter(

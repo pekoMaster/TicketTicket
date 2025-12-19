@@ -189,7 +189,7 @@ export const TICKET_TYPE_INFO: Record<TicketType, {
   find_companion: {
     label: '尋找同行者',
     description: '尋找一起入場的夥伴，費用均攤',
-    warning: '必須選擇二人票，價格為票價的一半',
+    warning: '必須選擇二人票',
     color: 'bg-blue-100 text-blue-800',
     requiresDuo: true,
   },

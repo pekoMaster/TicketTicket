@@ -5,15 +5,17 @@ import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Home, PlusCircle, MessageCircle, User, Ticket } from 'lucide-react';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
+import { useNotification } from '@/contexts/NotificationContext';
 
 export default function SideNav() {
   const pathname = usePathname();
   const t = useTranslations('nav');
+  const { hasUnread } = useNotification();
 
   const navItems = [
     { href: '/', label: t('home'), icon: Home },
     { href: '/create', label: t('create'), icon: PlusCircle },
-    { href: '/messages', label: t('messages'), icon: MessageCircle },
+    { href: '/messages', label: t('messages'), icon: MessageCircle, showBadge: hasUnread },
     { href: '/profile', label: t('profile'), icon: User },
   ];
 
@@ -41,7 +43,7 @@ export default function SideNav() {
       {/* Navigation */}
       <nav className="flex-1 px-4 py-6">
         <ul className="space-y-2">
-          {navItems.map(({ href, label, icon: Icon }) => {
+          {navItems.map(({ href, label, icon: Icon, showBadge }) => {
             const isActive = pathname === href;
 
             return (
@@ -56,10 +58,15 @@ export default function SideNav() {
                       : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100'}
                   `}
                 >
-                  <Icon
-                    className={`w-5 h-5 ${href === '/create' ? 'w-6 h-6' : ''}`}
-                    strokeWidth={isActive ? 2.5 : 2}
-                  />
+                  <div className="relative">
+                    <Icon
+                      className={`w-5 h-5 ${href === '/create' ? 'w-6 h-6' : ''}`}
+                      strokeWidth={isActive ? 2.5 : 2}
+                    />
+                    {showBadge && (
+                      <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-gray-800" />
+                    )}
+                  </div>
                   <span className="text-sm">{label}</span>
                 </Link>
               </li>
@@ -78,3 +85,4 @@ export default function SideNav() {
     </aside>
   );
 }
+

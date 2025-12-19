@@ -249,7 +249,7 @@
     "ticketTypes": {
       "find_companion": "Find Companion",
       "find_companionDesc": "Find a partner to enter together, split the cost",
-      "find_companionWarning": "Must select duo ticket, price is half of the ticket price",
+      "find_companionWarning": "Must select duo ticket",
       "main_ticket_transfer": "Main Ticket Transfer",
       "main_ticket_transferDesc": "Transfer main ticket, need to provide account or lend phone",
       "main_ticket_transferWarning": "Need to provide ZAIKO account or lend phone at venue",
@@ -297,7 +297,7 @@
   "ticketType": {
     "findCompanion": "Find Companion",
     "findCompanionDesc": "Find a partner to enter together, split the cost",
-    "findCompanionWarning": "Must select duo ticket, price is half of the ticket price",
+    "findCompanionWarning": "Must select duo ticket",
     "mainTicketTransfer": "Main Ticket Transfer",
     "mainTicketTransferDesc": "Transfer main ticket, need to provide account or lend phone",
     "mainTicketTransferWarning": "Need to provide ZAIKO account or lend phone at venue",
@@ -344,6 +344,9 @@
     "inputPlaceholder": "Type a message...",
     "send": "Send",
     "startConversation": "Start the conversation!",
+    "translate": "Translate",
+    "translated": "Translated",
+    "translating": "Translating...",
     "notFound": "Conversation not found"
   },
   "profile": {
@@ -576,6 +579,13 @@
     "section8Title": "8. Changes to Terms",
     "section8Content": "We may update these Terms of Service from time to time. Continued use of the Platform after changes indicates your acceptance of the updated terms.",
     "section9Title": "9. Contact Us",
-    "section9Content": "If you have any questions about these Terms of Service, please contact us through the in-app customer support."
+    "section9Content": "If you have any questions about these Terms of Service, please contact us through the in-app support feature."
+  },
+  "notification": {
+    "title": "Notification",
+    "newApplication": "You have a new application",
+    "applicationAccepted": "Your application has been accepted",
+    "applicationRejected": "Your application has been rejected",
+    "newMessage": "You have a new message"
   }
 }

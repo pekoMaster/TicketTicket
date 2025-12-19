@@ -249,7 +249,7 @@
     "ticketTypes": {
       "find_companion": "同行者募集",
       "find_companionDesc": "一緒に入場する仲間を探す、費用は折半",
-      "find_companionWarning": "二人チケット必須、価格はチケット価格の半額",
+      "find_companionWarning": "二人チケット必須",
       "main_ticket_transfer": "親チケット譲渡",
       "main_ticket_transferDesc": "親チケットを譲渡、アカウント提供またはスマホ貸出が必要",
       "main_ticket_transferWarning": "ZAIKOアカウントの提供または現地でスマホ貸出が必要",
@@ -297,7 +297,7 @@
   "ticketType": {
     "findCompanion": "同行者募集",
     "findCompanionDesc": "一緒に入場する仲間を探す、費用は折半",
-    "findCompanionWarning": "二人チケット必須、価格はチケット価格の半額",
+    "findCompanionWarning": "二人チケット必須",
     "mainTicketTransfer": "親チケット譲渡",
     "mainTicketTransferDesc": "親チケットを譲渡、アカウント提供またはスマホ貸出が必要",
     "mainTicketTransferWarning": "ZAIKOアカウントの提供または現地でスマホ貸出が必要",
@@ -344,6 +344,9 @@
     "inputPlaceholder": "メッセージを入力...",
     "send": "送信",
     "startConversation": "会話を始めましょう！",
+    "translate": "翻訳",
+    "translated": "翻訳結果",
+    "translating": "翻訳中...",
     "notFound": "会話が見つかりません"
   },
   "profile": {
@@ -577,5 +580,12 @@
     "section8Content": "当社はこの利用規約を随時更新する場合があります。変更後も当プラットフォームを継続してご利用いただくことで、更新された規約に同意したものとみなされます。",
     "section9Title": "9. お問い合わせ",
     "section9Content": "この利用規約に関するご質問は、アプリ内カスタマーサポートよりお問い合わせください。"
+  },
+  "notification": {
+    "title": "通知",
+    "newApplication": "新しい申請があります",
+    "applicationAccepted": "申請が承認されました",
+    "applicationRejected": "申請が却下されました",
+    "newMessage": "新しいメッセージがあります"
   }
 }

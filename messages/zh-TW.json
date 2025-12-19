@@ -249,7 +249,7 @@
     "ticketTypes": {
       "find_companion": "尋找同行者",
       "find_companionDesc": "尋找一起入場的夥伴，費用均攤",
-      "find_companionWarning": "必須選擇二人票，價格為票價的一半",
+      "find_companionWarning": "必須選擇二人票",
       "main_ticket_transfer": "母票轉讓",
       "main_ticket_transferDesc": "轉讓主票，需提供持票帳號或借出手機",
       "main_ticket_transferWarning": "須提供 ZAIKO 帳號或現場借出手機入場",
@@ -297,7 +297,7 @@
   "ticketType": {
     "findCompanion": "尋找同行者",
     "findCompanionDesc": "尋找一起入場的夥伴，費用均攤",
-    "findCompanionWarning": "必須選擇二人票，價格為票價的一半",
+    "findCompanionWarning": "必須選擇二人票",
     "mainTicketTransfer": "母票轉讓",
     "mainTicketTransferDesc": "轉讓主票，需提供持票帳號或借出手機",
     "mainTicketTransferWarning": "須提供 ZAIKO 帳號或現場借出手機入場",
@@ -344,6 +344,9 @@
     "inputPlaceholder": "輸入訊息...",
     "send": "送出",
     "startConversation": "開始對話吧！",
+    "translate": "翻譯",
+    "translated": "翻譯結果",
+    "translating": "翻譯中...",
     "notFound": "找不到此對話"
   },
   "profile": {
@@ -577,5 +580,12 @@
     "section8Content": "我們可能會不時更新本使用條款。變更後繼續使用本平台即表示您接受更新後的條款。",
     "section9Title": "9. 聯絡我們",
     "section9Content": "如果您對本使用條款有任何問題，請透過應用程式內的客服功能聯繫我們。"
+  },
+  "notification": {
+    "title": "通知",
+    "newApplication": "您有新的申請",
+    "applicationAccepted": "您的申請已通過",
+    "applicationRejected": "您的申請已駁回",
+    "newMessage": "您有新消息"
   }
 }

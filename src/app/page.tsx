@@ -477,8 +477,8 @@ export default function HomePage() {
 
       {/* Footer with Privacy Policy */}
       <footer className="bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-6 mt-auto">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
             <div className="flex items-center gap-2">
               <Ticket className="w-5 h-5 text-indigo-500" />
               <span className="text-sm font-medium text-gray-700 dark:text-gray-200">TicketTicket</span>
@@ -497,10 +497,10 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-          <p className="text-xs text-gray-400 dark:text-gray-500 text-center mt-4">
+          <p className="text-xs text-gray-400 dark:text-gray-500">
             {tTokushoho('subtitle')}
           </p>
-          <p className="text-xs text-gray-400 dark:text-gray-500 text-center mt-2">
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
             © 2025 TicketTicket. All rights reserved.
           </p>
         </div>
