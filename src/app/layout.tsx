@@ -11,9 +11,9 @@ import ReCaptchaProvider from '@/components/providers/ReCaptchaProvider';
 import MainLayout from '@/components/layout/MainLayout';
 
 export const metadata: Metadata = {
-  title: 'TicketTicket - Concert Companion Matching',
-  description: 'Find your concert companion and enjoy live music together',
-  keywords: ['concert', 'companion', 'matching', 'ticket', 'live music'],
+  title: 'TicketTicket - 與世界的雜魚粉絲們一起使用"同行"！',
+  description: '分享，或找到您的雜魚同伴，一起享受演唱會吧！',
+  keywords: ['concert', 'companion', 'matching', 'ticket', 'live music', '同行', '演唱會', 'VTuber', 'hololive'],
   verification: {
     google: 'VasyI-zBTHn_uu8sQ8Evapg18hH-VXdID1O6VAPQI1A',
   },
