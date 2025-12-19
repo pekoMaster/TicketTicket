@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     // Exchange code for access token
     const clientId = process.env.AUTH_LINE_ID;
     const clientSecret = process.env.AUTH_LINE_SECRET;
-    const baseUrl = request.nextUrl.origin;
+    const baseUrl = process.env.NEXTAUTH_URL || 'https://ticketticket.live';
     const redirectUri = `${baseUrl}/api/auth/link/line/callback`;
 
     const tokenResponse = await fetch('https://api.line.me/oauth2/v2.1/token', {

@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     // Exchange code for access token
     const clientId = process.env.AUTH_DISCORD_ID;
     const clientSecret = process.env.AUTH_DISCORD_SECRET;
-    const baseUrl = request.nextUrl.origin;
+    const baseUrl = process.env.NEXTAUTH_URL || 'https://ticketticket.live';
     const redirectUri = `${baseUrl}/api/auth/link/discord/callback`;
 
     const tokenResponse = await fetch('https://discord.com/api/oauth2/token', {

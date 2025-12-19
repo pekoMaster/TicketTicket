@@ -288,11 +288,10 @@ export default function ProfileSettingsPage() {
         {/* Save Message */}
         {saveMessage && (
           <div
-            className={`p-3 rounded-lg flex items-center gap-2 ${
-              saveMessage.type === 'success'
-                ? 'bg-green-50 text-green-700 border border-green-200'
-                : 'bg-red-50 text-red-700 border border-red-200'
-            }`}
+            className={`p-3 rounded-lg flex items-center gap-2 ${saveMessage.type === 'success'
+                ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800'
+                : 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
+              }`}
           >
             {saveMessage.type === 'success' ? (
               <Check className="w-5 h-5" />
@@ -356,22 +355,22 @@ export default function ProfileSettingsPage() {
         </Card>
 
         {/* Contact Info Section */}
-        <Card>
+        <Card className="dark:bg-gray-800 dark:border-gray-700">
           <div className="flex items-center gap-2 mb-2">
             <Phone className="w-5 h-5 text-indigo-500" />
-            <h2 className="text-lg font-semibold text-gray-900">{t('contactInfo')}</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('contactInfo')}</h2>
           </div>
-          <p className="text-sm text-gray-500 mb-4">{t('contactInfoHint')}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('contactInfoHint')}</p>
 
           {/* Phone */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">{t('phone')}</label>
-            <p className="text-xs text-gray-500 mb-2">{t('phoneHint')}</p>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('phone')}</label>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t('phoneHint')}</p>
             <div className="flex gap-2">
               <select
                 value={phoneCountryCode}
                 onChange={(e) => setPhoneCountryCode(e.target.value)}
-                className="w-32 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                className="w-32 px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               >
                 {PHONE_COUNTRY_CODES.map((code) => (
                   <option key={code.value} value={code.value}>
@@ -452,14 +451,12 @@ export default function ProfileSettingsPage() {
                   <button
                     type="button"
                     onClick={() => setShowLine(!showLine)}
-                    className={`relative w-11 h-6 rounded-full transition-colors ${
-                      showLine ? 'bg-indigo-500' : 'bg-gray-300 dark:bg-gray-600'
-                    }`}
+                    className={`relative w-11 h-6 rounded-full transition-colors ${showLine ? 'bg-indigo-500' : 'bg-gray-300 dark:bg-gray-600'
+                      }`}
                   >
                     <span
-                      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                        showLine ? 'translate-x-5' : 'translate-x-0'
-                      }`}
+                      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${showLine ? 'translate-x-5' : 'translate-x-0'
+                        }`}
                     />
                   </button>
                 </div>
@@ -519,14 +516,12 @@ export default function ProfileSettingsPage() {
                   <button
                     type="button"
                     onClick={() => setShowDiscord(!showDiscord)}
-                    className={`relative w-11 h-6 rounded-full transition-colors ${
-                      showDiscord ? 'bg-indigo-500' : 'bg-gray-300 dark:bg-gray-600'
-                    }`}
+                    className={`relative w-11 h-6 rounded-full transition-colors ${showDiscord ? 'bg-indigo-500' : 'bg-gray-300 dark:bg-gray-600'
+                      }`}
                   >
                     <span
-                      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                        showDiscord ? 'translate-x-5' : 'translate-x-0'
-                      }`}
+                      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${showDiscord ? 'translate-x-5' : 'translate-x-0'
+                        }`}
                     />
                   </button>
                 </div>
@@ -538,7 +533,7 @@ export default function ProfileSettingsPage() {
         </Card>
 
         {/* Save Button */}
-        <div className="fixed bottom-16 left-0 right-0 lg:left-64 lg:bottom-0 bg-white border-t border-gray-100 px-4 py-3 safe-area-bottom">
+        <div className="fixed bottom-16 left-0 right-0 lg:left-64 lg:bottom-0 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-3 safe-area-bottom">
           <div className="max-w-2xl mx-auto">
             <Button fullWidth onClick={handleSave} loading={isSaving}>
               {isSaving ? t('saving') : t('save')}

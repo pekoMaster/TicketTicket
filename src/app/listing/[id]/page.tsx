@@ -301,31 +301,31 @@ export default function ListingDetailPage() {
 
       <div className="pt-14 pb-24">
         {/* 主要資訊 */}
-        <div className="bg-white px-4 py-6 border-b border-gray-100">
+        <div className="bg-white dark:bg-gray-800 px-4 py-6 border-b border-gray-100 dark:border-gray-700">
           {/* 票券類型標籤 */}
           <div className="mb-3">
             <TicketTypeTag type={listing.ticketType} size="md" />
           </div>
 
           {/* 活動名稱 */}
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">{listing.eventName}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">{listing.eventName}</h1>
 
           {/* 活動資訊 */}
           <div className="space-y-3">
-            <div className="flex items-center gap-3 text-gray-600">
-              <Calendar className="w-5 h-5 text-gray-400" />
+            <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
+              <Calendar className="w-5 h-5 text-gray-400 dark:text-gray-500" />
               <span>{formatDate(listing.eventDate)}</span>
             </div>
-            <div className="flex items-center gap-3 text-gray-600">
-              <MapPin className="w-5 h-5 text-gray-400" />
+            <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
+              <MapPin className="w-5 h-5 text-gray-400 dark:text-gray-500" />
               <span>{listing.venue}</span>
             </div>
-            <div className="flex items-center gap-3 text-gray-600">
-              <Clock className="w-5 h-5 text-gray-400" />
+            <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
+              <Clock className="w-5 h-5 text-gray-400 dark:text-gray-500" />
               <span>{t('meetingTime')}: {formatTime(listing.meetingTime)}</span>
             </div>
-            <div className="flex items-center gap-3 text-gray-600">
-              <MapPin className="w-5 h-5 text-gray-400" />
+            <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
+              <MapPin className="w-5 h-5 text-gray-400 dark:text-gray-500" />
               <span>{t('meetingLocation')}: {listing.meetingLocation}</span>
             </div>
           </div>
@@ -339,22 +339,22 @@ export default function ListingDetailPage() {
               <div>
                 <div className="flex items-center gap-2 mb-4">
                   <ArrowLeftRight className="w-5 h-5 text-orange-500" />
-                  <h3 className="font-semibold text-gray-900">{t('exchangeInfo')}</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('exchangeInfo')}</h3>
                 </div>
 
                 {/* 想換的活動 */}
                 {listing.exchangeEventName && (
                   <div className="mb-3">
-                    <p className="text-sm text-gray-500">{t('wantToExchange')}</p>
-                    <p className="font-medium text-gray-900">{listing.exchangeEventName}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('wantToExchange')}</p>
+                    <p className="font-medium text-gray-900 dark:text-gray-100">{listing.exchangeEventName}</p>
                   </div>
                 )}
 
                 {/* 想換的票種 */}
                 {listing.exchangeSeatGrade && (
                   <div className="mb-3">
-                    <p className="text-sm text-gray-500">{t('wantSeatGrade')}</p>
-                    <p className="font-medium text-gray-900">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('wantSeatGrade')}</p>
+                    <p className="font-medium text-gray-900 dark:text-gray-100">
                       {listing.exchangeSeatGrade === 'any' ? tCreate('anyGrade') : listing.exchangeSeatGrade}
                     </p>
                   </div>
@@ -362,19 +362,19 @@ export default function ListingDetailPage() {
 
                 {/* 補貼資訊 */}
                 {(listing.subsidyAmount !== undefined && listing.subsidyAmount > 0) && (
-                  <div className="bg-orange-50 rounded-lg p-3 mt-3">
+                  <div className="bg-orange-50 dark:bg-orange-900/30 rounded-lg p-3 mt-3">
                     <div className="flex items-center gap-2 mb-1">
-                      <Banknote className="w-4 h-4 text-orange-600" />
-                      <p className="text-sm font-medium text-orange-800">{t('subsidyInfo')}</p>
+                      <Banknote className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                      <p className="text-sm font-medium text-orange-800 dark:text-orange-300">{t('subsidyInfo')}</p>
                     </div>
-                    <p className="text-orange-700">
+                    <p className="text-orange-700 dark:text-orange-300">
                       {getSubsidyDirectionLabel(listing.subsidyDirection)}: ¥{listing.subsidyAmount.toLocaleString()}
                     </p>
                   </div>
                 )}
 
                 {/* 持有票券原價 */}
-                <div className="bg-gray-50 rounded-lg p-3 text-sm text-gray-600 mt-3">
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-sm text-gray-600 dark:text-gray-300 mt-3">
                   <p>{t('myTicketPrice')}: ¥{listing.originalPriceJPY.toLocaleString()}</p>
                 </div>
               </div>
@@ -383,24 +383,24 @@ export default function ListingDetailPage() {
               <>
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <p className="text-sm text-gray-500">{t('price')}</p>
-                    <p className="text-3xl font-bold text-indigo-600">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('price')}</p>
+                    <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
                       ¥{listing.askingPriceJPY.toLocaleString()}
-                      <span className="text-base font-normal text-gray-500">{t('perPerson')}</span>
+                      <span className="text-base font-normal text-gray-500 dark:text-gray-400">{t('perPerson')}</span>
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm text-gray-500">{t('availableSlots')}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('availableSlots')}</p>
                     <div className="flex items-center gap-1">
-                      <Users className="w-5 h-5 text-gray-400" />
-                      <span className="text-2xl font-bold text-gray-700">
+                      <Users className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                      <span className="text-2xl font-bold text-gray-700 dark:text-gray-200">
                         {listing.availableSlots}/{listing.totalSlots}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-gray-50 rounded-lg p-3 text-sm text-gray-600">
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-sm text-gray-600 dark:text-gray-300">
                   <p>{t('originalPrice')}: ¥{listing.originalPriceJPY.toLocaleString()}</p>
                 </div>
               </>
@@ -410,11 +410,11 @@ export default function ListingDetailPage() {
 
         {/* 零手續費聲明 */}
         <div className="px-4 pb-4">
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3">
-            <ShieldCheck className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+          <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-4 flex items-start gap-3">
+            <ShieldCheck className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="font-medium text-green-800">{t('noFeeTitle')}</p>
-              <p className="text-sm text-green-700 mt-1">{t('noFeeDesc')}</p>
+              <p className="font-medium text-green-800 dark:text-green-300">{t('noFeeTitle')}</p>
+              <p className="text-sm text-green-700 dark:text-green-400 mt-1">{t('noFeeDesc')}</p>
             </div>
           </div>
         </div>
@@ -422,11 +422,11 @@ export default function ListingDetailPage() {
         {/* 票券類型警告 */}
         {ticketInfo.warning && (
           <div className="px-4 pb-4">
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 flex items-start gap-3">
+            <div className="bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800 rounded-lg p-4 flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-medium text-orange-800">{ticketInfo.label}</p>
-                <p className="text-sm text-orange-700 mt-1">{ticketInfo.warning}</p>
+                <p className="font-medium text-orange-800 dark:text-orange-300">{ticketInfo.label}</p>
+                <p className="text-sm text-orange-700 dark:text-orange-400 mt-1">{ticketInfo.warning}</p>
               </div>
             </div>
           </div>
@@ -436,8 +436,8 @@ export default function ListingDetailPage() {
         {listing.description && (
           <div className="px-4 pb-4">
             <Card>
-              <h3 className="font-semibold text-gray-900 mb-2">{t('description')}</h3>
-              <p className="text-gray-600 whitespace-pre-wrap">{listing.description}</p>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">{t('description')}</h3>
+              <p className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{listing.description}</p>
             </Card>
           </div>
         )}
@@ -446,11 +446,11 @@ export default function ListingDetailPage() {
         {host && (
           <div className="px-4 pb-4">
             <Card>
-              <h3 className="font-semibold text-gray-900 mb-3">{t('host')}</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('host')}</h3>
               <div className="flex items-center gap-3">
                 <Avatar src={host.customAvatarUrl || host.avatarUrl} size="lg" />
                 <div className="flex-1">
-                  <p className="font-medium text-gray-900">{host.username}</p>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">{host.username}</p>
                   <StarRating
                     value={host.rating}
                     readonly
@@ -488,17 +488,17 @@ export default function ListingDetailPage() {
         {/* 評價按鈕 */}
         {canReview && reviewableUsers.length > 0 && (
           <div className="px-4 pb-4">
-            <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
+            <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/30 dark:to-orange-900/30 border-yellow-200 dark:border-yellow-800">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                  <div className="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/50 rounded-full flex items-center justify-center">
                     <Star className="w-5 h-5 text-yellow-600" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-gray-900 dark:text-gray-100">
                       {isHostForReview ? tReview('reviewGuest') : tReview('reviewHost')}
                     </p>
-                    <p className="text-sm text-gray-500">{tReview('leaveReview')}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{tReview('leaveReview')}</p>
                   </div>
                 </div>
                 <Button
@@ -519,11 +519,11 @@ export default function ListingDetailPage() {
       </div>
 
       {/* 底部操作列 */}
-      <div className="fixed bottom-16 left-0 right-0 lg:left-64 lg:bottom-0 bg-white border-t border-gray-100 px-4 py-3 safe-area-bottom">
+      <div className="fixed bottom-16 left-0 right-0 lg:left-64 lg:bottom-0 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-3 safe-area-bottom">
         {isCheckingApplication ? (
           <Button fullWidth disabled variant="secondary">
             <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-            載入中...
+            {tCommon('loading')}
           </Button>
         ) : isHost ? (
           <Button fullWidth onClick={() => router.push(`/messages`)}>
@@ -567,10 +567,10 @@ export default function ListingDetailPage() {
       >
         <div className="p-4">
           <div className="mb-4">
-            <p className="text-gray-600 text-sm mb-2">
+            <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
               {listing.eventName}
             </p>
-            <p className="text-gray-600 text-sm">
+            <p className="text-gray-600 dark:text-gray-300 text-sm">
               {t('price')}: ¥{listing.askingPriceJPY.toLocaleString()}{t('perPerson')}
             </p>
           </div>

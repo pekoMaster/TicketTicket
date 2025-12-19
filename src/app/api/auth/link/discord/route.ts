@@ -20,8 +20,8 @@ export async function GET(request: NextRequest) {
       timestamp: Date.now(),
     })).toString('base64');
 
-    // Get callback URL
-    const baseUrl = request.nextUrl.origin;
+    // Get callback URL - use NEXTAUTH_URL or fixed domain for production
+    const baseUrl = process.env.NEXTAUTH_URL || 'https://ticketticket.live';
     const redirectUri = `${baseUrl}/api/auth/link/discord/callback`;
 
     // Discord OAuth authorization URL

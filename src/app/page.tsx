@@ -32,6 +32,7 @@ export default function HomePage() {
   const t = useTranslations('home');
   const tFilter = useTranslations('filter');
   const tTicket = useTranslations('ticketType');
+  const tLegal = useTranslations('legal');
 
   // 搜尋和篩選狀態
   const [searchQuery, setSearchQuery] = useState('');
@@ -482,13 +483,13 @@ export default function HomePage() {
             </div>
             <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
               <Link href="/legal/privacy" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                隱私權政策
+                {tLegal('privacyTitle')}
               </Link>
               <Link href="/legal/terms" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                使用條款
+                {tLegal('termsTitle')}
               </Link>
               <Link href="/legal/tokushoho" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                特定商取引法
+                {tLegal('tokushohoTitle')}
               </Link>
             </div>
             <p className="text-xs text-gray-400 dark:text-gray-500">
