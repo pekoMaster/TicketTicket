@@ -80,3 +80,57 @@ export async function PATCH(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+// DELETE /api/applications/[id] - 撤回申請（設為 cancelled）
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await auth();
+    if (!session?.user?.dbId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { id } = await params;
+
+    // 獲取申請資訊
+    const { data: application } = await supabaseAdmin
+      .from('applications')
+      .select('id, guest_id, status')
+      .eq('id', id)
+      .single();
+
+    if (!application) {
+      return NextResponse.json({ error: 'Application not found' }, { status: 404 });
+    }
+
+    // 只有申請者本人可以撤回
+    if (application.guest_id !== session.user.dbId) {
+      return NextResponse.json({ error: 'Only applicant can withdraw' }, { status: 403 });
+    }
+
+    // 只有 pending 狀態可以撤回
+    if (application.status !== 'pending') {
+      return NextResponse.json({ error: 'Can only withdraw pending applications' }, { status: 400 });
+    }
+
+    // 更新狀態為 cancelled
+    const { data, error } = await supabaseAdmin
+      .from('applications')
+      .update({ status: 'cancelled' })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error withdrawing application:', error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Error in DELETE /api/applications/[id]:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
