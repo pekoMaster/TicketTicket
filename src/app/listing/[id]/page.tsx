@@ -98,11 +98,15 @@ export default function ListingDetailPage() {
       if (response.ok) {
         const data = await response.json();
         const existingApp = data.sent?.find(
-          (app: { listing_id: string }) => app.listing_id === listing.id
+          (app: { listing_id: string; status: string }) =>
+            app.listing_id === listing.id && app.status !== 'cancelled'
         );
         if (existingApp) {
           setHasApplied(true);
           setApplicationStatus(existingApp.status);
+        } else {
+          setHasApplied(false);
+          setApplicationStatus(null);
         }
       }
     } catch (error) {
