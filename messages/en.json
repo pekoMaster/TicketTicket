@@ -26,6 +26,7 @@
     "loginWithLine": "Login with LINE",
     "loginWithDiscord": "Login with Discord",
     "loginError": "Login failed, please try again",
+    "accountBlocked": "This account has been blocked. Please contact the administrator if you have any questions.",
     "agreeToTerms": "By logging in, you agree to our",
     "termsOfService": "Terms of Service",
     "privacyPolicy": "Privacy Policy",

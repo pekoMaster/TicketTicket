@@ -26,6 +26,7 @@
     "loginWithLine": "使用 LINE 登录",
     "loginWithDiscord": "使用 Discord 登录",
     "loginError": "登录失败，请重试",
+    "accountBlocked": "此帐号已被封锁，无法登录。如有疑问请联系管理员。",
     "agreeToTerms": "登录即表示您同意我们的",
     "termsOfService": "使用条款",
     "privacyPolicy": "隐私政策",

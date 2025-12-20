@@ -28,6 +28,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (!account || !user.email) return true;
 
       try {
+        // 檢查黑名單
+        const { data: blacklisted } = await supabaseAdmin
+          .from('blacklist')
+          .select('id, reason')
+          .eq('email', user.email)
+          .single();
+
+        if (blacklisted) {
+          // 用戶被封鎖，拒絕登入
+          console.log(`Blocked user attempted to login: ${user.email}`);
+          return '/login?error=AccountBlocked';
+        }
+
         // 檢查用戶是否已存在
         const { data: existingUser } = await supabaseAdmin
           .from('users')

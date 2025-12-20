@@ -3,11 +3,14 @@
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useAdmin } from '@/contexts/AdminContext';
-import { Lock, LogOut, Ticket, Menu, X, Calendar, Home, ChevronRight } from 'lucide-react';
+import { Lock, LogOut, Ticket, Menu, X, Calendar, Home, ChevronRight, FileText, Users, Ban } from 'lucide-react';
 import Link from 'next/link';
 
 const NAV_ITEMS = [
   { href: '/admin/events', label: '活動管理', icon: Calendar },
+  { href: '/admin/listings', label: '刊登管理', icon: FileText },
+  { href: '/admin/users', label: '會員管理', icon: Users },
+  { href: '/admin/blacklist', label: '黑名單', icon: Ban },
 ];
 
 export default function AdminLayout({

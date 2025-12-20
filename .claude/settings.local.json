@@ -43,7 +43,8 @@
       "Bash(git diff:*)",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nV12：票券驗證流程與評價系統優化\n\n功能新增：\n- 票券驗證流程：主辦方確認已給票 + 申請人確認已收票\n- 驗證完成後解鎖評價功能（相容舊資料：活動日期已過亦可評價）\n- 新增用戶評價頁面 /reviews/[userId]，含評分分布圖\n- 個人頁面新增「查看全部」評價連結\n\nAPI 新增/修改：\n- POST /api/conversations/[id]/confirm - 確認/取消票券\n- GET /api/users/[userId]/reviews - 用戶評價列表（分頁）\n- 對話 API 新增確認狀態回傳\n- 評價權限/提交 API 新增驗證邏輯\n\n其他：\n- 翻譯檔案新增 verification 和 reviews 區塊\n- 票券警告只顯示給主辦方\n- 移除活動表單未使用的圖片欄位\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git commit -m \"$\\(cat <<''EOF''\n修復：解決 API 路由參數衝突\n\n將 /api/users/[userId]/reviews 移至 /api/users/[id]/reviews\n避免與 /api/users/[id] 的動態路由參數衝突\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\n優化：調整刊登頁面零手續費聲明位置\n\n將零手續費聲明移至安全提示橫幅下方\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git commit -m \"$\\(cat <<''EOF''\n優化：調整刊登頁面零手續費聲明位置\n\n將零手續費聲明移至安全提示橫幅下方\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Skill(openspec-proposal)"
     ]
   }
 }

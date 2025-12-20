@@ -26,6 +26,7 @@
     "loginWithLine": "LINEでログイン",
     "loginWithDiscord": "Discordでログイン",
     "loginError": "ログインに失敗しました。もう一度お試しください",
+    "accountBlocked": "このアカウントはブロックされています。ご不明な点がございましたら管理者にお問い合わせください。",
     "agreeToTerms": "ログインすることで、以下に同意したものとみなされます",
     "termsOfService": "利用規約",
     "privacyPolicy": "プライバシーポリシー",

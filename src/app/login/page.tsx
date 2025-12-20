@@ -38,7 +38,9 @@ export default function LoginPage() {
           <Card className="mb-6 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800">
             <div className="flex items-center gap-3">
               <AlertCircle className="w-5 h-5 text-red-500" />
-              <p className="text-red-700 dark:text-red-300 text-sm">{t('loginError')}</p>
+              <p className="text-red-700 dark:text-red-300 text-sm">
+                {error === 'AccountBlocked' ? t('accountBlocked') : t('loginError')}
+              </p>
             </div>
           </Card>
         )}
