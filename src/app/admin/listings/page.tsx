@@ -16,7 +16,7 @@ interface Listing {
   status: string;
   total_slots: number;
   available_slots: number;
-  asking_price_twd: number;
+  asking_price_jpy: number;
   ticket_type: string;
   created_at: string;
   host: Host;
@@ -284,7 +284,8 @@ export default function AdminListingsPage() {
                       {listing.applications_count}
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-900 dark:text-gray-100">
-                      NT$ {listing.asking_price_twd?.toLocaleString() || 0}
+                      <div>¥ {listing.asking_price_jpy?.toLocaleString() || 0}</div>
+                      <div className="text-xs text-gray-500">≈ NT$ {Math.round((listing.asking_price_jpy || 0) * 0.22).toLocaleString()}</div>
                     </td>
                     <td className="px-4 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">

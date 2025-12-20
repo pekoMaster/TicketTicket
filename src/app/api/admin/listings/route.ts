@@ -23,10 +23,10 @@ export async function GET(request: NextRequest) {
         status,
         total_slots,
         available_slots,
-        asking_price_twd,
+        asking_price_jpy,
         ticket_type,
         created_at,
-        host:host_id (
+        host:users!host_id (
           id,
           username,
           email
