@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Search, Pencil, Trash2, ChevronLeft, ChevronRight, Loader2, X, Bell } from 'lucide-react';
+import { Search, Pencil, Trash2, ChevronLeft, ChevronRight, Loader2, X, Bell, FileText, RefreshCw } from 'lucide-react';
 
 interface Host {
   id: string;
@@ -17,7 +17,20 @@ interface Listing {
   total_slots: number;
   available_slots: number;
   asking_price_jpy: number;
+  original_price_jpy: number;
   ticket_type: string;
+  seat_grade: string;
+  ticket_count_type: string;
+  description: string;
+  meeting_time: string;
+  meeting_location: string;
+  identification_features: string;
+  host_nationality: string;
+  host_languages: string[];
+  exchange_event_name?: string;
+  exchange_seat_grade?: string;
+  subsidy_amount?: number;
+  subsidy_direction?: string;
   created_at: string;
   host: Host;
   applications_count: number;
@@ -48,6 +61,12 @@ export default function AdminListingsPage() {
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; listing: Listing | null }>({ open: false, listing: null });
   const [deleteForm, setDeleteForm] = useState({ reason: '', notify: true, notifyMessage: '' });
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // 詳情 Modal
+  const [detailModal, setDetailModal] = useState<{ open: boolean; listing: Listing | null }>({ open: false, listing: null });
+
+  // 刷新中
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const fetchListings = useCallback(async () => {
     setIsLoading(true);
@@ -82,6 +101,12 @@ export default function AdminListingsPage() {
     e.preventDefault();
     setPagination(p => ({ ...p, page: 1 }));
     fetchListings();
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await fetchListings();
+    setIsRefreshing(false);
   };
 
   const openEditModal = (listing: Listing) => {
@@ -178,6 +203,35 @@ export default function AdminListingsPage() {
     );
   };
 
+  const getTicketTypeBadge = (type: string) => {
+    const styles: Record<string, string> = {
+      find_companion: 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300',
+      main_ticket_transfer: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300',
+      sub_ticket_transfer: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/50 dark:text-cyan-300',
+      ticket_exchange: 'bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300',
+    };
+    const labels: Record<string, string> = {
+      find_companion: '尋找同行',
+      main_ticket_transfer: '母票轉讓',
+      sub_ticket_transfer: '子票轉讓',
+      ticket_exchange: '換票',
+    };
+    return (
+      <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[type] || 'bg-gray-100 text-gray-800'}`}>
+        {labels[type] || type}
+      </span>
+    );
+  };
+
+  const getTicketCountLabel = (type: string) => {
+    const labels: Record<string, string> = {
+      solo: '一人',
+      duo: '二人',
+      family: '家庭',
+    };
+    return labels[type] || type;
+  };
+
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('zh-TW', {
       year: 'numeric',
@@ -189,7 +243,20 @@ export default function AdminListingsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">刊登管理</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">刊登管理</h1>
+          <button
+            onClick={handleRefresh}
+            disabled={isRefreshing || isLoading}
+            className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors disabled:opacity-50"
+            title="刷新資料"
+          >
+            <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+          </button>
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            共 {pagination.total} 筆
+          </span>
+        </div>
 
         {/* 搜尋和篩選 */}
         <div className="flex flex-wrap items-center gap-3">
@@ -250,55 +317,67 @@ export default function AdminListingsPage() {
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-700/50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">活動</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">主辦方</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">日期</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">狀態</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">申請數</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">價格</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">操作</th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">活動</th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">主辦方</th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">類型</th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">票種/人數</th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">狀態</th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">申請</th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">價格</th>
+                  <th className="px-3 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">操作</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {listings.map((listing) => (
                   <tr key={listing.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30">
-                    <td className="px-4 py-4">
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 max-w-[200px] truncate">
+                    <td className="px-3 py-3">
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 max-w-[180px] truncate" title={listing.event_name}>
                         {listing.event_name}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">
-                        {listing.ticket_type}
+                        {formatDate(listing.event_date)}
                       </div>
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="px-3 py-3">
                       <div className="text-sm text-gray-900 dark:text-gray-100">{listing.host?.username || '-'}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{listing.host?.email || '-'}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 max-w-[120px] truncate">{listing.host?.email || '-'}</div>
                     </td>
-                    <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">
-                      {formatDate(listing.event_date)}
+                    <td className="px-3 py-3">
+                      {getTicketTypeBadge(listing.ticket_type)}
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="px-3 py-3">
+                      <div className="text-sm text-gray-900 dark:text-gray-100 font-medium">{listing.seat_grade || '-'}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{getTicketCountLabel(listing.ticket_count_type)}</div>
+                    </td>
+                    <td className="px-3 py-3">
                       {getStatusBadge(listing.status)}
                     </td>
-                    <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <td className="px-3 py-3 text-sm text-gray-500 dark:text-gray-400">
                       {listing.applications_count}
                     </td>
-                    <td className="px-4 py-4 text-sm text-gray-900 dark:text-gray-100">
+                    <td className="px-3 py-3 text-sm text-gray-900 dark:text-gray-100">
                       <div>¥ {listing.asking_price_jpy?.toLocaleString() || 0}</div>
                       <div className="text-xs text-gray-500">≈ NT$ {Math.round((listing.asking_price_jpy || 0) * 0.22).toLocaleString()}</div>
                     </td>
-                    <td className="px-4 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                    <td className="px-3 py-3 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => setDetailModal({ open: true, listing })}
+                          className="p-1.5 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/30 rounded-lg transition-colors"
+                          title="查看詳情"
+                        >
+                          <FileText className="w-4 h-4" />
+                        </button>
                         <button
                           onClick={() => openEditModal(listing)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                          className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
                           title="編輯"
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => openDeleteModal(listing)}
-                          className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                          className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                           title="刪除"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -468,6 +547,214 @@ export default function AdminListingsPage() {
               >
                 {isDeleting && <Loader2 className="w-4 h-4 animate-spin" />}
                 確認刪除
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 詳情 Modal */}
+      {detailModal.open && detailModal.listing && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-2xl my-8">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-amber-500" />
+                刊登詳情
+              </h3>
+              <button onClick={() => setDetailModal({ open: false, listing: null })} className="text-gray-400 hover:text-gray-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-4 space-y-4 max-h-[70vh] overflow-y-auto">
+              {/* 基本資訊 */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs text-gray-500 dark:text-gray-400">活動名稱</label>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{detailModal.listing.event_name}</p>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 dark:text-gray-400">活動日期</label>
+                  <p className="text-sm text-gray-900 dark:text-gray-100">{formatDate(detailModal.listing.event_date)}</p>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 dark:text-gray-400">刊登類型</label>
+                  <div className="mt-1">{getTicketTypeBadge(detailModal.listing.ticket_type)}</div>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 dark:text-gray-400">狀態</label>
+                  <div className="mt-1">{getStatusBadge(detailModal.listing.status)}</div>
+                </div>
+              </div>
+
+              {/* 票券資訊 */}
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
+                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">票券資訊</h4>
+                <div className="grid grid-cols-3 gap-3 text-sm">
+                  <div>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">座位等級</label>
+                    <p className="font-medium text-gray-900 dark:text-gray-100">{detailModal.listing.seat_grade || '-'}</p>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">票種</label>
+                    <p className="text-gray-900 dark:text-gray-100">{getTicketCountLabel(detailModal.listing.ticket_count_type)}</p>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">申請數</label>
+                    <p className="text-gray-900 dark:text-gray-100">{detailModal.listing.applications_count}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 價格資訊 */}
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
+                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">價格資訊</h4>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">原價</label>
+                    <p className="text-gray-900 dark:text-gray-100">¥ {detailModal.listing.original_price_jpy?.toLocaleString() || 0}</p>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">希望價格</label>
+                    <p className="font-medium text-indigo-600 dark:text-indigo-400">
+                      ¥ {detailModal.listing.asking_price_jpy?.toLocaleString() || 0}
+                      <span className="text-xs text-gray-500 ml-1">
+                        (≈ NT$ {Math.round((detailModal.listing.asking_price_jpy || 0) * 0.22).toLocaleString()})
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                {/* 檢查是否收取手續費 */}
+                {detailModal.listing.asking_price_jpy > detailModal.listing.original_price_jpy && (
+                  <div className="mt-2 p-2 bg-red-100 dark:bg-red-900/30 rounded text-red-700 dark:text-red-300 text-sm">
+                    ⚠️ 希望價格高於原價，可能有收取額外費用
+                  </div>
+                )}
+              </div>
+
+              {/* 換票資訊（如果是換票類型）*/}
+              {detailModal.listing.ticket_type === 'ticket_exchange' && (
+                <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-3">
+                  <h4 className="text-sm font-medium text-orange-700 dark:text-orange-300 mb-2">換票資訊</h4>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <label className="text-xs text-gray-500 dark:text-gray-400">想換的活動</label>
+                      <p className="text-gray-900 dark:text-gray-100">{detailModal.listing.exchange_event_name || '-'}</p>
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500 dark:text-gray-400">想換的座位</label>
+                      <p className="text-gray-900 dark:text-gray-100">{detailModal.listing.exchange_seat_grade || '任意'}</p>
+                    </div>
+                    {detailModal.listing.subsidy_amount && detailModal.listing.subsidy_amount > 0 && (
+                      <>
+                        <div>
+                          <label className="text-xs text-gray-500 dark:text-gray-400">補貼金額</label>
+                          <p className="text-gray-900 dark:text-gray-100">¥ {detailModal.listing.subsidy_amount.toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-500 dark:text-gray-400">補貼方向</label>
+                          <p className="text-gray-900 dark:text-gray-100">
+                            {detailModal.listing.subsidy_direction === 'i_pay_you' ? '我補貼對方' : '對方補貼我'}
+                          </p>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* 集合資訊 */}
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
+                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">集合資訊</h4>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">集合時間</label>
+                    <p className="text-gray-900 dark:text-gray-100">
+                      {detailModal.listing.meeting_time ? new Date(detailModal.listing.meeting_time).toLocaleString('zh-TW') : '-'}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">集合地點</label>
+                    <p className="text-gray-900 dark:text-gray-100">{detailModal.listing.meeting_location || '-'}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 主辦方資訊 */}
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
+                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">主辦方資訊</h4>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">用戶名稱</label>
+                    <p className="text-gray-900 dark:text-gray-100">{detailModal.listing.host?.username || '-'}</p>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">Email</label>
+                    <p className="text-gray-900 dark:text-gray-100">{detailModal.listing.host?.email || '-'}</p>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">國籍</label>
+                    <p className="text-gray-900 dark:text-gray-100">{detailModal.listing.host_nationality || '-'}</p>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">語言</label>
+                    <p className="text-gray-900 dark:text-gray-100">{detailModal.listing.host_languages?.join(', ') || '-'}</p>
+                  </div>
+                </div>
+                {detailModal.listing.identification_features && (
+                  <div className="mt-2">
+                    <label className="text-xs text-gray-500 dark:text-gray-400">辨識特徵</label>
+                    <p className="text-gray-900 dark:text-gray-100">{detailModal.listing.identification_features}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* 說明內容 */}
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-3">
+                <h4 className="text-sm font-medium text-yellow-700 dark:text-yellow-300 mb-2">📝 說明內容（檢查是否有額外收費）</h4>
+                <div className="text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap">
+                  {detailModal.listing.description || '（無說明）'}
+                </div>
+                {/* 關鍵字檢查 */}
+                {detailModal.listing.description && (
+                  (() => {
+                    const description = detailModal.listing?.description || '';
+                    const keywords = ['手續費', '服務費', '額外', '加收', '轉帳', '匯款', 'fee', 'charge', '代購費'];
+                    const found = keywords.filter(k => description.toLowerCase().includes(k.toLowerCase()));
+                    if (found.length > 0) {
+                      return (
+                        <div className="mt-2 p-2 bg-red-100 dark:bg-red-900/30 rounded text-red-700 dark:text-red-300 text-sm">
+                          ⚠️ 檢測到可疑關鍵字：{found.join('、')}
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()
+                )}
+              </div>
+
+              {/* 建立時間 */}
+              <div className="text-xs text-gray-500 dark:text-gray-400 text-right">
+                建立時間：{new Date(detailModal.listing.created_at).toLocaleString('zh-TW')}
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setDetailModal({ open: false, listing: null })}
+                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              >
+                關閉
+              </button>
+              <button
+                onClick={() => {
+                  const listing = detailModal.listing;
+                  setDetailModal({ open: false, listing: null });
+                  if (listing) openEditModal(listing);
+                }}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center gap-2"
+              >
+                <Pencil className="w-4 h-4" />
+                編輯
               </button>
             </div>
           </div>
