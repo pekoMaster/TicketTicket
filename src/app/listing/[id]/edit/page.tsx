@@ -190,9 +190,11 @@ export default function EditListingPage() {
     const jpy = effectiveOriginalPrice;
     const asking = parseInt(askingPriceJPY) || 0;
 
-    // 如果是尋找同行者，價格上限為一半
+    // 如果是尋找同行者或子票轉讓，價格上限為一半 + 1000
     const isFindCompanion = ticketType === 'find_companion';
-    const maxAllowed = isFindCompanion ? Math.round(jpy / 2) : jpy;
+    const isSubTicketTransfer = ticketType === 'sub_ticket_transfer';
+    const needsHalfPrice = isFindCompanion || isSubTicketTransfer;
+    const maxAllowed = needsHalfPrice ? Math.round(jpy / 2) + 1000 : jpy;
 
     const isValid = asking > 0 && asking <= maxAllowed;
 
@@ -202,6 +204,8 @@ export default function EditListingPage() {
       isValid,
       asking,
       isFindCompanion,
+      isSubTicketTransfer,
+      needsHalfPrice,
     };
   }, [effectiveOriginalPrice, askingPriceJPY, ticketType]);
 
@@ -652,14 +656,14 @@ export default function EditListingPage() {
             </h3>
 
             <div className="space-y-4">
-              {/* 價格上限說明 */}
-              {effectiveOriginalPrice > 0 && (
+              {/* 價格上限說明 - 只在尋找同行者或子票轉讓時顯示 */}
+              {effectiveOriginalPrice > 0 && priceCalc.needsHalfPrice && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                   <p className="text-sm text-blue-800">
                     <Info className="w-4 h-4 inline mr-1" />
                     {priceCalc.isFindCompanion
-                      ? t('companionPriceLimit').replace('${max}', priceCalc.maxAllowed.toLocaleString())
-                      : t('priceLimit').replace('${max}', priceCalc.maxAllowed.toLocaleString())
+                      ? t('companionPriceLimit', { max: priceCalc.maxAllowed.toLocaleString() })
+                      : t('subTicketPriceLimit', { max: priceCalc.maxAllowed.toLocaleString() })
                     }
                   </p>
                 </div>

@@ -6,10 +6,10 @@ import { useTranslations } from 'next-intl';
 import Header from '@/components/layout/Header';
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
-import Tag from '@/components/ui/Tag';
+import Tag, { TicketTypeTag } from '@/components/ui/Tag';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
-import { MessageCircle, Users, Clock, Check, X, Loader2, Undo2 } from 'lucide-react';
+import { MessageCircle, Users, Clock, Check, X, Loader2, Undo2, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -27,6 +27,8 @@ interface Listing {
   venue: string;
   host_id: string;
   host?: User;
+  ticket_type?: 'find_companion' | 'main_ticket_transfer' | 'sub_ticket_transfer' | 'ticket_exchange';
+  meeting_location?: string;
 }
 
 interface Application {
@@ -307,15 +309,11 @@ export default function MessagesPage() {
             <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
               {sentApplications.map((app) => (
                 <Card key={app.id}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900 dark:text-gray-100 truncate">
-                        {app.listing?.event_name}
-                      </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {app.listing?.venue}
-                      </p>
-                    </div>
+                  {/* 標題行：活動名稱 + 申請狀態 */}
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <p className="font-medium text-gray-900 dark:text-gray-100 line-clamp-2">
+                      {app.listing?.event_name}
+                    </p>
                     <Tag
                       variant={
                         app.status === 'pending'
@@ -333,6 +331,38 @@ export default function MessagesPage() {
                       {app.status === 'cancelled' && t('cancelled')}
                     </Tag>
                   </div>
+
+                  {/* 詳細資訊 */}
+                  <div className="space-y-1.5 text-sm text-gray-600 dark:text-gray-400">
+                    {/* 主辦方 */}
+                    {app.listing?.host && (
+                      <div className="flex items-center gap-2">
+                        <Avatar src={app.listing.host.avatar_url} size="sm" />
+                        <span>{app.listing.host.username}</span>
+                      </div>
+                    )}
+
+                    {/* 票種類型 */}
+                    {app.listing?.ticket_type && (
+                      <div className="flex items-center gap-2">
+                        <TicketTypeTag type={app.listing.ticket_type} size="sm" />
+                      </div>
+                    )}
+
+                    {/* 場地 */}
+                    <p className="text-gray-500 dark:text-gray-400">
+                      {app.listing?.venue}
+                    </p>
+
+                    {/* 集合地點 */}
+                    {app.listing?.meeting_location && (
+                      <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
+                        <MapPin className="w-3 h-3" />
+                        <span>{t('meetingLocation')}: {app.listing.meeting_location}</span>
+                      </div>
+                    )}
+                  </div>
+
                   {/* 撤回按鈕 - 只在 pending 狀態顯示 */}
                   {app.status === 'pending' && (
                     <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
@@ -356,43 +386,43 @@ export default function MessagesPage() {
             </div>
           </section>
         )}
-
-        {/* 撤回確認 Modal */}
-        <Modal
-          isOpen={showWithdrawModal}
-          onClose={() => {
-            setShowWithdrawModal(false);
-            setSelectedWithdrawApp(null);
-          }}
-          title={t('withdrawConfirmTitle')}
-        >
-          <div className="p-4">
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
-              {t('withdrawConfirmMessage')}
-            </p>
-            <div className="flex gap-3">
-              <Button
-                variant="secondary"
-                fullWidth
-                onClick={() => {
-                  setShowWithdrawModal(false);
-                  setSelectedWithdrawApp(null);
-                }}
-              >
-                {t('cancel')}
-              </Button>
-              <Button
-                fullWidth
-                onClick={handleWithdraw}
-                loading={withdrawingId !== null}
-                className="bg-red-600 hover:bg-red-700"
-              >
-                {t('confirmWithdraw')}
-              </Button>
-            </div>
-          </div>
-        </Modal>
       </div>
+
+      {/* 撤回確認 Modal */}
+      <Modal
+        isOpen={showWithdrawModal}
+        onClose={() => {
+          setShowWithdrawModal(false);
+          setSelectedWithdrawApp(null);
+        }}
+        title={t('withdrawConfirmTitle')}
+      >
+        <div className="p-4">
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
+            {t('withdrawConfirmMessage')}
+          </p>
+          <div className="flex gap-3">
+            <Button
+              variant="secondary"
+              fullWidth
+              onClick={() => {
+                setShowWithdrawModal(false);
+                setSelectedWithdrawApp(null);
+              }}
+            >
+              {t('cancel')}
+            </Button>
+            <Button
+              fullWidth
+              onClick={handleWithdraw}
+              loading={withdrawingId !== null}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {t('confirmWithdraw')}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

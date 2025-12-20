@@ -135,12 +135,12 @@ export default function CreateListingPage() {
     const jpy = originalPriceJPY;
     const asking = parseInt(askingPriceJPY) || 0;
 
-    // 尋找同行者：價格上限為二人票的一半
-    // 子票轉讓：價格上限也為二人票的一半（只轉讓一張子票）
+    // 尋找同行者：價格上限為票價的一半 + 1000
+    // 子票轉讓：價格上限也為票價的一半 + 1000
     const isFindCompanion = ticketType === 'find_companion';
     const isSubTicketTransfer = ticketType === 'sub_ticket_transfer';
     const needsHalfPrice = isFindCompanion || isSubTicketTransfer;
-    const maxAllowed = needsHalfPrice ? Math.round(jpy / 2) : jpy;
+    const maxAllowed = needsHalfPrice ? Math.round(jpy / 2) + 1000 : jpy;
 
     const isValid = asking > 0 && asking <= maxAllowed;
 
@@ -708,14 +708,14 @@ export default function CreateListingPage() {
               </h3>
 
               <div className="space-y-4">
-                {/* 價格上限說明 */}
-                {selectedPriceTier && (
+                {/* 價格上限說明 - 只在尋找同行者或子票轉讓時顯示 */}
+                {selectedPriceTier && priceCalc.needsHalfPrice && (
                   <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                     <p className="text-sm text-blue-800 dark:text-blue-200">
                       <Info className="w-4 h-4 inline mr-1" />
-                      {priceCalc.needsHalfPrice
+                      {priceCalc.isFindCompanion
                         ? t('companionPriceLimit', { max: priceCalc.maxAllowed.toLocaleString() })
-                        : t('priceLimit', { max: priceCalc.maxAllowed.toLocaleString() })
+                        : t('subTicketPriceLimit', { max: priceCalc.maxAllowed.toLocaleString() })
                       }
                     </p>
                   </div>
