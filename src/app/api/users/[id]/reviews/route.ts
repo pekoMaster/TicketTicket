@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 
-// GET /api/users/[userId]/reviews - 取得用戶所有評價（分頁）
+// GET /api/users/[id]/reviews - 取得用戶所有評價（分頁）
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ userId: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId } = await params;
+    const { id: userId } = await params;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
@@ -90,7 +90,7 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error('Error in GET /api/users/[userId]/reviews:', error);
+    console.error('Error in GET /api/users/[id]/reviews:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
