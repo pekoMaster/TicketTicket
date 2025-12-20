@@ -108,11 +108,32 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
 
         {/* 價格與查看按鈕 */}
         <div className="flex items-center gap-3">
-          <div className="flex-1 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg py-2 px-3 text-center">
-            <p className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
-              ¥{listing.askingPriceJPY.toLocaleString()}
-            </p>
-          </div>
+          {listing.ticketType === 'ticket_exchange' ? (
+            // 換票類型：顯示補貼資訊
+            <div className={`flex-1 rounded-lg py-2 px-3 text-center ${
+              listing.subsidyDirection === 'i_pay_you'
+                ? 'bg-red-50 dark:bg-red-900/30'
+                : 'bg-green-50 dark:bg-green-900/30'
+            }`}>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">
+                {listing.subsidyDirection === 'i_pay_you' ? t('subsidyToApplicant') : t('subsidyToHost')}
+              </p>
+              <p className={`text-lg font-bold ${
+                listing.subsidyDirection === 'i_pay_you'
+                  ? 'text-red-600 dark:text-red-400'
+                  : 'text-green-600 dark:text-green-400'
+              }`}>
+                ¥{(listing.subsidyAmount || 0).toLocaleString()}
+              </p>
+            </div>
+          ) : (
+            // 其他類型：顯示希望費用
+            <div className="flex-1 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg py-2 px-3 text-center">
+              <p className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
+                ¥{listing.askingPriceJPY.toLocaleString()}
+              </p>
+            </div>
+          )}
           <Link
             href={`/listing/${listing.id}`}
             className="flex items-center gap-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"

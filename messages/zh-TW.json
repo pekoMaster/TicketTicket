@@ -172,7 +172,9 @@
     "subsidyInfo": "補貼資訊",
     "myTicketPrice": "我持有的票券原價",
     "noFeeTitle": "零手續費・完全免費",
-    "noFeeDesc": "本平台不收取任何手續費、仲介費或其他額外費用。所有配對服務均為免費提供。"
+    "noFeeDesc": "本平台不收取任何手續費、仲介費或其他額外費用。所有配對服務均為免費提供。",
+    "subsidyToApplicant": "補貼申請人",
+    "subsidyToHost": "補貼主辦人"
   },
   "edit": {
     "title": "編輯刊登",

@@ -135,9 +135,12 @@ export default function CreateListingPage() {
     const jpy = originalPriceJPY;
     const asking = parseInt(askingPriceJPY) || 0;
 
-    // 如果是尋找同行者，價格上限為一半
+    // 尋找同行者：價格上限為二人票的一半
+    // 子票轉讓：價格上限也為二人票的一半（只轉讓一張子票）
     const isFindCompanion = ticketType === 'find_companion';
-    const maxAllowed = isFindCompanion ? Math.round(jpy / 2) : jpy;
+    const isSubTicketTransfer = ticketType === 'sub_ticket_transfer';
+    const needsHalfPrice = isFindCompanion || isSubTicketTransfer;
+    const maxAllowed = needsHalfPrice ? Math.round(jpy / 2) : jpy;
 
     const isValid = asking > 0 && asking <= maxAllowed;
 
@@ -147,6 +150,8 @@ export default function CreateListingPage() {
       isValid,
       asking,
       isFindCompanion,
+      isSubTicketTransfer,
+      needsHalfPrice,
     };
   }, [originalPriceJPY, askingPriceJPY, ticketType]);
 
@@ -708,9 +713,9 @@ export default function CreateListingPage() {
                   <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                     <p className="text-sm text-blue-800 dark:text-blue-200">
                       <Info className="w-4 h-4 inline mr-1" />
-                      {priceCalc.isFindCompanion
-                        ? t('companionPriceLimit').replace('${max}', priceCalc.maxAllowed.toLocaleString())
-                        : t('priceLimit').replace('${max}', priceCalc.maxAllowed.toLocaleString())
+                      {priceCalc.needsHalfPrice
+                        ? t('companionPriceLimit', { max: priceCalc.maxAllowed.toLocaleString() })
+                        : t('priceLimit', { max: priceCalc.maxAllowed.toLocaleString() })
                       }
                     </p>
                   </div>
@@ -727,7 +732,7 @@ export default function CreateListingPage() {
                   disabled={!selectedPriceTier}
                   error={
                     priceCalc.asking > 0 && !priceCalc.isValid
-                      ? t('cannotExceed').replace('${max}', priceCalc.maxAllowed.toLocaleString())
+                      ? t('cannotExceed', { max: priceCalc.maxAllowed.toLocaleString() })
                       : undefined
                   }
                 />

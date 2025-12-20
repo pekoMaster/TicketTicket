@@ -187,7 +187,7 @@ export default function HomePage() {
     selectedLanguages.length > 0 ||
     sortBy !== 'date';
 
-  const ticketTypes: TicketType[] = ['find_companion', 'main_ticket_transfer', 'sub_ticket_transfer'];
+  const ticketTypes: TicketType[] = ['find_companion', 'main_ticket_transfer', 'sub_ticket_transfer', 'ticket_exchange'];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">

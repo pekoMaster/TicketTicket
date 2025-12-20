@@ -172,7 +172,9 @@
     "subsidyInfo": "Subsidy Information",
     "myTicketPrice": "My Ticket Original Price",
     "noFeeTitle": "Zero Fees - Completely Free",
-    "noFeeDesc": "This platform charges no service fees, broker fees, or any other additional charges. All matching services are provided free of charge."
+    "noFeeDesc": "This platform charges no service fees, broker fees, or any other additional charges. All matching services are provided free of charge.",
+    "subsidyToApplicant": "Subsidy to Applicant",
+    "subsidyToHost": "Subsidy to Host"
   },
   "edit": {
     "title": "Edit Listing",

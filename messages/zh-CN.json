@@ -172,7 +172,9 @@
     "subsidyInfo": "补贴信息",
     "myTicketPrice": "我持有的票券原价",
     "noFeeTitle": "零手续费・完全免费",
-    "noFeeDesc": "本平台不收取任何手续费、中介费或其他额外费用。所有配对服务均为免费提供。"
+    "noFeeDesc": "本平台不收取任何手续费、中介费或其他额外费用。所有配对服务均为免费提供。",
+    "subsidyToApplicant": "补贴申请人",
+    "subsidyToHost": "补贴主办人"
   },
   "edit": {
     "title": "编辑刊登",
