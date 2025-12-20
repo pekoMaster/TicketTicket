@@ -63,6 +63,10 @@ export async function GET(
         ...conversation,
         otherUser: conversation.host_id === userId ? conversation.guest : conversation.host,
         isHost: conversation.host_id === userId,
+        // 票券驗證狀態
+        hostConfirmedAt: conversation.host_confirmed_at,
+        guestConfirmedAt: conversation.guest_confirmed_at,
+        bothConfirmed: !!(conversation.host_confirmed_at && conversation.guest_confirmed_at),
       },
       messages: messages || [],
     });

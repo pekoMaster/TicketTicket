@@ -411,8 +411,8 @@ export default function ListingDetailPage() {
           </div>
         </div>
 
-        {/* 票券類型警告 */}
-        {ticketInfo.warning && (
+        {/* 票券類型警告 - 只有主辦方看得到 */}
+        {isHost && ticketInfo.warning && (
           <div className="px-4 pb-4">
             <div className="bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800 rounded-lg p-4 flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
@@ -491,6 +491,7 @@ export default function ListingDetailPage() {
                       {isHostForReview ? tReview('reviewGuest') : tReview('reviewHost')}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{tReview('leaveReview')}</p>
+                    <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">{tReview('confirmBeforeReview')}</p>
                   </div>
                 </div>
                 <Button

@@ -9,7 +9,7 @@ import SafetyBanner from '@/components/ui/SafetyBanner';
 import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
 import Tag from '@/components/ui/Tag';
-import { Send, Calendar, MapPin, Clock, Ticket, Tag as TagIcon, Banknote, Loader2, Languages } from 'lucide-react';
+import { Send, Calendar, MapPin, Clock, Ticket, Tag as TagIcon, Banknote, Loader2, Languages, CheckCircle, Circle, Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -54,6 +54,10 @@ interface ConversationData {
     guest: User;
     otherUser: User;
     isHost: boolean;
+    // 票券驗證狀態
+    hostConfirmedAt: string | null;
+    guestConfirmedAt: string | null;
+    bothConfirmed: boolean;
   };
   messages: Message[];
 }
@@ -66,6 +70,7 @@ export default function ChatPage() {
   const tCommon = useTranslations('common');
   const tListing = useTranslations('listing');
   const tChat = useTranslations('chat');
+  const tVerification = useTranslations('verification');
 
   const [conversationData, setConversationData] = useState<ConversationData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -73,8 +78,44 @@ export default function ChatPage() {
   const [isSending, setIsSending] = useState(false);
   const [translations, setTranslations] = useState<Record<string, string>>({});
   const [translatingIds, setTranslatingIds] = useState<Set<string>>(new Set());
+  const [isConfirming, setIsConfirming] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { locale } = useLanguage();
+
+  // 處理確認票券
+  const handleConfirm = async (action: 'confirm' | 'cancel') => {
+    if (isConfirming) return;
+    setIsConfirming(true);
+
+    try {
+      const response = await fetch(`/api/conversations/${conversationId}/confirm`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // 更新對話狀態
+        setConversationData((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            conversation: {
+              ...prev.conversation,
+              hostConfirmedAt: data.conversation.hostConfirmedAt,
+              guestConfirmedAt: data.conversation.guestConfirmedAt,
+              bothConfirmed: data.conversation.bothConfirmed,
+            },
+          };
+        });
+      }
+    } catch (error) {
+      console.error('Error confirming ticket:', error);
+    } finally {
+      setIsConfirming(false);
+    }
+  };
 
   // 獲取對話資料
   const fetchConversation = useCallback(async () => {
@@ -386,6 +427,116 @@ export default function ChatPage() {
               ¥{listing.asking_price_jpy?.toLocaleString() || 0}
             </span>
           </div>
+        </div>
+
+        {/* 票券驗證區塊 */}
+        <div className="px-4 py-3 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+          <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
+            <CheckCircle className="w-4 h-4 text-green-500" />
+            {tVerification('title')}
+          </h4>
+
+          <div className="grid grid-cols-2 gap-3">
+            {/* 主辦方確認狀態 */}
+            <div className={`p-3 rounded-lg border ${
+              conversation.hostConfirmedAt
+                ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800'
+                : 'bg-gray-50 border-gray-200 dark:bg-gray-700 dark:border-gray-600'
+            }`}>
+              <div className="flex items-center gap-2 mb-1">
+                {conversation.hostConfirmedAt ? (
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                ) : (
+                  <Circle className="w-4 h-4 text-gray-400" />
+                )}
+                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {tVerification('hostStatus')}
+                </span>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {conversation.hostConfirmedAt
+                  ? tVerification('ticketGiven')
+                  : tVerification('waitingHost')
+                }
+              </p>
+              {conversation.isHost && !conversation.bothConfirmed && (
+                <Button
+                  size="sm"
+                  className="mt-2 w-full"
+                  onClick={() => handleConfirm(conversation.hostConfirmedAt ? 'cancel' : 'confirm')}
+                  variant={conversation.hostConfirmedAt ? 'secondary' : 'primary'}
+                  disabled={isConfirming}
+                >
+                  {isConfirming ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : conversation.hostConfirmedAt ? (
+                    tVerification('cancelConfirm')
+                  ) : (
+                    tVerification('confirmGiven')
+                  )}
+                </Button>
+              )}
+            </div>
+
+            {/* 申請人確認狀態 */}
+            <div className={`p-3 rounded-lg border ${
+              conversation.guestConfirmedAt
+                ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800'
+                : 'bg-gray-50 border-gray-200 dark:bg-gray-700 dark:border-gray-600'
+            }`}>
+              <div className="flex items-center gap-2 mb-1">
+                {conversation.guestConfirmedAt ? (
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                ) : (
+                  <Circle className="w-4 h-4 text-gray-400" />
+                )}
+                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {tVerification('guestStatus')}
+                </span>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {conversation.guestConfirmedAt
+                  ? tVerification('ticketReceived')
+                  : tVerification('waitingGuest')
+                }
+              </p>
+              {!conversation.isHost && !conversation.bothConfirmed && (
+                <Button
+                  size="sm"
+                  className="mt-2 w-full"
+                  onClick={() => handleConfirm(conversation.guestConfirmedAt ? 'cancel' : 'confirm')}
+                  variant={conversation.guestConfirmedAt ? 'secondary' : 'primary'}
+                  disabled={isConfirming}
+                >
+                  {isConfirming ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : conversation.guestConfirmedAt ? (
+                    tVerification('cancelConfirm')
+                  ) : (
+                    tVerification('confirmReceived')
+                  )}
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {/* 雙方都確認後顯示成功訊息和評價按鈕 */}
+          {conversation.bothConfirmed && (
+            <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+              <p className="text-sm text-green-700 dark:text-green-300 mb-2 flex items-center gap-2">
+                <CheckCircle className="w-4 h-4" />
+                {tVerification('completed')}
+              </p>
+              <Button
+                size="sm"
+                onClick={() => window.location.href = `/listing/${conversation.listing_id}`}
+                className="w-full flex items-center justify-center gap-2"
+              >
+                <Star className="w-4 h-4" />
+                {tVerification('writeReview')}
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* 訊息區域 */}

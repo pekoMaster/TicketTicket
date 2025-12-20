@@ -479,6 +479,7 @@
     "title": "评价",
     "writeReview": "撰写评价",
     "leaveReview": "留下评价",
+    "confirmBeforeReview": "请确认有成功进入演唱会或收到票后再留下评价，视同同行完成。",
     "reviewHost": "评价主办方",
     "reviewGuest": "评价同行者",
     "yourRating": "您的评分",
@@ -493,7 +494,30 @@
     "reviewedBy": "来自 {name}",
     "eventReview": "{event} 的评价",
     "selectUser": "选择要评价的用户",
-    "thankYou": "感谢您的评价！"
+    "thankYou": "感谢您的评价！",
+    "viewAll": "查看全部"
+  },
+  "verification": {
+    "title": "票券验证",
+    "hostStatus": "主办方",
+    "guestStatus": "申请人",
+    "ticketGiven": "已确认给票",
+    "ticketReceived": "已确认收票",
+    "waitingHost": "等待确认给票",
+    "waitingGuest": "等待确认收票",
+    "confirmGiven": "确认已给票",
+    "confirmReceived": "确认已收票",
+    "cancelConfirm": "取消确认",
+    "completed": "双方已确认完成！现在可以互相评价了",
+    "writeReview": "撰写评价",
+    "cannotCancelAfterBoth": "双方都确认后无法取消"
+  },
+  "reviews": {
+    "userReviews": "{name} 的评价",
+    "allReviews": "所有评价",
+    "ratingDistribution": "评分分布",
+    "page": "第 {current} 页，共 {total} 页",
+    "notFound": "找不到用户"
   },
   "theme": {
     "title": "外观主题",

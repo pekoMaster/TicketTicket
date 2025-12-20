@@ -10,7 +10,7 @@ import {
   TicketCountType,
   TICKET_COUNT_TYPE_INFO,
 } from '@/types';
-import { Calendar, MapPin, Image, Ticket, FileText, Plus, Trash2 } from 'lucide-react';
+import { Calendar, MapPin, Ticket, FileText, Plus, Trash2, Settings } from 'lucide-react';
 
 interface EventFormProps {
   initialData?: HololiveEvent;
@@ -40,7 +40,6 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
       : '',
     venue: initialData?.venue || '',
     venueAddress: initialData?.venueAddress || '',
-    imageUrl: initialData?.imageUrl || '',
     description: initialData?.description || '',
     category: initialData?.category || 'concert',
     isActive: initialData?.isActive ?? true,
@@ -138,7 +137,6 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
         eventEndDate: formData.eventEndDate ? new Date(formData.eventEndDate) : undefined,
         venue: formData.venue.trim(),
         venueAddress: formData.venueAddress.trim() || undefined,
-        imageUrl: formData.imageUrl.trim() || undefined,
         description: formData.description.trim() || undefined,
         ticketPriceTiers: validPriceTiers,
         category: formData.category as EventCategory,
@@ -454,22 +452,10 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
       {/* 其他 */}
       <section className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 lg:p-8 shadow-sm border border-gray-200 dark:border-gray-700">
         <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4 lg:mb-6 flex items-center gap-2">
-          <Image className="w-5 h-5 text-indigo-500" />
+          <Settings className="w-5 h-5 text-indigo-500" />
           其他
         </h2>
         <div className="grid gap-4 lg:gap-6">
-          {/* 圖片 URL */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">圖片 URL</label>
-            <input
-              type="url"
-              name="imageUrl"
-              value={formData.imageUrl}
-              onChange={handleChange}
-              placeholder="https://..."
-              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-            />
-          </div>
 
           {/* 啟用顯示 */}
           <div className="flex items-center gap-3">

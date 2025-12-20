@@ -479,6 +479,7 @@
     "title": "Review",
     "writeReview": "Write Review",
     "leaveReview": "Leave a Review",
+    "confirmBeforeReview": "Please confirm you have successfully entered the concert or received the ticket before leaving a review.",
     "reviewHost": "Review Host",
     "reviewGuest": "Review Companion",
     "yourRating": "Your Rating",
@@ -493,7 +494,30 @@
     "reviewedBy": "From {name}",
     "eventReview": "Review for {event}",
     "selectUser": "Select user to review",
-    "thankYou": "Thank you for your review!"
+    "thankYou": "Thank you for your review!",
+    "viewAll": "View All"
+  },
+  "verification": {
+    "title": "Ticket Verification",
+    "hostStatus": "Host",
+    "guestStatus": "Guest",
+    "ticketGiven": "Ticket Given",
+    "ticketReceived": "Ticket Received",
+    "waitingHost": "Waiting for confirmation",
+    "waitingGuest": "Waiting for confirmation",
+    "confirmGiven": "Confirm Given",
+    "confirmReceived": "Confirm Received",
+    "cancelConfirm": "Cancel",
+    "completed": "Both confirmed! You can now rate each other",
+    "writeReview": "Write Review",
+    "cannotCancelAfterBoth": "Cannot cancel after both confirmed"
+  },
+  "reviews": {
+    "userReviews": "{name}'s Reviews",
+    "allReviews": "All Reviews",
+    "ratingDistribution": "Rating Distribution",
+    "page": "Page {current} of {total}",
+    "notFound": "User not found"
   },
   "theme": {
     "title": "Theme",

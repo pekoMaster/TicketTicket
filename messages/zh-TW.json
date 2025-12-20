@@ -479,6 +479,7 @@
     "title": "評價",
     "writeReview": "撰寫評價",
     "leaveReview": "留下評價",
+    "confirmBeforeReview": "請確認有成功進入演唱會或收到票後再留下評價，視同同行完成。",
     "reviewHost": "評價主辦方",
     "reviewGuest": "評價同行者",
     "yourRating": "您的評分",
@@ -493,7 +494,30 @@
     "reviewedBy": "來自 {name}",
     "eventReview": "{event} 的評價",
     "selectUser": "選擇要評價的用戶",
-    "thankYou": "感謝您的評價！"
+    "thankYou": "感謝您的評價！",
+    "viewAll": "查看全部"
+  },
+  "verification": {
+    "title": "票券驗證",
+    "hostStatus": "主辦方",
+    "guestStatus": "申請人",
+    "ticketGiven": "已確認給票",
+    "ticketReceived": "已確認收票",
+    "waitingHost": "等待確認給票",
+    "waitingGuest": "等待確認收票",
+    "confirmGiven": "確認已給票",
+    "confirmReceived": "確認已收票",
+    "cancelConfirm": "取消確認",
+    "completed": "雙方已確認完成！現在可以互相評價了",
+    "writeReview": "撰寫評價",
+    "cannotCancelAfterBoth": "雙方都確認後無法取消"
+  },
+  "reviews": {
+    "userReviews": "{name} 的評價",
+    "allReviews": "所有評價",
+    "ratingDistribution": "評分分布",
+    "page": "第 {current} 頁，共 {total} 頁",
+    "notFound": "找不到用戶"
   },
   "theme": {
     "title": "外觀主題",

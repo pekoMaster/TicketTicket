@@ -471,8 +471,13 @@ export default function ProfilePage() {
         <section>
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold text-gray-900 dark:text-gray-100">{tReview('receivedReviews')}</h3>
-            {userReviews.length > 0 && (
-              <span className="text-sm text-gray-500 dark:text-gray-400">{userReviews.length}</span>
+            {userReviews.length > 5 && currentUser && (
+              <Link
+                href={`/reviews/${currentUser.id}`}
+                className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
+              >
+                {tReview('viewAll')} ({userReviews.length})
+              </Link>
             )}
           </div>
 
@@ -481,6 +486,14 @@ export default function ProfilePage() {
               {userReviews.slice(0, 5).map((review) => (
                 <ReviewCard key={review.id} review={review} showEvent />
               ))}
+              {userReviews.length > 5 && currentUser && (
+                <Link
+                  href={`/reviews/${currentUser.id}`}
+                  className="block text-center py-3 text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
+                >
+                  {tReview('viewAll')} ({userReviews.length})
+                </Link>
+              )}
             </div>
           ) : (
             <Card className="text-center py-8 dark:bg-gray-800 dark:border-gray-700">

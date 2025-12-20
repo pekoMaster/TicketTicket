@@ -94,14 +94,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Listing not found' }, { status: 404 });
     }
 
-    // 檢查活動日期是否已過（只能在活動結束後評價）
+    // 檢查活動日期是否已過
     const eventDate = new Date(listing.event_date);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     eventDate.setHours(0, 0, 0, 0);
+    const eventPassed = eventDate <= today;
 
-    if (eventDate > today) {
-      return NextResponse.json({ error: 'Cannot review before event date' }, { status: 400 });
+    // 查詢對話的票券驗證狀態
+    const { data: conversation } = await supabaseAdmin
+      .from('conversations')
+      .select('host_confirmed_at, guest_confirmed_at')
+      .eq('listing_id', listingId)
+      .or(`host_id.eq.${session.user.dbId},guest_id.eq.${session.user.dbId}`)
+      .single();
+
+    const bothConfirmed = !!(conversation?.host_confirmed_at && conversation?.guest_confirmed_at);
+
+    // 評價解鎖條件：雙方都確認 OR 活動日期已過
+    if (!bothConfirmed && !eventPassed) {
+      return NextResponse.json({
+        error: 'Cannot review yet - ticket verification required or wait until event date'
+      }, { status: 400 });
     }
 
     // 檢查評價權限：

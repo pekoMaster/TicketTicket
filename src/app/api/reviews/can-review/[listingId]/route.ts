@@ -32,9 +32,30 @@ export async function GET(
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     eventDate.setHours(0, 0, 0, 0);
+    const eventPassed = eventDate <= today;
 
-    if (eventDate > today) {
-      return NextResponse.json({ canReview: false, reason: 'event_not_passed' });
+    // 查詢對話的票券驗證狀態
+    const { data: conversation } = await supabaseAdmin
+      .from('conversations')
+      .select('host_confirmed_at, guest_confirmed_at')
+      .eq('listing_id', listingId)
+      .or(`host_id.eq.${session.user.dbId},guest_id.eq.${session.user.dbId}`)
+      .single();
+
+    const bothConfirmed = !!(conversation?.host_confirmed_at && conversation?.guest_confirmed_at);
+
+    // 評價解鎖條件：雙方都確認 OR 活動日期已過
+    if (!bothConfirmed && !eventPassed) {
+      return NextResponse.json({
+        canReview: false,
+        reason: 'verification_required',
+        confirmationStatus: {
+          hostConfirmed: !!conversation?.host_confirmed_at,
+          guestConfirmed: !!conversation?.guest_confirmed_at,
+          bothConfirmed: false,
+        },
+        eventPassed: false,
+      });
     }
 
     // 檢查是否已經評價過

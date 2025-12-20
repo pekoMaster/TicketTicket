@@ -479,6 +479,7 @@
     "title": "レビュー",
     "writeReview": "レビューを書く",
     "leaveReview": "レビューを残す",
+    "confirmBeforeReview": "コンサートへの入場またはチケット受取を確認してからレビューを投稿してください。同行完了とみなされます。",
     "reviewHost": "主催者をレビュー",
     "reviewGuest": "同行者をレビュー",
     "yourRating": "評価",
@@ -493,7 +494,30 @@
     "reviewedBy": "{name}より",
     "eventReview": "{event}のレビュー",
     "selectUser": "レビューするユーザーを選択",
-    "thankYou": "レビューありがとうございます！"
+    "thankYou": "レビューありがとうございます！",
+    "viewAll": "すべて見る"
+  },
+  "verification": {
+    "title": "チケット確認",
+    "hostStatus": "主催者",
+    "guestStatus": "参加者",
+    "ticketGiven": "チケット渡済み",
+    "ticketReceived": "チケット受取済み",
+    "waitingHost": "確認待ち",
+    "waitingGuest": "確認待ち",
+    "confirmGiven": "渡済みを確認",
+    "confirmReceived": "受取を確認",
+    "cancelConfirm": "取消",
+    "completed": "両者確認完了！相互評価が可能です",
+    "writeReview": "レビューを書く",
+    "cannotCancelAfterBoth": "両者確認後は取消できません"
+  },
+  "reviews": {
+    "userReviews": "{name}のレビュー",
+    "allReviews": "すべてのレビュー",
+    "ratingDistribution": "評価分布",
+    "page": "{current}ページ / {total}ページ",
+    "notFound": "ユーザーが見つかりません"
   },
   "theme": {
     "title": "テーマ",
