@@ -400,17 +400,6 @@ export default function ListingDetailPage() {
           </Card>
         </div>
 
-        {/* 零手續費聲明 */}
-        <div className="px-4 pb-4">
-          <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-4 flex items-start gap-3">
-            <ShieldCheck className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="font-medium text-green-800 dark:text-green-300">{t('noFeeTitle')}</p>
-              <p className="text-sm text-green-700 dark:text-green-400 mt-1">{t('noFeeDesc')}</p>
-            </div>
-          </div>
-        </div>
-
         {/* 票券類型警告 - 只有主辦方看得到 */}
         {isHost && ticketInfo.warning && (
           <div className="px-4 pb-4">
@@ -508,6 +497,17 @@ export default function ListingDetailPage() {
         {/* 安全提醒 */}
         <div className="px-4 pb-4">
           <SafetyBanner variant="listing" />
+        </div>
+
+        {/* 零手續費聲明 */}
+        <div className="px-4 pb-4">
+          <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-4 flex items-start gap-3">
+            <ShieldCheck className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium text-green-800 dark:text-green-300">{t('noFeeTitle')}</p>
+              <p className="text-sm text-green-700 dark:text-green-400 mt-1">{t('noFeeDesc')}</p>
+            </div>
+          </div>
         </div>
       </div>
 
