@@ -65,10 +65,14 @@ interface ApiApplication {
     event_date: string;
     venue: string;
     status: string;
+    ticket_type: string;
+    seat_grade: string;
+    asking_price_jpy: number;
     host: {
       id: string;
       username: string;
       avatar_url?: string;
+      custom_avatar_url?: string;
     };
   };
 }
@@ -427,9 +431,17 @@ export default function ProfilePage() {
               {myApplications.map((application) => (
                 <Card key={application.id} className="dark:bg-gray-800 dark:border-gray-700">
                   <Link href={`/listing/${application.listing_id}`}>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-start gap-3">
+                      {/* 主辦方頭像 */}
+                      <Avatar
+                        src={application.listing.host?.custom_avatar_url || application.listing.host?.avatar_url}
+                        size="md"
+                        className="flex-shrink-0"
+                      />
+
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
+                        {/* 狀態 + 活動名稱 */}
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
                           <Tag
                             variant={
                               application.status === 'pending'
@@ -444,22 +456,27 @@ export default function ProfilePage() {
                             {application.status === 'accepted' && tMessages('accepted')}
                             {application.status === 'rejected' && tMessages('rejected')}
                           </Tag>
+                          <TicketTypeTag type={application.listing.ticket_type as 'find_companion' | 'main_ticket_transfer' | 'sub_ticket_transfer' | 'ticket_exchange'} size="sm" />
                         </div>
-                        <p className="font-medium text-gray-900 dark:text-gray-100 truncate">
+
+                        {/* 活動名稱 */}
+                        <p className="font-medium text-gray-900 dark:text-gray-100 line-clamp-2 break-words mb-1">
                           {application.listing.event_name}
                         </p>
-                        <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400 mt-1">
-                          <span className="flex items-center gap-1">
-                            <Calendar className="w-3.5 h-3.5" />
-                            {formatDate(application.listing.event_date)}
+
+                        {/* 主辦方 + 座位 + 價格 */}
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
+                          <span>{application.listing.host?.username}</span>
+                          <span className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">
+                            {application.listing.seat_grade}
                           </span>
-                          <span className="flex items-center gap-1">
-                            <MapPin className="w-3.5 h-3.5" />
-                            {application.listing.venue}
+                          <span className="font-medium text-gray-700 dark:text-gray-300">
+                            ¥{application.listing.asking_price_jpy?.toLocaleString()}
                           </span>
                         </div>
                       </div>
-                      <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
+
+                      <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 mt-1" />
                     </div>
                   </Link>
 
@@ -525,7 +542,7 @@ export default function ProfilePage() {
                             {match.isHost ? t('iWasHost') : t('iWasGuest')}
                           </Tag>
                         </div>
-                        <p className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                        <p className="font-medium text-gray-900 dark:text-gray-100 line-clamp-2 break-words">
                           {match.listing.event_name}
                         </p>
                         <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1">

@@ -120,32 +120,35 @@ export default function CompletedMatchesPage() {
                             {items.map((item) => (
                                 <Link key={item.id} href={`/listing/${item.listingId}`}>
                                     <Card hoverable className="p-4">
-                                        <div className="flex items-start gap-4">
+                                        {/* 主要內容區 */}
+                                        <div className="flex items-start gap-3 sm:gap-4">
                                             {/* 配對對象頭像 */}
-                                            <Avatar src={item.otherUser.avatarUrl} size="lg" />
+                                            <Avatar src={item.otherUser.avatarUrl} size="lg" className="flex-shrink-0" />
 
                                             {/* 活動資訊 */}
                                             <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">
+                                                {/* 標題行 */}
+                                                <div className="flex flex-wrap items-center gap-2 mb-1">
+                                                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 break-words">
                                                         {item.listing.event_name}
                                                     </h3>
                                                     <TicketTypeTag type={item.listing.ticket_type as 'find_companion' | 'main_ticket_transfer' | 'sub_ticket_transfer' | 'ticket_exchange'} size="sm" />
                                                 </div>
 
-                                                <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500 dark:text-gray-400 mb-2">
+                                                {/* 日期地點 */}
+                                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500 dark:text-gray-400 mb-2">
                                                     <span className="flex items-center gap-1">
-                                                        <Calendar className="w-4 h-4" />
+                                                        <Calendar className="w-4 h-4 flex-shrink-0" />
                                                         {formatDate(item.listing.event_date)}
                                                     </span>
                                                     <span className="flex items-center gap-1">
-                                                        <MapPin className="w-4 h-4" />
+                                                        <MapPin className="w-4 h-4 flex-shrink-0" />
                                                         {item.listing.venue}
                                                     </span>
                                                 </div>
 
                                                 {/* 配對對象 */}
-                                                <div className="flex items-center gap-2 mb-2">
+                                                <div className="flex flex-wrap items-center gap-2 mb-2">
                                                     <span className="text-sm text-gray-500 dark:text-gray-400">
                                                         {t('matchedWith')}:
                                                     </span>
@@ -159,7 +162,7 @@ export default function CompletedMatchesPage() {
 
                                                 {/* 我的評價 */}
                                                 {item.myReview ? (
-                                                    <div className="flex items-center gap-2">
+                                                    <div className="flex flex-wrap items-center gap-2">
                                                         <span className="text-sm text-gray-500 dark:text-gray-400">
                                                             {t('myReview')}:
                                                         </span>
@@ -173,12 +176,11 @@ export default function CompletedMatchesPage() {
                                                         <span className="text-sm text-orange-500">{t('notReviewed')}</span>
                                                     </div>
                                                 )}
-                                            </div>
 
-                                            {/* 完成日期 */}
-                                            <div className="text-right text-sm text-gray-400 dark:text-gray-500">
-                                                <p>{t('completedAt')}</p>
-                                                <p>{formatDate(item.completedAt)}</p>
+                                                {/* 完成日期 - 移到底部 */}
+                                                <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-400 dark:text-gray-500">
+                                                    {t('completedAt')}: {formatDate(item.completedAt)}
+                                                </div>
                                             </div>
                                         </div>
                                     </Card>

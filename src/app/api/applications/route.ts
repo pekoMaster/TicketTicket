@@ -25,6 +25,7 @@ export async function GET() {
           host_id,
           asking_price_jpy,
           ticket_type,
+          seat_grade,
           meeting_location,
           host:users!host_id(id, username, avatar_url, custom_avatar_url)
         )
