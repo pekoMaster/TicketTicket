@@ -40,4 +40,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
+# IDE
+.vscode/
+.idea/
+
+# Claude Code
+.claude/
+
+# Other projects
+novel-helper/
