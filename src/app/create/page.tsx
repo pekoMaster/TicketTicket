@@ -173,9 +173,9 @@ export default function CreateListingPage() {
   // 是否為換票模式
   const isExchangeMode = ticketType === 'ticket_exchange';
 
-  // 換票補貼金額驗證（不超過票價一半）
+  // 換票補貼金額驗證（固定上限 2500 日幣）
   const subsidyValidation = useMemo(() => {
-    const max = Math.round(originalPriceJPY / 2);
+    const max = 2500;
     const amount = parseInt(subsidyAmount) || 0;
     if (!isExchangeMode) return { isValid: true, maxAllowed: max, amount: 0 };
     return {
@@ -183,7 +183,7 @@ export default function CreateListingPage() {
       maxAllowed: max,
       amount,
     };
-  }, [isExchangeMode, originalPriceJPY, subsidyAmount]);
+  }, [isExchangeMode, subsidyAmount]);
 
   // 表單驗證
   const isFormValid = useMemo(() => {
@@ -650,13 +650,13 @@ export default function CreateListingPage() {
                 <Input
                   label={t('subsidyAmount', { defaultValue: '補貼金額（日圓）' })}
                   type="number"
-                  placeholder={`最高 ¥${subsidyValidation.maxAllowed.toLocaleString()}（票價一半）`}
+                  placeholder="最高 ¥2,500"
                   value={subsidyAmount}
                   onChange={(e) => setSubsidyAmount(e.target.value)}
                   leftIcon={<span className="text-gray-400 font-medium">¥</span>}
                   error={
                     (subsidyValidation.amount || 0) > 0 && !subsidyValidation.isValid
-                      ? t('subsidyExceedsLimit', { defaultValue: `不可超過票價一半 ¥${subsidyValidation.maxAllowed.toLocaleString()}` })
+                      ? '不可超過 ¥2,500'
                       : undefined
                   }
                 />
