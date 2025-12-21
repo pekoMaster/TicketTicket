@@ -362,7 +362,10 @@
     "withdrawConfirmTitle": "确认撤回",
     "withdrawConfirmMessage": "确定要撤回这个申请吗？撤回后将无法恢复。",
     "cancel": "取消",
-    "confirmWithdraw": "确认撤回"
+    "confirmWithdraw": "确认撤回",
+    "pendingReviews": "待评价",
+    "autoReviewIn": "{days} 天后自动评价",
+    "writeReview": "撰写评价"
   },
   "chat": {
     "title": "与 {name} 聊天",
@@ -410,7 +413,24 @@
     "helpSupport": "帮助与支持",
     "terms": "使用条款",
     "logout": "登出",
-    "version": "版本"
+    "version": "版本",
+    "completedMatches": "已完成的配对",
+    "viewMore": "查看更多",
+    "iWasHost": "我是主办",
+    "iWasGuest": "我是参加者",
+    "matchedWith": "配对对象",
+    "noCompleted": "暂无已完成的配对"
+  },
+  "completed": {
+    "title": "已完成的配对",
+    "noCompleted": "暂无已完成的配对",
+    "matchedWith": "配对对象",
+    "iWasHost": "我是主办",
+    "iWasGuest": "我是参加者",
+    "myReview": "我的评价",
+    "notReviewed": "尚未评价",
+    "autoReview": "自动评价",
+    "completedAt": "完成日期"
   },
   "profileSettings": {
     "title": "账号设定",

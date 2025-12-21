@@ -48,11 +48,12 @@ class TranslationService {
      * @param targetLang 目標語言 (en, ja, zh-TW, zh-CN)
      */
     async translate(text: string, targetLang: string): Promise<TranslationResult> {
+        let result: TranslationResult;
+
         // 嘗試使用 DeepL
         if (this.deeplAvailable && this.deeplClient) {
             try {
-                const result = await this.translateWithDeepL(text, targetLang);
-                return result;
+                result = await this.translateWithDeepL(text, targetLang);
             } catch (error) {
                 // 檢查是否是額度用完
                 if (this.isQuotaExceeded(error)) {
@@ -62,11 +63,33 @@ class TranslationService {
                     console.error('DeepL translation error:', error);
                 }
                 // 降級到 Google Translate
+                result = await this.translateWithGoogle(text, targetLang);
             }
+        } else {
+            // 使用 Google Translate 作為備用
+            result = await this.translateWithGoogle(text, targetLang);
         }
 
-        // 使用 Google Translate 作為備用
-        return this.translateWithGoogle(text, targetLang);
+        // 驗證翻譯結果：如果目標語言是中文，但結果主要是拉丁字母，保留原文
+        if ((targetLang === 'zh-TW' || targetLang === 'zh-CN') && this.isMostlyLatin(result.text) && !this.isMostlyLatin(text)) {
+            return {
+                text: text, // 保留原文
+                detectedSourceLang: result.detectedSourceLang,
+                provider: result.provider,
+            };
+        }
+
+        return result;
+    }
+
+    /**
+     * 檢查文字是否主要是拉丁字母
+     */
+    private isMostlyLatin(text: string): boolean {
+        const cleanText = text.replace(/[\s\d\p{P}]/gu, ''); // 移除空白、數字、標點
+        if (cleanText.length === 0) return false;
+        const latinCount = (cleanText.match(/[a-zA-ZāēīōūĀĒĪŌŪ]/g) || []).length;
+        return latinCount / cleanText.length > 0.5; // 超過 50% 是拉丁字母
     }
 
     private async translateWithDeepL(text: string, targetLang: string): Promise<TranslationResult> {

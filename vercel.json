@@ -1,0 +1,8 @@
+{
+    "crons": [
+        {
+            "path": "/api/reviews/auto-complete",
+            "schedule": "0 0 * * *"
+        }
+    ]
+}

@@ -362,7 +362,10 @@
     "withdrawConfirmTitle": "Confirm Withdrawal",
     "withdrawConfirmMessage": "Are you sure you want to withdraw this application? This action cannot be undone.",
     "cancel": "Cancel",
-    "confirmWithdraw": "Confirm Withdrawal"
+    "confirmWithdraw": "Confirm Withdrawal",
+    "pendingReviews": "Pending Reviews",
+    "autoReviewIn": "Auto-review in {days} days",
+    "writeReview": "Write Review"
   },
   "chat": {
     "title": "Chat with {name}",
@@ -410,7 +413,24 @@
     "helpSupport": "Help & Support",
     "terms": "Terms of Service",
     "logout": "Log Out",
-    "version": "Version"
+    "version": "Version",
+    "completedMatches": "Completed Matches",
+    "viewMore": "View More",
+    "iWasHost": "I was Host",
+    "iWasGuest": "I was Guest",
+    "matchedWith": "Matched with",
+    "noCompleted": "No completed matches yet"
+  },
+  "completed": {
+    "title": "Completed Matches",
+    "noCompleted": "No completed matches yet",
+    "matchedWith": "Matched with",
+    "iWasHost": "I was Host",
+    "iWasGuest": "I was Guest",
+    "myReview": "My Review",
+    "notReviewed": "Not yet reviewed",
+    "autoReview": "Auto Review",
+    "completedAt": "Completed at"
   },
   "profileSettings": {
     "title": "Account Settings",

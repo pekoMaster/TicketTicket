@@ -17,8 +17,8 @@ export async function GET() {
       .select(`
         *,
         listing:listings!listing_id(id, event_name, event_date, venue, asking_price_jpy),
-        host:users!host_id(id, username, avatar_url),
-        guest:users!guest_id(id, username, avatar_url),
+        host:users!host_id(id, username, avatar_url, custom_avatar_url),
+        guest:users!guest_id(id, username, avatar_url, custom_avatar_url),
         messages(id, content, sender_id, is_read, created_at)
       `)
       .or(`host_id.eq.${userId},guest_id.eq.${userId}`)

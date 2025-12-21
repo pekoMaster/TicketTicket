@@ -33,6 +33,7 @@ import {
   Edit3,
   Trash2,
   X,
+  Check,
 } from 'lucide-react';
 
 interface ApiReview {
@@ -83,6 +84,28 @@ interface UserProfile {
   isVerified: boolean;
 }
 
+interface CompletedMatch {
+  id: string;
+  listingId: string;
+  listing: {
+    event_name: string;
+    event_date: string;
+    venue: string;
+    ticket_type: string;
+  };
+  isHost: boolean;
+  otherUser: {
+    id: string;
+    username: string;
+    avatarUrl?: string;
+  };
+  completedAt: string;
+  myReview: {
+    rating: number;
+    isAuto?: boolean;
+  } | null;
+}
+
 export default function ProfilePage() {
   const { data: session } = useSession();
   const router = useRouter();
@@ -98,6 +121,7 @@ export default function ProfilePage() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [userReviews, setUserReviews] = useState<ApiReview[]>([]);
   const [myApplications, setMyApplications] = useState<ApiApplication[]>([]);
+  const [completedMatches, setCompletedMatches] = useState<CompletedMatch[]>([]);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
 
   // Delete listing modal
@@ -118,11 +142,12 @@ export default function ProfilePage() {
     }
 
     try {
-      // 並行取得用戶資料、評價和申請
-      const [profileRes, reviewsRes, applicationsRes] = await Promise.all([
+      // 並行取得用戶資料、評價、申請和已完成配對
+      const [profileRes, reviewsRes, applicationsRes, completedRes] = await Promise.all([
         fetch('/api/profile'),
         fetch(`/api/reviews?userId=${session.user.dbId}`),
         fetch('/api/applications'),
+        fetch('/api/profile/completed?limit=2'),
       ]);
 
       if (profileRes.ok) {
@@ -151,6 +176,11 @@ export default function ProfilePage() {
           (app: ApiApplication) => app.status !== 'cancelled'
         );
         setMyApplications(activeApplications);
+      }
+
+      if (completedRes.ok) {
+        const completedData = await completedRes.json();
+        setCompletedMatches(completedData.items || []);
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -305,8 +335,8 @@ export default function ProfilePage() {
                               listing.status === 'open'
                                 ? 'success'
                                 : listing.status === 'matched'
-                                ? 'info'
-                                : 'default'
+                                  ? 'info'
+                                  : 'default'
                             }
                             size="sm"
                           >
@@ -405,8 +435,8 @@ export default function ProfilePage() {
                               application.status === 'pending'
                                 ? 'warning'
                                 : application.status === 'accepted'
-                                ? 'success'
-                                : 'default'
+                                  ? 'success'
+                                  : 'default'
                             }
                             size="sm"
                           >
@@ -463,6 +493,61 @@ export default function ProfilePage() {
               >
                 {t('goExplore')}
               </Link>
+            </Card>
+          )}
+        </section>
+
+        {/* 我的已完成配對 */}
+        <section>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('completedMatches')}</h3>
+            {completedMatches.length > 0 && (
+              <Link
+                href="/profile/completed"
+                className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
+              >
+                {t('viewMore')}
+              </Link>
+            )}
+          </div>
+
+          {completedMatches.length > 0 ? (
+            <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
+              {completedMatches.map((match) => (
+                <Card key={match.id} className="dark:bg-gray-800 dark:border-gray-700">
+                  <Link href={`/listing/${match.listingId}`}>
+                    <div className="flex items-center gap-3">
+                      <Avatar src={match.otherUser.avatarUrl} size="md" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <TicketTypeTag type={match.listing.ticket_type as 'find_companion' | 'main_ticket_transfer' | 'sub_ticket_transfer' | 'ticket_exchange'} size="sm" />
+                          <Tag variant={match.isHost ? 'purple' : 'info'} size="sm">
+                            {match.isHost ? t('iWasHost') : t('iWasGuest')}
+                          </Tag>
+                        </div>
+                        <p className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                          {match.listing.event_name}
+                        </p>
+                        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1">
+                          <span>{t('matchedWith')}: {match.otherUser.username}</span>
+                          {match.myReview && (
+                            <span className="flex items-center gap-1">
+                              <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                              {match.myReview.rating}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                    </div>
+                  </Link>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card className="text-center py-8 dark:bg-gray-800 dark:border-gray-700">
+              <Check className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{t('noCompleted')}</p>
             </Card>
           )}
         </section>

@@ -362,7 +362,10 @@
     "withdrawConfirmTitle": "確認撤回",
     "withdrawConfirmMessage": "確定要撤回這個申請嗎？撤回後將無法恢復。",
     "cancel": "取消",
-    "confirmWithdraw": "確認撤回"
+    "confirmWithdraw": "確認撤回",
+    "pendingReviews": "待評價",
+    "autoReviewIn": "{days} 天後自動評價",
+    "writeReview": "撰寫評價"
   },
   "chat": {
     "title": "與 {name} 聊天",
@@ -410,7 +413,24 @@
     "helpSupport": "幫助與支援",
     "terms": "使用條款",
     "logout": "登出",
-    "version": "版本"
+    "version": "版本",
+    "completedMatches": "已完成的配對",
+    "viewMore": "查看更多",
+    "iWasHost": "我是主辦",
+    "iWasGuest": "我是參加者",
+    "matchedWith": "配對對象",
+    "noCompleted": "尚無已完成的配對"
+  },
+  "completed": {
+    "title": "已完成的配對",
+    "noCompleted": "尚無已完成的配對",
+    "matchedWith": "配對對象",
+    "iWasHost": "我是主辦",
+    "iWasGuest": "我是參加者",
+    "myReview": "我的評價",
+    "notReviewed": "尚未評價",
+    "autoReview": "自動評價",
+    "completedAt": "完成日期"
   },
   "profileSettings": {
     "title": "帳號設定",

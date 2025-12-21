@@ -37,13 +37,13 @@ export default function ReviewModal({
   const [selectedUser, setSelectedUser] = useState<ReviewableUser | null>(
     reviewableUsers.length === 1 ? reviewableUsers[0] : null
   );
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
   const handleSubmit = async () => {
-    if (!selectedUser || rating === 0) return;
+    if (!selectedUser) return;
 
     setIsSubmitting(true);
 
@@ -66,7 +66,7 @@ export default function ReviewModal({
           onClose();
           // Reset state
           setShowSuccess(false);
-          setRating(0);
+          setRating(5);
           setComment('');
           setSelectedUser(reviewableUsers.length === 1 ? reviewableUsers[0] : null);
         }, 1500);
@@ -168,15 +168,13 @@ export default function ReviewModal({
               >
                 <Star
                   className={`w-8 h-8 ${star <= rating
-                      ? 'fill-yellow-400 text-yellow-400'
-                      : 'text-gray-300 dark:text-gray-600'
+                    ? 'fill-yellow-400 text-yellow-400'
+                    : 'text-gray-300 dark:text-gray-600'
                     }`}
                 />
               </button>
             ))}
-            {rating > 0 && (
-              <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">{rating}/5</span>
-            )}
+            <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">{rating}/5</span>
           </div>
         </div>
 
@@ -195,7 +193,7 @@ export default function ReviewModal({
         <Button
           fullWidth
           onClick={handleSubmit}
-          disabled={!selectedUser || rating === 0}
+          disabled={!selectedUser}
           loading={isSubmitting}
         >
           {t('submit')}

@@ -26,7 +26,7 @@ export async function GET() {
           asking_price_jpy,
           ticket_type,
           meeting_location,
-          host:users!host_id(id, username, avatar_url)
+          host:users!host_id(id, username, avatar_url, custom_avatar_url)
         )
       `)
       .eq('guest_id', userId)
@@ -52,7 +52,7 @@ export async function GET() {
         .from('applications')
         .select(`
           *,
-          guest:users!guest_id(id, username, avatar_url, rating, review_count),
+          guest:users!guest_id(id, username, avatar_url, custom_avatar_url, rating, review_count),
           listing:listings!listing_id(id, event_name, event_date, venue, host_id)
         `)
         .in('listing_id', listingIds)

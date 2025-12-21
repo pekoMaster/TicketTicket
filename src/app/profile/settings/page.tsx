@@ -76,12 +76,15 @@ export default function ProfileSettingsPage() {
       setSaveMessage({ type: 'error', text: t('discordConnectionFailed') });
       router.replace('/profile/settings');
     }
+  }, [searchParams, router, t]);
 
+  // Auto-clear saveMessage after 5 seconds
+  useEffect(() => {
     if (saveMessage) {
       const timer = setTimeout(() => setSaveMessage(null), 5000);
       return () => clearTimeout(timer);
     }
-  }, [searchParams, router, t, saveMessage]);
+  }, [saveMessage]);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -289,8 +292,8 @@ export default function ProfileSettingsPage() {
         {saveMessage && (
           <div
             className={`p-3 rounded-lg flex items-center gap-2 ${saveMessage.type === 'success'
-                ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800'
-                : 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
+              ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800'
+              : 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
               }`}
           >
             {saveMessage.type === 'success' ? (

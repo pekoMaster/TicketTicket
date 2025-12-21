@@ -362,7 +362,10 @@
     "withdrawConfirmTitle": "取り消しの確認",
     "withdrawConfirmMessage": "この申請を取り消してもよろしいですか？取り消し後は元に戻せません。",
     "cancel": "キャンセル",
-    "confirmWithdraw": "取り消しを確認"
+    "confirmWithdraw": "取り消しを確認",
+    "pendingReviews": "レビュー待ち",
+    "autoReviewIn": "{days}日後に自動評価",
+    "writeReview": "レビューを書く"
   },
   "chat": {
     "title": "{name}とチャット",
@@ -410,7 +413,24 @@
     "helpSupport": "ヘルプ＆サポート",
     "terms": "利用規約",
     "logout": "ログアウト",
-    "version": "バージョン"
+    "version": "バージョン",
+    "completedMatches": "完了したマッチング",
+    "viewMore": "もっと見る",
+    "iWasHost": "主催者として",
+    "iWasGuest": "参加者として",
+    "matchedWith": "マッチング相手",
+    "noCompleted": "完了したマッチングはありません"
+  },
+  "completed": {
+    "title": "完了したマッチング",
+    "noCompleted": "完了したマッチングはありません",
+    "matchedWith": "マッチング相手",
+    "iWasHost": "主催者として",
+    "iWasGuest": "参加者として",
+    "myReview": "私のレビュー",
+    "notReviewed": "未評価",
+    "autoReview": "自動評価",
+    "completedAt": "完了日"
   },
   "profileSettings": {
     "title": "アカウント設定",

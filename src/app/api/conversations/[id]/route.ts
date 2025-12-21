@@ -25,8 +25,8 @@ export async function GET(
           id, event_name, event_date, venue, asking_price_jpy, status,
           ticket_type, ticket_count_type, meeting_time, meeting_location
         ),
-        host:users!host_id(id, username, avatar_url, rating, review_count),
-        guest:users!guest_id(id, username, avatar_url, rating, review_count)
+        host:users!host_id(id, username, avatar_url, custom_avatar_url, rating, review_count),
+        guest:users!guest_id(id, username, avatar_url, custom_avatar_url, rating, review_count)
       `)
       .eq('id', id)
       .single();

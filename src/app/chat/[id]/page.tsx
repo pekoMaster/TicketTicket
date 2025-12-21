@@ -9,6 +9,7 @@ import SafetyBanner from '@/components/ui/SafetyBanner';
 import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
 import Tag from '@/components/ui/Tag';
+import ReviewModal from '@/components/features/ReviewModal';
 import { Send, Calendar, MapPin, Clock, Ticket, Tag as TagIcon, Banknote, Loader2, Languages, CheckCircle, Circle, Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -26,6 +27,7 @@ interface User {
   id: string;
   username: string;
   avatar_url?: string;
+  custom_avatar_url?: string;
   rating: number;
   review_count: number;
 }
@@ -79,6 +81,7 @@ export default function ChatPage() {
   const [translations, setTranslations] = useState<Record<string, string>>({});
   const [translatingIds, setTranslatingIds] = useState<Set<string>>(new Set());
   const [isConfirming, setIsConfirming] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { locale } = useLanguage();
 
@@ -109,6 +112,11 @@ export default function ChatPage() {
             },
           };
         });
+
+        // 如果雙方都確認了，自動顯示評價視窗
+        if (data.conversation.bothConfirmed) {
+          setShowReviewModal(true);
+        }
       }
     } catch (error) {
       console.error('Error confirming ticket:', error);
@@ -408,7 +416,7 @@ export default function ChatPage() {
               <Tag
                 variant={
                   listing.ticket_type === 'find_companion' ? 'success' :
-                  listing.ticket_type === 'ticket_exchange' ? 'warning' : 'info'
+                    listing.ticket_type === 'ticket_exchange' ? 'warning' : 'info'
                 }
                 size="sm"
               >
@@ -438,11 +446,10 @@ export default function ChatPage() {
 
           <div className="grid grid-cols-2 gap-3">
             {/* 主辦方確認狀態 */}
-            <div className={`p-3 rounded-lg border ${
-              conversation.hostConfirmedAt
-                ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800'
-                : 'bg-gray-50 border-gray-200 dark:bg-gray-700 dark:border-gray-600'
-            }`}>
+            <div className={`p-3 rounded-lg border ${conversation.hostConfirmedAt
+              ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800'
+              : 'bg-gray-50 border-gray-200 dark:bg-gray-700 dark:border-gray-600'
+              }`}>
               <div className="flex items-center gap-2 mb-1">
                 {conversation.hostConfirmedAt ? (
                   <CheckCircle className="w-4 h-4 text-green-500" />
@@ -479,11 +486,10 @@ export default function ChatPage() {
             </div>
 
             {/* 申請人確認狀態 */}
-            <div className={`p-3 rounded-lg border ${
-              conversation.guestConfirmedAt
-                ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800'
-                : 'bg-gray-50 border-gray-200 dark:bg-gray-700 dark:border-gray-600'
-            }`}>
+            <div className={`p-3 rounded-lg border ${conversation.guestConfirmedAt
+              ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800'
+              : 'bg-gray-50 border-gray-200 dark:bg-gray-700 dark:border-gray-600'
+              }`}>
               <div className="flex items-center gap-2 mb-1">
                 {conversation.guestConfirmedAt ? (
                   <CheckCircle className="w-4 h-4 text-green-500" />
@@ -557,7 +563,7 @@ export default function ChatPage() {
                   key={msg.id}
                   className={`flex items-end gap-2 ${isMe ? 'flex-row-reverse' : ''}`}
                 >
-                  {!isMe && <Avatar src={sender?.avatar_url} size="sm" />}
+                  {!isMe && <Avatar src={sender?.custom_avatar_url || sender?.avatar_url} size="sm" />}
 
                   <div
                     className={`
@@ -640,6 +646,16 @@ export default function ChatPage() {
           </div>
         </div>
       </div>
+
+      {/* 評價彈窗 */}
+      <ReviewModal
+        isOpen={showReviewModal}
+        onClose={() => setShowReviewModal(false)}
+        listingId={conversation.listing_id}
+        reviewableUsers={[otherUser]}
+        isHost={conversation.isHost}
+        onSubmitSuccess={() => setShowReviewModal(false)}
+      />
     </div>
   );
 }

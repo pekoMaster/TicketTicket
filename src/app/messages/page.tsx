@@ -9,14 +9,17 @@ import Avatar from '@/components/ui/Avatar';
 import Tag, { TicketTypeTag } from '@/components/ui/Tag';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
-import { MessageCircle, Users, Clock, Check, X, Loader2, Undo2, MapPin } from 'lucide-react';
+import ReviewModal from '@/components/features/ReviewModal';
+import { MessageCircle, Users, Clock, Check, X, Loader2, Undo2, MapPin, Star } from 'lucide-react';
 import Link from 'next/link';
 import { useNotification } from '@/contexts/NotificationContext';
+import { useSupabaseClient } from '@/hooks/useSupabaseClient';
 
 interface User {
   id: string;
   username: string;
   avatar_url?: string;
+  custom_avatar_url?: string;
   rating: number;
   review_count: number;
 }
@@ -55,10 +58,31 @@ interface Conversation {
   unreadCount: number;
 }
 
+interface PendingReview {
+  conversationId: string;
+  listingId: string;
+  listing: {
+    id: string;
+    event_name: string;
+    event_date: string;
+    venue: string;
+    ticket_type: string;
+  };
+  isHost: boolean;
+  otherUser: {
+    id: string;
+    username: string;
+    avatarUrl?: string;
+  };
+  completedAt: string;
+  daysRemaining: number;
+}
+
 export default function MessagesPage() {
   const { data: session } = useSession();
   const t = useTranslations('messages');
   const { markAsRead } = useNotification();
+  const supabase = useSupabaseClient();
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [sentApplications, setSentApplications] = useState<Application[]>([]);
@@ -67,6 +91,9 @@ export default function MessagesPage() {
   const [withdrawingId, setWithdrawingId] = useState<string | null>(null);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [selectedWithdrawApp, setSelectedWithdrawApp] = useState<Application | null>(null);
+  const [pendingReviews, setPendingReviews] = useState<PendingReview[]>([]);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [selectedReview, setSelectedReview] = useState<PendingReview | null>(null);
 
   const currentUserId = session?.user?.dbId;
 
@@ -78,10 +105,11 @@ export default function MessagesPage() {
     }
 
     try {
-      // 並行獲取對話和申請
-      const [convoRes, appRes] = await Promise.all([
+      // 並行獲取對話、申請和待評價
+      const [convoRes, appRes, pendingRes] = await Promise.all([
         fetch('/api/conversations'),
         fetch('/api/applications'),
+        fetch('/api/reviews/pending'),
       ]);
 
       if (convoRes.ok) {
@@ -98,6 +126,11 @@ export default function MessagesPage() {
         setSentApplications(activeSent);
         setReceivedApplications(appData.received || []);
       }
+
+      if (pendingRes.ok) {
+        const pendingData = await pendingRes.json();
+        setPendingReviews(pendingData);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -110,6 +143,67 @@ export default function MessagesPage() {
     // 進入消息頁面時標記為已讀
     markAsRead();
   }, [fetchData, markAsRead]);
+
+  // Supabase Realtime 訂閱 - 自動更新
+  useEffect(() => {
+    if (!currentUserId) return;
+
+    // 訂閱 messages 變化（新訊息）
+    const messagesChannel = supabase
+      .channel('messages-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+        },
+        () => {
+          // 有新訊息時重新獲取數據
+          fetchData();
+        }
+      )
+      .subscribe();
+
+    // 訂閱 applications 變化（新申請、狀態變更）
+    const applicationsChannel = supabase
+      .channel('applications-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'applications',
+        },
+        () => {
+          // 申請狀態變化時重新獲取數據
+          fetchData();
+        }
+      )
+      .subscribe();
+
+    // 訂閱 conversations 變化（新對話）
+    const conversationsChannel = supabase
+      .channel('conversations-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'conversations',
+        },
+        () => {
+          fetchData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(messagesChannel);
+      supabase.removeChannel(applicationsChannel);
+      supabase.removeChannel(conversationsChannel);
+    };
+  }, [currentUserId, supabase, fetchData]);
 
   // 待處理的申請（收到的）
   const pendingApplications = receivedApplications.filter(
@@ -207,7 +301,7 @@ export default function MessagesPage() {
               {pendingApplications.map((app) => (
                 <Card key={app.id}>
                   <div className="flex items-start gap-3">
-                    <Avatar src={app.guest?.avatar_url} size="lg" />
+                    <Avatar src={app.guest?.custom_avatar_url || app.guest?.avatar_url} size="lg" />
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-gray-900 dark:text-gray-100">{app.guest?.username}</p>
                       <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{app.listing?.event_name}</p>
@@ -258,7 +352,7 @@ export default function MessagesPage() {
                 return (
                   <Link key={convo.id} href={`/chat/${convo.id}`}>
                     <Card hoverable className="flex items-center gap-3">
-                      <Avatar src={convo.otherUser?.avatar_url} size="lg" />
+                      <Avatar src={convo.otherUser?.custom_avatar_url || convo.otherUser?.avatar_url} size="lg" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <p className="font-medium text-gray-900 dark:text-gray-100">{convo.otherUser?.username}</p>
@@ -337,7 +431,7 @@ export default function MessagesPage() {
                     {/* 主辦方 */}
                     {app.listing?.host && (
                       <div className="flex items-center gap-2">
-                        <Avatar src={app.listing.host.avatar_url} size="sm" />
+                        <Avatar src={app.listing.host.custom_avatar_url || app.listing.host.avatar_url} size="sm" />
                         <span>{app.listing.host.username}</span>
                       </div>
                     )}
@@ -386,6 +480,57 @@ export default function MessagesPage() {
             </div>
           </section>
         )}
+
+        {/* 待評價的已完成活動 */}
+        {pendingReviews.length > 0 && (
+          <section>
+            <div className="flex items-center gap-2 mb-4">
+              <Star className="w-5 h-5 text-yellow-500" />
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('pendingReviews')}</h2>
+              <span className="bg-yellow-100 dark:bg-yellow-900/50 text-yellow-600 dark:text-yellow-400 text-xs font-medium px-2 py-0.5 rounded-full">
+                {pendingReviews.length}
+              </span>
+            </div>
+
+            <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
+              {pendingReviews.map((review) => (
+                <Card key={review.conversationId}>
+                  <div className="flex items-start gap-3">
+                    <Avatar src={review.otherUser.avatarUrl} size="lg" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="font-medium text-gray-900 dark:text-gray-100">{review.otherUser.username}</p>
+                        <Tag variant={review.isHost ? 'purple' : 'info'} size="sm">
+                          {review.isHost ? t('imHost') : t('imGuest')}
+                        </Tag>
+                      </div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{review.listing.event_name}</p>
+                      {review.daysRemaining > 0 && (
+                        <p className="text-xs text-orange-500 mt-1">
+                          {t('autoReviewIn', { days: review.daysRemaining })}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <Button
+                      fullWidth
+                      size="sm"
+                      onClick={() => {
+                        setSelectedReview(review);
+                        setShowReviewModal(true);
+                      }}
+                    >
+                      <Star className="w-4 h-4 mr-1" />
+                      {t('writeReview')}
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
 
       {/* 撤回確認 Modal */}
@@ -423,6 +568,29 @@ export default function MessagesPage() {
           </div>
         </div>
       </Modal>
+
+      {/* 評價彈窗 */}
+      {selectedReview && (
+        <ReviewModal
+          isOpen={showReviewModal}
+          onClose={() => {
+            setShowReviewModal(false);
+            setSelectedReview(null);
+          }}
+          listingId={selectedReview.listingId}
+          reviewableUsers={[{
+            id: selectedReview.otherUser.id,
+            username: selectedReview.otherUser.username,
+            avatar_url: selectedReview.otherUser.avatarUrl,
+          }]}
+          isHost={selectedReview.isHost}
+          onSubmitSuccess={() => {
+            setShowReviewModal(false);
+            setSelectedReview(null);
+            fetchData();
+          }}
+        />
+      )}
     </div>
   );
 }
