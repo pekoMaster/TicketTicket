@@ -192,7 +192,8 @@
     "duoTicket": "二人票",
     "soloTicket": "一人票",
     "ticketTypeLabel": "券種類型",
-    "askingPrice": "希望費用"
+    "askingPrice": "希望費用",
+    "perPersonUnit": "人"
   },
   "edit": {
     "title": "編輯刊登",

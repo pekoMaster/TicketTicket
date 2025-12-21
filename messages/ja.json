@@ -192,7 +192,8 @@
     "duoTicket": "二人チケット",
     "soloTicket": "一人チケット",
     "ticketTypeLabel": "券種タイプ",
-    "askingPrice": "希望価格"
+    "askingPrice": "希望価格",
+    "perPersonUnit": "人"
   },
   "edit": {
     "title": "募集を編集",

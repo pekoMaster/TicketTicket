@@ -192,7 +192,8 @@
     "duoTicket": "Duo Ticket",
     "soloTicket": "Solo Ticket",
     "ticketTypeLabel": "Ticket Category",
-    "askingPrice": "Asking Price"
+    "askingPrice": "Asking Price",
+    "perPersonUnit": " person(s)"
   },
   "edit": {
     "title": "Edit Listing",

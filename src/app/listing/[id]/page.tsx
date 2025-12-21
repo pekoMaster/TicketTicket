@@ -17,7 +17,7 @@ import Avatar from '@/components/ui/Avatar';
 import StarRating from '@/components/ui/StarRating';
 import SafetyBanner from '@/components/ui/SafetyBanner';
 import AgreementModal from '@/components/ui/AgreementModal';
-import { TicketType, Listing, SubsidyDirection } from '@/types';
+import { TicketType, Listing, SubsidyDirection, LANGUAGE_OPTIONS } from '@/types';
 import {
   Calendar,
   MapPin,
@@ -408,7 +408,7 @@ export default function ListingDetailPage() {
 
                   {/* 持有票券原價 */}
                   <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mt-2 text-sm text-gray-600 dark:text-gray-300">
-                    <p>{t('myTicketPrice')}: ¥{listing.originalPriceJPY.toLocaleString()}</p>
+                    <p>{t('myTicketPrice')}: ¥{listing.originalPriceJPY.toLocaleString()}/{listing.totalSlots}{t('perPersonUnit')}</p>
                   </div>
                 </>
               ) : (
@@ -422,7 +422,7 @@ export default function ListingDetailPage() {
                   </div>
 
                   <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-sm text-gray-600 dark:text-gray-300">
-                    <p>{t('originalPrice')}: ¥{listing.originalPriceJPY.toLocaleString()}</p>
+                    <p>{t('originalPrice')}: ¥{listing.originalPriceJPY.toLocaleString()}/{listing.totalSlots}{t('perPersonUnit')}</p>
                   </div>
                 </>
               )}
@@ -483,7 +483,10 @@ export default function ListingDetailPage() {
                     {listing.hostLanguages && listing.hostLanguages.length > 0 && (
                       <span className="inline-flex items-center gap-1">
                         <Languages className="w-3.5 h-3.5" />
-                        {listing.hostLanguages.join(', ')}
+                        {listing.hostLanguages.map(code => {
+                          const lang = LANGUAGE_OPTIONS.find(l => l.value === code);
+                          return lang?.label || code;
+                        }).join(', ')}
                       </span>
                     )}
                   </div>
