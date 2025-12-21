@@ -91,7 +91,8 @@
     "seatGrade": "Seat Grade",
     "ticketType": "Ticket Type",
     "price": "Price",
-    "host": "Host"
+    "host": "Host",
+    "nationality": "Nationality"
   },
   "filter": {
     "searchPlaceholder": "Search events, venues, keywords...",
@@ -185,7 +186,13 @@
     "noFeeTitle": "Zero Fees - Completely Free",
     "noFeeDesc": "This platform charges no service fees, broker fees, or any other additional charges. All matching services are provided free of charge.",
     "subsidyToApplicant": "Subsidy to Applicant",
-    "subsidyToHost": "Subsidy to Host"
+    "subsidyToHost": "Subsidy to Host",
+    "ticketInfo": "Ticket Information",
+    "ticketCountType": "Ticket Type",
+    "duoTicket": "Duo Ticket",
+    "soloTicket": "Solo Ticket",
+    "ticketTypeLabel": "Ticket Category",
+    "askingPrice": "Asking Price"
   },
   "edit": {
     "title": "Edit Listing",

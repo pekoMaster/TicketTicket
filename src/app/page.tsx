@@ -466,7 +466,7 @@ export default function HomePage() {
                         <tr>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">{t('event')}</th>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">{t('date')}</th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">{t('seatGrade')}</th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">{t('nationality')}</th>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">{t('ticketType')}</th>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">{t('price')}</th>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">{t('host')}</th>
@@ -485,7 +485,7 @@ export default function HomePage() {
                               </div>
                             </td>
                             <td className="px-4 py-3">
-                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{listing.seatGrade || '-'}</span>
+                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{listing.hostNationality || '-'}</span>
                             </td>
                             <td className="px-4 py-3">
                               <TicketTypeTag type={listing.ticketType} size="sm" />

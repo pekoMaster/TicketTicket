@@ -91,7 +91,8 @@
     "seatGrade": "座席等級",
     "ticketType": "チケット種別",
     "price": "価格",
-    "host": "主催者"
+    "host": "主催者",
+    "nationality": "国籍"
   },
   "filter": {
     "searchPlaceholder": "イベント、会場、キーワードを検索...",
@@ -185,7 +186,13 @@
     "noFeeTitle": "手数料無料・完全無料",
     "noFeeDesc": "このプラットフォームはサービス料、仲介料、その他の追加料金を一切いただきません。すべてのマッチングサービスは無料で提供されます。",
     "subsidyToApplicant": "申請者への補填",
-    "subsidyToHost": "主催者への補填"
+    "subsidyToHost": "主催者への補填",
+    "ticketInfo": "チケット情報",
+    "ticketCountType": "チケット種別",
+    "duoTicket": "二人チケット",
+    "soloTicket": "一人チケット",
+    "ticketTypeLabel": "券種タイプ",
+    "askingPrice": "希望価格"
   },
   "edit": {
     "title": "募集を編集",

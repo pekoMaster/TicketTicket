@@ -91,7 +91,8 @@
     "seatGrade": "座位等級",
     "ticketType": "票種",
     "price": "費用",
-    "host": "主辦方"
+    "host": "主辦方",
+    "nationality": "國籍"
   },
   "filter": {
     "searchPlaceholder": "搜尋活動、場地、關鍵字...",
@@ -185,7 +186,13 @@
     "noFeeTitle": "零手續費・完全免費",
     "noFeeDesc": "本平台不收取任何手續費、仲介費或其他額外費用。所有配對服務均為免費提供。",
     "subsidyToApplicant": "補貼申請人",
-    "subsidyToHost": "補貼主辦人"
+    "subsidyToHost": "補貼主辦人",
+    "ticketInfo": "票種資訊",
+    "ticketCountType": "票種",
+    "duoTicket": "二人票",
+    "soloTicket": "一人票",
+    "ticketTypeLabel": "券種類型",
+    "askingPrice": "希望費用"
   },
   "edit": {
     "title": "編輯刊登",

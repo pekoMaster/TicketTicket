@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useApp } from '@/contexts/AppContext';
 import { useTranslations } from 'next-intl';
@@ -23,6 +24,7 @@ import {
   Clock,
   Users,
   AlertTriangle,
+  Ticket,
   MessageCircle,
   Check,
   Loader2,
@@ -33,6 +35,8 @@ import {
   ArrowLeftRight,
   Banknote,
   ShieldCheck,
+  Globe,
+  Languages,
 } from 'lucide-react';
 import ReviewModal from '@/components/features/ReviewModal';
 
@@ -306,14 +310,9 @@ export default function ListingDetailPage() {
       <div className="pt-14 pb-24">
         {/* 主要資訊 */}
         <div className="bg-white dark:bg-gray-800 px-4 py-6 border-b border-gray-100 dark:border-gray-700">
-          {/* 票券類型標籤 + 座位等級 */}
-          <div className="mb-3 flex items-center gap-3 flex-wrap">
+          {/* 票券類型標籤 */}
+          <div className="mb-3">
             <TicketTypeTag type={listing.ticketType} size="md" />
-            {listing.seatGrade && (
-              <span className="inline-flex items-center px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-full">
-                {t('seatGradeLabel')}: {listing.seatGrade}
-              </span>
-            )}
           </div>
 
           {/* 活動名稱 */}
@@ -340,68 +339,94 @@ export default function ListingDetailPage() {
           </div>
         </div>
 
-        {/* 價格資訊 / 換票資訊 */}
+        {/* 票種資訊 */}
         <div className="px-4 py-4">
           <Card>
-            {isExchangeMode ? (
-              /* 換票模式 */
-              <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <ArrowLeftRight className="w-5 h-5 text-orange-500" />
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('exchangeInfo')}</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <Ticket className="w-5 h-5 text-indigo-500" />
+              {t('ticketInfo')}
+            </h3>
+
+            <div className="space-y-3">
+              {/* 座位等級 */}
+              {listing.seatGrade && (
+                <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
+                  <span className="text-gray-500 dark:text-gray-400">{t('seatGradeLabel')}</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{listing.seatGrade}</span>
                 </div>
+              )}
 
-                {/* 想換的活動 */}
-                {listing.exchangeEventName && (
-                  <div className="mb-3">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('wantToExchange')}</p>
-                    <p className="font-medium text-gray-900 dark:text-gray-100">{listing.exchangeEventName}</p>
-                  </div>
-                )}
-
-                {/* 想換的票種 */}
-                {listing.exchangeSeatGrade && (
-                  <div className="mb-3">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('wantSeatGrade')}</p>
-                    <p className="font-medium text-gray-900 dark:text-gray-100">
-                      {listing.exchangeSeatGrade === 'any' ? tCreate('anyGrade') : listing.exchangeSeatGrade}
-                    </p>
-                  </div>
-                )}
-
-                {/* 補貼資訊 */}
-                {(listing.subsidyAmount !== undefined && listing.subsidyAmount > 0) && (
-                  <div className="bg-orange-50 dark:bg-orange-900/30 rounded-lg p-3 mt-3">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Banknote className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-                      <p className="text-sm font-medium text-orange-800 dark:text-orange-300">{t('subsidyInfo')}</p>
-                    </div>
-                    <p className="text-orange-700 dark:text-orange-300">
-                      {getSubsidyDirectionLabel(listing.subsidyDirection)}: ¥{listing.subsidyAmount.toLocaleString()}
-                    </p>
-                  </div>
-                )}
-
-                {/* 持有票券原價 */}
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-sm text-gray-600 dark:text-gray-300 mt-3">
-                  <p>{t('myTicketPrice')}: ¥{listing.originalPriceJPY.toLocaleString()}</p>
-                </div>
+              {/* 幾人票 */}
+              <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
+                <span className="text-gray-500 dark:text-gray-400">{t('ticketCountType')}</span>
+                <span className="font-medium text-gray-900 dark:text-gray-100">
+                  {listing.ticketCountType === 'duo' ? t('duoTicket') : t('soloTicket')}
+                </span>
               </div>
-            ) : (
-              /* 一般模式：價格資訊 */
-              <>
-                <div className="mb-4">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('price')}</p>
-                  <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
-                    ¥{listing.askingPriceJPY.toLocaleString()}
-                  </p>
-                </div>
 
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-sm text-gray-600 dark:text-gray-300">
-                  <p>{t('originalPrice')}: ¥{listing.originalPriceJPY.toLocaleString()}</p>
-                </div>
-              </>
-            )}
+              {/* 票種類型 */}
+              <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
+                <span className="text-gray-500 dark:text-gray-400">{t('ticketTypeLabel')}</span>
+                <TicketTypeTag type={listing.ticketType} size="sm" />
+              </div>
+
+              {isExchangeMode ? (
+                /* 換票模式 */
+                <>
+                  {/* 想換的活動 */}
+                  {listing.exchangeEventName && (
+                    <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
+                      <span className="text-gray-500 dark:text-gray-400">{t('wantToExchange')}</span>
+                      <span className="font-medium text-gray-900 dark:text-gray-100 text-right max-w-[200px] truncate">{listing.exchangeEventName}</span>
+                    </div>
+                  )}
+
+                  {/* 想換的票種 */}
+                  {listing.exchangeSeatGrade && (
+                    <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
+                      <span className="text-gray-500 dark:text-gray-400">{t('wantSeatGrade')}</span>
+                      <span className="font-medium text-gray-900 dark:text-gray-100">
+                        {listing.exchangeSeatGrade === 'any' ? tCreate('anyGrade') : listing.exchangeSeatGrade}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* 補貼資訊 */}
+                  {(listing.subsidyAmount !== undefined && listing.subsidyAmount > 0) && (
+                    <div className="bg-orange-50 dark:bg-orange-900/30 rounded-lg p-3 mt-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Banknote className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                          <span className="text-sm text-orange-800 dark:text-orange-300">{t('subsidyInfo')}</span>
+                        </div>
+                        <span className="font-bold text-orange-700 dark:text-orange-300">
+                          {getSubsidyDirectionLabel(listing.subsidyDirection)}: ¥{listing.subsidyAmount.toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 持有票券原價 */}
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mt-2 text-sm text-gray-600 dark:text-gray-300">
+                    <p>{t('myTicketPrice')}: ¥{listing.originalPriceJPY.toLocaleString()}</p>
+                  </div>
+                </>
+              ) : (
+                /* 一般模式：希望價格 */
+                <>
+                  <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
+                    <span className="text-gray-500 dark:text-gray-400">{t('askingPrice')}</span>
+                    <span className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
+                      ¥{listing.askingPriceJPY.toLocaleString()}
+                    </span>
+                  </div>
+
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-sm text-gray-600 dark:text-gray-300">
+                    <p>{t('originalPrice')}: ¥{listing.originalPriceJPY.toLocaleString()}</p>
+                  </div>
+                </>
+              )}
+            </div>
           </Card>
         </div>
 
@@ -437,13 +462,31 @@ export default function ListingDetailPage() {
                 <Avatar src={host.customAvatarUrl || host.avatarUrl} size="lg" />
                 <div className="flex-1">
                   <p className="font-medium text-gray-900 dark:text-gray-100">{host.username}</p>
-                  <StarRating
-                    value={host.rating}
-                    readonly
-                    size="sm"
-                    showValue
-                    totalReviews={host.reviewCount}
-                  />
+                  {/* 評價 - 可點擊跳轉 */}
+                  <Link href={`/reviews/${host.id}`} className="inline-block hover:opacity-80 transition-opacity">
+                    <StarRating
+                      value={host.rating}
+                      readonly
+                      size="sm"
+                      showValue
+                      totalReviews={host.reviewCount}
+                    />
+                  </Link>
+                  {/* 國籍和語言 */}
+                  <div className="flex flex-wrap gap-2 mt-2 text-sm text-gray-600 dark:text-gray-400">
+                    {listing.hostNationality && (
+                      <span className="inline-flex items-center gap-1">
+                        <Globe className="w-3.5 h-3.5" />
+                        {listing.hostNationality}
+                      </span>
+                    )}
+                    {listing.hostLanguages && listing.hostLanguages.length > 0 && (
+                      <span className="inline-flex items-center gap-1">
+                        <Languages className="w-3.5 h-3.5" />
+                        {listing.hostLanguages.join(', ')}
+                      </span>
+                    )}
+                  </div>
                   {/* 已申請後顯示聯絡方式圖示 */}
                   {hasApplied && (host.showLine || host.showDiscord) && (
                     <div className="flex items-center gap-2 mt-2">
