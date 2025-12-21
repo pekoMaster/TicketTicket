@@ -37,6 +37,24 @@ export async function GET() {
       return NextResponse.json({ error: sentError.message }, { status: 500 });
     }
 
+    // 獲取已完成的對話（用於過濾）
+    const { data: completedConversations } = await supabaseAdmin
+      .from('conversations')
+      .select('listing_id, guest_id')
+      .eq('guest_id', userId)
+      .not('host_confirmed_at', 'is', null)
+      .not('guest_confirmed_at', 'is', null);
+
+    // 建立已完成的 listing_id 集合
+    const completedListingIds = new Set(
+      (completedConversations || []).map(c => c.listing_id)
+    );
+
+    // 過濾掉已完成的申請
+    const filteredSentApplications = (sentApplications || []).filter(
+      app => !completedListingIds.has(app.listing_id)
+    );
+
     // 獲取用戶收到的申請（針對自己的刊登）
     // 先獲取用戶的所有刊登 ID
     const { data: userListings } = await supabaseAdmin
@@ -67,7 +85,7 @@ export async function GET() {
     }
 
     return NextResponse.json({
-      sent: sentApplications || [],
+      sent: filteredSentApplications,
       received: receivedApplications || [],
     });
   } catch (error) {
