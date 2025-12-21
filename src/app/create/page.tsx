@@ -99,16 +99,14 @@ export default function CreateListingPage() {
     return Array.from(grades);
   }, [selectedEvent]);
 
-  // 換票用：獲取所有活動的所有可用座位等級
-  const allAvailableSeatGrades = useMemo(() => {
-    const allGrades = new Set<string>();
-    events.forEach(event => {
-      event.ticketPriceTiers?.forEach(tier => {
-        allGrades.add(tier.seatGrade);
-      });
-    });
-    return Array.from(allGrades);
-  }, [events]);
+  // 換票用：根據選擇的「想換的活動」獲取該活動的可用座位等級
+  const exchangeEventSeatGrades = useMemo(() => {
+    if (!exchangeEventName) return [];
+    const targetEvent = events.find(e => e.name === exchangeEventName);
+    if (!targetEvent?.ticketPriceTiers) return [];
+    const grades = new Set(targetEvent.ticketPriceTiers.map(t => t.seatGrade));
+    return Array.from(grades);
+  }, [events, exchangeEventName]);
 
   // 從活動取得可用的票種類型（根據座位等級）
   const availableTicketCountTypes = useMemo(() => {
@@ -602,7 +600,10 @@ export default function CreateListingPage() {
                   placeholder={t('selectExchangeEvent', { defaultValue: '選擇想換的活動' })}
                   options={eventOptions}
                   value={exchangeEventName}
-                  onChange={setExchangeEventName}
+                  onChange={(val) => {
+                    setExchangeEventName(val);
+                    setExchangeSeatGrade(''); // 重置票種等級選擇
+                  }}
                   searchable
                   required
                 />
@@ -627,7 +628,7 @@ export default function CreateListingPage() {
                       {t('anyGrade', { defaultValue: '任意' })}
                     </button>
                     {/* 動態票種等級按鈕 */}
-                    {allAvailableSeatGrades.map((grade) => (
+                    {exchangeEventSeatGrades.map((grade: string) => (
                       <button
                         key={grade}
                         type="button"
