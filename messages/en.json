@@ -62,7 +62,8 @@
     "explore": "Explore",
     "create": "Post",
     "messages": "Messages",
-    "profile": "Profile"
+    "profile": "Profile",
+    "help": "Help"
   },
   "language": {
     "title": "Select Language",
@@ -652,5 +653,39 @@
     "reviews": "reviews",
     "successfulMeetups": "successful meetups",
     "linkedAccounts": "Linked Accounts"
+  },
+  "help": {
+    "title": "How to Use",
+    "intro": "Welcome to TicketTicket! A ticket matching platform designed for VTuber fans.",
+    "browsing": {
+      "title": "Browse Events",
+      "step1": "Browse all listed tickets on the homepage. Use search and filter to find the events you're looking for.",
+      "step2": "Tap a card to view details including date, venue, seat grade, and pricing.",
+      "step3": "On desktop, you can switch between card and list view. Mobile shows card view only."
+    },
+    "listing": {
+      "title": "List Tickets",
+      "step1": "Tap 'Post' to create a listing. Choose 'Looking for Tickets', 'Offering Tickets', or 'Exchange'.",
+      "step2": "Fill in event info, seat grade, payment method, and other details.",
+      "step3": "After posting, wait for applications from other users. You can edit or close your listing anytime."
+    },
+    "messaging": {
+      "title": "Connect & Chat",
+      "step1": "Found an interesting listing? Tap 'Apply' to send a companion request.",
+      "step2": "The host will be notified and can accept or decline. Once accepted, you can start chatting.",
+      "step3": "Confirm meeting time, location, and other important details in the chat."
+    },
+    "completing": {
+      "title": "Complete Transaction",
+      "step1": "Meet in person on event day, verify tickets before payment. Host confirms ticket given, applicant confirms receipt to complete verification.",
+      "step2": "After completing the transaction, leave a review to help other users build trust.",
+      "step3": "Reviews appear on profile pages. Good reviews help with future matchmaking."
+    },
+    "safety": {
+      "title": "Safety Reminders",
+      "point1": "This platform only provides matching services and does not handle money transactions. Verify tickets in person before paying.",
+      "point2": "Avoid online advance transfers to prevent fraud. Report suspicious activity immediately.",
+      "point3": "Some events have companion identity restrictions. Always verify and follow the organizer's rules beforehand."
+    }
   }
 }

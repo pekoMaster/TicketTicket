@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Home, PlusCircle, MessageCircle, User, Ticket } from 'lucide-react';
+import { Home, PlusCircle, MessageCircle, User, Ticket, HelpCircle } from 'lucide-react';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -17,6 +17,7 @@ export default function SideNav() {
     { href: '/create', label: t('create'), icon: PlusCircle },
     { href: '/messages', label: t('messages'), icon: MessageCircle, showBadge: hasUnread },
     { href: '/profile', label: t('profile'), icon: User },
+    { href: '/help', label: t('help'), icon: HelpCircle },
   ];
 
   // 在聊天頁面等特定頁面隱藏導覽
