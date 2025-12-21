@@ -10,7 +10,8 @@ import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
 import Tag from '@/components/ui/Tag';
 import ReviewModal from '@/components/features/ReviewModal';
-import { Send, Calendar, MapPin, Clock, Ticket, Tag as TagIcon, Banknote, Loader2, Languages, CheckCircle, Circle, Star } from 'lucide-react';
+import ReportModal from '@/components/ui/ReportModal';
+import { Send, Calendar, MapPin, Clock, Ticket, Tag as TagIcon, Banknote, Loader2, Languages, CheckCircle, Circle, Star, Flag } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -82,6 +83,7 @@ export default function ChatPage() {
   const [translatingIds, setTranslatingIds] = useState<Set<string>>(new Set());
   const [isConfirming, setIsConfirming] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { locale } = useLanguage();
 
@@ -369,6 +371,17 @@ export default function ChatPage() {
       <Header
         title={otherUser ? tCommon('chatWith', { name: otherUser.username }) : tCommon('chat')}
         showBack
+        rightAction={
+          otherUser && (
+            <button
+              onClick={() => setShowReportModal(true)}
+              className="p-2 text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
+              title={tCommon('report')}
+            >
+              <Flag className="w-5 h-5" />
+            </button>
+          )
+        }
       />
 
       <div className="flex-1 flex flex-col pt-14">
@@ -655,6 +668,16 @@ export default function ChatPage() {
         reviewableUsers={[otherUser]}
         isHost={conversation.isHost}
         onSubmitSuccess={() => setShowReviewModal(false)}
+      />
+
+      {/* 檢舉彈窗 */}
+      <ReportModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        reportedUserId={otherUser.id}
+        reportedUserName={otherUser.username}
+        conversationId={conversationId}
+        listingId={conversation.listing_id}
       />
     </div>
   );

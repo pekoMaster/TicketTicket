@@ -206,10 +206,9 @@ export const TICKET_TYPE_INFO: Record<TicketType, {
   },
   main_ticket_transfer: {
     label: '母票轉讓',
-    description: '轉讓主票，需提供持票帳號給對方或見面時借出手機',
-    warning: '須提供 ZAIKO 帳號或現場借出手機入場',
+    description: '轉讓主票，無法線上讓渡，請自行連絡同行辦法',
+    warning: '轉讓主票為違反 ZAIKO 與相關舉辦單位之行為，本網站不負責任何換票後的後果',
     color: 'bg-purple-100 text-purple-800',
-    disabled: true,  // 暫時停用
   },
   sub_ticket_transfer: {
     label: '子票轉讓',
@@ -300,3 +299,50 @@ export function calculateMaxPrice(originalPriceJPY: number, totalSlots: number):
 export function validatePrice(askingPrice: number, maxPrice: number): boolean {
   return askingPrice <= maxPrice;
 }
+
+// 檢舉類型
+export type ReportType = 'scalper' | 'ticket_issue' | 'fraud' | 'payment_issue';
+
+// 檢舉狀態
+export type ReportStatus = 'pending' | 'investigating' | 'resolved' | 'dismissed';
+
+// 檢舉
+export interface Report {
+  id: string;
+  reporterId: string;
+  reportedUserId: string;
+  conversationId?: string;
+  listingId?: string;
+  reportType: ReportType;
+  reason: string;
+  status: ReportStatus;
+  adminNotes?: string;
+  resolvedBy?: string;
+  createdAt: string;
+  resolvedAt?: string;
+  // 關聯資料（從 API 載入時附帶）
+  reporter?: User;
+  reportedUser?: User;
+}
+
+// 檢舉類型資訊
+export const REPORT_TYPE_INFO: Record<ReportType, {
+  label: string;
+  color: string;
+}> = {
+  scalper: { label: '疑似黃牛', color: 'bg-red-100 text-red-800' },
+  ticket_issue: { label: '票券相關', color: 'bg-orange-100 text-orange-800' },
+  fraud: { label: '疑似惡意詐欺', color: 'bg-purple-100 text-purple-800' },
+  payment_issue: { label: '金額交易相關', color: 'bg-yellow-100 text-yellow-800' },
+};
+
+// 檢舉狀態資訊
+export const REPORT_STATUS_INFO: Record<ReportStatus, {
+  label: string;
+  color: string;
+}> = {
+  pending: { label: '待處理', color: 'bg-yellow-100 text-yellow-800' },
+  investigating: { label: '處理中', color: 'bg-blue-100 text-blue-800' },
+  resolved: { label: '已解決', color: 'bg-green-100 text-green-800' },
+  dismissed: { label: '已駁回', color: 'bg-gray-100 text-gray-800' },
+};

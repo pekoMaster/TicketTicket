@@ -324,8 +324,8 @@
     "findCompanionDesc": "尋找一起入場的夥伴，費用均攤",
     "findCompanionWarning": "必須選擇二人票",
     "mainTicketTransfer": "母票轉讓",
-    "mainTicketTransferDesc": "轉讓主票，需提供持票帳號或借出手機",
-    "mainTicketTransferWarning": "須提供 ZAIKO 帳號或現場借出手機入場",
+    "mainTicketTransferDesc": "轉讓主票，無法線上讓渡，請自行連絡同行辦法",
+    "mainTicketTransferWarning": "轉讓主票為違反 ZAIKO 與相關舉辦單位之行為，本網站不負責任何換票後的後果",
     "subTicketTransfer": "子票轉讓",
     "subTicketTransferDesc": "轉讓子票，對方需持有並可啟用 ZAIKO",
     "subTicketTransferWarning": "請確認對方已安裝 ZAIKO 並可接收票券",
@@ -559,6 +559,48 @@
     "ratingDistribution": "評分分布",
     "page": "第 {current} 頁，共 {total} 頁",
     "notFound": "找不到用戶"
+  },
+  "report": {
+    "title": "檢舉用戶",
+    "type": "檢舉類型",
+    "types": {
+      "scalper": "疑似黃牛",
+      "ticket_issue": "票券相關",
+      "fraud": "疑似惡意詐欺",
+      "payment_issue": "金額交易相關"
+    },
+    "reason": "詳細說明",
+    "reasonPlaceholder": "請描述具體情況...",
+    "submit": "提交檢舉",
+    "submitting": "提交中...",
+    "success": "檢舉已提交",
+    "error": "提交失敗，請稍後再試",
+    "alreadyReported": "您已檢舉過此用戶"
+  },
+  "adminReports": {
+    "title": "檢舉管理",
+    "reporter": "檢舉人",
+    "reported": "被檢舉人",
+    "type": "類型",
+    "status": "狀態",
+    "statuses": {
+      "pending": "待處理",
+      "investigating": "處理中",
+      "resolved": "已解決",
+      "dismissed": "已駁回"
+    },
+    "sendWarning": "發送警告",
+    "blacklist": "封鎖用戶",
+    "resolve": "標記已處理",
+    "dismiss": "駁回",
+    "conversation": "對話記錄",
+    "listingInfo": "刊登資訊",
+    "adminNotes": "管理員備註",
+    "adminNotesPlaceholder": "輸入備註...",
+    "noReports": "目前沒有檢舉",
+    "detail": "檢舉詳情",
+    "copyEmail": "複製信箱",
+    "emailCopied": "信箱已複製"
   },
   "theme": {
     "title": "外觀主題",

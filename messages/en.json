@@ -324,8 +324,8 @@
     "findCompanionDesc": "Find a partner to enter together, split the cost",
     "findCompanionWarning": "Must select duo ticket",
     "mainTicketTransfer": "Main Ticket Transfer",
-    "mainTicketTransferDesc": "Transfer main ticket, need to provide account or lend phone",
-    "mainTicketTransferWarning": "Need to provide ZAIKO account or lend phone at venue",
+    "mainTicketTransferDesc": "Transfer main ticket, cannot transfer online, please arrange your own method",
+    "mainTicketTransferWarning": "Main ticket transfer violates ZAIKO and event organizer policies. This website is not responsible for any consequences after the transfer",
     "subTicketTransfer": "Sub Ticket Transfer",
     "subTicketTransferDesc": "Transfer sub ticket, recipient must have and activate ZAIKO",
     "subTicketTransferWarning": "Please confirm recipient has ZAIKO installed and can receive ticket",
@@ -559,6 +559,48 @@
     "ratingDistribution": "Rating Distribution",
     "page": "Page {current} of {total}",
     "notFound": "User not found"
+  },
+  "report": {
+    "title": "Report User",
+    "type": "Report Type",
+    "types": {
+      "scalper": "Suspected Scalper",
+      "ticket_issue": "Ticket Issue",
+      "fraud": "Suspected Fraud",
+      "payment_issue": "Payment Issue"
+    },
+    "reason": "Details",
+    "reasonPlaceholder": "Please describe the situation...",
+    "submit": "Submit Report",
+    "submitting": "Submitting...",
+    "success": "Report submitted",
+    "error": "Failed to submit, please try again",
+    "alreadyReported": "You have already reported this user"
+  },
+  "adminReports": {
+    "title": "Report Management",
+    "reporter": "Reporter",
+    "reported": "Reported User",
+    "type": "Type",
+    "status": "Status",
+    "statuses": {
+      "pending": "Pending",
+      "investigating": "Investigating",
+      "resolved": "Resolved",
+      "dismissed": "Dismissed"
+    },
+    "sendWarning": "Send Warning",
+    "blacklist": "Block User",
+    "resolve": "Mark Resolved",
+    "dismiss": "Dismiss",
+    "conversation": "Conversation",
+    "listingInfo": "Listing Info",
+    "adminNotes": "Admin Notes",
+    "adminNotesPlaceholder": "Enter notes...",
+    "noReports": "No reports at this time",
+    "detail": "Report Details",
+    "copyEmail": "Copy Email",
+    "emailCopied": "Email copied"
   },
   "theme": {
     "title": "Theme",

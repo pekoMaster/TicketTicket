@@ -324,8 +324,8 @@
     "findCompanionDesc": "一緒に入場する仲間を探す、費用は折半",
     "findCompanionWarning": "二人チケット必須",
     "mainTicketTransfer": "親チケット譲渡",
-    "mainTicketTransferDesc": "親チケットを譲渡、アカウント提供またはスマホ貸出が必要",
-    "mainTicketTransferWarning": "ZAIKOアカウントの提供または現地でスマホ貸出が必要",
+    "mainTicketTransferDesc": "親チケットを譲渡、オンライン譲渡不可、同行方法は自己連絡してください",
+    "mainTicketTransferWarning": "親チケット譲渡はZAIKOおよび関連主催者の規約に違反する行為です。当サイトは交換後の結果について一切責任を負いません",
     "subTicketTransfer": "子チケット譲渡",
     "subTicketTransferDesc": "子チケットを譲渡、相手はZAIKOを持っている必要があります",
     "subTicketTransferWarning": "相手がZAIKOをインストールし、チケットを受け取れることを確認してください",
@@ -559,6 +559,48 @@
     "ratingDistribution": "評価分布",
     "page": "{current}ページ / {total}ページ",
     "notFound": "ユーザーが見つかりません"
+  },
+  "report": {
+    "title": "ユーザーを通報",
+    "type": "通報タイプ",
+    "types": {
+      "scalper": "転売屋の疑い",
+      "ticket_issue": "チケット関連",
+      "fraud": "詐欺の疑い",
+      "payment_issue": "金銭取引関連"
+    },
+    "reason": "詳細説明",
+    "reasonPlaceholder": "具体的な状況を説明してください...",
+    "submit": "通報を送信",
+    "submitting": "送信中...",
+    "success": "通報が送信されました",
+    "error": "送信に失敗しました。後でもう一度お試しください",
+    "alreadyReported": "このユーザーは既に通報済みです"
+  },
+  "adminReports": {
+    "title": "通報管理",
+    "reporter": "通報者",
+    "reported": "被通報者",
+    "type": "タイプ",
+    "status": "ステータス",
+    "statuses": {
+      "pending": "保留中",
+      "investigating": "調査中",
+      "resolved": "解決済み",
+      "dismissed": "却下"
+    },
+    "sendWarning": "警告を送信",
+    "blacklist": "ユーザーをブロック",
+    "resolve": "解決済みにする",
+    "dismiss": "却下",
+    "conversation": "会話記録",
+    "listingInfo": "投稿情報",
+    "adminNotes": "管理者メモ",
+    "adminNotesPlaceholder": "メモを入力...",
+    "noReports": "現在通報はありません",
+    "detail": "通報詳細",
+    "copyEmail": "メールをコピー",
+    "emailCopied": "メールがコピーされました"
   },
   "theme": {
     "title": "テーマ",

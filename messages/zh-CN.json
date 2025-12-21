@@ -324,8 +324,8 @@
     "findCompanionDesc": "寻找一起入场的伙伴，费用均摊",
     "findCompanionWarning": "必须选择二人票",
     "mainTicketTransfer": "母票转让",
-    "mainTicketTransferDesc": "转让主票，需提供持票账号或借出手机",
-    "mainTicketTransferWarning": "须提供 ZAIKO 账号或现场借出手机入场",
+    "mainTicketTransferDesc": "转让主票，无法在线让渡，请自行联系同行办法",
+    "mainTicketTransferWarning": "转让主票为违反 ZAIKO 与相关举办单位之行为，本网站不负责任何换票后的后果",
     "subTicketTransfer": "子票转让",
     "subTicketTransferDesc": "转让子票，对方需持有并可启用 ZAIKO",
     "subTicketTransferWarning": "请确认对方已安装 ZAIKO 并可接收票券",
@@ -559,6 +559,48 @@
     "ratingDistribution": "评分分布",
     "page": "第 {current} 页，共 {total} 页",
     "notFound": "找不到用户"
+  },
+  "report": {
+    "title": "举报用户",
+    "type": "举报类型",
+    "types": {
+      "scalper": "疑似黄牛",
+      "ticket_issue": "票券相关",
+      "fraud": "疑似恶意诈欺",
+      "payment_issue": "金额交易相关"
+    },
+    "reason": "详细说明",
+    "reasonPlaceholder": "请描述具体情况...",
+    "submit": "提交举报",
+    "submitting": "提交中...",
+    "success": "举报已提交",
+    "error": "提交失败，请稍后再试",
+    "alreadyReported": "您已举报过此用户"
+  },
+  "adminReports": {
+    "title": "举报管理",
+    "reporter": "举报人",
+    "reported": "被举报人",
+    "type": "类型",
+    "status": "状态",
+    "statuses": {
+      "pending": "待处理",
+      "investigating": "处理中",
+      "resolved": "已解决",
+      "dismissed": "已驳回"
+    },
+    "sendWarning": "发送警告",
+    "blacklist": "封锁用户",
+    "resolve": "标记已处理",
+    "dismiss": "驳回",
+    "conversation": "对话记录",
+    "listingInfo": "刊登信息",
+    "adminNotes": "管理员备注",
+    "adminNotesPlaceholder": "输入备注...",
+    "noReports": "目前没有举报",
+    "detail": "举报详情",
+    "copyEmail": "复制邮箱",
+    "emailCopied": "邮箱已复制"
   },
   "theme": {
     "title": "外观主题",

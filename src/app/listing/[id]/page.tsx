@@ -37,8 +37,10 @@ import {
   ShieldCheck,
   Globe,
   Languages,
+  Flag,
 } from 'lucide-react';
 import ReviewModal from '@/components/features/ReviewModal';
+import ReportModal from '@/components/ui/ReportModal';
 
 export default function ListingDetailPage() {
   const params = useParams();
@@ -70,6 +72,7 @@ export default function ListingDetailPage() {
 
   // Review states
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
   const [canReview, setCanReview] = useState(false);
   const [isHostForReview, setIsHostForReview] = useState(false);
   const [reviewableUsers, setReviewableUsers] = useState<Array<{
@@ -457,7 +460,18 @@ export default function ListingDetailPage() {
         {host && (
           <div className="px-4 pb-4">
             <Card>
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('host')}</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('host')}</h3>
+                {!isHost && session?.user && (
+                  <button
+                    onClick={() => setShowReportModal(true)}
+                    className="p-1.5 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                    title={t('report')}
+                  >
+                    <Flag className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
               <div className="flex items-center gap-3">
                 <Avatar src={host.customAvatarUrl || host.avatarUrl} size="lg" />
                 <div className="flex-1">
@@ -738,6 +752,17 @@ export default function ListingDetailPage() {
           ))}
         </div>
       </Modal>
+
+      {/* 檢舉彈窗 */}
+      {host && (
+        <ReportModal
+          isOpen={showReportModal}
+          onClose={() => setShowReportModal(false)}
+          reportedUserId={host.id}
+          reportedUserName={host.username}
+          listingId={listing.id}
+        />
+      )}
     </div>
   );
 }
