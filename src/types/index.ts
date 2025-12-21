@@ -1,8 +1,19 @@
+// 用戶角色
+export type UserRole = 'user' | 'sub_admin' | 'super_admin';
+
+// 角色層級（用於權限比較）
+export const ROLE_HIERARCHY: Record<UserRole, number> = {
+  user: 1,
+  sub_admin: 2,
+  super_admin: 3,
+};
+
 // 用戶型別
 export interface User {
   id: string;
   username: string;
   email: string;
+  role: UserRole;                   // 用戶角色
   avatarUrl?: string;
   customAvatarUrl?: string;        // 用戶上傳的自訂頭像
   rating: number;

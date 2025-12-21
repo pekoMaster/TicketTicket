@@ -84,6 +84,7 @@ function convertApiListingToListing(apiListing: ApiListing): Listing {
       id: apiListing.host.id,
       email: '',
       username: apiListing.host.username,
+      role: 'user' as const,
       avatarUrl: apiListing.host.avatar_url || '',
       customAvatarUrl: apiListing.host.custom_avatar_url,
       rating: apiListing.host.rating,

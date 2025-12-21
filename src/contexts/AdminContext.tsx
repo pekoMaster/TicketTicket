@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { HololiveEvent } from '@/types';
+import { HololiveEvent, UserRole } from '@/types';
 
 // API 回傳的活動類型
 interface ApiEvent {
@@ -59,21 +59,24 @@ interface AdminContextType {
   deleteEvent: (id: string) => Promise<void>;
   getEvent: (id: string) => HololiveEvent | undefined;
 
-  // 管理員驗證（現在透過 OAuth）
+  // 管理員驗證
   isAuthenticated: boolean;
-  login: (password: string) => boolean;
+  isLoggingIn: boolean;
+  role: UserRole | null;
+  isSuperAdmin: boolean;
+  login: (password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
-// 管理員密碼（保留舊版兼容）
-const ADMIN_PASSWORD = 'hololive2025';
-
 export function AdminProvider({ children }: { children: ReactNode }) {
   const [events, setEvents] = useState<HololiveEvent[]>([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [role, setRole] = useState<UserRole | null>(null);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
   // 獲取活動列表
   const fetchEvents = useCallback(async () => {
@@ -99,7 +102,14 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
     // 檢查管理員登入狀態
     const authStatus = sessionStorage.getItem('admin-auth');
-    setIsAuthenticated(authStatus === 'true');
+    const savedRole = sessionStorage.getItem('admin-role') as UserRole | null;
+    const savedIsSuperAdmin = sessionStorage.getItem('admin-is-super') === 'true';
+
+    if (authStatus === 'true' && savedRole) {
+      setIsAuthenticated(true);
+      setRole(savedRole);
+      setIsSuperAdmin(savedIsSuperAdmin);
+    }
   }, [fetchEvents]);
 
   // 新增活動
@@ -208,20 +218,49 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     return events.find((e) => e.id === id);
   };
 
-  // 登入
-  const login = (password: string): boolean => {
-    if (password === ADMIN_PASSWORD) {
+  // 登入 - 透過 API 驗證密碼和角色
+  const login = async (password: string): Promise<{ success: boolean; error?: string }> => {
+    setIsLoggingIn(true);
+    try {
+      const response = await fetch('/api/admin/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return { success: false, error: data.error || '驗證失敗' };
+      }
+
+      // 設定狀態
       setIsAuthenticated(true);
+      setRole(data.role);
+      setIsSuperAdmin(data.isSuperAdmin);
+
+      // 儲存到 sessionStorage
       sessionStorage.setItem('admin-auth', 'true');
-      return true;
+      sessionStorage.setItem('admin-role', data.role);
+      sessionStorage.setItem('admin-is-super', data.isSuperAdmin ? 'true' : 'false');
+
+      return { success: true };
+    } catch (error) {
+      console.error('Login error:', error);
+      return { success: false, error: '網路錯誤，請稍後再試' };
+    } finally {
+      setIsLoggingIn(false);
     }
-    return false;
   };
 
   // 登出
   const logout = () => {
     setIsAuthenticated(false);
+    setRole(null);
+    setIsSuperAdmin(false);
     sessionStorage.removeItem('admin-auth');
+    sessionStorage.removeItem('admin-role');
+    sessionStorage.removeItem('admin-is-super');
   };
 
   return (
@@ -235,6 +274,9 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         deleteEvent,
         getEvent,
         isAuthenticated,
+        isLoggingIn,
+        role,
+        isSuperAdmin,
         login,
         logout,
       }}

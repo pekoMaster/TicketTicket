@@ -19,7 +19,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { isAuthenticated, login, logout } = useAdmin();
+  const { isAuthenticated, isLoggingIn, role, isSuperAdmin, login, logout } = useAdmin();
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -34,14 +34,15 @@ export default function AdminLayout({
     setSidebarOpen(false);
   }, [pathname]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (login(password)) {
+    const result = await login(password);
+    if (result.success) {
       setPassword('');
     } else {
-      setError('密碼錯誤');
+      setError(result.error || '登入失敗');
     }
   };
 
@@ -87,9 +88,15 @@ export default function AdminLayout({
 
               <button
                 type="submit"
-                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition-colors"
+                disabled={isLoggingIn}
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-800 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
               >
-                登入
+                {isLoggingIn ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    驗證中...
+                  </>
+                ) : '登入'}
               </button>
             </form>
 
@@ -246,6 +253,14 @@ export default function AdminLayout({
               {NAV_ITEMS.find((item) => pathname.startsWith(item.href))?.label || '管理後台'}
             </h2>
             <div className="flex items-center gap-4">
+              {/* 角色徽章 */}
+              <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                isSuperAdmin
+                  ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+                  : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+              }`}>
+                {isSuperAdmin ? '主管理員' : '副管理員'}
+              </span>
               <Link
                 href="/"
                 className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"

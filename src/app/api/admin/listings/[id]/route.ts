@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { requireAdmin, isAuthError } from '@/lib/auth-helpers';
 
 // PUT /api/admin/listings/[id] - 強制編輯刊登
 export async function PUT(
@@ -7,6 +8,12 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // 驗證管理員權限
+    const authResult = await requireAdmin();
+    if (isAuthError(authResult)) {
+      return NextResponse.json({ error: authResult.error }, { status: authResult.status });
+    }
+
     const { id } = await params;
     const body = await request.json();
     const { updates, notify, notifyMessage } = body;
@@ -95,6 +102,12 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // 驗證管理員權限
+    const authResult = await requireAdmin();
+    if (isAuthError(authResult)) {
+      return NextResponse.json({ error: authResult.error }, { status: authResult.status });
+    }
+
     const { id } = await params;
     const body = await request.json();
     const { reason, notify, notifyMessage } = body;

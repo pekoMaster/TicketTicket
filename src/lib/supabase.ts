@@ -51,6 +51,7 @@ export interface DbUser {
   is_verified: boolean;
   provider: string;
   provider_id: string;
+  role: 'user' | 'sub_admin' | 'super_admin';  // 用戶角色
   created_at: string;
   updated_at: string;
 }

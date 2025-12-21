@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { requireAdmin, isAuthError } from '@/lib/auth-helpers';
 
 // POST /api/admin/users/[id]/blacklist - 加入黑名單
 export async function POST(
@@ -7,6 +8,12 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // 驗證管理員權限
+    const authResult = await requireAdmin();
+    if (isAuthError(authResult)) {
+      return NextResponse.json({ error: authResult.error }, { status: authResult.status });
+    }
+
     const { id } = await params;
     const body = await request.json();
     const { reason } = body;
@@ -75,6 +82,12 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // 驗證管理員權限
+    const authResult = await requireAdmin();
+    if (isAuthError(authResult)) {
+      return NextResponse.json({ error: authResult.error }, { status: authResult.status });
+    }
+
     const { id } = await params;
 
     // 取得用戶資訊

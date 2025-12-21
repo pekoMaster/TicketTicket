@@ -3,6 +3,8 @@ import Google from "next-auth/providers/google"
 import Line from "next-auth/providers/line"
 import Discord from "next-auth/providers/discord"
 import { supabaseAdmin } from "@/lib/supabase"
+import { INITIAL_SUPER_ADMIN } from "@/lib/auth-helpers"
+import { UserRole } from "@/types"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -51,12 +53,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!existingUser) {
           // 新用戶，插入資料庫
+          // 判斷角色：主管理員 email 自動設為 super_admin，其他為 user
+          const role: UserRole = user.email === INITIAL_SUPER_ADMIN ? 'super_admin' : 'user';
+
           await supabaseAdmin.from('users').insert({
             email: user.email,
             username: user.name || user.email.split('@')[0],
             avatar_url: user.image,
             provider: account.provider,
             provider_id: account.providerAccountId,
+            role,
           });
         } else {
           // 更新頭像和名稱
@@ -83,6 +89,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (token.dbUserId) {
         session.user.dbId = token.dbUserId as string;
       }
+      if (token.role) {
+        session.user.role = token.role as UserRole;
+      }
       return session;
     },
     async jwt({ token, user, account }) {
@@ -93,17 +102,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.provider = account.provider;
         token.providerAccountId = account.providerAccountId;
 
-        // 獲取資料庫中的用戶ID
+        // 獲取資料庫中的用戶ID和角色
         try {
           const { data: dbUser } = await supabaseAdmin
             .from('users')
-            .select('id')
+            .select('id, role')
             .eq('provider', account.provider)
             .eq('provider_id', account.providerAccountId)
             .single();
 
           if (dbUser) {
             token.dbUserId = dbUser.id;
+            token.role = dbUser.role as UserRole;
           }
         } catch (error) {
           console.error('Error fetching user from database:', error);

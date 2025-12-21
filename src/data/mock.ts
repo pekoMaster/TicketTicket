@@ -6,6 +6,7 @@ export const mockUsers: User[] = [
     id: 'current-user',
     username: '我',
     email: 'me@example.com',
+    role: 'user',
     avatarUrl: undefined,
     rating: 0,
     reviewCount: 0,

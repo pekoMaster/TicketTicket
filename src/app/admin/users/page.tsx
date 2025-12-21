@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Search, Pencil, Ban, CheckCircle, ChevronLeft, ChevronRight, Loader2, X, Star, ImageOff } from 'lucide-react';
+import { Search, Pencil, Ban, CheckCircle, ChevronLeft, ChevronRight, Loader2, X, Star, ImageOff, Shield, ShieldOff, Crown, RefreshCw } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
+import { useAdmin } from '@/contexts/AdminContext';
+import { UserRole } from '@/types';
 
 interface User {
   id: string;
@@ -12,6 +14,7 @@ interface User {
   custom_avatar_url: string | null;
   rating: number;
   review_count: number;
+  role: UserRole;
   created_at: string;
   listings_count: number;
   is_blacklisted: boolean;
@@ -25,6 +28,7 @@ interface Pagination {
 }
 
 export default function AdminUsersPage() {
+  const { isSuperAdmin } = useAdmin();
   const [users, setUsers] = useState<User[]>([]);
   const [pagination, setPagination] = useState<Pagination>({ page: 1, limit: 20, total: 0, totalPages: 0 });
   const [isLoading, setIsLoading] = useState(true);
@@ -44,6 +48,15 @@ export default function AdminUsersPage() {
   // 解封確認
   const [unblockModal, setUnblockModal] = useState<{ open: boolean; user: User | null }>({ open: false, user: null });
   const [isUnblocking, setIsUnblocking] = useState(false);
+
+  // 角色管理 Modal（僅主管理員可見）
+  const [roleModal, setRoleModal] = useState<{ open: boolean; user: User | null; action: 'grant' | 'revoke' | 'transfer' }>({
+    open: false,
+    user: null,
+    action: 'grant'
+  });
+  const [transferPassword, setTransferPassword] = useState('');
+  const [isUpdatingRole, setIsUpdatingRole] = useState(false);
 
   const fetchUsers = useCallback(async () => {
     setIsLoading(true);
@@ -179,6 +192,84 @@ export default function AdminUsersPage() {
     });
   };
 
+  // 角色管理
+  const handleRoleChange = async () => {
+    if (!roleModal.user) return;
+    setIsUpdatingRole(true);
+
+    try {
+      let newRole: UserRole;
+      let body: { newRole: UserRole; transferPassword?: string } = { newRole: 'user' };
+
+      switch (roleModal.action) {
+        case 'grant':
+          newRole = 'sub_admin';
+          body = { newRole };
+          break;
+        case 'revoke':
+          newRole = 'user';
+          body = { newRole };
+          break;
+        case 'transfer':
+          newRole = 'super_admin';
+          body = { newRole, transferPassword };
+          break;
+        default:
+          return;
+      }
+
+      const response = await fetch(`/api/admin/users/${roleModal.user.id}/role`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setRoleModal({ open: false, user: null, action: 'grant' });
+        setTransferPassword('');
+        fetchUsers();
+        if (roleModal.action === 'transfer') {
+          alert('站主權限已轉讓，請重新登入');
+          window.location.reload();
+        }
+      } else {
+        alert(data.error || '操作失敗');
+      }
+    } catch (error) {
+      console.error('Error updating role:', error);
+      alert('操作失敗');
+    } finally {
+      setIsUpdatingRole(false);
+    }
+  };
+
+  const getRoleBadge = (role: UserRole) => {
+    switch (role) {
+      case 'super_admin':
+        return (
+          <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300 flex items-center gap-1">
+            <Crown className="w-3 h-3" />
+            主管理員
+          </span>
+        );
+      case 'sub_admin':
+        return (
+          <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 flex items-center gap-1">
+            <Shield className="w-3 h-3" />
+            副管理員
+          </span>
+        );
+      default:
+        return (
+          <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+            一般會員
+          </span>
+        );
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -211,6 +302,15 @@ export default function AdminUsersPage() {
             <Ban className="w-4 h-4 inline mr-2" />
             {showBlacklisted ? '顯示全部' : '只看封鎖'}
           </button>
+
+          <button
+            onClick={fetchUsers}
+            disabled={isLoading}
+            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
+          >
+            <RefreshCw className={`w-4 h-4 inline mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+            刷新
+          </button>
         </div>
       </div>
 
@@ -231,6 +331,7 @@ export default function AdminUsersPage() {
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">會員</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">角色</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">評分</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">刊登數</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">狀態</th>
@@ -254,6 +355,9 @@ export default function AdminUsersPage() {
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">
                       {user.email}
+                    </td>
+                    <td className="px-4 py-4">
+                      {getRoleBadge(user.role)}
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-1">
@@ -308,6 +412,35 @@ export default function AdminUsersPage() {
                           >
                             <Ban className="w-4 h-4" />
                           </button>
+                        )}
+                        {/* 角色管理按鈕（僅主管理員可見，且不能編輯自己和其他主管理員）*/}
+                        {isSuperAdmin && user.role !== 'super_admin' && (
+                          <>
+                            {user.role === 'user' ? (
+                              <button
+                                onClick={() => setRoleModal({ open: true, user, action: 'grant' })}
+                                className="p-2 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-lg transition-colors"
+                                title="授予副管理員"
+                              >
+                                <Shield className="w-4 h-4" />
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => setRoleModal({ open: true, user, action: 'revoke' })}
+                                className="p-2 text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                                title="移除副管理員"
+                              >
+                                <ShieldOff className="w-4 h-4" />
+                              </button>
+                            )}
+                            <button
+                              onClick={() => setRoleModal({ open: true, user, action: 'transfer' })}
+                              className="p-2 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 rounded-lg transition-colors"
+                              title="轉讓站主"
+                            >
+                              <Crown className="w-4 h-4" />
+                            </button>
+                          </>
                         )}
                       </div>
                     </td>
@@ -508,6 +641,101 @@ export default function AdminUsersPage() {
               >
                 {isUnblocking && <Loader2 className="w-4 h-4 animate-spin" />}
                 確認解除
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 角色管理 Modal */}
+      {roleModal.open && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-md">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+              <h3 className={`font-semibold ${
+                roleModal.action === 'grant' ? 'text-purple-600' :
+                roleModal.action === 'revoke' ? 'text-gray-600' :
+                'text-yellow-600'
+              }`}>
+                {roleModal.action === 'grant' && '授予副管理員權限'}
+                {roleModal.action === 'revoke' && '移除副管理員權限'}
+                {roleModal.action === 'transfer' && '轉讓站主權限'}
+              </h3>
+              <button
+                onClick={() => {
+                  setRoleModal({ open: false, user: null, action: 'grant' });
+                  setTransferPassword('');
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-4 space-y-4">
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {roleModal.action === 'grant' && (
+                  <>
+                    確定要將「{roleModal.user?.username}」設為副管理員嗎？
+                    <br />
+                    <span className="text-purple-600 dark:text-purple-400">副管理員可以進入後台管理刊登和會員。</span>
+                  </>
+                )}
+                {roleModal.action === 'revoke' && (
+                  <>
+                    確定要移除「{roleModal.user?.username}」的副管理員權限嗎？
+                    <br />
+                    移除後此用戶將無法再進入管理後台。
+                  </>
+                )}
+                {roleModal.action === 'transfer' && (
+                  <>
+                    <span className="text-red-600 dark:text-red-400 font-medium">警告：此操作不可逆！</span>
+                    <br /><br />
+                    確定要將站主權限轉讓給「{roleModal.user?.username}」嗎？
+                    <br />
+                    轉讓後您將降為副管理員，無法再執行此操作。
+                  </>
+                )}
+              </div>
+
+              {roleModal.action === 'transfer' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    請輸入轉讓密碼 *
+                  </label>
+                  <input
+                    type="password"
+                    value={transferPassword}
+                    onChange={(e) => setTransferPassword(e.target.value)}
+                    placeholder="請輸入站主轉讓密碼"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  />
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => {
+                  setRoleModal({ open: false, user: null, action: 'grant' });
+                  setTransferPassword('');
+                }}
+                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              >
+                取消
+              </button>
+              <button
+                onClick={handleRoleChange}
+                disabled={isUpdatingRole || (roleModal.action === 'transfer' && !transferPassword)}
+                className={`px-4 py-2 text-white rounded-lg disabled:opacity-50 flex items-center gap-2 ${
+                  roleModal.action === 'grant' ? 'bg-purple-600 hover:bg-purple-700' :
+                  roleModal.action === 'revoke' ? 'bg-gray-600 hover:bg-gray-700' :
+                  'bg-yellow-600 hover:bg-yellow-700'
+                }`}
+              >
+                {isUpdatingRole && <Loader2 className="w-4 h-4 animate-spin" />}
+                {roleModal.action === 'grant' && '確認授予'}
+                {roleModal.action === 'revoke' && '確認移除'}
+                {roleModal.action === 'transfer' && '確認轉讓'}
               </button>
             </div>
           </div>

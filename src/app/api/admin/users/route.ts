@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { requireAdmin, isAuthError } from '@/lib/auth-helpers';
 
 // GET /api/admin/users - 取得會員列表（分頁、搜尋）
 export async function GET(request: NextRequest) {
   try {
+    // 驗證管理員權限
+    const authResult = await requireAdmin();
+    if (isAuthError(authResult)) {
+      return NextResponse.json({ error: authResult.error }, { status: authResult.status });
+    }
+
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
@@ -20,7 +27,7 @@ export async function GET(request: NextRequest) {
     // 建立查詢
     let query = supabaseAdmin
       .from('users')
-      .select('id, username, email, avatar_url, custom_avatar_url, rating, review_count, created_at', { count: 'exact' });
+      .select('id, username, email, avatar_url, custom_avatar_url, rating, review_count, role, created_at', { count: 'exact' });
 
     // 搜尋（暱稱或 Email）
     if (search) {

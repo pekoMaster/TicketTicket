@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { requireAdmin, isAuthError } from '@/lib/auth-helpers';
 
 // DELETE /api/admin/blacklist/[id] - 從黑名單移除
 export async function DELETE(
@@ -7,6 +8,12 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // 驗證管理員權限
+    const authResult = await requireAdmin();
+    if (isAuthError(authResult)) {
+      return NextResponse.json({ error: authResult.error }, { status: authResult.status });
+    }
+
     const { id } = await params;
 
     // 取得黑名單記錄

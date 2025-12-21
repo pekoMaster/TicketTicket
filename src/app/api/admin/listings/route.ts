@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { requireAdmin, isAuthError } from '@/lib/auth-helpers';
 
 // GET /api/admin/listings - 取得刊登列表（分頁、搜尋、篩選）
 export async function GET(request: NextRequest) {
   try {
+    // 驗證管理員權限
+    const authResult = await requireAdmin();
+    if (isAuthError(authResult)) {
+      return NextResponse.json({ error: authResult.error }, { status: authResult.status });
+    }
+
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
