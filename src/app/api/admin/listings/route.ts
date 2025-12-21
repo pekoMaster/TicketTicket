@@ -77,17 +77,29 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch listings' }, { status: 500 });
     }
 
-    // 取得每個刊登的申請數量
+    // 取得每個刊登的申請數量和完成狀態
     const listingsWithApplications = await Promise.all(
       (listings || []).map(async (listing) => {
+        // 查詢申請數量
         const { count: applicationsCount } = await supabaseAdmin
           .from('applications')
           .select('id', { count: 'exact', head: true })
           .eq('listing_id', listing.id);
 
+        // 查詢是否有已完成的對話（雙方都確認收票）
+        const { data: completedConvo } = await supabaseAdmin
+          .from('conversations')
+          .select('id, host_confirmed_at, guest_confirmed_at')
+          .eq('listing_id', listing.id)
+          .not('host_confirmed_at', 'is', null)
+          .not('guest_confirmed_at', 'is', null)
+          .limit(1)
+          .single();
+
         return {
           ...listing,
           applications_count: applicationsCount || 0,
+          is_completed: !!completedConvo,
         };
       })
     );

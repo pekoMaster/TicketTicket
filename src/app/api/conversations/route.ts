@@ -48,7 +48,44 @@ export async function GET() {
       };
     });
 
-    return NextResponse.json(processedConversations);
+    // 過濾掉已完成（雙方確認）且當前用戶已評價的對話
+    const completedConvoIds = processedConversations
+      .filter(c => c.host_confirmed_at && c.guest_confirmed_at)
+      .map(c => c.id);
+
+    // 如果有已完成的對話，檢查用戶是否已評價
+    let completedAndReviewedIds: string[] = [];
+    if (completedConvoIds.length > 0) {
+      // 獲取這些對話相關的 listing_id
+      const completedListingIds = processedConversations
+        .filter(c => completedConvoIds.includes(c.id))
+        .map(c => c.listing_id);
+
+      // 檢查用戶在這些 listing 上是否已評價
+      const { data: userReviews } = await supabaseAdmin
+        .from('reviews')
+        .select('listing_id')
+        .eq('reviewer_id', userId)
+        .in('listing_id', completedListingIds);
+
+      const reviewedListingIds = new Set((userReviews || []).map(r => r.listing_id));
+
+      // 找出已完成且已評價的對話 ID
+      completedAndReviewedIds = processedConversations
+        .filter(c =>
+          c.host_confirmed_at &&
+          c.guest_confirmed_at &&
+          reviewedListingIds.has(c.listing_id)
+        )
+        .map(c => c.id);
+    }
+
+    // 過濾掉已完成且已評價的對話
+    const filteredConversations = processedConversations.filter(
+      c => !completedAndReviewedIds.includes(c.id)
+    );
+
+    return NextResponse.json(filteredConversations);
   } catch (error) {
     console.error('Error in GET /api/conversations:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

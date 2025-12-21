@@ -34,6 +34,7 @@ interface Listing {
   created_at: string;
   host: Host;
   applications_count: number;
+  is_completed?: boolean;
 }
 
 interface Pagination {
@@ -185,7 +186,15 @@ export default function AdminListingsPage() {
     }
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, isCompleted?: boolean) => {
+    // 如果是已完成，優先顯示已完成狀態
+    if (isCompleted) {
+      return (
+        <span className="px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300">
+          ✓ 已完成
+        </span>
+      );
+    }
     const styles: Record<string, string> = {
       open: 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300',
       matched: 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300',
@@ -350,7 +359,7 @@ export default function AdminListingsPage() {
                       <div className="text-xs text-gray-500 dark:text-gray-400">{getTicketCountLabel(listing.ticket_count_type)}</div>
                     </td>
                     <td className="px-3 py-3">
-                      {getStatusBadge(listing.status)}
+                      {getStatusBadge(listing.status, listing.is_completed)}
                     </td>
                     <td className="px-3 py-3 text-sm text-gray-500 dark:text-gray-400">
                       {listing.applications_count}

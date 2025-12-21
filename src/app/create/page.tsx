@@ -526,13 +526,16 @@ export default function CreateListingPage() {
                 <div className="space-y-2">
                   {ticketTypes.map((type) => {
                     const info = TICKET_TYPE_INFO[type];
+                    // 必須先選擇活動、座位等級和票種類型（人數）
+                    const isPrerequisitesMet = eventName && seatGrade && ticketCountType;
+
                     // 尋找同行者只有二人票可選
                     const isFindCompanionDisabled = type === 'find_companion' && ticketCountType !== 'duo';
                     // 母票轉讓暫時停用
                     const isMainTicketDisabled = info.disabled === true;
                     // 轉讓子票只有二人以上票可選（一人票無子票可轉讓）
                     const isSubTicketDisabled = type === 'sub_ticket_transfer' && ticketCountType === 'solo';
-                    const isDisabled = isFindCompanionDisabled || isMainTicketDisabled || isSubTicketDisabled;
+                    const isDisabled = !isPrerequisitesMet || isFindCompanionDisabled || isMainTicketDisabled || isSubTicketDisabled;
 
                     // 使用翻譯或預設標籤
                     const label = t(`ticketTypes.${type}`, { defaultValue: info.label });

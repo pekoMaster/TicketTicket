@@ -32,6 +32,8 @@ interface Listing {
   host?: User;
   ticket_type?: 'find_companion' | 'main_ticket_transfer' | 'sub_ticket_transfer' | 'ticket_exchange';
   meeting_location?: string;
+  seat_grade?: string;
+  asking_price_jpy?: number;
 }
 
 interface Application {
@@ -427,34 +429,38 @@ export default function MessagesPage() {
                   </div>
 
                   {/* 詳細資訊 */}
-                  <div className="space-y-1.5 text-sm text-gray-600 dark:text-gray-400">
-                    {/* 主辦方 */}
+                  <div className="flex items-start gap-3">
+                    {/* 主辦方頭像 */}
                     {app.listing?.host && (
-                      <div className="flex items-center gap-2">
-                        <Avatar src={app.listing.host.custom_avatar_url || app.listing.host.avatar_url} size="sm" />
-                        <span>{app.listing.host.username}</span>
-                      </div>
+                      <Avatar src={app.listing.host.custom_avatar_url || app.listing.host.avatar_url} size="md" className="flex-shrink-0" />
                     )}
 
-                    {/* 票種類型 */}
-                    {app.listing?.ticket_type && (
-                      <div className="flex items-center gap-2">
-                        <TicketTypeTag type={app.listing.ticket_type} size="sm" />
+                    <div className="flex-1 min-w-0 space-y-1.5">
+                      {/* 票種類型 */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        {app.listing?.ticket_type && (
+                          <TicketTypeTag type={app.listing.ticket_type} size="sm" />
+                        )}
+                        {/* 主辦方名稱 */}
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                          {app.listing?.host?.username}
+                        </span>
                       </div>
-                    )}
 
-                    {/* 場地 */}
-                    <p className="text-gray-500 dark:text-gray-400">
-                      {app.listing?.venue}
-                    </p>
-
-                    {/* 集合地點 */}
-                    {app.listing?.meeting_location && (
-                      <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
-                        <MapPin className="w-3 h-3" />
-                        <span>{t('meetingLocation')}: {app.listing.meeting_location}</span>
+                      {/* 座位等級 + 價格 */}
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
+                        {app.listing?.seat_grade && (
+                          <span className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">
+                            {app.listing.seat_grade}
+                          </span>
+                        )}
+                        {app.listing?.asking_price_jpy && (
+                          <span className="font-medium text-gray-700 dark:text-gray-300">
+                            ¥{app.listing.asking_price_jpy.toLocaleString()}
+                          </span>
+                        )}
                       </div>
-                    )}
+                    </div>
                   </div>
 
                   {/* 撤回按鈕 - 只在 pending 狀態顯示 */}
