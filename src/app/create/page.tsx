@@ -650,7 +650,7 @@ export default function CreateListingPage() {
                 <Input
                   label={t('subsidyAmount', { defaultValue: '補貼金額（日圓）' })}
                   type="number"
-                  placeholder={`${t('maxAmount', { defaultValue: '最高' })} ¥${subsidyValidation.maxAllowed.toLocaleString()}${t('halfOfTicketPrice', { defaultValue: '（票價一半）' })}`}
+                  placeholder={`最高 ¥${subsidyValidation.maxAllowed.toLocaleString()}（票價一半）`}
                   value={subsidyAmount}
                   onChange={(e) => setSubsidyAmount(e.target.value)}
                   leftIcon={<span className="text-gray-400 font-medium">¥</span>}
