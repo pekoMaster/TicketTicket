@@ -88,6 +88,7 @@
     "event": "イベント",
     "date": "日付",
     "venue": "会場",
+    "seatGrade": "座席等級",
     "ticketType": "チケット種別",
     "price": "価格",
     "host": "主催者"
@@ -149,6 +150,7 @@
     "eventInfo": "イベント情報",
     "date": "日付",
     "venue": "会場",
+    "seatGradeLabel": "座席等級",
     "meetingTime": "待ち合わせ時間",
     "meetingLocation": "待ち合わせ場所",
     "view": "詳細",

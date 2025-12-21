@@ -88,6 +88,7 @@
     "event": "Event",
     "date": "Date",
     "venue": "Venue",
+    "seatGrade": "Seat Grade",
     "ticketType": "Ticket Type",
     "price": "Price",
     "host": "Host"
@@ -149,6 +150,7 @@
     "eventInfo": "Event Information",
     "date": "Date",
     "venue": "Venue",
+    "seatGradeLabel": "Seat Grade",
     "meetingTime": "Meeting Time",
     "meetingLocation": "Meeting Location",
     "view": "View",

@@ -306,9 +306,14 @@ export default function ListingDetailPage() {
       <div className="pt-14 pb-24">
         {/* 主要資訊 */}
         <div className="bg-white dark:bg-gray-800 px-4 py-6 border-b border-gray-100 dark:border-gray-700">
-          {/* 票券類型標籤 */}
-          <div className="mb-3">
+          {/* 票券類型標籤 + 座位等級 */}
+          <div className="mb-3 flex items-center gap-3 flex-wrap">
             <TicketTypeTag type={listing.ticketType} size="md" />
+            {listing.seatGrade && (
+              <span className="inline-flex items-center px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-full">
+                {t('seatGradeLabel')}: {listing.seatGrade}
+              </span>
+            )}
           </div>
 
           {/* 活動名稱 */}

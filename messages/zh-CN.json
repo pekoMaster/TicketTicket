@@ -88,6 +88,7 @@
     "event": "活动",
     "date": "日期",
     "venue": "场地",
+    "seatGrade": "座位等级",
     "ticketType": "票种",
     "price": "费用",
     "host": "主办方"
@@ -149,6 +150,7 @@
     "eventInfo": "活动信息",
     "date": "日期",
     "venue": "场地",
+    "seatGradeLabel": "座位等级",
     "meetingTime": "见面时间",
     "meetingLocation": "见面地点",
     "view": "查看",
