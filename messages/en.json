@@ -82,7 +82,15 @@
     "whatIs": "What is TicketTicket?",
     "feature1": "A companion matching platform for concert ticket holders",
     "feature2": "Not ticket resale, but finding a partner to enter together",
-    "feature3": "Safe matching, meet in person, secure"
+    "feature3": "Safe matching, meet in person, secure",
+    "cardView": "Card View",
+    "listView": "List View",
+    "event": "Event",
+    "date": "Date",
+    "venue": "Venue",
+    "ticketType": "Ticket Type",
+    "price": "Price",
+    "host": "Host"
   },
   "filter": {
     "searchPlaceholder": "Search events, venues, keywords...",

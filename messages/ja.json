@@ -82,7 +82,15 @@
     "whatIs": "TicketTicketとは？",
     "feature1": "コンサートチケット保有者のための同行マッチングプラットフォーム",
     "feature2": "チケット転売ではなく、一緒に入場する仲間を探す",
-    "feature3": "安全なマッチング、現地で会う、安心"
+    "feature3": "安全なマッチング、現地で会う、安心",
+    "cardView": "カード表示",
+    "listView": "リスト表示",
+    "event": "イベント",
+    "date": "日付",
+    "venue": "会場",
+    "ticketType": "チケット種別",
+    "price": "価格",
+    "host": "主催者"
   },
   "filter": {
     "searchPlaceholder": "イベント、会場、キーワードを検索...",

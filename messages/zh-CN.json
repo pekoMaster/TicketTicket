@@ -82,7 +82,15 @@
     "whatIs": "什么是 TicketTicket？",
     "feature1": "专为演唱会票券持有者设计的同行配对平台",
     "feature2": "不是票券转售，而是找同行伙伴一起入场",
-    "feature3": "安全配对，现场见面，有保障"
+    "feature3": "安全配对，现场见面，有保障",
+    "cardView": "卡片模式",
+    "listView": "列表模式",
+    "event": "活动",
+    "date": "日期",
+    "venue": "场地",
+    "ticketType": "票种",
+    "price": "费用",
+    "host": "主办方"
   },
   "filter": {
     "searchPlaceholder": "搜索活动、场地、关键字...",
