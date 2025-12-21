@@ -52,7 +52,7 @@ export default function SideNav() {
                 <Link
                   href={href}
                   className={`
-                    flex items-center gap-3 px-4 py-3 rounded-xl
+                    w-full flex items-center gap-3 px-4 py-3 rounded-xl
                     transition-all duration-200
                     ${isActive
                       ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold'
