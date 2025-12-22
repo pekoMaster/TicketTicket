@@ -55,7 +55,9 @@
     "defaultUser": "ユーザー",
     "inputMessage": "メッセージを入力...",
     "chatWith": "{name}とチャット",
-    "chat": "チャット"
+    "chat": "チャット",
+    "help": "ヘルプ",
+    "report": "通報"
   },
   "nav": {
     "home": "ホーム",

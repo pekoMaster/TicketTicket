@@ -55,7 +55,9 @@
     "defaultUser": "用户",
     "inputMessage": "输入消息...",
     "chatWith": "与 {name} 聊天",
-    "chat": "聊天"
+    "chat": "聊天",
+    "help": "帮助",
+    "report": "举报"
   },
   "nav": {
     "home": "首页",

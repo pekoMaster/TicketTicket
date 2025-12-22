@@ -55,7 +55,9 @@
     "defaultUser": "User",
     "inputMessage": "Type a message...",
     "chatWith": "Chat with {name}",
-    "chat": "Chat"
+    "chat": "Chat",
+    "help": "Help",
+    "report": "Report"
   },
   "nav": {
     "home": "Home",

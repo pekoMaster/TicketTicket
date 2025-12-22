@@ -55,7 +55,9 @@
     "defaultUser": "用戶",
     "inputMessage": "輸入訊息...",
     "chatWith": "與 {name} 聊天",
-    "chat": "聊天"
+    "chat": "聊天",
+    "help": "幫助",
+    "report": "檢舉"
   },
   "nav": {
     "home": "首頁",
