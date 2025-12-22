@@ -411,6 +411,11 @@
       "sub_ticket_transfer": "Sub Ticket Transfer",
       "ticket_exchange": "Ticket Exchange"
     },
+    "labels": {
+      "seatGrade": "Seat Grade",
+      "ticketCount": "Count",
+      "listingType": "Type"
+    },
     "seatGrade": {
       "unknown": "Unknown Seat"
     }

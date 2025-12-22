@@ -411,6 +411,11 @@
       "sub_ticket_transfer": "子チケット譲渡",
       "ticket_exchange": "チケット交換"
     },
+    "labels": {
+      "seatGrade": "座席",
+      "ticketCount": "枚数",
+      "listingType": "取引"
+    },
     "seatGrade": {
       "unknown": "座席未定"
     }

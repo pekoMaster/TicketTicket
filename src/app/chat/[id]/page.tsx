@@ -426,12 +426,14 @@ export default function ChatPage() {
             {/* 座位等級 */}
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
               <Armchair className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
-              <span className="truncate">{listing.seat_grade || tChat('seatGrade.unknown')}</span>
+              <span className="text-gray-500 dark:text-gray-400">{tChat('labels.seatGrade')}:</span>
+              <span className="truncate font-medium text-gray-900 dark:text-gray-100">{listing.seat_grade || tChat('seatGrade.unknown')}</span>
             </div>
 
             {/* 票種類型 (幾人票) */}
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
               <TagIcon className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+              <span className="text-gray-500 dark:text-gray-400">{tChat('labels.ticketCount')}:</span>
               <Tag
                 variant={listing.ticket_count_type === 'solo' ? 'default' : listing.ticket_count_type === 'duo' ? 'info' : 'purple'}
                 size="sm"
@@ -443,6 +445,7 @@ export default function ChatPage() {
             {/* 刊登類型 */}
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
               <Ticket className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+              <span className="text-gray-500 dark:text-gray-400">{tChat('labels.listingType')}:</span>
               <Tag
                 variant={
                   listing.ticket_type === 'find_companion' ? 'success' :
