@@ -16,7 +16,7 @@ export async function GET() {
       .from('conversations')
       .select(`
         *,
-        listing:listings!listing_id(id, event_name, event_date, venue, asking_price_jpy),
+        listing:listings!listing_id(id, event_name, event_date, venue, asking_price_jpy, ticket_type, seat_grade, ticket_count_type, will_assist_entry),
         host:users!host_id(id, username, avatar_url, custom_avatar_url),
         guest:users!guest_id(id, username, avatar_url, custom_avatar_url),
         messages(id, content, sender_id, is_read, created_at)

@@ -382,7 +382,10 @@
     "confirmWithdraw": "取り消しを確認",
     "pendingReviews": "レビュー待ち",
     "autoReviewIn": "{days}日後に自動評価",
-    "writeReview": "レビューを書く"
+    "writeReview": "レビューを書く",
+    "typeInquiry": "お問い合わせ中",
+    "typeMatched": "マッチング済み",
+    "iAmHost": "主催者"
   },
   "chat": {
     "title": "{name}とチャット",

@@ -382,7 +382,10 @@
     "confirmWithdraw": "确认撤回",
     "pendingReviews": "待评价",
     "autoReviewIn": "{days} 天后自动评价",
-    "writeReview": "撰写评价"
+    "writeReview": "撰写评价",
+    "typeInquiry": "咨询中",
+    "typeMatched": "已配对",
+    "iAmHost": "我是主办"
   },
   "chat": {
     "title": "与 {name} 聊天",

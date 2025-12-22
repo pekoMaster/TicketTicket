@@ -382,7 +382,10 @@
     "confirmWithdraw": "Confirm Withdrawal",
     "pendingReviews": "Pending Reviews",
     "autoReviewIn": "Auto-review in {days} days",
-    "writeReview": "Write Review"
+    "writeReview": "Write Review",
+    "typeInquiry": "Inquiry",
+    "typeMatched": "Matched",
+    "iAmHost": "I'm Host"
   },
   "chat": {
     "title": "Chat with {name}",

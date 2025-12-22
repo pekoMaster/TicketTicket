@@ -382,7 +382,10 @@
     "confirmWithdraw": "確認撤回",
     "pendingReviews": "待評價",
     "autoReviewIn": "{days} 天後自動評價",
-    "writeReview": "撰寫評價"
+    "writeReview": "撰寫評價",
+    "typeInquiry": "諮詢中",
+    "typeMatched": "已配對",
+    "iAmHost": "我是主辦"
   },
   "chat": {
     "title": "與 {name} 聊天",

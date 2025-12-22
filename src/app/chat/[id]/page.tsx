@@ -469,8 +469,8 @@ export default function ChatPage() {
             {/* 7天期限倒數 */}
             {conversation.deadlineInfo && !conversation.bothConfirmed && (
               <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${conversation.deadlineInfo.daysRemaining <= 2
-                  ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
-                  : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'
+                ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'
                 }`}>
                 <Clock className="w-3 h-3" />
                 {tVerification('daysRemaining', {
@@ -661,7 +661,7 @@ export default function ChatPage() {
         </div>
 
         {/* 輸入區域 */}
-        <div className="bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-3 safe-area-bottom">
+        <div className="bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-3 pb-6 safe-area-bottom">
           <div className="flex gap-2">
             <input
               type="text"
