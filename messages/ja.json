@@ -410,6 +410,9 @@
       "main_ticket_transfer": "親チケット譲渡",
       "sub_ticket_transfer": "子チケット譲渡",
       "ticket_exchange": "チケット交換"
+    },
+    "seatGrade": {
+      "unknown": "座席未定"
     }
   },
   "profile": {

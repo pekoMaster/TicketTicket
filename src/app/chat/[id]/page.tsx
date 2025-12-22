@@ -11,7 +11,7 @@ import Button from '@/components/ui/Button';
 import Tag from '@/components/ui/Tag';
 import ReviewModal from '@/components/features/ReviewModal';
 import ReportModal from '@/components/ui/ReportModal';
-import { Send, Calendar, MapPin, Clock, Ticket, Tag as TagIcon, Banknote, Loader2, Languages, CheckCircle, Circle, Star, Flag } from 'lucide-react';
+import { Send, Calendar, MapPin, Clock, Ticket, Tag as TagIcon, Banknote, Loader2, Languages, CheckCircle, Circle, Star, Flag, Armchair } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -43,6 +43,8 @@ interface Listing {
   meeting_time: string;
   ticket_type: string;
   ticket_count_type: string;
+  seat_grade?: string;
+  will_assist_entry?: boolean;
   status: string;
 }
 
@@ -421,7 +423,13 @@ export default function ChatPage() {
               <span className="truncate">{listing.meeting_location}</span>
             </div>
 
-            {/* 票種類型 */}
+            {/* 座位等級 */}
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+              <Armchair className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+              <span className="truncate">{listing.seat_grade || tChat('seatGrade.unknown')}</span>
+            </div>
+
+            {/* 票種類型 (幾人票) */}
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
               <TagIcon className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
               <Tag
