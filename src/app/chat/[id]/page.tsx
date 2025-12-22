@@ -484,9 +484,9 @@ export default function ChatPage() {
   const isInquiry = conversationType === 'inquiry';
 
   // 檢查是否有待處理的取消請求需要回應
-  const hasPendingCancellation = conversation.cancellation_status === 'pending';
-  const isRequester = conversation.cancellation_requested_by === currentUserId;
-  const shouldShowCancellationPrompt = hasPendingCancellation && !isRequester;
+  const hasPendingCancellation = conversation?.cancellation_status === 'pending';
+  const isRequester = conversation?.cancellation_requested_by === currentUserId;
+  const shouldShowCancellationPrompt = hasPendingCancellation && !isRequester && currentUserId;
 
   // 自動顯示取消請求回應彈窗（給收到請求的一方）
   useEffect(() => {
@@ -494,7 +494,8 @@ export default function ChatPage() {
       setCancellationMode('respond');
       setShowCancellationModal(true);
     }
-  }, [shouldShowCancellationPrompt, showCancellationModal]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldShowCancellationPrompt]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
