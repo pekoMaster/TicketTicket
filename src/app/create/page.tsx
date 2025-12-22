@@ -33,7 +33,12 @@ import {
   User,
   Ticket,
   Info,
+  Mail,
+  Phone,
+  Loader2,
 } from 'lucide-react';
+import Link from 'next/link';
+import { VerificationLevel } from '@/types';
 
 // 穿著快速標籤 keys
 const CLOTHING_TAG_KEYS = [
@@ -73,6 +78,34 @@ export default function CreateListingPage() {
   // 換票專用欄位
   const [exchangeEventName, setExchangeEventName] = useState('');
   const [exchangeSeatGrade, setExchangeSeatGrade] = useState('');
+
+  // 驗證層級檢查
+  const [verificationLevel, setVerificationLevel] = useState<VerificationLevel | null>(null);
+  const [isCheckingVerification, setIsCheckingVerification] = useState(true);
+
+  // 檢查用戶驗證層級
+  useEffect(() => {
+    const checkVerification = async () => {
+      if (!session?.user?.dbId) {
+        setIsCheckingVerification(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/users/${session.user.dbId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setVerificationLevel(data.verification_level || 'unverified');
+        }
+      } catch (error) {
+        console.error('Failed to check verification:', error);
+      } finally {
+        setIsCheckingVerification(false);
+      }
+    };
+
+    checkVerification();
+  }, [session?.user?.dbId]);
 
   // 從管理員活動獲取選項
   const eventOptions = useMemo(() => {
@@ -261,6 +294,77 @@ export default function CreateListingPage() {
 
   // 票券類型選項
   const ticketTypes: TicketType[] = ['find_companion', 'sub_ticket_transfer', 'ticket_exchange'];
+
+  // 檢查中
+  if (isCheckingVerification) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+      </div>
+    );
+  }
+
+  // 驗證層級不足
+  if (verificationLevel && verificationLevel !== 'host') {
+    const needsEmailVerification = verificationLevel === 'unverified';
+    const needsPhoneVerification = verificationLevel === 'applicant';
+
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <Header title={t('title')} showBack />
+        <main className="max-w-md mx-auto px-4 py-12">
+          <Card className="p-8 text-center">
+            <div className="w-16 h-16 mx-auto mb-6 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center">
+              {needsEmailVerification ? (
+                <Mail className="w-8 h-8 text-amber-600 dark:text-amber-400" />
+              ) : (
+                <Phone className="w-8 h-8 text-amber-600 dark:text-amber-400" />
+              )}
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+              {t('verificationRequired')}
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              {needsEmailVerification
+                ? t('needEmailVerification')
+                : t('needPhoneVerification')
+              }
+            </p>
+
+            {/* 驗證進度 */}
+            <div className="mb-8 space-y-3">
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                  verificationLevel !== 'unverified'
+                    ? 'bg-green-500 text-white'
+                    : 'bg-gray-300 dark:bg-gray-600'
+                }`}>
+                  {verificationLevel !== 'unverified' ? <Check className="w-4 h-4" /> : '1'}
+                </div>
+                <span className={verificationLevel !== 'unverified' ? 'text-green-600 dark:text-green-400' : ''}>
+                  {t('stepEmailVerification')}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                <div className="w-6 h-6 rounded-full flex items-center justify-center bg-gray-300 dark:bg-gray-600">
+                  2
+                </div>
+                <span>
+                  {t('stepPhoneVerification')}
+                </span>
+              </div>
+            </div>
+
+            <Link href={needsEmailVerification ? '/verify-email' : '/verify-phone'}>
+              <Button variant="primary" className="w-full">
+                {needsEmailVerification ? t('goVerifyEmail') : t('goVerifyPhone')}
+              </Button>
+            </Link>
+          </Card>
+        </main>
+      </div>
+    );
+  }
 
   if (showSuccess) {
     return (

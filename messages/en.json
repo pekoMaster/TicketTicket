@@ -322,7 +322,14 @@
       "penlight": "Penlight"
     },
     "maxListingsPerEvent": "Maximum {max} listings per event",
-    "alreadyMaxListings": "You have reached the listing limit for this event ({current}/{max})"
+    "alreadyMaxListings": "You have reached the listing limit for this event ({current}/{max})",
+    "verificationRequired": "Verification Required",
+    "needEmailVerification": "You need to verify your email address before you can publish listings. Please verify your email first.",
+    "needPhoneVerification": "You need to verify your phone number before you can publish listings. This helps prevent fake accounts and scalping.",
+    "stepEmailVerification": "Email Verification",
+    "stepPhoneVerification": "Phone Verification",
+    "goVerifyEmail": "Go to Verify Email",
+    "goVerifyPhone": "Go to Verify Phone"
   },
   "ticketType": {
     "findCompanion": "Find Companion",
@@ -731,9 +738,9 @@
       "step3": "On desktop, you can switch between card and list view. Mobile shows card view only."
     },
     "listing": {
-      "title": "List Tickets",
-      "step1": "Tap 'Post' to create a listing. Choose 'Looking for Tickets', 'Offering Tickets', or 'Exchange'.",
-      "step2": "Fill in event info, seat grade, payment method, and other details.",
+      "title": "Post Listing",
+      "step1": "Tap 'Post' to create a companion request. Choose 'Find Companion' (looking for someone to attend together), 'Sub-Ticket Transfer' (transfer your sub-ticket), or 'Exchange' (swap tickets with others).",
+      "step2": "Fill in event info, seat grade, meeting point, and other details.",
       "step3": "After posting, wait for applications from other users. You can edit or close your listing anytime."
     },
     "messaging": {
@@ -742,17 +749,11 @@
       "step2": "The host will be notified and can accept or decline. Once accepted, you can start chatting.",
       "step3": "Confirm meeting time, location, and other important details in the chat."
     },
-    "completing": {
-      "title": "Complete Transaction",
-      "step1": "Meet in person on event day, verify tickets before payment. Host confirms ticket given, applicant confirms receipt to complete verification.",
-      "step2": "After completing the transaction, leave a review to help other users build trust.",
-      "step3": "Reviews appear on profile pages. Good reviews help with future matchmaking."
-    },
     "safety": {
       "title": "Safety Reminders",
-      "point1": "This platform only provides matching services and does not handle money transactions. Verify tickets in person before paying.",
-      "point2": "Avoid online advance transfers to prevent fraud. Report suspicious activity immediately.",
-      "point3": "Some events have companion identity restrictions. Always verify and follow the organizer's rules beforehand."
+      "point1": "This platform is a fan matching community, not a ticket trading site. Please comply with venue regulations.",
+      "point2": "Some events have companion identity restrictions. Always verify and follow the organizer's rules beforehand.",
+      "point3": "If you encounter suspicious or illegal activities, please use the 'Report' function immediately."
     }
   },
   "phoneVerification": {

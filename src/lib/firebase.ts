@@ -1,15 +1,15 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from 'firebase/auth';
 
-// Firebase 設定
+// Firebase 設定 - 使用環境變數
 const firebaseConfig = {
-  apiKey: "AIzaSyBjMDzT-kTxHjjQZZH0f9IJ49TDr_Ap3NE",
-  authDomain: "ticketticket-be114.firebaseapp.com",
-  projectId: "ticketticket-be114",
-  storageBucket: "ticketticket-be114.firebasestorage.app",
-  messagingSenderId: "445867774154",
-  appId: "1:445867774154:web:0a10b6ec34a0e876c5a433",
-  measurementId: "G-E0TWZBSNDC"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 // 初始化 Firebase（避免重複初始化）
