@@ -194,7 +194,12 @@
     "soloTicket": "一人票",
     "ticketTypeLabel": "券种类型",
     "askingPrice": "希望费用",
-    "perPersonUnit": "人"
+    "perPersonUnit": "人",
+    "willAssistEntryLabel": "协助入场",
+    "hostWillAssist": "主办会协助入场",
+    "canAssistEntry": "可协助入场",
+    "manageApplicants": "管理申请者",
+    "ownListing": "自己主办的活动"
   },
   "edit": {
     "title": "编辑刊登",
@@ -277,7 +282,7 @@
     "ticketTypes": {
       "find_companion": "寻找同行者",
       "find_companionDesc": "寻找一起入场的伙伴，费用均摊",
-      "find_companionWarning": "必须选择二人票",
+      "find_companionWarning": "使用母票协助他人也请确认本人能到",
       "main_ticket_transfer": "母票转让",
       "main_ticket_transferDesc": "转让主票，需提供持票账号或借出手机",
       "main_ticket_transferWarning": "须提供 ZAIKO 账号或现场借出手机入场",

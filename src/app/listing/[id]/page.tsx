@@ -470,8 +470,8 @@ export default function ListingDetailPage() {
           </Card>
         </div>
 
-        {/* 票券類型警告 - 只有主辦方看得到 */}
-        {isHost && ticketInfo.warning && (
+        {/* 票券類型警告 - 只有主辦方看得到，且排除尋找同行者 */}
+        {isHost && ticketInfo.warning && listing.ticketType !== 'find_companion' && (
           <div className="px-4 pb-4">
             <div className="bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800 rounded-lg p-4 flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
@@ -621,9 +621,8 @@ export default function ListingDetailPage() {
             {tCommon('loading')}
           </Button>
         ) : isHost ? (
-          <Button fullWidth onClick={() => router.push(`/listing/${listing.id}/applicants`)}>
-            <Users className="w-5 h-5 mr-2" />
-            {t('manageApplicants', { defaultValue: '管理申請者' })}
+          <Button fullWidth disabled variant="secondary">
+            {t('ownListing', { defaultValue: '自己主辦的活動' })}
           </Button>
         ) : hasApplied ? (
           <Button fullWidth disabled variant="secondary">

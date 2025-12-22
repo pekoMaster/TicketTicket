@@ -223,7 +223,8 @@ export const TICKET_TYPE_INFO: Record<TicketType, {
 }> = {
   find_companion: {
     label: '尋找同行者',
-    description: '尋找一起入場的夥伴',
+    description: '尋找一起入場的夥伴，費用均攤',
+    warning: '使用母票協助他人也請確認本人能到',
     color: 'bg-blue-100 text-blue-800',
   },
   sub_ticket_transfer: {

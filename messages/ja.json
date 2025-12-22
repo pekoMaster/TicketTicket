@@ -194,7 +194,12 @@
     "soloTicket": "一人チケット",
     "ticketTypeLabel": "券種タイプ",
     "askingPrice": "希望価格",
-    "perPersonUnit": "人"
+    "perPersonUnit": "人",
+    "willAssistEntryLabel": "入場サポート",
+    "hostWillAssist": "主催者が入場をサポート",
+    "canAssistEntry": "入場サポート可",
+    "manageApplicants": "申請者管理",
+    "ownListing": "自分の募集"
   },
   "edit": {
     "title": "募集を編集",
@@ -277,7 +282,7 @@
     "ticketTypes": {
       "find_companion": "同行者募集",
       "find_companionDesc": "一緒に入場する仲間を探す、費用は折半",
-      "find_companionWarning": "二人チケット必須",
+      "find_companionWarning": "親チケで他の人を入場させる場合は本人が来れるか確認してください",
       "main_ticket_transfer": "親チケット譲渡",
       "main_ticket_transferDesc": "親チケットを譲渡、アカウント提供またはスマホ貸出が必要",
       "main_ticket_transferWarning": "ZAIKOアカウントの提供または現地でスマホ貸出が必要",

@@ -194,7 +194,12 @@
     "soloTicket": "一人票",
     "ticketTypeLabel": "券種類型",
     "askingPrice": "希望費用",
-    "perPersonUnit": "人"
+    "perPersonUnit": "人",
+    "willAssistEntryLabel": "協助入場",
+    "hostWillAssist": "主辦會協助入場",
+    "canAssistEntry": "可協助入場",
+    "manageApplicants": "管理申請者",
+    "ownListing": "自己主辦的活動"
   },
   "edit": {
     "title": "編輯刊登",
@@ -277,7 +282,7 @@
     "ticketTypes": {
       "find_companion": "尋找同行者",
       "find_companionDesc": "尋找一起入場的夥伴，費用均攤",
-      "find_companionWarning": "必須選擇二人票",
+      "find_companionWarning": "使用母票協助他人也請確認本人能到",
       "main_ticket_transfer": "母票轉讓",
       "main_ticket_transferDesc": "轉讓主票，需提供持票帳號或借出手機",
       "main_ticket_transferWarning": "須提供 ZAIKO 帳號或現場借出手機入場",

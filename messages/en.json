@@ -194,7 +194,12 @@
     "soloTicket": "Solo Ticket",
     "ticketTypeLabel": "Ticket Category",
     "askingPrice": "Asking Price",
-    "perPersonUnit": " person(s)"
+    "perPersonUnit": " person(s)",
+    "willAssistEntryLabel": "Entry Assistance",
+    "hostWillAssist": "Host will assist entry",
+    "canAssistEntry": "Can Assist Entry",
+    "manageApplicants": "Manage Applicants",
+    "ownListing": "Your Own Listing"
   },
   "edit": {
     "title": "Edit Listing",
@@ -277,7 +282,7 @@
     "ticketTypes": {
       "find_companion": "Find Companion",
       "find_companionDesc": "Find a partner to enter together, split the cost",
-      "find_companionWarning": "Must select duo ticket",
+      "find_companionWarning": "If using main ticket to assist others, please ensure you can attend in person",
       "main_ticket_transfer": "Main Ticket Transfer",
       "main_ticket_transferDesc": "Transfer main ticket, need to provide account or lend phone",
       "main_ticket_transferWarning": "Need to provide ZAIKO account or lend phone at venue",
