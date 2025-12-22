@@ -58,6 +58,12 @@ export default function VerifyPhonePage() {
     setErrorMessage('');
 
     try {
+      // 先清理舊的 reCAPTCHA
+      clearRecaptcha();
+
+      // 等待 DOM 更新
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       // 初始化 reCAPTCHA
       const recaptcha = initRecaptcha('recaptcha-container');
 

@@ -21,24 +21,32 @@ auth.useDeviceLanguage();
 
 // reCAPTCHA 驗證器實例
 let recaptchaVerifier: RecaptchaVerifier | null = null;
+let recaptchaWidgetId: number | null = null;
 
 /**
  * 初始化 reCAPTCHA 驗證器
  */
 export function initRecaptcha(containerId: string): RecaptchaVerifier {
+  // 如果已經有實例且還有效，直接返回
   if (recaptchaVerifier) {
-    recaptchaVerifier.clear();
+    return recaptchaVerifier;
+  }
+
+  // 清理舊的 reCAPTCHA widget（如果存在）
+  const container = document.getElementById(containerId);
+  if (container) {
+    container.innerHTML = '';
   }
 
   recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
     size: 'invisible',
     callback: () => {
-      // reCAPTCHA 驗證成功
       console.log('reCAPTCHA verified');
     },
     'expired-callback': () => {
-      // reCAPTCHA 過期
       console.log('reCAPTCHA expired');
+      // 過期時重置
+      recaptchaVerifier = null;
     }
   });
 
@@ -60,8 +68,19 @@ export async function sendPhoneVerificationCode(
  */
 export function clearRecaptcha(): void {
   if (recaptchaVerifier) {
-    recaptchaVerifier.clear();
+    try {
+      recaptchaVerifier.clear();
+    } catch (e) {
+      console.log('reCAPTCHA clear error (ignored):', e);
+    }
     recaptchaVerifier = null;
+  }
+  recaptchaWidgetId = null;
+
+  // 清理 DOM 中的 reCAPTCHA 元素
+  const container = document.getElementById('recaptcha-container');
+  if (container) {
+    container.innerHTML = '';
   }
 }
 
