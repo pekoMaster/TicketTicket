@@ -154,8 +154,12 @@ export async function sendVerificationEmail(
   const verificationLink = `${BASE_URL}/verify-email?token=${token}`;
 
   try {
+    // Resend 免費版只能使用 onboarding@resend.dev
+    // 如需自訂網域，需在 Resend 控制台驗證網域
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'TicketTicket <onboarding@resend.dev>';
+
     const { error } = await getResend().emails.send({
-      from: 'TicketTicket <noreply@ticket-ticket.com>',
+      from: fromEmail,
       to: [to],
       subject: '驗證您的 Email - TicketTicket',
       html: getVerificationEmailHtml(username, verificationLink),
