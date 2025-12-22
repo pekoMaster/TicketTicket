@@ -458,16 +458,7 @@ export default function ChatPage() {
             </div>
           </div>
 
-          {/* 希望費用 */}
-          <div className="mt-3 pt-3 border-t border-indigo-100 dark:border-indigo-800 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-              <Banknote className="w-4 h-4 text-green-500" />
-              <span className="text-sm">{tChat('expectedPrice')}</span>
-            </div>
-            <span className="font-bold text-lg text-indigo-600 dark:text-indigo-400">
-              ¥{listing.asking_price_jpy?.toLocaleString() || 0}
-            </span>
-          </div>
+
         </div>
 
         {/* 票券驗證區塊 */}
