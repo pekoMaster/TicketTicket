@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useSupabaseClient } from '@/hooks/useSupabaseClient';
 import Header from '@/components/layout/Header';
@@ -11,7 +11,10 @@ import Button from '@/components/ui/Button';
 import Tag from '@/components/ui/Tag';
 import ReviewModal from '@/components/features/ReviewModal';
 import ReportModal from '@/components/ui/ReportModal';
-import { Send, Calendar, MapPin, Clock, Ticket, Tag as TagIcon, Loader2, Languages, CheckCircle, Circle, Star, Flag, Armchair } from 'lucide-react';
+import HelpModal from '@/components/ui/HelpModal';
+import CancellationModal from '@/components/ui/CancellationModal';
+import BlockUserModal from '@/components/ui/BlockUserModal';
+import { Send, Calendar, MapPin, Clock, Ticket, Tag as TagIcon, Loader2, Languages, CheckCircle, Circle, Star, Flag, Armchair, HelpCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -99,8 +102,14 @@ export default function ChatPage() {
   const [showApplyConfirm, setShowApplyConfirm] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
   const [isAccepting, setIsAccepting] = useState(false);
+  // New modal states
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showCancellationModal, setShowCancellationModal] = useState(false);
+  const [cancellationMode, setCancellationMode] = useState<'request' | 'respond'>('request');
+  const [showBlockModal, setShowBlockModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { locale } = useLanguage();
+  const router = useRouter();
 
   // 處理申請加入
   const handleApply = async () => {
@@ -478,13 +487,22 @@ export default function ChatPage() {
         showBack
         rightAction={
           otherUser && (
-            <button
-              onClick={() => setShowReportModal(true)}
-              className="p-2 text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
-              title={tCommon('report')}
-            >
-              <Flag className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setShowHelpModal(true)}
+                className="p-2 text-gray-500 hover:text-indigo-500 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors"
+                title={tCommon('help', { defaultValue: '幫助' })}
+              >
+                <HelpCircle className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setShowReportModal(true)}
+                className="p-2 text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
+                title={tCommon('report')}
+              >
+                <Flag className="w-5 h-5" />
+              </button>
+            </div>
           )
         }
       />
@@ -886,6 +904,45 @@ export default function ChatPage() {
         reportedUserName={otherUser.username}
         conversationId={conversationId}
         listingId={conversation.listing_id}
+      />
+
+      {/* 幫助選單 */}
+      <HelpModal
+        isOpen={showHelpModal}
+        onClose={() => setShowHelpModal(false)}
+        conversationType={conversationType}
+        otherUserName={otherUser.username}
+        onCancelRequest={() => {
+          setCancellationMode('request');
+          setShowCancellationModal(true);
+        }}
+        onReport={() => setShowReportModal(true)}
+        onBlock={() => setShowBlockModal(true)}
+      />
+
+      {/* 取消同行彈窗 */}
+      <CancellationModal
+        isOpen={showCancellationModal}
+        onClose={() => setShowCancellationModal(false)}
+        conversationId={conversationId}
+        eventName={listing.event_name}
+        mode={cancellationMode}
+        cancellationReason={(conversation as Record<string, unknown>).cancellation_reason as string | undefined}
+        onSuccess={() => {
+          fetchConversation();
+          setShowCancellationModal(false);
+        }}
+      />
+
+      {/* 封鎖用戶彈窗 */}
+      <BlockUserModal
+        isOpen={showBlockModal}
+        onClose={() => setShowBlockModal(false)}
+        userId={otherUser.id}
+        userName={otherUser.username}
+        onSuccess={() => {
+          router.push('/messages');
+        }}
       />
     </div>
   );

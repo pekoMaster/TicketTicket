@@ -874,5 +874,41 @@
     "resendEmail": "再送信",
     "resendIn": "再送信まで",
     "sending": "送信中..."
+  },
+  "help": {
+    "title": "何かお困りですか？",
+    "cancelMatch": "同行をキャンセル",
+    "cancelMatchDesc": "相手とのマッチングを解除",
+    "report": "通報する",
+    "reportDesc": "不適切な行為を報告",
+    "block": "ブロックする",
+    "blockDesc": "ブロック後はお互いが見えなくなります",
+    "close": "閉じる"
+  },
+  "cancellation": {
+    "requestTitle": "同行キャンセル",
+    "respondTitle": "キャンセルリクエストを受信",
+    "event": "イベント",
+    "warning": "キャンセルは双方の記録に影響します。慎重にご利用ください。",
+    "reasonLabel": "キャンセル理由",
+    "reasonPlaceholder": "キャンセルしたい理由を説明してください...",
+    "reasonRequired": "理由を入力してください",
+    "otherReason": "相手の理由",
+    "respondHint": "承諾するとマッチングが解除されます。拒否すると交渉を続けられます。",
+    "cancel": "キャンセル",
+    "submit": "リクエスト送信",
+    "accept": "キャンセルを承諾",
+    "reject": "拒否",
+    "submitError": "送信に失敗しました"
+  },
+  "block": {
+    "title": "ユーザーをブロック",
+    "confirm": "{name}をブロックしますか？",
+    "effect1": "相手の掲載が見えなくなります",
+    "effect2": "相手もあなたの掲載が見えなくなります",
+    "effect3": "お互いにメッセージできなくなります",
+    "cancel": "キャンセル",
+    "confirm_btn": "ブロックする",
+    "error": "ブロックに失敗しました"
   }
 }

@@ -874,5 +874,41 @@
     "resendEmail": "重新發送",
     "resendIn": "重新發送倒數",
     "sending": "發送中..."
+  },
+  "help": {
+    "title": "請問您需要什麼幫助？",
+    "cancelMatch": "取消同行",
+    "cancelMatchDesc": "解除與對方的配對關係",
+    "report": "檢舉對方",
+    "reportDesc": "回報不當行為或違規",
+    "block": "加入黑名單",
+    "blockDesc": "封鎖後將無法看到對方",
+    "close": "關閉"
+  },
+  "cancellation": {
+    "requestTitle": "取消同行",
+    "respondTitle": "收到取消請求",
+    "event": "活動",
+    "warning": "取消同行將影響雙方的評價記錄。請謹慎使用。",
+    "reasonLabel": "取消原因",
+    "reasonPlaceholder": "請說明您希望取消的原因...",
+    "reasonRequired": "請填寫取消原因",
+    "otherReason": "對方的取消原因",
+    "respondHint": "若您同意取消，配對將解除。若您拒絕，雙方可繼續溝通協調。",
+    "cancel": "取消",
+    "submit": "送出請求",
+    "accept": "同意取消",
+    "reject": "拒絕",
+    "submitError": "提交失敗"
+  },
+  "block": {
+    "title": "封鎖用戶",
+    "confirm": "確定要封鎖 {name} 嗎？",
+    "effect1": "您將無法看到對方的刊登",
+    "effect2": "對方也無法看到您的刊登",
+    "effect3": "雙方無法再進行私訊對話",
+    "cancel": "取消",
+    "confirm_btn": "確認封鎖",
+    "error": "封鎖失敗"
   }
 }
