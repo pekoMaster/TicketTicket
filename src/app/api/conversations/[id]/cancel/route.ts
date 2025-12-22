@@ -43,10 +43,13 @@ export async function POST(
             return NextResponse.json({ error: 'Only matched conversations can be cancelled' }, { status: 400 });
         }
 
-        // 檢查是否已有待處理的取消請求
+        // 檢查是否已有待處理的取消請求（rejected 狀態允許再次申請）
         if (conversation.cancellation_status === 'pending') {
             return NextResponse.json({ error: 'A cancellation request is already pending' }, { status: 400 });
         }
+
+        // 如果之前被拒絕，先清除舊的取消資料，允許新的申請
+        // ('rejected' 狀態會被新請求覆蓋)
 
         // 設定 48 小時期限
         const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
