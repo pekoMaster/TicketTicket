@@ -749,5 +749,70 @@
       "point2": "Avoid online advance transfers to prevent fraud. Report suspicious activity immediately.",
       "point3": "Some events have companion identity restrictions. Always verify and follow the organizer's rules beforehand."
     }
+  },
+  "phoneVerification": {
+    "title": "Phone Verification",
+    "input": {
+      "title": "Verify Your Phone Number",
+      "description": "Complete phone verification to start posting event listings.",
+      "phoneNumber": "Phone Number",
+      "sendCode": "Send Verification Code",
+      "sending": "Sending...",
+      "notice": "We will send a verification code via SMS to your phone."
+    },
+    "verify": {
+      "title": "Enter Verification Code",
+      "description": "Please enter the 6-digit code you received.",
+      "code": "Verification Code",
+      "verify": "Verify",
+      "verifying": "Verifying...",
+      "resend": "Resend Code",
+      "resendIn": "Resend in"
+    },
+    "success": {
+      "title": "Phone Verified!",
+      "description": "Congratulations! You've completed all verifications and can now post event listings.",
+      "createListing": "Create Listing"
+    },
+    "error": {
+      "title": "Verification Failed",
+      "tryAgain": "Try Again"
+    },
+    "errors": {
+      "sendFailed": "Failed to send verification code. Please try again later.",
+      "invalidCode": "Invalid verification code. Please try again.",
+      "verifyFailed": "Verification failed. Please try again later.",
+      "phoneInUse": "This phone number is already used by another account."
+    }
+  },
+  "verification": {
+    "title": "Email Verification",
+    "success": {
+      "title": "Verification Successful!",
+      "description": "Your email has been verified. You can now start applying for companions.",
+      "goHome": "Go to Home"
+    },
+    "error": {
+      "title": "Verification Failed"
+    },
+    "errors": {
+      "missingToken": "Invalid verification link. Please request a new verification email.",
+      "invalidToken": "Invalid or already used verification link.",
+      "expiredToken": "Verification link has expired. Please request a new verification email.",
+      "alreadyVerified": "This email has already been verified.",
+      "updateFailed": "An error occurred during verification. Please try again later.",
+      "unknown": "An unknown error occurred. Please try again later.",
+      "tooManyRequests": "Too many requests. Please try again later.",
+      "sendFailed": "Failed to send verification email. Please try again later."
+    },
+    "pending": {
+      "title": "Verify Your Email",
+      "description": "We've sent a verification email to your inbox. Click the link in the email to complete verification.",
+      "checkSpam": "If you don't see the email, please check your spam folder."
+    },
+    "sendEmail": "Send Verification Email",
+    "resendEmail": "Resend",
+    "resendIn": "Resend in",
+    "sending": "Sending..."
   }
 }

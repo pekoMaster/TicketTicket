@@ -66,18 +66,19 @@ export interface DbListing {
   venue: string;
   meeting_time: string;
   meeting_location: string;
-  original_price_jpy: number;
-  asking_price_jpy: number;
   total_slots: number;
   available_slots: number;
-  ticket_type: 'find_companion' | 'main_ticket_transfer' | 'sub_ticket_transfer';
+  ticket_type: 'find_companion' | 'sub_ticket_transfer' | 'ticket_exchange';
   seat_grade: 'B' | 'A' | 'S' | 'SS';
   ticket_count_type: 'solo' | 'duo';
   host_nationality: string;
   host_languages: string[];
   identification_features: string;
+  will_assist_entry?: boolean;
   status: 'open' | 'matched' | 'closed';
   description?: string;
+  exchange_event_name?: string;
+  exchange_seat_grade?: string;
   created_at: string;
   updated_at: string;
 }

@@ -30,10 +30,10 @@ interface Listing {
   venue: string;
   host_id: string;
   host?: User;
-  ticket_type?: 'find_companion' | 'main_ticket_transfer' | 'sub_ticket_transfer' | 'ticket_exchange';
+  ticket_type?: 'find_companion' | 'sub_ticket_transfer' | 'ticket_exchange';
   meeting_location?: string;
   seat_grade?: string;
-  asking_price_jpy?: number;
+  will_assist_entry?: boolean;
 }
 
 interface Application {
@@ -368,6 +368,15 @@ export default function MessagesPage() {
                           )}
                         </div>
                         <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{convo.listing?.event_name}</p>
+                        {/* 協助入場標籤 */}
+                        {convo.listing?.ticket_type === 'find_companion' && convo.listing?.will_assist_entry && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 mt-1">
+                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                            {t('hostWillAssist', { defaultValue: '主辦會協助入場' })}
+                          </span>
+                        )}
                         {convo.lastMessage && (
                           <p className="text-xs text-gray-400 dark:text-gray-500 truncate mt-1">
                             {convo.lastMessage.content}
@@ -452,11 +461,6 @@ export default function MessagesPage() {
                         {app.listing?.seat_grade && (
                           <span className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">
                             {app.listing.seat_grade}
-                          </span>
-                        )}
-                        {app.listing?.asking_price_jpy && (
-                          <span className="font-medium text-gray-700 dark:text-gray-300">
-                            ¥{app.listing.asking_price_jpy.toLocaleString()}
                           </span>
                         )}
                       </div>

@@ -17,7 +17,7 @@ import Avatar from '@/components/ui/Avatar';
 import StarRating from '@/components/ui/StarRating';
 import SafetyBanner from '@/components/ui/SafetyBanner';
 import AgreementModal from '@/components/ui/AgreementModal';
-import { TicketType, Listing, SubsidyDirection, LANGUAGE_OPTIONS } from '@/types';
+import { TicketType, Listing, LANGUAGE_OPTIONS } from '@/types';
 import {
   Calendar,
   MapPin,
@@ -154,7 +154,6 @@ export default function ListingDetailPage() {
   const getTicketTypeInfo = (type: TicketType) => {
     const typeMapping: Record<TicketType, { labelKey: string; warningKey: string }> = {
       find_companion: { labelKey: 'findCompanion', warningKey: 'findCompanionWarning' },
-      main_ticket_transfer: { labelKey: 'mainTicketTransfer', warningKey: 'mainTicketTransferWarning' },
       sub_ticket_transfer: { labelKey: 'subTicketTransfer', warningKey: 'subTicketTransferWarning' },
       ticket_exchange: { labelKey: 'ticketExchange', warningKey: 'ticketExchangeWarning' },
     };
@@ -163,12 +162,6 @@ export default function ListingDetailPage() {
       label: tTicket(labelKey),
       warning: tTicket(warningKey),
     };
-  };
-
-  // Helper to get subsidy direction label
-  const getSubsidyDirectionLabel = (direction?: SubsidyDirection) => {
-    if (!direction) return '';
-    return direction === 'i_pay_you' ? tCreate('iPayYou') : tCreate('youPayMe');
   };
 
   if (!listing) {
@@ -373,6 +366,19 @@ export default function ListingDetailPage() {
                 <TicketTypeTag type={listing.ticketType} size="sm" />
               </div>
 
+              {/* 協助入場 - 只有同行者類型才顯示 */}
+              {listing.ticketType === 'find_companion' && listing.willAssistEntry && (
+                <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
+                  <span className="text-gray-500 dark:text-gray-400">{t('willAssistEntryLabel', { defaultValue: '協助入場' })}</span>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
+                    <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    {t('hostWillAssist', { defaultValue: '主辦會協助入場' })}
+                  </span>
+                </div>
+              )}
+
               {isExchangeMode ? (
                 /* 換票模式 */
                 <>
@@ -384,7 +390,7 @@ export default function ListingDetailPage() {
                     </div>
                   )}
 
-                  {/* 想換的票種 */}
+                  {/* 想換的票種等級 */}
                   {listing.exchangeSeatGrade && (
                     <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
                       <span className="text-gray-500 dark:text-gray-400">{t('wantSeatGrade')}</span>
@@ -393,41 +399,10 @@ export default function ListingDetailPage() {
                       </span>
                     </div>
                   )}
-
-                  {/* 補貼資訊 */}
-                  {(listing.subsidyAmount !== undefined && listing.subsidyAmount > 0) && (
-                    <div className="bg-orange-50 dark:bg-orange-900/30 rounded-lg p-3 mt-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Banknote className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-                          <span className="text-sm text-orange-800 dark:text-orange-300">{t('subsidyInfo')}</span>
-                        </div>
-                        <span className="font-bold text-orange-700 dark:text-orange-300">
-                          {getSubsidyDirectionLabel(listing.subsidyDirection)}: ¥{listing.subsidyAmount.toLocaleString()}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* 持有票券原價 */}
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mt-2 text-sm text-gray-600 dark:text-gray-300">
-                    <p>{t('myTicketPrice')}: ¥{listing.originalPriceJPY.toLocaleString()}/{listing.totalSlots}{t('perPersonUnit')}</p>
-                  </div>
                 </>
               ) : (
-                /* 一般模式：希望價格 */
-                <>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-                    <span className="text-gray-500 dark:text-gray-400">{t('askingPrice')}</span>
-                    <span className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
-                      ¥{listing.askingPriceJPY.toLocaleString()}
-                    </span>
-                  </div>
-
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-sm text-gray-600 dark:text-gray-300">
-                    <p>{t('originalPrice')}: ¥{listing.originalPriceJPY.toLocaleString()}/{listing.totalSlots}{t('perPersonUnit')}</p>
-                  </div>
-                </>
+                /* 一般模式 */
+                <></>
               )}
             </div>
           </Card>
@@ -625,11 +600,8 @@ export default function ListingDetailPage() {
       >
         <div className="p-4">
           <div className="mb-4">
-            <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
-              {listing.eventName}
-            </p>
             <p className="text-gray-600 dark:text-gray-300 text-sm">
-              {t('price')}: ¥{listing.askingPriceJPY.toLocaleString()}
+              {listing.eventName}
             </p>
           </div>
 

@@ -749,5 +749,70 @@
       "point2": "請勿在線上提前轉帳，避免詐騙風險。如遇可疑情況請立即舉報。",
       "point3": "部分活動有同行者身分限制，請務必事先確認並遵守主辦單位的規定。"
     }
+  },
+  "phoneVerification": {
+    "title": "電話驗證",
+    "input": {
+      "title": "驗證您的電話號碼",
+      "description": "完成電話驗證後，您就可以發布活動刊登了。",
+      "phoneNumber": "電話號碼",
+      "sendCode": "發送驗證碼",
+      "sending": "發送中...",
+      "notice": "我們會發送一則簡訊驗證碼到您的手機。"
+    },
+    "verify": {
+      "title": "輸入驗證碼",
+      "description": "請輸入收到的 6 位數驗證碼。",
+      "code": "驗證碼",
+      "verify": "驗證",
+      "verifying": "驗證中...",
+      "resend": "重新發送驗證碼",
+      "resendIn": "重新發送倒數"
+    },
+    "success": {
+      "title": "電話驗證成功！",
+      "description": "恭喜！您已完成所有驗證，現在可以發布活動刊登了。",
+      "createListing": "立即發布刊登"
+    },
+    "error": {
+      "title": "驗證失敗",
+      "tryAgain": "重新嘗試"
+    },
+    "errors": {
+      "sendFailed": "發送驗證碼失敗，請稍後再試。",
+      "invalidCode": "驗證碼錯誤，請重新輸入。",
+      "verifyFailed": "驗證失敗，請稍後再試。",
+      "phoneInUse": "此電話號碼已被其他帳號使用。"
+    }
+  },
+  "verification": {
+    "title": "Email 驗證",
+    "success": {
+      "title": "驗證成功！",
+      "description": "您的 Email 已成功驗證。現在您可以開始申請同行夥伴了。",
+      "goHome": "返回首頁"
+    },
+    "error": {
+      "title": "驗證失敗"
+    },
+    "errors": {
+      "missingToken": "驗證連結無效，請重新請求驗證信。",
+      "invalidToken": "驗證連結無效或已被使用。",
+      "expiredToken": "驗證連結已過期，請重新請求驗證信。",
+      "alreadyVerified": "此 Email 已經驗證過了。",
+      "updateFailed": "驗證過程發生錯誤，請稍後再試。",
+      "unknown": "發生未知錯誤，請稍後再試。",
+      "tooManyRequests": "請求過於頻繁，請稍後再試。",
+      "sendFailed": "發送驗證信失敗，請稍後再試。"
+    },
+    "pending": {
+      "title": "驗證您的 Email",
+      "description": "我們已發送驗證信到您的信箱，請點擊信中的連結完成驗證。",
+      "checkSpam": "如果沒有收到信件，請檢查垃圾郵件資料夾。"
+    },
+    "sendEmail": "發送驗證信",
+    "resendEmail": "重新發送",
+    "resendIn": "重新發送倒數",
+    "sending": "發送中..."
   }
 }

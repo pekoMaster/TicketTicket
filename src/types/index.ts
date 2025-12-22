@@ -8,18 +8,51 @@ export const ROLE_HIERARCHY: Record<UserRole, number> = {
   super_admin: 3,
 };
 
+// 驗證層級
+// unverified: 未驗證（剛註冊）
+// applicant: 已驗證 Email（可申請同行）
+// host: 已驗證電話（可發布活動）
+export type VerificationLevel = 'unverified' | 'applicant' | 'host';
+
+// 驗證層級資訊
+export const VERIFICATION_LEVEL_INFO: Record<VerificationLevel, {
+  label: string;
+  description: string;
+  color: string;
+}> = {
+  unverified: {
+    label: '未驗證',
+    description: '請驗證 Email 以使用完整功能',
+    color: 'bg-gray-100 text-gray-800',
+  },
+  applicant: {
+    label: '申請者',
+    description: '可申請同行，驗證電話後可發布活動',
+    color: 'bg-blue-100 text-blue-800',
+  },
+  host: {
+    label: '主辦方',
+    description: '已完成所有驗證，可發布活動',
+    color: 'bg-green-100 text-green-800',
+  },
+};
+
 // 用戶型別
 export interface User {
   id: string;
   username: string;
   email: string;
   role: UserRole;                   // 用戶角色
+  verificationLevel: VerificationLevel;  // 驗證層級
   avatarUrl?: string;
   customAvatarUrl?: string;        // 用戶上傳的自訂頭像
   rating: number;
   reviewCount: number;
   createdAt: Date;
-  isVerified: boolean;
+  isVerified: boolean;             // 舊欄位，向後相容
+  // 驗證時間
+  emailVerifiedAt?: Date;
+  phoneVerifiedAt?: Date;
   // 聯絡資料
   phoneCountryCode?: string;
   phoneNumber?: string;
@@ -48,11 +81,10 @@ export const PHONE_COUNTRY_CODES = [
 ];
 
 // 票券類型（新版）
-// find_companion: 尋找同行者（必須是二人票，價格為一半）
-// main_ticket_transfer: 母票轉讓（須提供持票帳號或見面時借出手機）- 暫時停用
+// find_companion: 尋找同行者（可選擇協助入場）
 // sub_ticket_transfer: 子票轉讓（須確認對方持有且可啟用ZAIKO）
 // ticket_exchange: 換票（與其他用戶交換票券）
-export type TicketType = 'find_companion' | 'main_ticket_transfer' | 'sub_ticket_transfer' | 'ticket_exchange';
+export type TicketType = 'find_companion' | 'sub_ticket_transfer' | 'ticket_exchange';
 
 // 座位等級（改為動態字串，由管理員自訂）
 export type SeatGrade = string;
@@ -63,8 +95,6 @@ export type TicketCountType = 'solo' | 'duo';
 // 刊登狀態
 export type ListingStatus = 'open' | 'matched' | 'closed';
 
-// 補貼方向
-export type SubsidyDirection = 'i_pay_you' | 'you_pay_me';
 
 // 票券刊登
 export interface Listing {
@@ -76,8 +106,6 @@ export interface Listing {
   venue: string;
   meetingTime: Date;
   meetingLocation: string;
-  originalPriceJPY: number;                // 原價（日圓）
-  askingPriceJPY: number;                  // 希望費用（日圓）
   totalSlots: number;
   availableSlots: number;
   ticketType: TicketType;
@@ -86,13 +114,12 @@ export interface Listing {
   hostNationality: string;                 // 持票人國籍
   hostLanguages: string[];                 // 可使用語言
   identificationFeatures: string;          // 辨識特徵（穿著等）
+  willAssistEntry?: boolean;               // 是否協助入場（同行者選項）
   status: ListingStatus;
   description?: string;                    // 其他注意事項
   // 換票專用欄位
   exchangeEventName?: string;              // 想換的活動名稱
   exchangeSeatGrade?: string;              // 想換的座位等級（'any' 為任意）
-  subsidyAmount?: number;                  // 補貼金額（日圓）
-  subsidyDirection?: SubsidyDirection;     // 補貼方向
   createdAt: Date;
   updatedAt: Date;
   host?: User;                             // 刊登者資訊（從 API 載入時附帶）
@@ -136,11 +163,10 @@ export interface Review {
 // HOLOLIVE 活動類型
 export type EventCategory = 'concert' | 'fan_meeting' | 'expo' | 'streaming' | 'other';
 
-// 票價等級（用於管理員設定價格天花板）
+// 票種等級（用於管理員設定可用的座位/票種組合）
 export interface TicketPriceTier {
   seatGrade: SeatGrade;
   ticketCountType: TicketCountType;
-  priceJPY: number;
 }
 
 // HOLOLIVE 活動
@@ -194,21 +220,11 @@ export const TICKET_TYPE_INFO: Record<TicketType, {
   description: string;
   warning?: string;
   color: string;
-  requiresDuo?: boolean;  // 是否必須是二人票
-  disabled?: boolean;     // 是否暫時停用
 }> = {
   find_companion: {
     label: '尋找同行者',
-    description: '尋找一起入場的夥伴，費用均攤',
-    warning: '必須選擇二人票',
+    description: '尋找一起入場的夥伴',
     color: 'bg-blue-100 text-blue-800',
-    requiresDuo: true,
-  },
-  main_ticket_transfer: {
-    label: '母票轉讓',
-    description: '轉讓主票，無法線上讓渡，請自行連絡同行辦法',
-    warning: '轉讓主票為違反 ZAIKO 與相關舉辦單位之行為，本網站不負責任何換票後的後果',
-    color: 'bg-purple-100 text-purple-800',
   },
   sub_ticket_transfer: {
     label: '子票轉讓',

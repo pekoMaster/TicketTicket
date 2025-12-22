@@ -103,6 +103,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // 檢查用戶驗證層級（必須至少是 applicant 才能申請）
+    const { data: user } = await supabaseAdmin
+      .from('users')
+      .select('verification_level')
+      .eq('id', session.user.dbId)
+      .single();
+
+    if (!user || user.verification_level === 'unverified') {
+      return NextResponse.json({
+        error: 'VERIFICATION_REQUIRED',
+        message: 'Email verification required to apply',
+        currentLevel: user?.verification_level || 'unverified',
+        requiredLevel: 'applicant',
+      }, { status: 403 });
+    }
+
     const body = await request.json();
     const { listingId, message } = body;
 

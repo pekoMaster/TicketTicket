@@ -30,7 +30,7 @@ import {
   LANGUAGE_OPTIONS,
 } from '@/types';
 
-type SortOption = 'date' | 'price_asc' | 'price_desc' | 'newest';
+type SortOption = 'date' | 'newest';
 type DateFilter = 'all' | 'week' | 'month' | '3months';
 
 export default function HomePage() {
@@ -49,8 +49,6 @@ export default function HomePage() {
   const [selectedEvent, setSelectedEvent] = useState('');
   const [dateFilter, setDateFilter] = useState<DateFilter>('all');
   const [selectedTicketType, setSelectedTicketType] = useState<TicketType | ''>('');
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
   const [hostNameQuery, setHostNameQuery] = useState('');
   const [minRating, setMinRating] = useState('');
   const [selectedNationality, setSelectedNationality] = useState('');
@@ -112,13 +110,6 @@ export default function HomePage() {
       result = result.filter((l) => l.ticketType === selectedTicketType);
     }
 
-    // 價格範圍篩選
-    const min = parseInt(minPrice) || 0;
-    const max = parseInt(maxPrice) || Infinity;
-    if (minPrice || maxPrice) {
-      result = result.filter((l) => l.askingPriceJPY >= min && l.askingPriceJPY <= max);
-    }
-
     // 主辦人名稱搜尋
     if (hostNameQuery) {
       const query = hostNameQuery.toLowerCase();
@@ -148,19 +139,13 @@ export default function HomePage() {
       case 'date':
         result.sort((a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime());
         break;
-      case 'price_asc':
-        result.sort((a, b) => a.askingPriceJPY - b.askingPriceJPY);
-        break;
-      case 'price_desc':
-        result.sort((a, b) => b.askingPriceJPY - a.askingPriceJPY);
-        break;
       case 'newest':
         result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         break;
     }
 
     return result;
-  }, [listings, searchQuery, selectedEvent, dateFilter, selectedTicketType, minPrice, maxPrice, hostNameQuery, minRating, selectedNationality, selectedLanguages, sortBy]);
+  }, [listings, searchQuery, selectedEvent, dateFilter, selectedTicketType, hostNameQuery, minRating, selectedNationality, selectedLanguages, sortBy]);
 
   const toggleLanguage = (lang: string) => {
     setSelectedLanguages((prev) =>
@@ -173,8 +158,6 @@ export default function HomePage() {
     setSelectedEvent('');
     setDateFilter('all');
     setSelectedTicketType('');
-    setMinPrice('');
-    setMaxPrice('');
     setHostNameQuery('');
     setMinRating('');
     setSelectedNationality('');
@@ -187,15 +170,13 @@ export default function HomePage() {
     selectedEvent !== '' ||
     dateFilter !== 'all' ||
     selectedTicketType !== '' ||
-    minPrice !== '' ||
-    maxPrice !== '' ||
     hostNameQuery !== '' ||
     minRating !== '' ||
     selectedNationality !== '' ||
     selectedLanguages.length > 0 ||
     sortBy !== 'date';
 
-  const ticketTypes: TicketType[] = ['find_companion', 'main_ticket_transfer', 'sub_ticket_transfer', 'ticket_exchange'];
+  const ticketTypes: TicketType[] = ['find_companion', 'sub_ticket_transfer', 'ticket_exchange'];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
@@ -305,28 +286,6 @@ export default function HomePage() {
                     <option value="price_desc">{tFilter('priceHighLow')}</option>
                     <option value="newest">{tFilter('newest')}</option>
                   </select>
-                </div>
-
-                {/* 價格範圍 */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('priceRange')}</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="number"
-                      placeholder={tFilter('minPrice')}
-                      value={minPrice}
-                      onChange={(e) => setMinPrice(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
-                    />
-                    <span className="flex items-center text-gray-400 dark:text-gray-500">~</span>
-                    <input
-                      type="number"
-                      placeholder={tFilter('maxPrice')}
-                      value={maxPrice}
-                      onChange={(e) => setMaxPrice(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
-                    />
-                  </div>
                 </div>
 
                 {/* 主辦人名稱 */}
@@ -468,7 +427,6 @@ export default function HomePage() {
                           <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">{t('date')}</th>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">{t('nationality')}</th>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">{t('ticketType')}</th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">{t('price')}</th>
                           <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">{t('host')}</th>
                         </tr>
                       </thead>
@@ -489,9 +447,6 @@ export default function HomePage() {
                             </td>
                             <td className="px-4 py-3">
                               <TicketTypeTag type={listing.ticketType} size="sm" />
-                            </td>
-                            <td className="px-4 py-3">
-                              <span className="text-sm font-medium text-indigo-600 dark:text-indigo-400">¥{listing.askingPriceJPY.toLocaleString()}</span>
                             </td>
                             <td className="px-4 py-3">
                               {listing.host && (

@@ -18,13 +18,13 @@ interface EventFormProps {
   isEditing?: boolean;
 }
 
-// 預設票價等級列（5列）- 座位等級現在是自訂字串
+// 預設票種等級列（5列）- 座位等級現在是自訂字串
 const createDefaultPriceTiers = (): TicketPriceTier[] => [
-  { seatGrade: 'SS', ticketCountType: 'solo', priceJPY: 0 },
-  { seatGrade: 'S', ticketCountType: 'solo', priceJPY: 0 },
-  { seatGrade: 'A', ticketCountType: 'solo', priceJPY: 0 },
-  { seatGrade: 'A', ticketCountType: 'duo', priceJPY: 0 },
-  { seatGrade: 'B', ticketCountType: 'solo', priceJPY: 0 },
+  { seatGrade: 'SS', ticketCountType: 'solo' },
+  { seatGrade: 'S', ticketCountType: 'solo' },
+  { seatGrade: 'A', ticketCountType: 'solo' },
+  { seatGrade: 'A', ticketCountType: 'duo' },
+  { seatGrade: 'B', ticketCountType: 'solo' },
 ];
 
 export default function EventForm({ initialData, onSubmit, isEditing }: EventFormProps) {
@@ -67,21 +67,17 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
     }
   };
 
-  // 票價等級操作
-  const handlePriceTierChange = (index: number, field: keyof TicketPriceTier, value: string | number) => {
+  // 票種等級操作
+  const handlePriceTierChange = (index: number, field: keyof TicketPriceTier, value: string) => {
     setPriceTiers((prev) => {
       const updated = [...prev];
-      if (field === 'priceJPY') {
-        updated[index] = { ...updated[index], [field]: parseInt(value as string) || 0 };
-      } else {
-        updated[index] = { ...updated[index], [field]: value };
-      }
+      updated[index] = { ...updated[index], [field]: value };
       return updated;
     });
   };
 
   const addPriceTier = () => {
-    setPriceTiers((prev) => [...prev, { seatGrade: '', ticketCountType: 'solo', priceJPY: 0 }]);
+    setPriceTiers((prev) => [...prev, { seatGrade: '', ticketCountType: 'solo' }]);
   };
 
   const removePriceTier = (index: number) => {
@@ -106,10 +102,10 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
       newErrors.venue = '請輸入場地';
     }
 
-    // 檢查至少有一個有效的票價（有座位等級名稱且價格大於0）
-    const validPriceTiers = priceTiers.filter((tier) => tier.seatGrade.trim() !== '' && tier.priceJPY > 0);
+    // 檢查至少有一個有效的票種（有座位等級名稱）
+    const validPriceTiers = priceTiers.filter((tier) => tier.seatGrade.trim() !== '');
     if (validPriceTiers.length === 0) {
-      newErrors.priceTiers = '請至少設定一個票價（須填寫座位等級名稱和價格）';
+      newErrors.priceTiers = '請至少設定一個票種（須填寫座位等級名稱）';
     }
 
     setErrors(newErrors);
@@ -126,8 +122,8 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
 
     setIsSubmitting(true);
 
-    // 只保留有效的票價等級（有座位等級名稱且價格大於0）
-    const validPriceTiers = priceTiers.filter((tier) => tier.seatGrade.trim() !== '' && tier.priceJPY > 0);
+    // 只保留有效的票種等級（有座位等級名稱）
+    const validPriceTiers = priceTiers.filter((tier) => tier.seatGrade.trim() !== '');
 
     try {
       await onSubmit({
@@ -319,19 +315,18 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
       <section className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 lg:p-8 shadow-sm border border-gray-200 dark:border-gray-700">
         <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4 lg:mb-6 flex items-center gap-2">
           <Ticket className="w-5 h-5 text-indigo-500" />
-          票價設定（價格天花板）
+          票種設定
         </h2>
         <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-4">
-          設定各座位等級與票種的最高價格，用戶發布同行時不可超過此價格
+          設定各座位等級與票種的組合，用戶發布時可選擇
         </p>
 
         <div className="space-y-3">
           {/* 表頭 - 只在桌面顯示 */}
           <div className="hidden sm:grid grid-cols-12 gap-2 text-sm font-medium text-gray-600 dark:text-gray-300 pb-2 border-b dark:border-gray-700">
-            <div className="col-span-4">座位等級名稱（自訂）</div>
-            <div className="col-span-4">票種類型</div>
-            <div className="col-span-3">價格（日圓）</div>
-            <div className="col-span-1"></div>
+            <div className="col-span-5">座位等級名稱（自訂）</div>
+            <div className="col-span-5">票種類型</div>
+            <div className="col-span-2"></div>
           </div>
 
           {/* 票價列表 */}
@@ -376,21 +371,11 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
                     </select>
                   </div>
                 </div>
-                <div>
-                  <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">價格（日圓）</label>
-                  <input
-                    type="number"
-                    value={tier.priceJPY || ''}
-                    onChange={(e) => handlePriceTierChange(index, 'priceJPY', e.target.value)}
-                    placeholder="0"
-                    className="w-full px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
-                  />
-                </div>
               </div>
 
               {/* 桌面版 - 表格式 */}
               <div className="hidden sm:grid grid-cols-12 gap-2 items-center">
-                <div className="col-span-4">
+                <div className="col-span-5">
                   <input
                     type="text"
                     value={tier.seatGrade}
@@ -399,7 +384,7 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
                   />
                 </div>
-                <div className="col-span-4">
+                <div className="col-span-5">
                   <select
                     value={tier.ticketCountType}
                     onChange={(e) => handlePriceTierChange(index, 'ticketCountType', e.target.value)}
@@ -412,16 +397,7 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
                     ))}
                   </select>
                 </div>
-                <div className="col-span-3">
-                  <input
-                    type="number"
-                    value={tier.priceJPY || ''}
-                    onChange={(e) => handlePriceTierChange(index, 'priceJPY', e.target.value)}
-                    placeholder="0"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
-                  />
-                </div>
-                <div className="col-span-1 flex justify-center">
+                <div className="col-span-2 flex justify-center">
                   <button
                     type="button"
                     onClick={() => removePriceTier(index)}

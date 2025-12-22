@@ -12,6 +12,7 @@ export const mockUsers: User[] = [
     reviewCount: 0,
     createdAt: new Date(),
     isVerified: false,
+    verificationLevel: 'unverified',
   },
 ];
 

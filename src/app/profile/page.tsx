@@ -456,7 +456,7 @@ export default function ProfilePage() {
                             {application.status === 'accepted' && tMessages('accepted')}
                             {application.status === 'rejected' && tMessages('rejected')}
                           </Tag>
-                          <TicketTypeTag type={application.listing.ticket_type as 'find_companion' | 'main_ticket_transfer' | 'sub_ticket_transfer' | 'ticket_exchange'} size="sm" />
+                          <TicketTypeTag type={application.listing.ticket_type as 'find_companion' | 'sub_ticket_transfer' | 'ticket_exchange'} size="sm" />
                         </div>
 
                         {/* 活動名稱 */}
@@ -464,14 +464,11 @@ export default function ProfilePage() {
                           {application.listing.event_name}
                         </p>
 
-                        {/* 主辦方 + 座位 + 價格 */}
+                        {/* 主辦方 + 座位 */}
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
                           <span>{application.listing.host?.username}</span>
                           <span className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">
                             {application.listing.seat_grade}
-                          </span>
-                          <span className="font-medium text-gray-700 dark:text-gray-300">
-                            ¥{application.listing.asking_price_jpy?.toLocaleString()}
                           </span>
                         </div>
                       </div>
@@ -537,7 +534,7 @@ export default function ProfilePage() {
                       <Avatar src={match.otherUser.avatarUrl} size="md" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <TicketTypeTag type={match.listing.ticket_type as 'find_companion' | 'main_ticket_transfer' | 'sub_ticket_transfer' | 'ticket_exchange'} size="sm" />
+                          <TicketTypeTag type={match.listing.ticket_type as 'find_companion' | 'sub_ticket_transfer' | 'ticket_exchange'} size="sm" />
                           <Tag variant={match.isHost ? 'purple' : 'info'} size="sm">
                             {match.isHost ? t('iWasHost') : t('iWasGuest')}
                           </Tag>

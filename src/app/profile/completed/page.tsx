@@ -132,7 +132,7 @@ export default function CompletedMatchesPage() {
                                                     <h3 className="font-semibold text-gray-900 dark:text-gray-100 break-words">
                                                         {item.listing.event_name}
                                                     </h3>
-                                                    <TicketTypeTag type={item.listing.ticket_type as 'find_companion' | 'main_ticket_transfer' | 'sub_ticket_transfer' | 'ticket_exchange'} size="sm" />
+                                                    <TicketTypeTag type={item.listing.ticket_type as 'find_companion' | 'sub_ticket_transfer' | 'ticket_exchange'} size="sm" />
                                                 </div>
 
                                                 {/* 日期地點 */}

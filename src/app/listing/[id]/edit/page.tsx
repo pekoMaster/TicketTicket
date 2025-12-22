@@ -71,14 +71,13 @@ export default function EditListingPage() {
   const [ticketType, setTicketType] = useState<TicketType | ''>('');
   const [seatGrade, setSeatGrade] = useState<SeatGrade | ''>('');
   const [ticketCountType, setTicketCountType] = useState<TicketCountType | ''>('');
-  const [originalPriceJPY, setOriginalPriceJPY] = useState(0);
-  const [askingPriceJPY, setAskingPriceJPY] = useState('');
   const [hostNationality, setHostNationality] = useState('');
   const [hostLanguages, setHostLanguages] = useState<string[]>([]);
   const [identificationFeatures, setIdentificationFeatures] = useState('');
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [willAssistEntry, setWillAssistEntry] = useState(false);
 
   const listing = listings.find((l) => l.id === params.id);
 
@@ -128,12 +127,11 @@ export default function EditListingPage() {
     setTicketType(listing.ticketType);
     setSeatGrade(listing.seatGrade);
     setTicketCountType(listing.ticketCountType);
-    setOriginalPriceJPY(listing.originalPriceJPY);
-    setAskingPriceJPY(String(listing.askingPriceJPY));
     setHostNationality(listing.hostNationality);
     setHostLanguages(listing.hostLanguages);
     setIdentificationFeatures(listing.identificationFeatures || '');
     setDescription(listing.description || '');
+    setWillAssistEntry(listing.willAssistEntry || false);
     setIsLoading(false);
   }, [listing, session?.user?.dbId, fetchListings]);
 
@@ -174,40 +172,13 @@ export default function EditListingPage() {
     return Array.from(new Set(types)) as TicketCountType[];
   }, [selectedEvent, seatGrade]);
 
-  // 獲取選定票價（自動從管理員設定獲取）
+  // 察看是否已選擇票種等級
   const selectedPriceTier = useMemo(() => {
     if (!selectedEvent?.ticketPriceTiers || !seatGrade || !ticketCountType) return null;
     return selectedEvent.ticketPriceTiers.find(
       t => t.seatGrade === seatGrade && t.ticketCountType === ticketCountType
     );
   }, [selectedEvent, seatGrade, ticketCountType]);
-
-  // 如果是從管理員活動取得，使用那個價格；否則使用原始價格
-  const effectiveOriginalPrice = selectedPriceTier?.priceJPY || originalPriceJPY;
-
-  // 計算價格限制（統一使用日圓）
-  const priceCalc = useMemo(() => {
-    const jpy = effectiveOriginalPrice;
-    const asking = parseInt(askingPriceJPY) || 0;
-
-    // 如果是尋找同行者或子票轉讓，價格上限為一半 + 1000
-    const isFindCompanion = ticketType === 'find_companion';
-    const isSubTicketTransfer = ticketType === 'sub_ticket_transfer';
-    const needsHalfPrice = isFindCompanion || isSubTicketTransfer;
-    const maxAllowed = needsHalfPrice ? Math.round(jpy / 2) + 1000 : jpy;
-
-    const isValid = asking > 0 && asking <= maxAllowed;
-
-    return {
-      originalJPY: jpy,
-      maxAllowed,
-      isValid,
-      asking,
-      isFindCompanion,
-      isSubTicketTransfer,
-      needsHalfPrice,
-    };
-  }, [effectiveOriginalPrice, askingPriceJPY, ticketType]);
 
   // 表單驗證
   const isFormValid = useMemo(() => {
@@ -217,8 +188,6 @@ export default function EditListingPage() {
       venue.trim() !== '' &&
       meetingTime !== '' &&
       meetingLocation.trim() !== '' &&
-      effectiveOriginalPrice > 0 &&
-      priceCalc.isValid &&
       identificationFeatures.trim() !== '' &&
       hostLanguages.length > 0 &&
       ticketType !== '' &&
@@ -226,7 +195,7 @@ export default function EditListingPage() {
       ticketCountType !== '' &&
       hostNationality !== ''
     );
-  }, [eventName, eventDate, venue, meetingTime, meetingLocation, effectiveOriginalPrice, priceCalc, identificationFeatures, hostLanguages, ticketType, seatGrade, ticketCountType, hostNationality]);
+  }, [eventName, eventDate, venue, meetingTime, meetingLocation, identificationFeatures, hostLanguages, ticketType, seatGrade, ticketCountType, hostNationality]);
 
   const handleLanguageToggle = (lang: string) => {
     setHostLanguages((prev) =>
@@ -290,8 +259,6 @@ export default function EditListingPage() {
         venue,
         meeting_time: `${eventDate}T${meetingTime}`,
         meeting_location: meetingLocation,
-        original_price_jpy: effectiveOriginalPrice,
-        asking_price_jpy: priceCalc.asking,
         total_slots: ticketCountType === 'duo' ? 2 : 1,
         ticket_type: ticketType as TicketType,
         seat_grade: seatGrade as SeatGrade,
@@ -300,6 +267,7 @@ export default function EditListingPage() {
         host_languages: hostLanguages,
         identification_features: identificationFeatures,
         description: description || null,
+        will_assist_entry: ticketType === 'find_companion' ? willAssistEntry : undefined,
       };
 
       const response = await fetch(`/api/listings/${listing.id}`, {
@@ -331,7 +299,7 @@ export default function EditListingPage() {
   };
 
   // 票券類型選項
-  const ticketTypes: TicketType[] = ['find_companion', 'main_ticket_transfer', 'sub_ticket_transfer'];
+  const ticketTypes: TicketType[] = ['find_companion', 'sub_ticket_transfer'];
 
   if (isLoading) {
     return (
@@ -574,20 +542,6 @@ export default function EditListingPage() {
                 )}
               </div>
 
-              {/* 票價顯示 */}
-              {(selectedPriceTier || originalPriceJPY > 0) && (
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Info className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm font-medium text-gray-700">{t('priceInfoByAdmin')}</span>
-                  </div>
-                  <div className="text-sm">
-                    <span className="text-gray-500">{t('originalPriceJPYLabel')}</span>
-                    <p className="font-medium text-gray-900 text-lg">¥{effectiveOriginalPrice.toLocaleString()}</p>
-                  </div>
-                </div>
-              )}
-
               {/* 票券類型選擇 */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -596,11 +550,9 @@ export default function EditListingPage() {
                 <div className="space-y-2">
                   {ticketTypes.map((type) => {
                     const info = TICKET_TYPE_INFO[type];
-                    // 尋找同行者只有二人票可選
-                    const isFindCompanionDisabled = type === 'find_companion' && ticketCountType !== 'duo';
-                    // 轉讓母票暫時禁用
-                    const isMainTicketDisabled = type === 'main_ticket_transfer';
-                    const isDisabled = isFindCompanionDisabled || isMainTicketDisabled;
+                    // 轉讓子票僅限二人票以上
+                    const isSubTicketDisabled = type === 'sub_ticket_transfer' && ticketCountType === 'solo';
+                    const isDisabled = isSubTicketDisabled;
 
                     return (
                       <label
@@ -624,14 +576,7 @@ export default function EditListingPage() {
                           className="mt-0.5"
                         />
                         <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium text-gray-900 text-sm">{info.label}</p>
-                            {isMainTicketDisabled && (
-                              <span className="px-1.5 py-0.5 text-xs bg-gray-200 text-gray-500 rounded">
-                                {tCommon('comingSoon')}
-                              </span>
-                            )}
-                          </div>
+                          <p className="font-medium text-gray-900 text-sm">{info.label}</p>
                           <p className="text-xs text-gray-500">{info.description}</p>
                           {info.warning && (
                             <div className="flex items-center gap-1 mt-1 text-xs text-orange-600">
@@ -644,55 +589,32 @@ export default function EditListingPage() {
                     );
                   })}
                 </div>
+
+                {/* 同行者 - 協助入場 Checkbox */}
+                {ticketType === 'find_companion' && (
+                  <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <label className="flex items-start gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={willAssistEntry}
+                        onChange={(e) => setWillAssistEntry(e.target.checked)}
+                        className="mt-0.5 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <div>
+                        <p className="font-medium text-blue-800 text-sm">
+                          {t('willAssistEntry', { defaultValue: '我會協助對方入場' })}
+                        </p>
+                        <p className="text-xs text-blue-600 mt-0.5">
+                          {t('willAssistEntryDesc', { defaultValue: '勾選此項表示您會在現場親自協助對方入場' })}
+                        </p>
+                      </div>
+                    </label>
+                  </div>
+                )}
               </div>
             </div>
           </Card>
 
-          {/* 希望費用 */}
-          <Card>
-            <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <span className="text-indigo-500 font-bold text-lg">¥</span>
-              {t('askingPriceSection')}
-            </h3>
-
-            <div className="space-y-4">
-              {/* 價格上限說明 - 只在尋找同行者或子票轉讓時顯示 */}
-              {effectiveOriginalPrice > 0 && priceCalc.needsHalfPrice && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                  <p className="text-sm text-blue-800">
-                    <Info className="w-4 h-4 inline mr-1" />
-                    {priceCalc.isFindCompanion
-                      ? t('companionPriceLimit', { max: priceCalc.maxAllowed.toLocaleString() })
-                      : t('subTicketPriceLimit', { max: priceCalc.maxAllowed.toLocaleString() })
-                    }
-                  </p>
-                </div>
-              )}
-
-              <Input
-                label={t('askingPriceJPY')}
-                type="number"
-                placeholder={priceCalc.maxAllowed > 0 ? t('maxPrice', { max: priceCalc.maxAllowed }) : t('pleaseSelectTicket')}
-                value={askingPriceJPY}
-                onChange={(e) => setAskingPriceJPY(e.target.value)}
-                leftIcon={<span className="text-gray-400 font-medium">¥</span>}
-                required
-                error={
-                  priceCalc.asking > 0 && !priceCalc.isValid
-                    ? t('cannotExceed').replace('${max}', priceCalc.maxAllowed.toLocaleString())
-                    : undefined
-                }
-              />
-
-              {/* 價格驗證結果 */}
-              {priceCalc.asking > 0 && priceCalc.isValid && (
-                <div className="flex items-center gap-2 text-sm rounded-lg p-3 bg-green-50 text-green-700">
-                  <Check className="w-5 h-5" />
-                  <span>{t('priceValid')}</span>
-                </div>
-              )}
-            </div>
-          </Card>
 
           {/* 發布者資訊 */}
           <Card>

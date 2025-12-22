@@ -749,5 +749,70 @@
       "point2": "请勿在线上提前转账，避免诈骗风险。如遇可疑情况请立即举报。",
       "point3": "部分活动有同行者身份限制，请务必事先确认并遵守主办单位的规定。"
     }
+  },
+  "phoneVerification": {
+    "title": "电话验证",
+    "input": {
+      "title": "验证您的电话号码",
+      "description": "完成电话验证后，您就可以发布活动刊登了。",
+      "phoneNumber": "电话号码",
+      "sendCode": "发送验证码",
+      "sending": "发送中...",
+      "notice": "我们会发送一则短信验证码到您的手机。"
+    },
+    "verify": {
+      "title": "输入验证码",
+      "description": "请输入收到的 6 位数验证码。",
+      "code": "验证码",
+      "verify": "验证",
+      "verifying": "验证中...",
+      "resend": "重新发送验证码",
+      "resendIn": "重新发送倒数"
+    },
+    "success": {
+      "title": "电话验证成功！",
+      "description": "恭喜！您已完成所有验证，现在可以发布活动刊登了。",
+      "createListing": "立即发布刊登"
+    },
+    "error": {
+      "title": "验证失败",
+      "tryAgain": "重新尝试"
+    },
+    "errors": {
+      "sendFailed": "发送验证码失败，请稍后再试。",
+      "invalidCode": "验证码错误，请重新输入。",
+      "verifyFailed": "验证失败，请稍后再试。",
+      "phoneInUse": "此电话号码已被其他帐号使用。"
+    }
+  },
+  "verification": {
+    "title": "Email 验证",
+    "success": {
+      "title": "验证成功！",
+      "description": "您的 Email 已成功验证。现在您可以开始申请同行伙伴了。",
+      "goHome": "返回首页"
+    },
+    "error": {
+      "title": "验证失败"
+    },
+    "errors": {
+      "missingToken": "验证链接无效，请重新请求验证信。",
+      "invalidToken": "验证链接无效或已被使用。",
+      "expiredToken": "验证链接已过期，请重新请求验证信。",
+      "alreadyVerified": "此 Email 已经验证过了。",
+      "updateFailed": "验证过程发生错误，请稍后再试。",
+      "unknown": "发生未知错误，请稍后再试。",
+      "tooManyRequests": "请求过于频繁，请稍后再试。",
+      "sendFailed": "发送验证信失败，请稍后再试。"
+    },
+    "pending": {
+      "title": "验证您的 Email",
+      "description": "我们已发送验证信到您的信箱，请点击信中的链接完成验证。",
+      "checkSpam": "如果没有收到信件，请检查垃圾邮件资料夹。"
+    },
+    "sendEmail": "发送验证信",
+    "resendEmail": "重新发送",
+    "resendIn": "重新发送倒数",
+    "sending": "发送中..."
   }
 }

@@ -28,23 +28,20 @@ interface ApiListing {
   venue: string;
   meeting_time: string;
   meeting_location: string;
-  original_price_jpy: number;
-  asking_price_jpy: number;
   total_slots: number;
   available_slots: number;
-  ticket_type: 'find_companion' | 'main_ticket_transfer' | 'sub_ticket_transfer' | 'ticket_exchange';
+  ticket_type: 'find_companion' | 'sub_ticket_transfer' | 'ticket_exchange';
   seat_grade: string;
   ticket_count_type: 'solo' | 'duo';
   host_nationality: string;
   host_languages: string[];
   identification_features?: string;
+  will_assist_entry?: boolean;
   status: 'open' | 'matched' | 'closed';
   description?: string;
   // 換票專用欄位
   exchange_event_name?: string;
   exchange_seat_grade?: string;
-  subsidy_amount?: number;
-  subsidy_direction?: 'i_pay_you' | 'you_pay_me';
   created_at: string;
   updated_at: string;
   host?: ApiUser;
@@ -61,8 +58,6 @@ function convertApiListingToListing(apiListing: ApiListing): Listing {
     venue: apiListing.venue,
     meetingTime: new Date(apiListing.meeting_time),
     meetingLocation: apiListing.meeting_location,
-    originalPriceJPY: apiListing.original_price_jpy,
-    askingPriceJPY: apiListing.asking_price_jpy,
     totalSlots: apiListing.total_slots,
     availableSlots: apiListing.available_slots,
     ticketType: apiListing.ticket_type,
@@ -71,13 +66,12 @@ function convertApiListingToListing(apiListing: ApiListing): Listing {
     hostNationality: apiListing.host_nationality,
     hostLanguages: apiListing.host_languages,
     identificationFeatures: apiListing.identification_features || '',
+    willAssistEntry: apiListing.will_assist_entry,
     status: apiListing.status,
     description: apiListing.description || '',
     // 換票專用欄位
     exchangeEventName: apiListing.exchange_event_name,
     exchangeSeatGrade: apiListing.exchange_seat_grade,
-    subsidyAmount: apiListing.subsidy_amount,
-    subsidyDirection: apiListing.subsidy_direction,
     createdAt: new Date(apiListing.created_at),
     updatedAt: new Date(apiListing.updated_at),
     host: apiListing.host ? {
@@ -85,6 +79,7 @@ function convertApiListingToListing(apiListing: ApiListing): Listing {
       email: '',
       username: apiListing.host.username,
       role: 'user' as const,
+      verificationLevel: 'applicant' as const,
       avatarUrl: apiListing.host.avatar_url || '',
       customAvatarUrl: apiListing.host.custom_avatar_url,
       rating: apiListing.host.rating,
@@ -130,21 +125,18 @@ interface CreateListingData {
   venue: string;
   meetingTime: string;
   meetingLocation: string;
-  originalPriceJPY: number;
-  askingPriceJPY: number;
   totalSlots?: number;
-  ticketType: 'find_companion' | 'main_ticket_transfer' | 'sub_ticket_transfer' | 'ticket_exchange';
+  ticketType: 'find_companion' | 'sub_ticket_transfer' | 'ticket_exchange';
   seatGrade: string;
   ticketCountType: 'solo' | 'duo';
   hostNationality: string;
   hostLanguages?: string[];
   identificationFeatures?: string;
   description?: string;
+  willAssistEntry?: boolean;
   // 換票專用欄位
   exchangeEventName?: string;
   exchangeSeatGrade?: string;
-  subsidyAmount?: number;
-  subsidyDirection?: 'i_pay_you' | 'you_pay_me';
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);

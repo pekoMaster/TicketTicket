@@ -37,6 +37,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // 檢查用戶驗證層級（必須是 host 才能發布刊登）
+    const { data: user } = await supabaseAdmin
+      .from('users')
+      .select('verification_level')
+      .eq('id', session.user.dbId)
+      .single();
+
+    if (!user || user.verification_level !== 'host') {
+      return NextResponse.json({
+        error: 'VERIFICATION_REQUIRED',
+        message: 'Phone verification required to create listings',
+        currentLevel: user?.verification_level || 'unverified',
+        requiredLevel: 'host',
+      }, { status: 403 });
+    }
+
     const body = await request.json();
 
     // 檢查該用戶在此活動的刊登數量
@@ -65,8 +81,8 @@ export async function POST(request: NextRequest) {
       venue: body.venue,
       meeting_time: body.meetingTime,
       meeting_location: body.meetingLocation,
-      original_price_jpy: body.originalPriceJPY,
-      asking_price_jpy: body.askingPriceJPY,
+      original_price_jpy: 0, // 價格功能已移除，預設為 0
+      asking_price_jpy: 0,   // 價格功能已移除，預設為 0
       total_slots: body.totalSlots || 1,
       available_slots: body.totalSlots || 1,
       ticket_type: body.ticketType,
@@ -77,14 +93,15 @@ export async function POST(request: NextRequest) {
       identification_features: body.identificationFeatures || '',
       description: body.description || '',
       status: 'open',
+      will_assist_entry: body.willAssistEntry || false, // 同行者協助入場
     };
 
     // 如果是換票類型，添加換票專用欄位
     if (body.ticketType === 'ticket_exchange') {
       insertData.exchange_event_name = body.exchangeEventName || '';
       insertData.exchange_seat_grade = body.exchangeSeatGrade || '';
-      insertData.subsidy_amount = body.subsidyAmount || 0;
-      insertData.subsidy_direction = body.subsidyDirection || 'i_pay_you';
+      insertData.subsidy_amount = 0;  // 補貼功能已移除，預設為 0
+      insertData.subsidy_direction = null; // 補貼功能已移除
     }
 
     const { data, error } = await supabaseAdmin
