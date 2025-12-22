@@ -833,6 +833,8 @@
   },
   "verification": {
     "title": "メール認証",
+    "daysRemaining": "残り {days} 日",
+    "autoCompleteHint": "マッチング後7日以内に確認がない場合、自動的に成功とみなされ、双方に5つ星評価が付与されます。",
     "hostStatus": "主催者",
     "guestStatus": "参加者",
     "ticketGiven": "チケット渡済み",

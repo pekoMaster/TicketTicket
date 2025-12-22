@@ -833,6 +833,8 @@
   },
   "verification": {
     "title": "Email Verification",
+    "daysRemaining": "{days} days remaining",
+    "autoCompleteHint": "If not confirmed within 7 days, it will be automatically marked as successful and 5-star reviews will be given to both parties.",
     "hostStatus": "Host",
     "guestStatus": "Guest",
     "ticketGiven": "Ticket Given",

@@ -833,6 +833,8 @@
   },
   "verification": {
     "title": "Email 验证",
+    "daysRemaining": "剩余 {days} 天",
+    "autoCompleteHint": "配对后 7 天内未确认将自动视为同行成功，系统会自动给予双方 5 星好评。",
     "hostStatus": "主办方",
     "guestStatus": "申请人",
     "ticketGiven": "已确认给票",
