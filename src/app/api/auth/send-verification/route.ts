@@ -29,14 +29,24 @@ export async function POST() {
       return NextResponse.json({ error: 'Email already verified' }, { status: 400 });
     }
 
-    // 檢查是否在冷卻時間內（防止濫發）
-    if (user.email_verification_expires) {
-      const expires = new Date(user.email_verification_expires);
-      const cooldown = new Date(expires.getTime() - 23 * 60 * 60 * 1000); // 發送後 1 小時內不能重發
-      if (new Date() < cooldown) {
-        const waitMinutes = Math.ceil((cooldown.getTime() - Date.now()) / 60000);
+    // 檢查是否在冷卻時間內（防止濫發）- 使用獨立的冷卻欄位
+    // 冷卻時間：1 分鐘
+    const COOLDOWN_SECONDS = 60;
+
+    // 獲取上次發送時間（使用 email_verification_sent_at 欄位）
+    const { data: cooldownData } = await supabaseAdmin
+      .from('users')
+      .select('email_verification_sent_at')
+      .eq('id', userId)
+      .single();
+
+    if (cooldownData?.email_verification_sent_at) {
+      const lastSent = new Date(cooldownData.email_verification_sent_at);
+      const cooldownEnd = new Date(lastSent.getTime() + COOLDOWN_SECONDS * 1000);
+      if (new Date() < cooldownEnd) {
+        const waitSeconds = Math.ceil((cooldownEnd.getTime() - Date.now()) / 1000);
         return NextResponse.json(
-          { error: `Please wait ${waitMinutes} minutes before requesting again` },
+          { error: `請等待 ${waitSeconds} 秒後再試`, waitSeconds },
           { status: 429 }
         );
       }
@@ -46,26 +56,28 @@ export async function POST() {
     const token = generateVerificationToken();
     const expires = getTokenExpiration();
 
-    // 更新資料庫
-    const { error: updateError } = await supabaseAdmin
-      .from('users')
-      .update({
-        email_verification_token: token,
-        email_verification_expires: expires.toISOString(),
-      })
-      .eq('id', userId);
-
-    if (updateError) {
-      console.error('Failed to save verification token:', updateError);
-      return NextResponse.json({ error: 'Failed to generate verification' }, { status: 500 });
-    }
-
-    // 發送驗證信
+    // 先發送驗證信（成功後才更新資料庫）
     const result = await sendVerificationEmail(user.email, user.username, token);
 
     if (!result.success) {
       console.error('Failed to send verification email:', result.error);
       return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
+    }
+
+    // 發送成功後才更新資料庫
+    const { error: updateError } = await supabaseAdmin
+      .from('users')
+      .update({
+        email_verification_token: token,
+        email_verification_expires: expires.toISOString(),
+        email_verification_sent_at: new Date().toISOString(),
+      })
+      .eq('id', userId);
+
+    if (updateError) {
+      console.error('Failed to save verification token:', updateError);
+      // 郵件已發送，但 token 儲存失敗，用戶需要重新發送
+      return NextResponse.json({ error: 'Email sent but failed to save token, please try again' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, message: 'Verification email sent' });
