@@ -199,7 +199,32 @@
     "hostWillAssist": "Host will assist entry",
     "canAssistEntry": "Can Assist Entry",
     "manageApplicants": "Manage Applicants",
-    "ownListing": "Your Own Listing"
+    "ownListing": "Your Own Listing",
+    "askQuestion": "Ask Question",
+    "inquiryTitle": "Ask the Host",
+    "inquiryDesc": "Have questions? Ask the host first before deciding to apply",
+    "inquiryLabel": "Your Question (Optional)",
+    "inquiryPlaceholder": "What would you like to ask? e.g., Can we meet earlier?",
+    "startChat": "Start Chat"
+  },
+  "applicants": {
+    "title": "Manage Applicants",
+    "notFound": "Listing not found",
+    "inquiryCount": "{count} inquiring",
+    "applicationCount": "{count} applied",
+    "applicationsTab": "Applied",
+    "inquiriesTab": "Inquiries",
+    "alreadySelected": "You have selected a match. Other applicants will be notified",
+    "noApplications": "No applicants yet",
+    "appliedAt": "Applied at",
+    "chat": "Chat",
+    "select": "Select",
+    "noInquiries": "No inquiries yet",
+    "inquiring": "Inquiring",
+    "confirmTitle": "Confirm Selection",
+    "confirmWarningTitle": "Cannot change after selection",
+    "confirmWarningDesc": "After selection, other applicants will receive a rejection notification and you cannot change your selection.",
+    "confirmSelect": "Confirm Selection"
   },
   "edit": {
     "title": "Edit Listing",

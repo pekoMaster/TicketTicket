@@ -199,7 +199,32 @@
     "hostWillAssist": "主办会协助入场",
     "canAssistEntry": "可协助入场",
     "manageApplicants": "管理申请者",
-    "ownListing": "自己主办的活动"
+    "ownListing": "自己主办的活动",
+    "askQuestion": "发问",
+    "inquiryTitle": "向主办发问",
+    "inquiryDesc": "有任何问题可以先向主办询问，再决定是否要申请",
+    "inquiryLabel": "您的问题（选填）",
+    "inquiryPlaceholder": "想问什么呢？例如：请问集合时间可以提早吗？",
+    "startChat": "开始对话"
+  },
+  "applicants": {
+    "title": "申请者管理",
+    "notFound": "找不到刊登",
+    "inquiryCount": "{count} 人咨询中",
+    "applicationCount": "{count} 人已申请",
+    "applicationsTab": "已申请",
+    "inquiriesTab": "咨询中",
+    "alreadySelected": "您已选择配对对象，其他申请者将收到未配对成功的通知",
+    "noApplications": "目前没有申请者",
+    "appliedAt": "申请于",
+    "chat": "聊天",
+    "select": "选择",
+    "noInquiries": "目前没有咨询",
+    "inquiring": "咨询中",
+    "confirmTitle": "确认选择",
+    "confirmWarningTitle": "选择后无法更改",
+    "confirmWarningDesc": "选择后，其他申请者将收到「未配对成功」的通知，且无法再变更选择。",
+    "confirmSelect": "确认选择"
   },
   "edit": {
     "title": "编辑刊登",

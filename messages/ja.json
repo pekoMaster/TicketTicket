@@ -199,7 +199,32 @@
     "hostWillAssist": "主催者が入場をサポート",
     "canAssistEntry": "入場サポート可",
     "manageApplicants": "申請者管理",
-    "ownListing": "自分の募集"
+    "ownListing": "自分の募集",
+    "askQuestion": "質問する",
+    "inquiryTitle": "主催者に質問",
+    "inquiryDesc": "質問がありますか？申請前に主催者に聞いてみましょう",
+    "inquiryLabel": "あなたの質問（任意）",
+    "inquiryPlaceholder": "何を聞きたいですか？例：集合時間は早められますか？",
+    "startChat": "チャットを開始"
+  },
+  "applicants": {
+    "title": "申請者管理",
+    "notFound": "募集が見つかりません",
+    "inquiryCount": "{count}人が問い合わせ中",
+    "applicationCount": "{count}人が申請済み",
+    "applicationsTab": "申請済み",
+    "inquiriesTab": "問い合わせ",
+    "alreadySelected": "マッチング相手を選択しました。他の申請者には通知されます",
+    "noApplications": "まだ申請者がいません",
+    "appliedAt": "申請日時",
+    "chat": "チャット",
+    "select": "選択",
+    "noInquiries": "まだ問い合わせがありません",
+    "inquiring": "問い合わせ中",
+    "confirmTitle": "選択を確認",
+    "confirmWarningTitle": "選択後は変更できません",
+    "confirmWarningDesc": "選択後、他の申請者には不成立の通知が送られ、選択は変更できなくなります。",
+    "confirmSelect": "選択を確認"
   },
   "edit": {
     "title": "募集を編集",

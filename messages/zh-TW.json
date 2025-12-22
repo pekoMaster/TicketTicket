@@ -199,7 +199,32 @@
     "hostWillAssist": "主辦會協助入場",
     "canAssistEntry": "可協助入場",
     "manageApplicants": "管理申請者",
-    "ownListing": "自己主辦的活動"
+    "ownListing": "自己主辦的活動",
+    "askQuestion": "發問",
+    "inquiryTitle": "向主辦發問",
+    "inquiryDesc": "有任何問題可以先向主辦詢問，再決定是否要申請",
+    "inquiryLabel": "您的問題（選填）",
+    "inquiryPlaceholder": "想問什麼呢？例如：請問集合時間可以提早嗎？",
+    "startChat": "開始對話"
+  },
+  "applicants": {
+    "title": "申請者管理",
+    "notFound": "找不到刊登",
+    "inquiryCount": "{count} 人諮詢中",
+    "applicationCount": "{count} 人已申請",
+    "applicationsTab": "已申請",
+    "inquiriesTab": "諮詢中",
+    "alreadySelected": "您已選擇配對對象，其他申請者將收到未配對成功的通知",
+    "noApplications": "目前沒有申請者",
+    "appliedAt": "申請於",
+    "chat": "聊天",
+    "select": "選擇",
+    "noInquiries": "目前沒有諮詢",
+    "inquiring": "諮詢中",
+    "confirmTitle": "確認選擇",
+    "confirmWarningTitle": "選擇後無法更改",
+    "confirmWarningDesc": "選擇後，其他申請者將收到「未配對成功」的通知，且無法再變更選擇。",
+    "confirmSelect": "確認選擇"
   },
   "edit": {
     "title": "編輯刊登",
