@@ -76,6 +76,10 @@ interface ConversationData {
     } | null;
     // 對話類型：inquiry(提問) -> pending(申請中) -> matched(已配對)
     conversationType?: 'inquiry' | 'pending' | 'matched';
+    // 取消同行狀態
+    cancellation_status?: 'pending' | 'rejected' | 'cancelled' | 'escalated' | null;
+    cancellation_requested_by?: string | null;
+    cancellation_reason?: string | null;
   };
   messages: Message[];
 }
@@ -478,6 +482,19 @@ export default function ChatPage() {
   const isMatched = conversationType === 'matched';
   const isPending = conversationType === 'pending';
   const isInquiry = conversationType === 'inquiry';
+
+  // 檢查是否有待處理的取消請求需要回應
+  const hasPendingCancellation = conversation.cancellation_status === 'pending';
+  const isRequester = conversation.cancellation_requested_by === currentUserId;
+  const shouldShowCancellationPrompt = hasPendingCancellation && !isRequester;
+
+  // 自動顯示取消請求回應彈窗（給收到請求的一方）
+  useEffect(() => {
+    if (shouldShowCancellationPrompt && !showCancellationModal) {
+      setCancellationMode('respond');
+      setShowCancellationModal(true);
+    }
+  }, [shouldShowCancellationPrompt, showCancellationModal]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
