@@ -610,6 +610,10 @@
   },
   "report": {
     "title": "檢舉用戶",
+    "warning": "請謹慎使用檢舉功能。惡意檢舉可能導致您的帳號被停權。",
+    "reportingUser": "檢舉對象",
+    "selectType": "請選擇檢舉類型",
+    "cancel": "取消",
     "type": "檢舉類型",
     "types": {
       "scalper": "疑似黃牛",

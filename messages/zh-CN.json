@@ -610,6 +610,10 @@
   },
   "report": {
     "title": "举报用户",
+    "warning": "请谨慎使用举报功能。恶意举报可能导致您的帐号被停权。",
+    "reportingUser": "举报对象",
+    "selectType": "请选择举报类型",
+    "cancel": "取消",
     "type": "举报类型",
     "types": {
       "scalper": "疑似黄牛",

@@ -610,6 +610,10 @@
   },
   "report": {
     "title": "Report User",
+    "warning": "Please use the report function responsibly. Malicious reports may result in account suspension.",
+    "reportingUser": "Reporting",
+    "selectType": "Select report type",
+    "cancel": "Cancel",
     "type": "Report Type",
     "types": {
       "scalper": "Suspected Scalper",
