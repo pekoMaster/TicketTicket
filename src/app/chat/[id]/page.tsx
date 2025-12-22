@@ -483,19 +483,12 @@ export default function ChatPage() {
   const isPending = conversationType === 'pending';
   const isInquiry = conversationType === 'inquiry';
 
-  // 檢查是否有待處理的取消請求需要回應
+  // 檢查是否有待處理的取消請求需要回應（不使用 useEffect 來避免 hooks 規則問題）
   const hasPendingCancellation = conversation?.cancellation_status === 'pending';
   const isRequester = conversation?.cancellation_requested_by === currentUserId;
   const shouldShowCancellationPrompt = hasPendingCancellation && !isRequester && currentUserId;
 
-  // 自動顯示取消請求回應彈窗（給收到請求的一方）
-  useEffect(() => {
-    if (shouldShowCancellationPrompt && !showCancellationModal) {
-      setCancellationMode('respond');
-      setShowCancellationModal(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldShowCancellationPrompt]);
+  // 注意：自動顯示取消請求回應彈窗的邏輯已移至下方的 JSX 渲染中處理
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
@@ -530,6 +523,31 @@ export default function ChatPage() {
         {isMatched && (
           <div className="px-4 py-3 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
             <SafetyBanner variant="chat" />
+          </div>
+        )}
+
+        {/* 取消請求待處理通知 - 給收到請求的一方 */}
+        {shouldShowCancellationPrompt && (
+          <div className="px-4 py-3 bg-amber-50 dark:bg-amber-900/30 border-b border-amber-200 dark:border-amber-800">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                  {tChat('cancellationPending', { defaultValue: '對方希望取消同行' })}
+                </p>
+                <p className="text-xs text-amber-600 dark:text-amber-300 mt-0.5">
+                  {conversation?.cancellation_reason}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setCancellationMode('respond');
+                  setShowCancellationModal(true);
+                }}
+                className="px-3 py-1.5 text-sm font-medium text-white bg-amber-500 hover:bg-amber-600 rounded-lg transition-colors"
+              >
+                {tChat('respond', { defaultValue: '回應' })}
+              </button>
+            </div>
           </div>
         )}
 
