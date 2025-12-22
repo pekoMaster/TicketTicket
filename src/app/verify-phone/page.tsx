@@ -75,9 +75,10 @@ export default function VerifyPhonePage() {
       setConfirmationResult(result);
       setPageState('verify');
       setCooldown(60);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to send verification code:', error);
-      setErrorMessage(t('errors.sendFailed'));
+      // 顯示詳細錯誤以便除錯
+      setErrorMessage(error.message || t('errors.sendFailed'));
       clearRecaptcha();
     } finally {
       setIsLoading(false);
