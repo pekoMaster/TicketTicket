@@ -409,6 +409,7 @@
     "autoReviewIn": "{days} 天後自動評價",
     "writeReview": "撰寫評價",
     "typeInquiry": "諮詢中",
+    "typePending": "申請中",
     "typeMatched": "已配對",
     "iAmHost": "我是主辦",
     "otherIsApplicant": "對方：申請者",
@@ -443,7 +444,13 @@
     },
     "seatGrade": {
       "unknown": "未知席位"
-    }
+    },
+    "pendingStatus": "申請中，等待主辦方回覆",
+    "acceptApplication": "同意申請",
+    "apply": "申請加入",
+    "applyConfirmTitle": "確認申請",
+    "applyConfirmMessage": "確定要申請加入這個同行嗎？申請後主辦方將收到通知。",
+    "emailVerificationRequired": "需要先驗證 Email 才能申請"
   },
   "profile": {
     "title": "我的",

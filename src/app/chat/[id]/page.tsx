@@ -71,7 +71,8 @@ interface ConversationData {
       autoCompleted: boolean;
       completedAt: string | null;
     } | null;
-    conversationType?: 'inquiry' | 'application' | 'matched';
+    // 對話類型：inquiry(提問) -> pending(申請中) -> matched(已配對)
+    conversationType?: 'inquiry' | 'pending' | 'matched';
   };
   messages: Message[];
 }
@@ -95,8 +96,68 @@ export default function ChatPage() {
   const [isConfirming, setIsConfirming] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showApplyConfirm, setShowApplyConfirm] = useState(false);
+  const [isApplying, setIsApplying] = useState(false);
+  const [isAccepting, setIsAccepting] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { locale } = useLanguage();
+
+  // 處理申請加入
+  const handleApply = async () => {
+    if (isApplying) return;
+    setIsApplying(true);
+
+    try {
+      const response = await fetch(`/api/conversations/${conversationId}/apply`, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        // 更新對話類型
+        setConversationData((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            conversation: {
+              ...prev.conversation,
+              conversationType: 'pending',
+            },
+          };
+        });
+        setShowApplyConfirm(false);
+      } else {
+        const data = await response.json();
+        if (data.error === 'EMAIL_VERIFICATION_REQUIRED') {
+          alert(tChat('emailVerificationRequired', { defaultValue: '需要先驗證 Email 才能申請' }));
+        }
+      }
+    } catch (error) {
+      console.error('Error applying:', error);
+    } finally {
+      setIsApplying(false);
+    }
+  };
+
+  // 處理同意申請
+  const handleAccept = async () => {
+    if (isAccepting) return;
+    setIsAccepting(true);
+
+    try {
+      const response = await fetch(`/api/conversations/${conversationId}/accept`, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        // 重新獲取完整對話資料（包含 deadlineInfo 等新創建的資料）
+        await fetchConversation();
+      }
+    } catch (error) {
+      console.error('Error accepting:', error);
+    } finally {
+      setIsAccepting(false);
+    }
+  };
 
   // 處理確認票券
   const handleConfirm = async (action: 'confirm' | 'cancel') => {
@@ -375,6 +436,10 @@ export default function ChatPage() {
   const { conversation, messages } = conversationData;
   const { listing, otherUser } = conversation;
   const currentUserId = session?.user?.dbId;
+  const conversationType = conversation.conversationType || 'inquiry';
+  const isMatched = conversationType === 'matched';
+  const isPending = conversationType === 'pending';
+  const isInquiry = conversationType === 'inquiry';
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
@@ -396,10 +461,12 @@ export default function ChatPage() {
       />
 
       <div className="flex-1 flex flex-col pt-14">
-        {/* 安全警告 */}
-        <div className="px-4 py-3 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-          <SafetyBanner variant="chat" />
-        </div>
+        {/* 安全警告 - 只在已配對時顯示 */}
+        {isMatched && (
+          <div className="px-4 py-3 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+            <SafetyBanner variant="chat" />
+          </div>
+        )}
 
         {/* 交易資訊區塊 */}
         <div className="px-4 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 border-b border-indigo-100 dark:border-indigo-800">
@@ -461,7 +528,8 @@ export default function ChatPage() {
 
         </div>
 
-        {/* 票券驗證區塊 */}
+        {/* 票券驗證區塊 - 只在已配對時顯示 */}
+        {isMatched && (
         <div className="px-4 py-3 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
           <div className="flex items-center justify-between mb-3">
             <h4 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
@@ -592,6 +660,7 @@ export default function ChatPage() {
             </div>
           )}
         </div>
+        )}
 
         {/* 訊息區域 */}
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
@@ -664,6 +733,30 @@ export default function ChatPage() {
 
         {/* 輸入區域 */}
         <div className="bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-3 pb-6 safe-area-bottom">
+          {/* 申請人在 pending 狀態時顯示提示 */}
+          {isPending && !conversation.isHost && (
+            <div className="mb-3 p-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 text-sm text-amber-700 dark:text-amber-300 text-center">
+              {tChat('pendingStatus', { defaultValue: '申請中，等待主辦方回覆' })}
+            </div>
+          )}
+
+          {/* 主辦方在 pending 狀態時顯示同意按鈕 */}
+          {isPending && conversation.isHost && (
+            <div className="mb-3">
+              <Button
+                variant="primary"
+                className="w-full"
+                onClick={handleAccept}
+                disabled={isAccepting}
+              >
+                {isAccepting ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : null}
+                {tChat('acceptApplication', { defaultValue: '同意申請' })}
+              </Button>
+            </div>
+          )}
+
           <div className="flex gap-2">
             <input
               type="text"
@@ -691,8 +784,59 @@ export default function ChatPage() {
                 <Send className="w-5 h-5" />
               )}
             </Button>
+
+            {/* 申請人在 inquiry 狀態時顯示申請按鈕 */}
+            {isInquiry && !conversation.isHost && (
+              <Button
+                variant="primary"
+                onClick={() => setShowApplyConfirm(true)}
+                disabled={isApplying}
+                className="whitespace-nowrap"
+              >
+                {isApplying ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  tChat('apply', { defaultValue: '申請加入' })
+                )}
+              </Button>
+            )}
           </div>
         </div>
+
+        {/* 申請確認對話框 */}
+        {showApplyConfirm && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-xl max-w-sm w-full p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                {tChat('applyConfirmTitle', { defaultValue: '確認申請' })}
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                {tChat('applyConfirmMessage', { defaultValue: '確定要申請加入這個同行嗎？申請後主辦方將收到通知。' })}
+              </p>
+              <div className="flex gap-3">
+                <Button
+                  variant="secondary"
+                  className="flex-1"
+                  onClick={() => setShowApplyConfirm(false)}
+                  disabled={isApplying}
+                >
+                  {tCommon('cancel')}
+                </Button>
+                <Button
+                  variant="primary"
+                  className="flex-1"
+                  onClick={handleApply}
+                  disabled={isApplying}
+                >
+                  {isApplying ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : null}
+                  {tCommon('confirm')}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 評價彈窗 */}

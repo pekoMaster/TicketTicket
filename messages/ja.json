@@ -409,6 +409,7 @@
     "autoReviewIn": "{days}日後に自動評価",
     "writeReview": "レビューを書く",
     "typeInquiry": "お問い合わせ中",
+    "typePending": "申請中",
     "typeMatched": "マッチング済み",
     "iAmHost": "主催者",
     "otherIsApplicant": "相手：申請者",
@@ -443,7 +444,13 @@
     },
     "seatGrade": {
       "unknown": "座席未定"
-    }
+    },
+    "pendingStatus": "申請中、主催者の返答をお待ちください",
+    "acceptApplication": "申請を承認",
+    "apply": "申請する",
+    "applyConfirmTitle": "申請の確認",
+    "applyConfirmMessage": "この同行に申請しますか？申請後、主催者に通知されます。",
+    "emailVerificationRequired": "申請するにはまずメールを認証してください"
   },
   "profile": {
     "title": "マイページ",

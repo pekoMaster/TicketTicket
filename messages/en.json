@@ -409,6 +409,7 @@
     "autoReviewIn": "Auto-review in {days} days",
     "writeReview": "Write Review",
     "typeInquiry": "Inquiry",
+    "typePending": "Pending",
     "typeMatched": "Matched",
     "iAmHost": "I'm Host",
     "otherIsApplicant": "Other: Applicant",
@@ -443,7 +444,13 @@
     },
     "seatGrade": {
       "unknown": "Unknown Seat"
-    }
+    },
+    "pendingStatus": "Pending, waiting for host response",
+    "acceptApplication": "Accept Application",
+    "apply": "Apply",
+    "applyConfirmTitle": "Confirm Application",
+    "applyConfirmMessage": "Are you sure you want to apply to join? The host will be notified.",
+    "emailVerificationRequired": "Email verification required before applying"
   },
   "profile": {
     "title": "Profile",

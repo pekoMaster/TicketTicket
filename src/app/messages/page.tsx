@@ -59,7 +59,7 @@ interface Conversation {
   otherUser?: User;
   lastMessage?: { content: string; created_at: string };
   unreadCount: number;
-  conversation_type?: 'inquiry' | 'application' | 'matched';
+  conversation_type?: 'inquiry' | 'pending' | 'matched';
   isHost?: boolean;
   deadlineInfo?: {
     daysRemaining: number;
@@ -380,6 +380,11 @@ export default function MessagesPage() {
                           {convo.conversation_type === 'inquiry' && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
                               {t('typeInquiry', { defaultValue: '諮詢中' })}
+                            </span>
+                          )}
+                          {convo.conversation_type === 'pending' && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300">
+                              {t('typePending', { defaultValue: '申請中' })}
                             </span>
                           )}
                           {convo.conversation_type === 'matched' && (
