@@ -58,15 +58,44 @@ export async function GET(
       .eq('conversation_id', id)
       .neq('sender_id', userId);
 
+    // 獲取交易確認資料（如果存在）
+    const { data: transactionConfirmation } = await supabaseAdmin
+      .from('transaction_confirmations')
+      .select('*')
+      .eq('conversation_id', id)
+      .single();
+
+    // 計算剩餘天數
+    let deadlineInfo = null;
+    if (transactionConfirmation?.deadline_at && !transactionConfirmation.completed_at) {
+      const deadline = new Date(transactionConfirmation.deadline_at);
+      const now = new Date();
+      const diffMs = deadline.getTime() - now.getTime();
+      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      deadlineInfo = {
+        deadlineAt: transactionConfirmation.deadline_at,
+        daysRemaining: Math.max(0, diffDays),
+        isExpired: diffDays <= 0,
+        autoCompleted: transactionConfirmation.auto_completed,
+        completedAt: transactionConfirmation.completed_at,
+      };
+    }
+
     return NextResponse.json({
       conversation: {
         ...conversation,
         otherUser: conversation.host_id === userId ? conversation.guest : conversation.host,
         isHost: conversation.host_id === userId,
         // 票券驗證狀態
-        hostConfirmedAt: conversation.host_confirmed_at,
-        guestConfirmedAt: conversation.guest_confirmed_at,
-        bothConfirmed: !!(conversation.host_confirmed_at && conversation.guest_confirmed_at),
+        hostConfirmedAt: transactionConfirmation?.host_confirmed_at || conversation.host_confirmed_at,
+        guestConfirmedAt: transactionConfirmation?.guest_confirmed_at || conversation.guest_confirmed_at,
+        bothConfirmed: !!(
+          (transactionConfirmation?.host_confirmed_at || conversation.host_confirmed_at) &&
+          (transactionConfirmation?.guest_confirmed_at || conversation.guest_confirmed_at)
+        ),
+        // 7天期限資訊
+        deadlineInfo,
+        conversationType: conversation.conversation_type,
       },
       messages: messages || [],
     });

@@ -83,6 +83,15 @@ export default function ListingDetailPage() {
   }>>([]);
   const tReview = useTranslations('review');
 
+  // Inquiry states
+  const [showInquiryModal, setShowInquiryModal] = useState(false);
+  const [inquiryMessage, setInquiryMessage] = useState('');
+  const [isInquiring, setIsInquiring] = useState(false);
+  const [hasInquiry, setHasInquiry] = useState(false);
+  const [existingConversationId, setExistingConversationId] = useState<string | null>(null);
+  const [inquiryCount, setInquiryCount] = useState(0);
+  const [applicationCount, setApplicationCount] = useState(0);
+
   const listing = listings.find((l) => l.id === params.id);
   const host = listing?.host;
   const currentUserId = session?.user?.dbId;
@@ -140,9 +149,62 @@ export default function ListingDetailPage() {
     }
   }, [currentUserId, listing]);
 
+  // 檢查是否已有諮詢對話並獲取統計
+  const checkInquiry = useCallback(async () => {
+    if (!listing) return;
+
+    try {
+      // 獲取諮詢/申請人數
+      const countRes = await fetch(`/api/inquiries?listingId=${listing.id}`);
+      if (countRes.ok) {
+        const data = await countRes.json();
+        setInquiryCount(data.count || 0);
+      }
+    } catch (error) {
+      console.error('Error checking inquiry:', error);
+    }
+  }, [listing]);
+
+  // 處理發問
+  const handleInquiry = async () => {
+    if (!currentUserId || !listing || isInquiring) return;
+
+    setIsInquiring(true);
+    try {
+      const response = await fetch('/api/inquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          listingId: listing.id,
+          message: inquiryMessage.trim() || undefined,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setExistingConversationId(data.conversationId);
+        setHasInquiry(true);
+        setShowInquiryModal(false);
+        // 跳轉到對話頁面
+        router.push(`/chat/${data.conversationId}`);
+      } else {
+        const error = await response.json();
+        console.error('Inquiry error:', error);
+      }
+    } catch (error) {
+      console.error('Error starting inquiry:', error);
+    } finally {
+      setIsInquiring(false);
+    }
+  };
+
   useEffect(() => {
     checkApplication();
   }, [checkApplication]);
+
+  useEffect(() => {
+    checkInquiry();
+  }, [checkInquiry]);
 
   useEffect(() => {
     if (hasApplied || isHost) {
@@ -559,9 +621,9 @@ export default function ListingDetailPage() {
             {tCommon('loading')}
           </Button>
         ) : isHost ? (
-          <Button fullWidth onClick={() => router.push(`/messages`)}>
-            <MessageCircle className="w-5 h-5 mr-2" />
-            {t('manageApplications')}
+          <Button fullWidth onClick={() => router.push(`/listing/${listing.id}/applicants`)}>
+            <Users className="w-5 h-5 mr-2" />
+            {t('manageApplicants', { defaultValue: '管理申請者' })}
           </Button>
         ) : hasApplied ? (
           <Button fullWidth disabled variant="secondary">
@@ -575,9 +637,22 @@ export default function ListingDetailPage() {
             {t('full')}
           </Button>
         ) : (
-          <Button fullWidth onClick={() => setShowApplyAgreement(true)}>
-            {t('apply')}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              className="flex-1"
+              onClick={() => setShowInquiryModal(true)}
+            >
+              <MessageCircle className="w-5 h-5 mr-2" />
+              {t('askQuestion', { defaultValue: '發問' })}
+            </Button>
+            <Button
+              className="flex-1"
+              onClick={() => setShowApplyAgreement(true)}
+            >
+              {t('apply')}
+            </Button>
+          </div>
         )}
       </div>
 
@@ -625,6 +700,51 @@ export default function ListingDetailPage() {
           >
             {tApply('submit')}
           </Button>
+        </div>
+      </Modal>
+
+      {/* 發問 Modal */}
+      <Modal
+        isOpen={showInquiryModal}
+        onClose={() => setShowInquiryModal(false)}
+        title={t('inquiryTitle', { defaultValue: '向主辦發問' })}
+      >
+        <div className="p-4">
+          <div className="mb-4">
+            <p className="text-gray-600 dark:text-gray-300 text-sm">
+              {listing.eventName}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {t('inquiryDesc', { defaultValue: '有任何問題可以先向主辦詢問，再決定是否要申請' })}
+            </p>
+          </div>
+
+          <Textarea
+            label={t('inquiryLabel', { defaultValue: '您的問題（選填）' })}
+            placeholder={t('inquiryPlaceholder', { defaultValue: '想問什麼呢？例如：請問集合時間可以提早嗎？' })}
+            value={inquiryMessage}
+            onChange={(e) => setInquiryMessage(e.target.value)}
+            rows={3}
+            maxLength={200}
+            showCount
+          />
+
+          <div className="mt-4 flex gap-2">
+            <Button
+              variant="secondary"
+              className="flex-1"
+              onClick={() => setShowInquiryModal(false)}
+            >
+              {tCommon('cancel')}
+            </Button>
+            <Button
+              className="flex-1"
+              onClick={handleInquiry}
+              loading={isInquiring}
+            >
+              {t('startChat', { defaultValue: '開始對話' })}
+            </Button>
+          </div>
         </div>
       </Modal>
 

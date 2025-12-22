@@ -45,6 +45,8 @@ export async function GET() {
         lastMessage,
         unreadCount,
         otherUser: convo.host_id === userId ? convo.guest : convo.host,
+        isHost: convo.host_id === userId,
+        conversation_type: convo.conversation_type || 'matched',
       };
     });
 

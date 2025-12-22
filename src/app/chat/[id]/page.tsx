@@ -61,6 +61,15 @@ interface ConversationData {
     hostConfirmedAt: string | null;
     guestConfirmedAt: string | null;
     bothConfirmed: boolean;
+    // 7天期限資訊
+    deadlineInfo?: {
+      deadlineAt: string;
+      daysRemaining: number;
+      isExpired: boolean;
+      autoCompleted: boolean;
+      completedAt: string | null;
+    } | null;
+    conversationType?: 'inquiry' | 'application' | 'matched';
   };
   messages: Message[];
 }
@@ -452,10 +461,34 @@ export default function ChatPage() {
 
         {/* 票券驗證區塊 */}
         <div className="px-4 py-3 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-          <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
-            <CheckCircle className="w-4 h-4 text-green-500" />
-            {tVerification('title')}
-          </h4>
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-green-500" />
+              {tVerification('title')}
+            </h4>
+            {/* 7天期限倒數 */}
+            {conversation.deadlineInfo && !conversation.bothConfirmed && (
+              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${conversation.deadlineInfo.daysRemaining <= 2
+                  ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                  : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'
+                }`}>
+                <Clock className="w-3 h-3" />
+                {tVerification('daysRemaining', {
+                  days: conversation.deadlineInfo.daysRemaining,
+                  defaultValue: `剩餘 ${conversation.deadlineInfo.daysRemaining} 天`
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* 7天自動完成提示 */}
+          {conversation.deadlineInfo && !conversation.bothConfirmed && (
+            <div className="mb-3 p-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-xs text-blue-700 dark:text-blue-300">
+              {tVerification('autoCompleteHint', {
+                defaultValue: '配對後 7 天內未確認將自動視為同行成功，系統會自動給予雙方 5 星好評。'
+              })}
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-3">
             {/* 主辦方確認狀態 */}

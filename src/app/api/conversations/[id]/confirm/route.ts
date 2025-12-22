@@ -25,7 +25,7 @@ export async function POST(
     // 獲取對話
     const { data: conversation, error: convoError } = await supabaseAdmin
       .from('conversations')
-      .select('*')
+      .select('*, listing:listings!listing_id(id, event_name)')
       .eq('id', id)
       .single();
 
@@ -41,11 +41,34 @@ export async function POST(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // 檢查雙方是否都已確認（如果是，則不允許取消）
-    const bothConfirmed = conversation.host_confirmed_at && conversation.guest_confirmed_at;
-    if (bothConfirmed && action === 'cancel') {
+    // 獲取或創建 transaction_confirmations 記錄
+    let { data: tc } = await supabaseAdmin
+      .from('transaction_confirmations')
+      .select('*')
+      .eq('conversation_id', id)
+      .single();
+
+    // 如果不存在，創建一個（支援舊對話）
+    if (!tc) {
+      const deadline = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+      const { data: newTc } = await supabaseAdmin
+        .from('transaction_confirmations')
+        .insert({
+          conversation_id: id,
+          listing_id: conversation.listing_id,
+          host_id: conversation.host_id,
+          guest_id: conversation.guest_id,
+          deadline_at: deadline,
+        })
+        .select()
+        .single();
+      tc = newTc;
+    }
+
+    // 檢查是否已完成
+    if (tc?.completed_at) {
       return NextResponse.json({
-        error: 'Cannot cancel after both parties confirmed'
+        error: 'Transaction already completed'
       }, { status: 400 });
     }
 
@@ -54,10 +77,10 @@ export async function POST(
     const updateValue = action === 'confirm' ? new Date().toISOString() : null;
 
     // 更新確認狀態
-    const { data: updatedConvo, error: updateError } = await supabaseAdmin
-      .from('conversations')
+    const { data: updatedTc, error: updateError } = await supabaseAdmin
+      .from('transaction_confirmations')
       .update({ [updateField]: updateValue })
-      .eq('id', id)
+      .eq('id', tc?.id)
       .select()
       .single();
 
@@ -66,13 +89,47 @@ export async function POST(
       return NextResponse.json({ error: updateError.message }, { status: 500 });
     }
 
+    // 檢查是否雙方都已確認
+    const bothConfirmed = !!(updatedTc?.host_confirmed_at && updatedTc?.guest_confirmed_at);
+
+    if (bothConfirmed && !updatedTc?.completed_at) {
+      // 標記為完成
+      await supabaseAdmin
+        .from('transaction_confirmations')
+        .update({ completed_at: new Date().toISOString() })
+        .eq('id', tc?.id);
+
+      // 發送通知
+      const otherUserId = isHost ? conversation.guest_id : conversation.host_id;
+      await supabaseAdmin
+        .from('notifications')
+        .insert([
+          {
+            user_id: userId,
+            type: 'transaction_completed',
+            title: '交易完成',
+            message: `「${conversation.listing?.event_name}」的同行已確認完成！請給對方評價。`,
+            data: { conversation_id: id, listing_id: conversation.listing_id },
+            is_read: false,
+          },
+          {
+            user_id: otherUserId,
+            type: 'transaction_completed',
+            title: '交易完成',
+            message: `「${conversation.listing?.event_name}」的同行已確認完成！請給對方評價。`,
+            data: { conversation_id: id, listing_id: conversation.listing_id },
+            is_read: false,
+          },
+        ]);
+    }
+
     return NextResponse.json({
       success: true,
       conversation: {
-        id: updatedConvo.id,
-        hostConfirmedAt: updatedConvo.host_confirmed_at,
-        guestConfirmedAt: updatedConvo.guest_confirmed_at,
-        bothConfirmed: !!(updatedConvo.host_confirmed_at && updatedConvo.guest_confirmed_at),
+        id: conversation.id,
+        hostConfirmedAt: updatedTc?.host_confirmed_at,
+        guestConfirmedAt: updatedTc?.guest_confirmed_at,
+        bothConfirmed,
       },
     });
   } catch (error) {
