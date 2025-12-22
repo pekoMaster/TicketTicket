@@ -561,21 +561,6 @@
     "thankYou": "レビューありがとうございます！",
     "viewAll": "すべて見る"
   },
-  "verification": {
-    "title": "チケット確認",
-    "hostStatus": "主催者",
-    "guestStatus": "参加者",
-    "ticketGiven": "チケット渡済み",
-    "ticketReceived": "チケット受取済み",
-    "waitingHost": "確認待ち",
-    "waitingGuest": "確認待ち",
-    "confirmGiven": "渡済みを確認",
-    "confirmReceived": "受取を確認",
-    "cancelConfirm": "取消",
-    "completed": "両者確認完了！相互評価が可能です",
-    "writeReview": "レビューを書く",
-    "cannotCancelAfterBoth": "両者確認後は取消できません"
-  },
   "reviews": {
     "userReviews": "{name}のレビュー",
     "allReviews": "すべてのレビュー",
@@ -804,6 +789,18 @@
   },
   "verification": {
     "title": "メール認証",
+    "hostStatus": "主催者",
+    "guestStatus": "参加者",
+    "ticketGiven": "チケット渡済み",
+    "ticketReceived": "チケット受取済み",
+    "waitingHost": "確認待ち",
+    "waitingGuest": "確認待ち",
+    "confirmGiven": "渡済みを確認",
+    "confirmReceived": "受取を確認",
+    "cancelConfirm": "取消",
+    "completed": "両者確認完了！相互評価が可能です",
+    "writeReview": "レビューを書く",
+    "cannotCancelAfterBoth": "両者確認後は取消できません",
     "success": {
       "title": "認証成功！",
       "description": "メールアドレスの認証が完了しました。同行パートナーへの申請が可能になりました。",

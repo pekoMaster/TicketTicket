@@ -561,21 +561,6 @@
     "thankYou": "感謝您的評價！",
     "viewAll": "查看全部"
   },
-  "verification": {
-    "title": "票券驗證",
-    "hostStatus": "主辦方",
-    "guestStatus": "申請人",
-    "ticketGiven": "已確認給票",
-    "ticketReceived": "已確認收票",
-    "waitingHost": "等待確認給票",
-    "waitingGuest": "等待確認收票",
-    "confirmGiven": "確認已給票",
-    "confirmReceived": "確認已收票",
-    "cancelConfirm": "取消確認",
-    "completed": "雙方已確認完成！現在可以互相評價了",
-    "writeReview": "撰寫評價",
-    "cannotCancelAfterBoth": "雙方都確認後無法取消"
-  },
   "reviews": {
     "userReviews": "{name} 的評價",
     "allReviews": "所有評價",
@@ -804,6 +789,18 @@
   },
   "verification": {
     "title": "Email 驗證",
+    "hostStatus": "主辦方",
+    "guestStatus": "申請人",
+    "ticketGiven": "已確認給票",
+    "ticketReceived": "已確認收票",
+    "waitingHost": "等待確認給票",
+    "waitingGuest": "等待確認收票",
+    "confirmGiven": "確認已給票",
+    "confirmReceived": "確認已收票",
+    "cancelConfirm": "取消確認",
+    "completed": "雙方已確認完成！現在可以互相評價了",
+    "writeReview": "撰寫評價",
+    "cannotCancelAfterBoth": "雙方都確認後無法取消",
     "success": {
       "title": "驗證成功！",
       "description": "您的 Email 已成功驗證。現在您可以開始申請同行夥伴了。",

@@ -561,21 +561,6 @@
     "thankYou": "Thank you for your review!",
     "viewAll": "View All"
   },
-  "verification": {
-    "title": "Ticket Verification",
-    "hostStatus": "Host",
-    "guestStatus": "Guest",
-    "ticketGiven": "Ticket Given",
-    "ticketReceived": "Ticket Received",
-    "waitingHost": "Waiting for confirmation",
-    "waitingGuest": "Waiting for confirmation",
-    "confirmGiven": "Confirm Given",
-    "confirmReceived": "Confirm Received",
-    "cancelConfirm": "Cancel",
-    "completed": "Both confirmed! You can now rate each other",
-    "writeReview": "Write Review",
-    "cannotCancelAfterBoth": "Cannot cancel after both confirmed"
-  },
   "reviews": {
     "userReviews": "{name}'s Reviews",
     "allReviews": "All Reviews",
@@ -804,6 +789,18 @@
   },
   "verification": {
     "title": "Email Verification",
+    "hostStatus": "Host",
+    "guestStatus": "Guest",
+    "ticketGiven": "Ticket Given",
+    "ticketReceived": "Ticket Received",
+    "waitingHost": "Waiting for confirmation",
+    "waitingGuest": "Waiting for confirmation",
+    "confirmGiven": "Confirm Given",
+    "confirmReceived": "Confirm Received",
+    "cancelConfirm": "Cancel",
+    "completed": "Both confirmed! You can now rate each other",
+    "writeReview": "Write Review",
+    "cannotCancelAfterBoth": "Cannot cancel after both confirmed",
     "success": {
       "title": "Verification Successful!",
       "description": "Your email has been verified. You can now start applying for companions.",

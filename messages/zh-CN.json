@@ -561,21 +561,6 @@
     "thankYou": "感谢您的评价！",
     "viewAll": "查看全部"
   },
-  "verification": {
-    "title": "票券验证",
-    "hostStatus": "主办方",
-    "guestStatus": "申请人",
-    "ticketGiven": "已确认给票",
-    "ticketReceived": "已确认收票",
-    "waitingHost": "等待确认给票",
-    "waitingGuest": "等待确认收票",
-    "confirmGiven": "确认已给票",
-    "confirmReceived": "确认已收票",
-    "cancelConfirm": "取消确认",
-    "completed": "双方已确认完成！现在可以互相评价了",
-    "writeReview": "撰写评价",
-    "cannotCancelAfterBoth": "双方都确认后无法取消"
-  },
   "reviews": {
     "userReviews": "{name} 的评价",
     "allReviews": "所有评价",
@@ -804,6 +789,18 @@
   },
   "verification": {
     "title": "Email 验证",
+    "hostStatus": "主办方",
+    "guestStatus": "申请人",
+    "ticketGiven": "已确认给票",
+    "ticketReceived": "已确认收票",
+    "waitingHost": "等待确认给票",
+    "waitingGuest": "等待确认收票",
+    "confirmGiven": "确认已给票",
+    "confirmReceived": "确认已收票",
+    "cancelConfirm": "取消确认",
+    "completed": "双方已确认完成！现在可以互相评价了",
+    "writeReview": "撰写评价",
+    "cannotCancelAfterBoth": "双方都确认后无法取消",
     "success": {
       "title": "验证成功！",
       "description": "您的 Email 已成功验证。现在您可以开始申请同行伙伴了。",
