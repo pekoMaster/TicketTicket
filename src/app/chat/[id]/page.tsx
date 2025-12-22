@@ -205,7 +205,24 @@ export default function ChatPage() {
       const response = await fetch(`/api/conversations/${conversationId}`);
       if (response.ok) {
         const data = await response.json();
-        setConversationData(data);
+
+        setConversationData((prev) => {
+          // 如果沒有舊資料，直接使用新資料
+          if (!prev) return data;
+
+          // 保留正在發送的臨時訊息 (optimistic updates)
+          const pendingMessages = prev.messages.filter(m => m.id.startsWith('temp-'));
+
+          // 如果沒有臨時訊息，直接使用新資料
+          if (pendingMessages.length === 0) return data;
+
+          // 如果有臨時訊息，確保它們不會被覆蓋，同時避免重複
+          // 這裡假設後端回傳的訊息不包含 temp- 開頭的 ID
+          return {
+            ...data,
+            messages: [...data.messages, ...pendingMessages]
+          };
+        });
       }
     } catch (error) {
       console.error('Error fetching conversation:', error);
@@ -214,10 +231,22 @@ export default function ChatPage() {
     }
   }, [conversationId]);
 
-  // 初始載入對話資料
+  // 輪詢機制 (取代不可用的 Realtime)
   useEffect(() => {
+    if (!conversationId) return;
+
+    // 初始載入
     fetchConversation();
-  }, [fetchConversation]);
+
+    const pollInterval = setInterval(() => {
+      // 只有在視窗可見時才更新，節省資源
+      if (document.visibilityState === 'visible') {
+        fetchConversation();
+      }
+    }, 4000); // 每 4 秒更新一次
+
+    return () => clearInterval(pollInterval);
+  }, [conversationId, fetchConversation]);
 
   // Supabase Realtime 訂閱
   useEffect(() => {
@@ -530,136 +559,136 @@ export default function ChatPage() {
 
         {/* 票券驗證區塊 - 只在已配對時顯示 */}
         {isMatched && (
-        <div className="px-4 py-3 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-green-500" />
-              {tVerification('title')}
-            </h4>
-            {/* 7天期限倒數 */}
+          <div className="px-4 py-3 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                {tVerification('title')}
+              </h4>
+              {/* 7天期限倒數 */}
+              {conversation.deadlineInfo && !conversation.bothConfirmed && (
+                <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${conversation.deadlineInfo.daysRemaining <= 2
+                  ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                  : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'
+                  }`}>
+                  <Clock className="w-3 h-3" />
+                  {tVerification('daysRemaining', {
+                    days: conversation.deadlineInfo.daysRemaining,
+                    defaultValue: `剩餘 ${conversation.deadlineInfo.daysRemaining} 天`
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* 7天自動完成提示 */}
             {conversation.deadlineInfo && !conversation.bothConfirmed && (
-              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${conversation.deadlineInfo.daysRemaining <= 2
-                ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
-                : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'
-                }`}>
-                <Clock className="w-3 h-3" />
-                {tVerification('daysRemaining', {
-                  days: conversation.deadlineInfo.daysRemaining,
-                  defaultValue: `剩餘 ${conversation.deadlineInfo.daysRemaining} 天`
+              <div className="mb-3 p-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-xs text-blue-700 dark:text-blue-300">
+                {tVerification('autoCompleteHint', {
+                  defaultValue: '配對後 7 天內未確認將自動視為同行成功，系統會自動給予雙方 5 星好評。'
                 })}
               </div>
             )}
-          </div>
 
-          {/* 7天自動完成提示 */}
-          {conversation.deadlineInfo && !conversation.bothConfirmed && (
-            <div className="mb-3 p-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-xs text-blue-700 dark:text-blue-300">
-              {tVerification('autoCompleteHint', {
-                defaultValue: '配對後 7 天內未確認將自動視為同行成功，系統會自動給予雙方 5 星好評。'
-              })}
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-3">
-            {/* 主辦方確認狀態 */}
-            <div className={`p-3 rounded-lg border ${conversation.hostConfirmedAt
-              ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800'
-              : 'bg-gray-50 border-gray-200 dark:bg-gray-700 dark:border-gray-600'
-              }`}>
-              <div className="flex items-center gap-2 mb-1">
-                {conversation.hostConfirmedAt ? (
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                ) : (
-                  <Circle className="w-4 h-4 text-gray-400" />
+            <div className="grid grid-cols-2 gap-3">
+              {/* 主辦方確認狀態 */}
+              <div className={`p-3 rounded-lg border ${conversation.hostConfirmedAt
+                ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800'
+                : 'bg-gray-50 border-gray-200 dark:bg-gray-700 dark:border-gray-600'
+                }`}>
+                <div className="flex items-center gap-2 mb-1">
+                  {conversation.hostConfirmedAt ? (
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <Circle className="w-4 h-4 text-gray-400" />
+                  )}
+                  <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {tVerification('hostStatus')}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {conversation.hostConfirmedAt
+                    ? tVerification('ticketGiven')
+                    : tVerification('waitingHost')
+                  }
+                </p>
+                {conversation.isHost && !conversation.bothConfirmed && (
+                  <Button
+                    size="sm"
+                    className="mt-2 w-full"
+                    onClick={() => handleConfirm(conversation.hostConfirmedAt ? 'cancel' : 'confirm')}
+                    variant={conversation.hostConfirmedAt ? 'secondary' : 'primary'}
+                    disabled={isConfirming}
+                  >
+                    {isConfirming ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : conversation.hostConfirmedAt ? (
+                      tVerification('cancelConfirm')
+                    ) : (
+                      tVerification('confirmGiven')
+                    )}
+                  </Button>
                 )}
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {tVerification('hostStatus')}
-                </span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {conversation.hostConfirmedAt
-                  ? tVerification('ticketGiven')
-                  : tVerification('waitingHost')
-                }
-              </p>
-              {conversation.isHost && !conversation.bothConfirmed && (
+
+              {/* 申請人確認狀態 */}
+              <div className={`p-3 rounded-lg border ${conversation.guestConfirmedAt
+                ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800'
+                : 'bg-gray-50 border-gray-200 dark:bg-gray-700 dark:border-gray-600'
+                }`}>
+                <div className="flex items-center gap-2 mb-1">
+                  {conversation.guestConfirmedAt ? (
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <Circle className="w-4 h-4 text-gray-400" />
+                  )}
+                  <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {tVerification('guestStatus')}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {conversation.guestConfirmedAt
+                    ? tVerification('ticketReceived')
+                    : tVerification('waitingGuest')
+                  }
+                </p>
+                {!conversation.isHost && !conversation.bothConfirmed && (
+                  <Button
+                    size="sm"
+                    className="mt-2 w-full"
+                    onClick={() => handleConfirm(conversation.guestConfirmedAt ? 'cancel' : 'confirm')}
+                    variant={conversation.guestConfirmedAt ? 'secondary' : 'primary'}
+                    disabled={isConfirming}
+                  >
+                    {isConfirming ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : conversation.guestConfirmedAt ? (
+                      tVerification('cancelConfirm')
+                    ) : (
+                      tVerification('confirmReceived')
+                    )}
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* 雙方都確認後顯示成功訊息和評價按鈕 */}
+            {conversation.bothConfirmed && (
+              <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                <p className="text-sm text-green-700 dark:text-green-300 mb-2 flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  {tVerification('completed')}
+                </p>
                 <Button
                   size="sm"
-                  className="mt-2 w-full"
-                  onClick={() => handleConfirm(conversation.hostConfirmedAt ? 'cancel' : 'confirm')}
-                  variant={conversation.hostConfirmedAt ? 'secondary' : 'primary'}
-                  disabled={isConfirming}
+                  onClick={() => window.location.href = `/listing/${conversation.listing_id}`}
+                  className="w-full flex items-center justify-center gap-2"
                 >
-                  {isConfirming ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : conversation.hostConfirmedAt ? (
-                    tVerification('cancelConfirm')
-                  ) : (
-                    tVerification('confirmGiven')
-                  )}
+                  <Star className="w-4 h-4" />
+                  {tVerification('writeReview')}
                 </Button>
-              )}
-            </div>
-
-            {/* 申請人確認狀態 */}
-            <div className={`p-3 rounded-lg border ${conversation.guestConfirmedAt
-              ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800'
-              : 'bg-gray-50 border-gray-200 dark:bg-gray-700 dark:border-gray-600'
-              }`}>
-              <div className="flex items-center gap-2 mb-1">
-                {conversation.guestConfirmedAt ? (
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                ) : (
-                  <Circle className="w-4 h-4 text-gray-400" />
-                )}
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {tVerification('guestStatus')}
-                </span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {conversation.guestConfirmedAt
-                  ? tVerification('ticketReceived')
-                  : tVerification('waitingGuest')
-                }
-              </p>
-              {!conversation.isHost && !conversation.bothConfirmed && (
-                <Button
-                  size="sm"
-                  className="mt-2 w-full"
-                  onClick={() => handleConfirm(conversation.guestConfirmedAt ? 'cancel' : 'confirm')}
-                  variant={conversation.guestConfirmedAt ? 'secondary' : 'primary'}
-                  disabled={isConfirming}
-                >
-                  {isConfirming ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : conversation.guestConfirmedAt ? (
-                    tVerification('cancelConfirm')
-                  ) : (
-                    tVerification('confirmReceived')
-                  )}
-                </Button>
-              )}
-            </div>
+            )}
           </div>
-
-          {/* 雙方都確認後顯示成功訊息和評價按鈕 */}
-          {conversation.bothConfirmed && (
-            <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-              <p className="text-sm text-green-700 dark:text-green-300 mb-2 flex items-center gap-2">
-                <CheckCircle className="w-4 h-4" />
-                {tVerification('completed')}
-              </p>
-              <Button
-                size="sm"
-                onClick={() => window.location.href = `/listing/${conversation.listing_id}`}
-                className="w-full flex items-center justify-center gap-2"
-              >
-                <Star className="w-4 h-4" />
-                {tVerification('writeReview')}
-              </Button>
-            </div>
-          )}
-        </div>
         )}
 
         {/* 訊息區域 */}
