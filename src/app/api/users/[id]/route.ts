@@ -12,7 +12,7 @@ export async function GET(
     // 獲取用戶基本資訊
     const { data: user, error } = await supabaseAdmin
       .from('users')
-      .select('id, username, avatar_url, custom_avatar_url, rating, review_count, is_verified, created_at, line_id, discord_id, show_line, show_discord')
+      .select('id, username, avatar_url, custom_avatar_url, rating, review_count, is_verified, created_at, line_id, discord_id, show_line, show_discord, verification_level, email_verified_at, phone_verified_at')
       .eq('id', id)
       .single();
 
@@ -52,6 +52,10 @@ export async function GET(
       showLine: user.show_line,
       showDiscord: user.show_discord,
       successfulMeetups,
+      // 驗證層級資訊
+      verification_level: user.verification_level || 'unverified',
+      emailVerifiedAt: user.email_verified_at,
+      phoneVerifiedAt: user.phone_verified_at,
     });
   } catch (error) {
     console.error('Error in GET /api/users/[id]:', error);
