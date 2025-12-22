@@ -385,7 +385,10 @@
     "writeReview": "撰寫評價",
     "typeInquiry": "諮詢中",
     "typeMatched": "已配對",
-    "iAmHost": "我是主辦"
+    "iAmHost": "我是主辦",
+    "otherIsApplicant": "對方：申請者",
+    "otherIsHost": "對方：主辦方",
+    "willAssistEntry": "可協助入場"
   },
   "chat": {
     "title": "與 {name} 聊天",

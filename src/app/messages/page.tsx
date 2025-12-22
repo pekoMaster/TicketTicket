@@ -387,9 +387,14 @@ export default function MessagesPage() {
                               {t('typeMatched', { defaultValue: '已配對' })}
                             </span>
                           )}
-                          {convo.isHost && (
+                          {/* 角色標籤 - 顯示對方的身份 */}
+                          {convo.isHost ? (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300">
-                              {t('iAmHost', { defaultValue: '我是主辦' })}
+                              {t('otherIsApplicant', { defaultValue: '對方：申請者' })}
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300">
+                              {t('otherIsHost', { defaultValue: '對方：主辦方' })}
                             </span>
                           )}
                           {/* 協助入場標籤 */}
@@ -398,7 +403,7 @@ export default function MessagesPage() {
                               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                               </svg>
-                              {t('hostWillAssist', { defaultValue: '協助入場' })}
+                              {t('willAssistEntry', { defaultValue: '可協助入場' })}
                             </span>
                           )}
                           {/* 票種資訊標籤 */}

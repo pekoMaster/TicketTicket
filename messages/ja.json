@@ -385,7 +385,10 @@
     "writeReview": "レビューを書く",
     "typeInquiry": "お問い合わせ中",
     "typeMatched": "マッチング済み",
-    "iAmHost": "主催者"
+    "iAmHost": "主催者",
+    "otherIsApplicant": "相手：申請者",
+    "otherIsHost": "相手：主催者",
+    "willAssistEntry": "入場サポート可"
   },
   "chat": {
     "title": "{name}とチャット",

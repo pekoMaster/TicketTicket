@@ -385,7 +385,10 @@
     "writeReview": "Write Review",
     "typeInquiry": "Inquiry",
     "typeMatched": "Matched",
-    "iAmHost": "I'm Host"
+    "iAmHost": "I'm Host",
+    "otherIsApplicant": "Other: Applicant",
+    "otherIsHost": "Other: Host",
+    "willAssistEntry": "Can Assist Entry"
   },
   "chat": {
     "title": "Chat with {name}",
