@@ -11,7 +11,7 @@ import Button from '@/components/ui/Button';
 import Tag from '@/components/ui/Tag';
 import ReviewModal from '@/components/features/ReviewModal';
 import ReportModal from '@/components/ui/ReportModal';
-import { Send, Calendar, MapPin, Clock, Ticket, Tag as TagIcon, Banknote, Loader2, Languages, CheckCircle, Circle, Star, Flag, Armchair } from 'lucide-react';
+import { Send, Calendar, MapPin, Clock, Ticket, Tag as TagIcon, Loader2, Languages, CheckCircle, Circle, Star, Flag, Armchair } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
 
