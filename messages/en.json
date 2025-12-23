@@ -452,7 +452,9 @@
     "apply": "Apply",
     "applyConfirmTitle": "Confirm Application",
     "applyConfirmMessage": "Are you sure you want to apply to join? The host will be notified.",
-    "emailVerificationRequired": "Email verification required before applying"
+    "emailVerificationRequired": "Email verification required before applying",
+    "cancellationPending": "The other party wants to cancel",
+    "respond": "Respond"
   },
   "profile": {
     "title": "Profile",

@@ -452,7 +452,9 @@
     "apply": "申請加入",
     "applyConfirmTitle": "確認申請",
     "applyConfirmMessage": "確定要申請加入這個同行嗎？申請後主辦方將收到通知。",
-    "emailVerificationRequired": "需要先驗證 Email 才能申請"
+    "emailVerificationRequired": "需要先驗證 Email 才能申請",
+    "cancellationPending": "對方希望取消同行",
+    "respond": "回應"
   },
   "profile": {
     "title": "我的",

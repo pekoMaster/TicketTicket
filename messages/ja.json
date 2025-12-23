@@ -452,7 +452,9 @@
     "apply": "申請する",
     "applyConfirmTitle": "申請の確認",
     "applyConfirmMessage": "この同行に申請しますか？申請後、主催者に通知されます。",
-    "emailVerificationRequired": "申請するにはまずメールを認証してください"
+    "emailVerificationRequired": "申請するにはまずメールを認証してください",
+    "cancellationPending": "相手がキャンセルを希望しています",
+    "respond": "回答する"
   },
   "profile": {
     "title": "マイページ",
