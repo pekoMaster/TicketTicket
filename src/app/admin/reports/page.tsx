@@ -199,6 +199,7 @@ export default function AdminReportsPage() {
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
+      hour12: false,
     });
   };
 
@@ -473,11 +474,10 @@ export default function AdminReportsPage() {
                     {reportMessages.map((msg) => (
                       <div
                         key={msg.id}
-                        className={`p-2 rounded-lg text-sm ${
-                          msg.sender_id === selectedReport.reported_user_id
+                        className={`p-2 rounded-lg text-sm ${msg.sender_id === selectedReport.reported_user_id
                             ? 'bg-red-100 dark:bg-red-900/30'
                             : 'bg-white dark:bg-gray-600'
-                        }`}
+                          }`}
                       >
                         <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                           {msg.sender?.username} - {formatDate(msg.created_at)}

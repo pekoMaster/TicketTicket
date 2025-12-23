@@ -207,8 +207,8 @@ export default function ApplicantsPage() {
                     <button
                         onClick={() => setActiveTab('applications')}
                         className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${activeTab === 'applications'
-                                ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300'
-                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                            ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                             }`}
                     >
                         {t('applicationsTab', { defaultValue: '已申請' })} ({pendingApplications.length})
@@ -216,8 +216,8 @@ export default function ApplicantsPage() {
                     <button
                         onClick={() => setActiveTab('inquiries')}
                         className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${activeTab === 'inquiries'
-                                ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300'
-                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                            ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                             }`}
                     >
                         {t('inquiriesTab', { defaultValue: '諮詢中' })} ({inquiries.length})
@@ -270,7 +270,7 @@ export default function ApplicantsPage() {
                                                 </p>
                                             )}
                                             <p className="text-xs text-gray-400 mt-1">
-                                                {t('appliedAt', { defaultValue: '申請於' })} {new Date(app.created_at).toLocaleString()}
+                                                {t('appliedAt', { defaultValue: '申請於' })} {new Date(app.created_at).toLocaleString('zh-TW', { hour12: false })}
                                             </p>
                                         </div>
                                     </div>
