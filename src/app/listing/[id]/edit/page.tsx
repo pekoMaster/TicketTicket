@@ -11,6 +11,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { Input, Textarea } from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
+import Modal from '@/components/ui/Modal';
 import {
   TicketType,
   SeatGrade,
@@ -21,7 +22,6 @@ import {
   NATIONALITY_OPTIONS,
   LANGUAGE_OPTIONS,
 } from '@/types';
-import Modal from '@/components/ui/Modal';
 import {
   Calendar,
   MapPin,
@@ -33,7 +33,6 @@ import {
   Shirt,
   User,
   Ticket,
-  Info,
   Loader2,
 } from 'lucide-react';
 
@@ -44,23 +43,29 @@ const CLOTHING_TAG_KEYS = [
   'crossbodyBag', 'handbag', 'itaBag', 'merchandise', 'penlight',
 ];
 
+// 可選的票券類型
+const TICKET_TYPES: TicketType[] = ['find_companion', 'sub_ticket_transfer'];
+
 export default function EditListingPage() {
+  // === Hooks ===
   const params = useParams();
   const router = useRouter();
   const { data: session } = useSession();
-  const { listings, updateListing, fetchListings } = useApp();
+  const { listings, fetchListings } = useApp();
   const { events } = useAdmin();
   const t = useTranslations('create');
   const tEdit = useTranslations('edit');
   const tCommon = useTranslations('common');
 
-  // 載入狀態
+  // === 頁面狀態 ===
   const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState('');
+  const [loadError, setLoadError] = useState<'Forbidden' | 'Matched' | 'NotFound' | null>(null);
   const [applicantCount, setApplicantCount] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [showWarningModal, setShowWarningModal] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  // 表單狀態
+  // === 表單狀態 ===
   const [eventName, setEventName] = useState('');
   const [artistTags, setArtistTags] = useState<string[]>([]);
   const [eventDate, setEventDate] = useState('');
@@ -68,80 +73,98 @@ export default function EditListingPage() {
   const [venueAddress, setVenueAddress] = useState('');
   const [meetingTime, setMeetingTime] = useState('');
   const [meetingLocation, setMeetingLocation] = useState('');
-  const [ticketType, setTicketType] = useState<TicketType | ''>('');
   const [seatGrade, setSeatGrade] = useState<SeatGrade | ''>('');
   const [ticketCountType, setTicketCountType] = useState<TicketCountType | ''>('');
+  const [ticketType, setTicketType] = useState<TicketType | ''>('');
+  const [willAssistEntry, setWillAssistEntry] = useState(false);
   const [hostNationality, setHostNationality] = useState('');
   const [hostLanguages, setHostLanguages] = useState<string[]>([]);
   const [identificationFeatures, setIdentificationFeatures] = useState('');
   const [description, setDescription] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [willAssistEntry, setWillAssistEntry] = useState(false);
 
-  const listing = listings.find((l) => l.id === params.id);
+  // === 取得現有刊登 ===
+  const listing = useMemo(() => {
+    return listings.find((l) => l.id === params.id);
+  }, [listings, params.id]);
 
-  // 載入現有刊登資料
+  // === 載入刊登資料 ===
   const loadListing = useCallback(async () => {
+    // 等待 listings 載入
     if (!listing) {
-      // 嘗試重新載入
       await fetchListings();
       return;
     }
 
-    // 檢查是否為擁有者
+    // 檢查擁有者權限
     if (listing.hostId !== session?.user?.dbId) {
       setLoadError('Forbidden');
       setIsLoading(false);
       return;
     }
 
-    // 檢查是否已配對 - 不允許編輯
+    // 檢查配對狀態
     if (listing.status === 'matched') {
       setLoadError('Matched');
       setIsLoading(false);
       return;
     }
 
-    // 獲取申請人數量
+    // 取得申請人數量
     try {
       const res = await fetch(`/api/listings/${listing.id}/applications`);
       if (res.ok) {
         const data = await res.json();
-        setApplicantCount(data.length || 0);
+        setApplicantCount(Array.isArray(data) ? data.length : 0);
       }
-    } catch (e) {
-      console.error('Error fetching applicants:', e);
+    } catch (error) {
+      console.error('Error fetching applicants:', error);
     }
 
-    // 填入表單
-    setEventName(listing.eventName);
+    // 填入表單資料
+    setEventName(listing.eventName || '');
     setArtistTags(listing.artistTags || []);
-    const eventDateObj = new Date(listing.eventDate);
-    setEventDate(eventDateObj.toISOString().split('T')[0]);
-    setVenue(listing.venue);
-    setVenueAddress('');
-    const meetingTimeObj = new Date(listing.meetingTime);
-    setMeetingTime(meetingTimeObj.toTimeString().slice(0, 5));
-    setMeetingLocation(listing.meetingLocation);
-    setTicketType(listing.ticketType);
-    setSeatGrade(listing.seatGrade);
-    setTicketCountType(listing.ticketCountType);
-    setHostNationality(listing.hostNationality);
-    setHostLanguages(listing.hostLanguages);
+
+    // 處理日期
+    if (listing.eventDate) {
+      const dateObj = new Date(listing.eventDate);
+      setEventDate(dateObj.toISOString().split('T')[0]);
+    }
+
+    setVenue(listing.venue || '');
+
+    // 處理集合時間
+    if (listing.meetingTime) {
+      const timeObj = new Date(listing.meetingTime);
+      setMeetingTime(timeObj.toTimeString().slice(0, 5));
+    }
+
+    setMeetingLocation(listing.meetingLocation || '');
+    setSeatGrade(listing.seatGrade || '');
+    setTicketCountType(listing.ticketCountType || '');
+    setTicketType(listing.ticketType || '');
+    setWillAssistEntry(listing.willAssistEntry || false);
+    setHostNationality(listing.hostNationality || '');
+    setHostLanguages(listing.hostLanguages || []);
     setIdentificationFeatures(listing.identificationFeatures || '');
     setDescription(listing.description || '');
-    setWillAssistEntry(listing.willAssistEntry || false);
-    setIsLoading(false);
-  }, [listing, session?.user?.dbId, fetchListings]);
 
+    // 嘗試從事件取得 venueAddress
+    const matchedEvent = events.find((e) => e.name === listing.eventName);
+    if (matchedEvent?.venueAddress) {
+      setVenueAddress(matchedEvent.venueAddress);
+    }
+
+    setIsLoading(false);
+  }, [listing, session?.user?.dbId, fetchListings, events]);
+
+  // 初始化載入
   useEffect(() => {
     if (session?.user?.dbId) {
       loadListing();
     }
   }, [session?.user?.dbId, loadListing]);
 
-  // 從管理員活動獲取選項
+  // === 活動選項 ===
   const eventOptions = useMemo(() => {
     return events
       .filter((e) => e.isActive)
@@ -151,36 +174,28 @@ export default function EditListingPage() {
       }));
   }, [events]);
 
-  // 當選擇活動時，找到對應的管理員活動資料
+  // === 選中的活動 ===
   const selectedEvent = useMemo(() => {
     return events.find((e) => e.name === eventName);
   }, [events, eventName]);
 
-  // 從活動取得可用的座位等級（根據已設定的票價）
+  // === 可用座位等級 ===
   const availableSeatGrades = useMemo(() => {
     if (!selectedEvent?.ticketPriceTiers) return [];
-    const grades = new Set(selectedEvent.ticketPriceTiers.map(t => t.seatGrade));
+    const grades = new Set(selectedEvent.ticketPriceTiers.map((tier) => tier.seatGrade));
     return Array.from(grades) as SeatGrade[];
   }, [selectedEvent]);
 
-  // 從活動取得可用的票種類型（根據座位等級）
+  // === 可用票種類型 ===
   const availableTicketCountTypes = useMemo(() => {
     if (!selectedEvent?.ticketPriceTiers || !seatGrade) return [];
     const types = selectedEvent.ticketPriceTiers
-      .filter(t => t.seatGrade === seatGrade)
-      .map(t => t.ticketCountType);
+      .filter((tier) => tier.seatGrade === seatGrade)
+      .map((tier) => tier.ticketCountType);
     return Array.from(new Set(types)) as TicketCountType[];
   }, [selectedEvent, seatGrade]);
 
-  // 察看是否已選擇票種等級
-  const selectedPriceTier = useMemo(() => {
-    if (!selectedEvent?.ticketPriceTiers || !seatGrade || !ticketCountType) return null;
-    return selectedEvent.ticketPriceTiers.find(
-      t => t.seatGrade === seatGrade && t.ticketCountType === ticketCountType
-    );
-  }, [selectedEvent, seatGrade, ticketCountType]);
-
-  // 表單驗證
+  // === 表單驗證 ===
   const isFormValid = useMemo(() => {
     return (
       eventName.trim() !== '' &&
@@ -188,36 +203,47 @@ export default function EditListingPage() {
       venue.trim() !== '' &&
       meetingTime !== '' &&
       meetingLocation.trim() !== '' &&
-      identificationFeatures.trim() !== '' &&
-      hostLanguages.length > 0 &&
-      ticketType !== '' &&
       seatGrade !== '' &&
       ticketCountType !== '' &&
-      hostNationality !== ''
+      ticketType !== '' &&
+      hostNationality !== '' &&
+      hostLanguages.length > 0 &&
+      identificationFeatures.trim() !== ''
     );
-  }, [eventName, eventDate, venue, meetingTime, meetingLocation, identificationFeatures, hostLanguages, ticketType, seatGrade, ticketCountType, hostNationality]);
+  }, [
+    eventName,
+    eventDate,
+    venue,
+    meetingTime,
+    meetingLocation,
+    seatGrade,
+    ticketCountType,
+    ticketType,
+    hostNationality,
+    hostLanguages,
+    identificationFeatures,
+  ]);
 
-  const handleLanguageToggle = (lang: string) => {
-    setHostLanguages((prev) =>
-      prev.includes(lang) ? prev.filter((l) => l !== lang) : [...prev, lang]
-    );
-  };
+  // === 事件處理 ===
 
   // 處理活動選擇
   const handleEventSelect = (name: string) => {
     setEventName(name);
+    // 清除依賴欄位
     setSeatGrade('');
     setTicketCountType('');
     setTicketType('');
 
     const event = events.find((e) => e.name === name);
     if (event) {
+      // 設定藝人標籤
       if (event.artist) {
-        const tags = event.artist.split(',').map((tag) => tag.trim()).filter((tag) => tag);
+        const tags = event.artist.split(',').map((tag) => tag.trim()).filter(Boolean);
         setArtistTags(tags);
       } else {
         setArtistTags([]);
       }
+      // 設定場地資訊
       setVenue(event.venue || '');
       setVenueAddress(event.venueAddress || '');
     } else {
@@ -227,15 +253,21 @@ export default function EditListingPage() {
     }
   };
 
+  // 處理語言切換
+  const handleLanguageToggle = (lang: string) => {
+    setHostLanguages((prev) =>
+      prev.includes(lang) ? prev.filter((l) => l !== lang) : [...prev, lang]
+    );
+  };
+
   // 添加穿著快速標籤
   const handleAddClothingTag = (tag: string) => {
     if (!identificationFeatures.includes(tag)) {
-      setIdentificationFeatures((prev) =>
-        prev ? `${prev}、${tag}` : tag
-      );
+      setIdentificationFeatures((prev) => (prev ? `${prev}、${tag}` : tag));
     }
   };
 
+  // 處理編輯按鈕點擊
   const handleEditClick = () => {
     if (applicantCount > 0) {
       setShowWarningModal(true);
@@ -244,14 +276,16 @@ export default function EditListingPage() {
     }
   };
 
+  // 處理提交
   const handleSubmit = async () => {
     setShowWarningModal(false);
+
     if (!session?.user?.dbId || !isFormValid || !listing) return;
 
     setIsSubmitting(true);
 
     try {
-      // 準備更新資料（使用 snake_case 給 API）
+      // 準備更新資料 (snake_case for API)
       const updates = {
         event_name: eventName,
         artist_tags: artistTags,
@@ -280,15 +314,14 @@ export default function EditListingPage() {
       });
 
       if (response.ok) {
-        // 重新載入列表
         await fetchListings();
         setShowSuccess(true);
         setTimeout(() => {
           router.push(`/listing/${listing.id}`);
         }, 2000);
       } else {
-        const error = await response.json();
-        alert(error.error || tCommon('updateFailed'));
+        const errorData = await response.json();
+        alert(errorData.error || tCommon('updateFailed'));
       }
     } catch (error) {
       console.error('Error updating listing:', error);
@@ -298,9 +331,9 @@ export default function EditListingPage() {
     }
   };
 
-  // 票券類型選項
-  const ticketTypes: TicketType[] = ['find_companion', 'sub_ticket_transfer'];
+  // === 渲染 ===
 
+  // 載入中畫面
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -309,12 +342,16 @@ export default function EditListingPage() {
     );
   }
 
+  // 錯誤畫面
   if (loadError || !listing) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
         <Card className="text-center max-w-sm w-full dark:bg-gray-800">
           <p className="text-gray-500 dark:text-gray-400">
-            {loadError === 'Matched' ? tEdit('cannotEditMatched') : tEdit('notFound')}
+            {loadError === 'Matched' && tEdit('cannotEditMatched')}
+            {loadError === 'Forbidden' && tEdit('forbidden', { defaultValue: '您沒有權限編輯此刊登' })}
+            {loadError === 'NotFound' && tEdit('notFound')}
+            {!loadError && tEdit('notFound')}
           </p>
           <Button className="mt-4" onClick={() => router.push('/profile')}>
             {tCommon('back')}
@@ -324,20 +361,26 @@ export default function EditListingPage() {
     );
   }
 
+  // 成功畫面
   if (showSuccess) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
-        <Card className="text-center max-w-sm w-full">
+        <Card className="text-center max-w-sm w-full dark:bg-gray-800">
           <div className="w-16 h-16 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
             <Check className="w-8 h-8 text-green-500" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">{tEdit('updateSuccess')}</h2>
-          <p className="text-gray-500 dark:text-gray-400">{tEdit('updateRedirecting')}</p>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            {tEdit('updateSuccess')}
+          </h2>
+          <p className="text-gray-500 dark:text-gray-400">
+            {tEdit('updateRedirecting')}
+          </p>
         </Card>
       </div>
     );
   }
 
+  // 主頁面
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header title={tEdit('title')} showBack />
@@ -358,9 +401,12 @@ export default function EditListingPage() {
 
           {/* 活動資訊 */}
           <Card>
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('eventInfo')}</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              {t('eventInfo')}
+            </h3>
 
             <div className="space-y-4">
+              {/* 活動名稱 */}
               <Select
                 label={t('eventName')}
                 placeholder={t('pleaseSelectEvent')}
@@ -371,15 +417,17 @@ export default function EditListingPage() {
                 required
               />
 
-              {/* 藝人標籤預覽 */}
+              {/* 藝人標籤 */}
               {artistTags.length > 0 && (
                 <div className="mt-2">
-                  <label className="text-sm text-gray-500 mb-1 block">{t('artistGroup')}</label>
+                  <label className="text-sm text-gray-500 dark:text-gray-400 mb-1 block">
+                    {t('artistGroup')}
+                  </label>
                   <div className="flex flex-wrap gap-2">
                     {artistTags.map((tag, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-pink-100 text-pink-700"
+                        className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300"
                       >
                         {tag}
                       </span>
@@ -388,6 +436,7 @@ export default function EditListingPage() {
                 </div>
               )}
 
+              {/* 日期與時間 */}
               <div className="grid grid-cols-2 gap-4">
                 <Input
                   label={t('companionDate')}
@@ -407,9 +456,9 @@ export default function EditListingPage() {
                 />
               </div>
 
-              {/* 活動現場地址（唯讀） */}
+              {/* 場地地址（唯讀） */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   {t('venueAddress')}
                 </label>
                 <div className="relative">
@@ -418,15 +467,17 @@ export default function EditListingPage() {
                     type="text"
                     value={venueAddress || venue || t('pleaseSelectEvent')}
                     readOnly
-                    className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
+                    className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed"
                   />
                 </div>
                 {!eventName && (
-                  <p className="text-xs text-gray-500 mt-1">{t('autoFillAfterSelect')}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    {t('autoFillAfterSelect')}
+                  </p>
                 )}
               </div>
 
-              {/* 同行集合地點 */}
+              {/* 集合地點 */}
               <Input
                 label={t('meetingPoint')}
                 placeholder={t('meetingPointPlaceholder')}
@@ -440,7 +491,7 @@ export default function EditListingPage() {
 
           {/* 票券資訊 */}
           <Card>
-            <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
               <Ticket className="w-5 h-5 text-indigo-500" />
               {t('ticketInfo')}
             </h3>
@@ -448,11 +499,11 @@ export default function EditListingPage() {
             <div className="space-y-4">
               {/* 座位等級 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   {t('seatGrade')} <span className="text-red-500">*</span>
                 </label>
                 {!selectedEvent ? (
-                  // 顯示目前選擇的座位等級（即使沒有活動資料）
+                  // 無活動資料時顯示預設選項
                   <div className="grid grid-cols-4 gap-2">
                     {(['B', 'A', 'S', 'SS'] as SeatGrade[]).map((grade) => (
                       <button
@@ -462,16 +513,18 @@ export default function EditListingPage() {
                         className={`
                           py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all
                           ${seatGrade === grade
-                            ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                            : 'border-gray-200 hover:border-gray-300 text-gray-700'}
+                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300'
+                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 text-gray-700 dark:text-gray-300'}
                         `}
                       >
-                        {SEAT_GRADE_INFO[grade].label}
+                        {SEAT_GRADE_INFO[grade]?.label || grade}
                       </button>
                     ))}
                   </div>
                 ) : availableSeatGrades.length === 0 ? (
-                  <p className="text-sm text-amber-600">{t('noPriceSet')}</p>
+                  <p className="text-sm text-amber-600 dark:text-amber-400">
+                    {t('noPriceSet')}
+                  </p>
                 ) : (
                   <div className="grid grid-cols-4 gap-2">
                     {availableSeatGrades.map((grade) => (
@@ -482,11 +535,11 @@ export default function EditListingPage() {
                         className={`
                           py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all
                           ${seatGrade === grade
-                            ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                            : 'border-gray-200 hover:border-gray-300 text-gray-700'}
+                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300'
+                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 text-gray-700 dark:text-gray-300'}
                         `}
                       >
-                        {SEAT_GRADE_INFO[grade].label}
+                        {SEAT_GRADE_INFO[grade]?.label || grade}
                       </button>
                     ))}
                   </div>
@@ -495,13 +548,15 @@ export default function EditListingPage() {
 
               {/* 票種類型 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   {t('ticketCountType')} <span className="text-red-500">*</span>
                 </label>
                 {!seatGrade ? (
-                  <p className="text-sm text-gray-500">{t('pleaseSelectSeatGrade')}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {t('pleaseSelectSeatGrade')}
+                  </p>
                 ) : !selectedEvent ? (
-                  // 顯示目前選擇的票種類型（即使沒有活動資料）
+                  // 無活動資料時顯示預設選項
                   <div className="grid grid-cols-2 gap-2">
                     {(['solo', 'duo'] as TicketCountType[]).map((type) => (
                       <button
@@ -511,8 +566,8 @@ export default function EditListingPage() {
                         className={`
                           py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all
                           ${ticketCountType === type
-                            ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                            : 'border-gray-200 hover:border-gray-300 text-gray-700'}
+                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300'
+                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 text-gray-700 dark:text-gray-300'}
                         `}
                       >
                         {TICKET_COUNT_TYPE_INFO[type].label}
@@ -520,7 +575,9 @@ export default function EditListingPage() {
                     ))}
                   </div>
                 ) : availableTicketCountTypes.length === 0 ? (
-                  <p className="text-sm text-amber-600">{t('seatNoPriceSet')}</p>
+                  <p className="text-sm text-amber-600 dark:text-amber-400">
+                    {t('seatNoPriceSet')}
+                  </p>
                 ) : (
                   <div className="grid grid-cols-2 gap-2">
                     {availableTicketCountTypes.map((type) => (
@@ -531,8 +588,8 @@ export default function EditListingPage() {
                         className={`
                           py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all
                           ${ticketCountType === type
-                            ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                            : 'border-gray-200 hover:border-gray-300 text-gray-700'}
+                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300'
+                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 text-gray-700 dark:text-gray-300'}
                         `}
                       >
                         {TICKET_COUNT_TYPE_INFO[type].label}
@@ -544,26 +601,25 @@ export default function EditListingPage() {
 
               {/* 票券類型選擇 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   {t('listingType')} <span className="text-red-500">*</span>
                 </label>
                 <div className="space-y-2">
-                  {ticketTypes.map((type) => {
+                  {TICKET_TYPES.map((type) => {
                     const info = TICKET_TYPE_INFO[type];
                     // 轉讓子票僅限二人票以上
                     const isSubTicketDisabled = type === 'sub_ticket_transfer' && ticketCountType === 'solo';
-                    const isDisabled = isSubTicketDisabled;
 
                     return (
                       <label
                         key={type}
                         className={`
                           flex items-start gap-3 p-3 rounded-lg border-2 transition-colors
-                          ${isDisabled
-                            ? 'border-gray-100 bg-gray-50 cursor-not-allowed opacity-50'
+                          ${isSubTicketDisabled
+                            ? 'border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 cursor-not-allowed opacity-50'
                             : ticketType === type
-                              ? 'border-indigo-500 bg-indigo-50 cursor-pointer'
-                              : 'border-gray-200 hover:border-gray-300 cursor-pointer'}
+                              ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 cursor-pointer'
+                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 cursor-pointer'}
                         `}
                       >
                         <input
@@ -571,15 +627,19 @@ export default function EditListingPage() {
                           name="ticketType"
                           value={type}
                           checked={ticketType === type}
-                          onChange={() => !isDisabled && setTicketType(type)}
-                          disabled={isDisabled}
+                          onChange={() => !isSubTicketDisabled && setTicketType(type)}
+                          disabled={isSubTicketDisabled}
                           className="mt-0.5"
                         />
                         <div className="flex-1">
-                          <p className="font-medium text-gray-900 text-sm">{info.label}</p>
-                          <p className="text-xs text-gray-500">{info.description}</p>
+                          <p className="font-medium text-gray-900 dark:text-gray-100 text-sm">
+                            {info.label}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {info.description}
+                          </p>
                           {info.warning && (
-                            <div className="flex items-center gap-1 mt-1 text-xs text-orange-600">
+                            <div className="flex items-center gap-1 mt-1 text-xs text-orange-600 dark:text-orange-400">
                               <AlertTriangle className="w-3 h-3" />
                               {info.warning}
                             </div>
@@ -590,9 +650,9 @@ export default function EditListingPage() {
                   })}
                 </div>
 
-                {/* 同行者 - 協助入場 Checkbox */}
+                {/* 協助入場 Checkbox */}
                 {ticketType === 'find_companion' && (
-                  <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800">
                     <label className="flex items-start gap-3 cursor-pointer">
                       <input
                         type="checkbox"
@@ -601,10 +661,10 @@ export default function EditListingPage() {
                         className="mt-0.5 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                       />
                       <div>
-                        <p className="font-medium text-blue-800 text-sm">
+                        <p className="font-medium text-blue-800 dark:text-blue-200 text-sm">
                           {t('willAssistEntry', { defaultValue: '我會協助對方入場' })}
                         </p>
-                        <p className="text-xs text-blue-600 mt-0.5">
+                        <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
                           {t('willAssistEntryDesc', { defaultValue: '勾選此項表示您會在現場親自協助對方入場' })}
                         </p>
                       </div>
@@ -615,10 +675,9 @@ export default function EditListingPage() {
             </div>
           </Card>
 
-
           {/* 發布者資訊 */}
           <Card>
-            <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
               <User className="w-5 h-5 text-indigo-500" />
               {t('publisherInfo')}
             </h3>
@@ -626,14 +685,14 @@ export default function EditListingPage() {
             <div className="space-y-4">
               {/* 國籍 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1">
                   <Globe className="w-4 h-4" />
                   {t('nationality')} <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={hostNationality}
                   onChange={(e) => setHostNationality(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 >
                   <option value="">{t('selectNationality')}</option>
                   {NATIONALITY_OPTIONS.map((opt) => (
@@ -646,7 +705,7 @@ export default function EditListingPage() {
 
               {/* 可用語言 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1">
                   <Languages className="w-4 h-4" />
                   {t('languages')} <span className="text-red-500">*</span>
                 </label>
@@ -660,7 +719,7 @@ export default function EditListingPage() {
                         px-3 py-1.5 rounded-full text-sm font-medium transition-all
                         ${hostLanguages.includes(lang.value)
                           ? 'bg-indigo-500 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}
                       `}
                     >
                       {lang.label}
@@ -668,13 +727,15 @@ export default function EditListingPage() {
                   ))}
                 </div>
                 {hostLanguages.length === 0 && (
-                  <p className="text-red-500 text-sm mt-1">{t('selectAtLeastOneLanguage')}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {t('selectAtLeastOneLanguage')}
+                  </p>
                 )}
               </div>
 
               {/* 辨識特徵 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1">
                   <Shirt className="w-4 h-4" />
                   {t('identificationFeatures')} <span className="text-red-500">*</span>
                 </label>
@@ -688,14 +749,16 @@ export default function EditListingPage() {
                 />
                 {/* 快速標籤 */}
                 <div className="mt-2">
-                  <p className="text-xs text-gray-500 mb-2">{t('quickAdd')}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                    {t('quickAdd')}
+                  </p>
                   <div className="flex flex-wrap gap-1.5">
                     {CLOTHING_TAG_KEYS.map((tagKey) => (
                       <button
                         key={tagKey}
                         type="button"
                         onClick={() => handleAddClothingTag(t(`clothingTags.${tagKey}`))}
-                        className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors"
+                        className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md transition-colors"
                       >
                         + {t(`clothingTags.${tagKey}`)}
                       </button>
