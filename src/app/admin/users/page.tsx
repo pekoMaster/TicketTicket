@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Search, Pencil, Ban, CheckCircle, ChevronLeft, ChevronRight, Loader2, X, Star, ImageOff, Shield, ShieldOff, Crown, RefreshCw } from 'lucide-react';
+import { Search, Pencil, Ban, CheckCircle, ChevronLeft, ChevronRight, Loader2, X, Star, ImageOff, Shield, ShieldOff, Crown, RefreshCw, Trash2 } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
 import { useAdmin } from '@/contexts/AdminContext';
 import { UserRole } from '@/types';
@@ -57,6 +57,10 @@ export default function AdminUsersPage() {
   });
   const [transferPassword, setTransferPassword] = useState('');
   const [isUpdatingRole, setIsUpdatingRole] = useState(false);
+
+  // 刪除 Modal
+  const [deleteModal, setDeleteModal] = useState<{ open: boolean; user: User | null }>({ open: false, user: null });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchUsers = useCallback(async () => {
     setIsLoading(true);
@@ -245,6 +249,33 @@ export default function AdminUsersPage() {
     }
   };
 
+  // 刪除用戶
+  const handleDelete = async () => {
+    if (!deleteModal.user) return;
+    setIsDeleting(true);
+
+    try {
+      const response = await fetch(`/api/admin/users/${deleteModal.user.id}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setDeleteModal({ open: false, user: null });
+        fetchUsers();
+        alert(`用戶 ${deleteModal.user.username} 已成功刪除`);
+      } else {
+        alert(data.error || '刪除失敗');
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      alert('刪除失敗');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const getRoleBadge = (role: UserRole) => {
     switch (role) {
       case 'super_admin':
@@ -293,11 +324,10 @@ export default function AdminUsersPage() {
               setShowBlacklisted(!showBlacklisted);
               setPagination(p => ({ ...p, page: 1 }));
             }}
-            className={`px-4 py-2 rounded-lg border transition-colors ${
-              showBlacklisted
-                ? 'bg-red-100 border-red-300 text-red-700 dark:bg-red-900/50 dark:border-red-700 dark:text-red-300'
-                : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-            }`}
+            className={`px-4 py-2 rounded-lg border transition-colors ${showBlacklisted
+              ? 'bg-red-100 border-red-300 text-red-700 dark:bg-red-900/50 dark:border-red-700 dark:text-red-300'
+              : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+              }`}
           >
             <Ban className="w-4 h-4 inline mr-2" />
             {showBlacklisted ? '顯示全部' : '只看封鎖'}
@@ -442,6 +472,16 @@ export default function AdminUsersPage() {
                             </button>
                           </>
                         )}
+                        {/* 刪除按鈕（僅主管理員可見，且不能刪除管理員）*/}
+                        {isSuperAdmin && user.role === 'user' && (
+                          <button
+                            onClick={() => setDeleteModal({ open: true, user })}
+                            className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                            title="刪除用戶"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -496,11 +536,10 @@ export default function AdminUsersPage() {
                 />
                 <button
                   onClick={() => setEditForm(f => ({ ...f, removeAvatar: !f.removeAvatar }))}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-                    editForm.removeAvatar
-                      ? 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300'
-                      : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${editForm.removeAvatar
+                    ? 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300'
+                    : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
                 >
                   <ImageOff className="w-4 h-4" />
                   {editForm.removeAvatar ? '已標記移除' : '移除頭像'}
@@ -652,11 +691,10 @@ export default function AdminUsersPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-md">
             <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 className={`font-semibold ${
-                roleModal.action === 'grant' ? 'text-purple-600' :
+              <h3 className={`font-semibold ${roleModal.action === 'grant' ? 'text-purple-600' :
                 roleModal.action === 'revoke' ? 'text-gray-600' :
-                'text-yellow-600'
-              }`}>
+                  'text-yellow-600'
+                }`}>
                 {roleModal.action === 'grant' && '授予副管理員權限'}
                 {roleModal.action === 'revoke' && '移除副管理員權限'}
                 {roleModal.action === 'transfer' && '轉讓站主權限'}
@@ -726,16 +764,54 @@ export default function AdminUsersPage() {
               <button
                 onClick={handleRoleChange}
                 disabled={isUpdatingRole || (roleModal.action === 'transfer' && !transferPassword)}
-                className={`px-4 py-2 text-white rounded-lg disabled:opacity-50 flex items-center gap-2 ${
-                  roleModal.action === 'grant' ? 'bg-purple-600 hover:bg-purple-700' :
+                className={`px-4 py-2 text-white rounded-lg disabled:opacity-50 flex items-center gap-2 ${roleModal.action === 'grant' ? 'bg-purple-600 hover:bg-purple-700' :
                   roleModal.action === 'revoke' ? 'bg-gray-600 hover:bg-gray-700' :
-                  'bg-yellow-600 hover:bg-yellow-700'
-                }`}
+                    'bg-yellow-600 hover:bg-yellow-700'
+                  }`}
               >
                 {isUpdatingRole && <Loader2 className="w-4 h-4 animate-spin" />}
                 {roleModal.action === 'grant' && '確認授予'}
                 {roleModal.action === 'revoke' && '確認移除'}
                 {roleModal.action === 'transfer' && '確認轉讓'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 刪除確認 Modal */}
+      {deleteModal.open && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-md">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="font-semibold text-red-600">刪除用戶</h3>
+              <button onClick={() => setDeleteModal({ open: false, user: null })} className="text-gray-400 hover:text-gray-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-4">
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                <span className="text-red-600 dark:text-red-400 font-medium">警告：此操作不可逆！</span>
+                <br /><br />
+                確定要刪除「{deleteModal.user?.username}」（{deleteModal.user?.email}）嗎？
+                <br /><br />
+                刪除後，該用戶的所有資料（包括刊登、訊息、評價等）都將被永久移除。
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setDeleteModal({ open: false, user: null })}
+                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              >
+                取消
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center gap-2"
+              >
+                {isDeleting && <Loader2 className="w-4 h-4 animate-spin" />}
+                確認刪除
               </button>
             </div>
           </div>
