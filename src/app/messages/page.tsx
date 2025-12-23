@@ -153,11 +153,26 @@ export default function MessagesPage() {
     markAsRead();
   }, [fetchData, markAsRead]);
 
-  // Supabase Realtime 訂閱 - 自動更新
+  // 輪詢機制 (每 5 秒更新一次) - 作為 Realtime 的備案
   useEffect(() => {
     if (!currentUserId) return;
 
-    // 訂閱 messages 變化（新訊息）
+    const pollInterval = setInterval(() => {
+      // 只有在視窗可見時才更新，節省資源
+      if (document.visibilityState === 'visible') {
+        fetchData();
+      }
+    }, 5000);
+
+    return () => clearInterval(pollInterval);
+  }, [currentUserId, fetchData]);
+
+  // Supabase Realtime 訂閱 (嘗試保持，但可能因 RLS 而失效)
+  useEffect(() => {
+    if (!currentUserId) return;
+
+    // ... (keep existing channels if you want, or just remove them to be cleaner)
+    // 這裡我們保留原本的訂閱邏輯，以防未來 RLS 政策調整
     const messagesChannel = supabase
       .channel('messages-updates')
       .on(
@@ -168,13 +183,11 @@ export default function MessagesPage() {
           table: 'messages',
         },
         () => {
-          // 有新訊息時重新獲取數據
           fetchData();
         }
       )
       .subscribe();
 
-    // 訂閱 applications 變化（新申請、狀態變更）
     const applicationsChannel = supabase
       .channel('applications-updates')
       .on(
@@ -185,13 +198,11 @@ export default function MessagesPage() {
           table: 'applications',
         },
         () => {
-          // 申請狀態變化時重新獲取數據
           fetchData();
         }
       )
       .subscribe();
 
-    // 訂閱 conversations 變化（新對話）
     const conversationsChannel = supabase
       .channel('conversations-updates')
       .on(

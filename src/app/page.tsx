@@ -5,8 +5,8 @@ import { useApp } from '@/contexts/AppContext';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useTranslations } from 'next-intl';
 import ListingCard from '@/components/features/ListingCard';
-import { TicketTypeTag } from '@/components/ui/Tag';
-import Avatar from '@/components/ui/Avatar';
+import ListingListItem from '@/components/features/ListingListItem';
+
 import { Input } from '@/components/ui/Input';
 import {
   Ticket,
@@ -18,9 +18,6 @@ import {
   ChevronUp,
   LayoutGrid,
   List,
-  Calendar,
-  MapPin,
-  User,
 } from 'lucide-react';
 import Link from 'next/link';
 import {
@@ -419,47 +416,14 @@ export default function HomePage() {
               {/* List View - PC限定 */}
               {viewMode === 'list' && (
                 <div className="hidden lg:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-                        <tr>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">{t('event')}</th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">{t('date')}</th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">{t('nationality')}</th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">{t('ticketType')}</th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">{t('host')}</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                        {filteredListings.map((listing) => (
-                          <tr key={listing.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer" onClick={() => window.location.href = `/listing/${listing.id}`}>
-                            <td className="px-4 py-3">
-                              <p className="font-medium text-gray-900 dark:text-gray-100 truncate max-w-[250px]">{listing.eventName}</p>
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
-                                <Calendar className="w-4 h-4 text-gray-400" />
-                                {new Date(listing.eventDate).toLocaleDateString()}
-                              </div>
-                            </td>
-                            <td className="px-4 py-3">
-                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{listing.hostNationality || '-'}</span>
-                            </td>
-                            <td className="px-4 py-3">
-                              <TicketTypeTag type={listing.ticketType} size="sm" />
-                            </td>
-                            <td className="px-4 py-3">
-                              {listing.host && (
-                                <div className="flex items-center gap-2">
-                                  <Avatar src={listing.host.customAvatarUrl || listing.host.avatarUrl} size="sm" />
-                                  <span className="text-sm text-gray-600 dark:text-gray-300 truncate max-w-[100px]">{listing.host.username}</span>
-                                </div>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                  <div className="flex flex-col">
+                    {filteredListings.map((listing) => (
+                      <ListingListItem
+                        key={listing.id}
+                        listing={listing}
+                        host={listing.host}
+                      />
+                    ))}
                   </div>
                 </div>
               )}

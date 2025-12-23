@@ -79,87 +79,99 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
 
   return (
     <>
-      <Card className="animate-fade-in flex flex-col h-full">
-        {/* 主辦方資訊 - 移到頂部，可點擊顯示用戶資訊 */}
+      <Card className="animate-fade-in flex flex-col h-full hover:shadow-md transition-shadow">
+        {/* Header: User Info */}
         {host && (
           <div
-            className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 -mx-4 -mt-4 px-4 pt-4 rounded-t-xl transition-colors"
+            className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100 dark:border-gray-700 cursor-pointer -mx-4 -mt-4 px-4 pt-4 rounded-t-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
             onClick={() => setShowUserModal(true)}
           >
             <Avatar src={getDisplayAvatar(host)} size="sm" />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-200 flex-1">{host.username}</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-200 flex-1 truncate">{host.username}</span>
             <StarRating
               value={host.rating}
               readonly
               size="sm"
-              showValue
+              showValue={false}
               totalReviews={host.reviewCount}
             />
           </div>
         )}
 
-        {/* 標籤列 - 票種類型 + 座位等級 + 幾人票 */}
-        <div className="mb-3 flex flex-wrap gap-1.5">
-          {/* 主要標籤（可協助入場 or 票種類型） */}
-          <Tag variant={mainTag.variant} size="sm">
-            {mainTag.label}
-          </Tag>
+        {/* Body: Event Info */}
+        <div className="flex flex-col gap-2 mb-3 pb-3 border-b border-gray-100 dark:border-gray-700 border-dashed">
+          {/* 1. Event Name */}
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 line-clamp-1" title={listing.eventName}>
+            {listing.eventName}
+          </h3>
 
-          {/* 座位等級 */}
-          {listing.seatGrade && (
-            <Tag variant="default" size="sm">
-              <Armchair className="w-3 h-3 mr-1" />
-              {listing.seatGrade}
-            </Tag>
+          {/* 2. Artist Tags */}
+          {listing.artistTags && listing.artistTags.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {listing.artistTags.slice(0, 3).map((tag, index) => (
+                <span
+                  key={index}
+                  className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-pink-50 dark:bg-pink-900/30 text-pink-600 dark:text-pink-300"
+                >
+                  {tag}
+                </span>
+              ))}
+              {listing.artistTags.length > 3 && (
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 self-center">
+                  +{listing.artistTags.length - 3}
+                </span>
+              )}
+            </div>
           )}
 
-          {/* 幾人票 */}
-          {listing.ticketCountType && (
-            <Tag variant="default" size="sm">
-              <Users className="w-3 h-3 mr-1" />
-              {getTicketCountLabel(listing.ticketCountType)}
-            </Tag>
-          )}
-        </div>
-
-        {/* 活動資訊 */}
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 line-clamp-1">
-          {listing.eventName}
-        </h3>
-
-        {/* 藝人標籤 */}
-        {listing.artistTags && listing.artistTags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-3">
-            {listing.artistTags.slice(0, 3).map((tag, index) => (
-              <span
-                key={index}
-                className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-pink-50 dark:bg-pink-900/30 text-pink-600 dark:text-pink-300"
-              >
-                {tag}
+          {/* 3. Seat Grade & Ticket Count */}
+          <div className="flex flex-wrap gap-2 items-center text-sm">
+            {listing.seatGrade && (
+              <span className="flex items-center gap-1 font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">
+                <Armchair className="w-3.5 h-3.5" />
+                {listing.seatGrade}
               </span>
-            ))}
-            {listing.artistTags.length > 3 && (
-              <span className="text-xs text-gray-400 dark:text-gray-500">
-                +{listing.artistTags.length - 3}
+            )}
+            {listing.ticketCountType && (
+              <span className="flex items-center gap-1 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 px-2 py-0.5 rounded border border-gray-100 dark:border-gray-700">
+                <Users className="w-3.5 h-3.5" />
+                {getTicketCountLabel(listing.ticketCountType)}
               </span>
             )}
           </div>
-        )}
 
-        <div className="space-y-1 mb-4">
-          {/* 日期 */}
-          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-            <Calendar className="w-4 h-4" />
-            <span>{formatDate(listing.eventDate)}</span>
+          {/* 4. Listing Type */}
+          <div className="mt-1">
+            <Tag variant={mainTag.variant} size="sm" className="w-fit">
+              {mainTag.label}
+            </Tag>
+          </div>
+        </div>
+
+        {/* Footer: Date, Nationality, Languages */}
+        <div className="space-y-2 text-xs text-gray-500 dark:text-gray-400">
+          <div className="flex items-center justify-between">
+            {/* Nationality */}
+            {listing.hostNationality && (
+              <span className="font-medium text-gray-600 dark:text-gray-300 bg-indigo-50 dark:bg-indigo-900/20 px-2 py-0.5 rounded text-indigo-600 dark:text-indigo-400">
+                {getLanguageLabel(listing.hostNationality)}
+              </span>
+            )}
+
+            {/* Date */}
+            <div className="flex items-center gap-1.5 ml-auto">
+              <Calendar className="w-3.5 h-3.5" />
+              <span>{formatDate(listing.eventDate)}</span>
+            </div>
           </div>
 
-          {/* 可使用語言 - 固定排序順序 */}
+          {/* Languages */}
           {listing.hostLanguages && listing.hostLanguages.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-2">
+            <div className="flex flex-wrap gap-1">
               {sortLanguages(listing.hostLanguages).map((lang) => (
                 <span
                   key={lang}
-                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300"
+                  className="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/30"
                 >
                   {getLanguageLabel(lang)}
                 </span>
@@ -168,14 +180,12 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
           )}
         </div>
 
-        {/* 彈性空間確保按鈕固定在底部 */}
+        {/* View Button - Flexible Spacer & Bottom */}
         <div className="flex-grow" />
-
-        {/* 查看按鈕 - 固定在底部居中 */}
-        <div className="flex items-center justify-center mt-auto pt-3">
+        <div className="mt-4 pt-3 flex justify-center">
           <Link
             href={`/listing/${listing.id}`}
-            className="flex items-center gap-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors text-sm shadow-sm hover:shadow"
           >
             <Eye className="w-4 h-4" />
             <span>{t('view')}</span>
