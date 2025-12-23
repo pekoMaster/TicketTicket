@@ -377,6 +377,7 @@ export default function ChatPage() {
     return new Date(dateStr).toLocaleTimeString('zh-TW', {
       hour: '2-digit',
       minute: '2-digit',
+      hour12: false,
     });
   };
 

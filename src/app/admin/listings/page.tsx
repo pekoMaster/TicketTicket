@@ -679,7 +679,7 @@ export default function AdminListingsPage() {
                   <div>
                     <label className="text-xs text-gray-500 dark:text-gray-400">集合時間</label>
                     <p className="text-gray-900 dark:text-gray-100">
-                      {detailModal.listing.meeting_time ? new Date(detailModal.listing.meeting_time).toLocaleString('zh-TW') : '-'}
+                      {detailModal.listing.meeting_time ? new Date(detailModal.listing.meeting_time).toLocaleString('zh-TW', { hour12: false }) : '-'}
                     </p>
                   </div>
                   <div>
@@ -744,7 +744,7 @@ export default function AdminListingsPage() {
 
               {/* 建立時間 */}
               <div className="text-xs text-gray-500 dark:text-gray-400 text-right">
-                建立時間：{new Date(detailModal.listing.created_at).toLocaleString('zh-TW')}
+                建立時間：{new Date(detailModal.listing.created_at).toLocaleString('zh-TW', { hour12: false })}
               </div>
             </div>
             <div className="flex justify-end gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
