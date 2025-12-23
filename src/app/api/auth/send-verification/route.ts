@@ -32,6 +32,13 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (userError || !user) {
+      // 用戶不存在（可能被刪除），回傳特殊錯誤讓前端處理
+      if (userError?.code === 'PGRST116' || !user) {
+        return NextResponse.json(
+          { error: 'user_deleted', message: '此帳號已被刪除，請重新登入註冊' },
+          { status: 401 }
+        );
+      }
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 

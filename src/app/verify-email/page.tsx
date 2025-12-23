@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Header from '@/components/layout/Header';
@@ -85,7 +85,12 @@ export default function VerifyEmailPage() {
       if (response.ok) {
         setCooldown(60); // 60 秒冷卻
       } else {
-        if (response.status === 429) {
+        if (response.status === 401 && data.error === 'user_deleted') {
+          // 用戶已被刪除，強制登出並導向登入頁
+          alert('此帳號已被刪除，請重新註冊');
+          await signOut({ callbackUrl: '/login' });
+          return;
+        } else if (response.status === 429) {
           // 從錯誤訊息解析等待時間
           const match = data.error.match(/(\d+)/);
           if (match) {
