@@ -18,7 +18,6 @@ import {
   TicketCountType,
   SEAT_GRADE_INFO,
   TICKET_COUNT_TYPE_INFO,
-  TICKET_TYPE_INFO,
   NATIONALITY_OPTIONS,
   LANGUAGE_OPTIONS,
 } from '@/types';
@@ -613,7 +612,6 @@ export default function EditListingPage() {
                 </label>
                 <div className="space-y-2">
                   {TICKET_TYPES.map((type) => {
-                    const info = TICKET_TYPE_INFO[type];
                     // 轉讓子票僅限二人票以上
                     const isSubTicketDisabled = type === 'sub_ticket_transfer' && ticketCountType === 'solo';
 
@@ -640,45 +638,43 @@ export default function EditListingPage() {
                         />
                         <div className="flex-1">
                           <p className="font-medium text-gray-900 dark:text-gray-100 text-sm">
-                            {info.label}
+                            {t(`ticketTypes.${type}`)}
                           </p>
                           <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {info.description}
+                            {t(`ticketTypes.${type}Desc`)}
                           </p>
-                          {info.warning && (
-                            <div className="flex items-center gap-1 mt-1 text-xs text-orange-600 dark:text-orange-400">
-                              <AlertTriangle className="w-3 h-3" />
-                              {info.warning}
-                            </div>
-                          )}
+                          <div className="flex items-center gap-1 mt-1 text-xs text-orange-600 dark:text-orange-400">
+                            <AlertTriangle className="w-3 h-3" />
+                            {t(`ticketTypes.${type}Warning`)}
+                          </div>
                         </div>
                       </label>
                     );
                   })}
                 </div>
-
-                {/* 協助入場 Checkbox */}
-                {ticketType === 'find_companion' && (
-                  <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800">
-                    <label className="flex items-start gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={willAssistEntry}
-                        onChange={(e) => setWillAssistEntry(e.target.checked)}
-                        className="mt-0.5 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                      />
-                      <div>
-                        <p className="font-medium text-blue-800 dark:text-blue-200 text-sm">
-                          {t('willAssistEntry', { defaultValue: '我會協助對方入場' })}
-                        </p>
-                        <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
-                          {t('willAssistEntryDesc', { defaultValue: '勾選此項表示您會在現場親自協助對方入場' })}
-                        </p>
-                      </div>
-                    </label>
-                  </div>
-                )}
               </div>
+
+              {/* 協助入場 Checkbox */}
+              {ticketType === 'find_companion' && (
+                <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={willAssistEntry}
+                      onChange={(e) => setWillAssistEntry(e.target.checked)}
+                      className="mt-0.5 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <div>
+                      <p className="font-medium text-blue-800 dark:text-blue-200 text-sm">
+                        {t('willAssistEntry', { defaultValue: '我會協助對方入場' })}
+                      </p>
+                      <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
+                        {t('willAssistEntryDesc', { defaultValue: '勾選此項表示您會在現場親自協助對方入場' })}
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              )}
             </div>
           </Card>
 
@@ -774,10 +770,10 @@ export default function EditListingPage() {
                 </div>
               </div>
             </div>
-          </Card>
+          </Card >
 
           {/* 其他注意事項 */}
-          <Card>
+          < Card >
             <Textarea
               label={t('otherNotes')}
               placeholder={t('otherNotesPlaceholder')}
@@ -787,12 +783,12 @@ export default function EditListingPage() {
               maxLength={500}
               showCount
             />
-          </Card>
-        </div>
-      </div>
+          </Card >
+        </div >
+      </div >
 
       {/* 底部提交按鈕 */}
-      <div className="fixed bottom-16 left-0 right-0 lg:left-64 lg:bottom-0 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-3 safe-area-bottom">
+      < div className="fixed bottom-16 left-0 right-0 lg:left-64 lg:bottom-0 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-3 safe-area-bottom" >
         <div className="max-w-2xl mx-auto">
           <Button
             fullWidth
@@ -803,12 +799,13 @@ export default function EditListingPage() {
             {tEdit('update')}
           </Button>
         </div>
-      </div>
+      </div >
 
       {/* 編輯警告 Modal */}
-      <Modal
+      < Modal
         isOpen={showWarningModal}
-        onClose={() => setShowWarningModal(false)}
+        onClose={() => setShowWarningModal(false)
+        }
         title={tEdit('warningTitle')}
       >
         <div className="p-4">
@@ -836,7 +833,7 @@ export default function EditListingPage() {
             </Button>
           </div>
         </div>
-      </Modal>
-    </div>
+      </Modal >
+    </div >
   );
 }
