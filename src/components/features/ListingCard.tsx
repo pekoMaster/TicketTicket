@@ -42,8 +42,8 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
     return lang?.label || code;
   };
 
-  // 語言排序順序：繁體中文 -> 簡體中文 -> 日本語 -> English
-  const LANGUAGE_ORDER = ['zh-TW', 'zh-CN', 'ja', 'en'];
+  // 語言排序順序（按 LANGUAGE_OPTIONS 中的順序）
+  const LANGUAGE_ORDER = ['zh-TW', 'zh-CN', 'ja', 'en', 'ko', 'id', 'th', 'vi'];
   const sortLanguages = (langs: string[]) => {
     return [...langs].sort((a, b) => {
       const orderA = LANGUAGE_ORDER.indexOf(a);
