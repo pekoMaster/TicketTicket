@@ -257,7 +257,7 @@ export default function EditListingPage() {
         artist_tags: artistTags,
         event_date: eventDate,
         venue,
-        meeting_time: `${eventDate}T${meetingTime}`,
+        meeting_time: `${eventDate}T${meetingTime}:00+09:00`,
         meeting_location: meetingLocation,
         total_slots: ticketCountType === 'duo' ? 2 : 1,
         ticket_type: ticketType as TicketType,

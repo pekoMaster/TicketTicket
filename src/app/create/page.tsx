@@ -249,7 +249,7 @@ export default function CreateListingPage() {
         artistTags,
         eventDate,
         venue,
-        meetingTime: `${eventDate}T${meetingTime}`,
+        meetingTime: `${eventDate}T${meetingTime}:00+09:00`,
         meetingLocation,
         totalSlots: ticketCountType === 'duo' ? 2 : 1,
         ticketType: ticketType as TicketType,
@@ -334,11 +334,10 @@ export default function CreateListingPage() {
             {/* 驗證進度 */}
             <div className="mb-8 space-y-3">
               <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                  verificationLevel !== 'unverified'
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${verificationLevel !== 'unverified'
                     ? 'bg-green-500 text-white'
                     : 'bg-gray-300 dark:bg-gray-600'
-                }`}>
+                  }`}>
                   {verificationLevel !== 'unverified' ? <Check className="w-4 h-4" /> : '1'}
                 </div>
                 <span className={verificationLevel !== 'unverified' ? 'text-green-600 dark:text-green-400' : ''}>
