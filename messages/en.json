@@ -796,6 +796,12 @@
       "step2": "The host will be notified and can accept or decline. Once accepted, you can start chatting.",
       "step3": "Confirm meeting time, location, and other important details in the chat."
     },
+    "completing": {
+      "title": "Complete Companion",
+      "step1": "Meet at the agreed location on the day",
+      "step2": "Rate each other after the event",
+      "step3": "Enjoy the concert!"
+    },
     "safety": {
       "title": "Safety Reminders",
       "point1": "This platform is a fan matching community, not a ticket trading site. Please comply with venue regulations.",

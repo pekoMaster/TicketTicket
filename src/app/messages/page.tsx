@@ -294,7 +294,7 @@ export default function MessagesPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header title={t('title')} />
 
-      <div className="pt-14 pb-20 px-4 py-6 space-y-6">
+      <div className="pt-20 pb-20 px-4 space-y-6">
         {/* 待處理申請 */}
         {pendingApplications.length > 0 && (
           <section>
