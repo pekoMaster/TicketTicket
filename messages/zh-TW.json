@@ -428,6 +428,7 @@
     "translating": "翻譯中...",
     "notFound": "找不到此對話",
     "expectedPrice": "希望費用",
+    "hostContactMethods": "主辦方可透過以下方式聯繫：",
     "ticketCount": {
       "solo": "一人票",
       "duo": "二人票",
@@ -508,13 +509,12 @@
     "changeAvatar": "更換頭像",
     "removeAvatar": "移除自訂頭像",
     "uploadHint": "點擊上傳新頭像（最大 2MB）",
-    "contactInfo": "聯絡資料",
-    "contactInfoHint": "這些資料可讓配對的同行夥伴在需要時聯繫您",
-    "phone": "手機電話",
-    "phoneHint": "非必填，但能讓對方在需要時與您聯絡",
-    "countryCode": "國碼",
-    "phoneNumber": "電話號碼",
-    "phoneNumberPlaceholder": "電話號碼（不含國碼）",
+    "phoneVerification": "電話驗證",
+    "phoneVerified": "電話已驗證",
+    "phoneVerifiedHint": "您已完成電話驗證，可以發布刊登",
+    "phoneNotVerified": "電話未驗證",
+    "phoneVerificationRequired": "發布刊登需要先完成電話驗證",
+    "verifyPhone": "前往驗證",
     "linkedAccounts": "連結帳號",
     "linkedAccountsHint": "連結的帳號會以圖示顯示在您的主辦頁面上（僅申請後可見）",
     "lineId": "LINE",
@@ -879,7 +879,7 @@
     "resendIn": "重新發送倒數",
     "sending": "發送中..."
   },
-  "help": {
+  "helpModal": {
     "title": "請問您需要什麼幫助？",
     "cancelMatch": "取消同行",
     "cancelMatchDesc": "解除與對方的配對關係",

@@ -428,6 +428,7 @@
     "translating": "翻訳中...",
     "notFound": "会話が見つかりません",
     "expectedPrice": "希望価格",
+    "hostContactMethods": "主催者への連絡方法：",
     "ticketCount": {
       "solo": "1人用チケット",
       "duo": "2人用チケット",
@@ -508,13 +509,12 @@
     "changeAvatar": "アバターを変更",
     "removeAvatar": "カスタムアバターを削除",
     "uploadHint": "クリックして新しいアバターをアップロード（最大2MB）",
-    "contactInfo": "連絡先情報",
-    "contactInfoHint": "この情報により、マッチした同行者が必要な時に連絡できます",
-    "phone": "電話番号",
-    "phoneHint": "任意ですが、必要な時に連絡が取れるようになります",
-    "countryCode": "国番号",
-    "phoneNumber": "電話番号",
-    "phoneNumberPlaceholder": "電話番号（国番号なし）",
+    "phoneVerification": "電話認証",
+    "phoneVerified": "電話認証済み",
+    "phoneVerifiedHint": "電話認証が完了しました。イベントを掲載できます",
+    "phoneNotVerified": "電話未認証",
+    "phoneVerificationRequired": "イベント掲載には電話認証が必要です",
+    "verifyPhone": "認証へ進む",
     "linkedAccounts": "連携アカウント",
     "linkedAccountsHint": "連携したアカウントはホストページにアイコンで表示されます（申請後のみ表示）",
     "lineId": "LINE",
@@ -879,7 +879,7 @@
     "resendIn": "再送信まで",
     "sending": "送信中..."
   },
-  "help": {
+  "helpModal": {
     "title": "何かお困りですか？",
     "cancelMatch": "同行をキャンセル",
     "cancelMatchDesc": "相手とのマッチングを解除",

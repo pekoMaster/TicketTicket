@@ -24,7 +24,7 @@ export default function HelpModal({
     onReport,
     onBlock,
 }: HelpModalProps) {
-    const t = useTranslations('help');
+    const t = useTranslations('helpModal');
 
     if (!isOpen) return null;
 

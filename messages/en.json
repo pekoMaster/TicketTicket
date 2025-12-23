@@ -428,6 +428,7 @@
     "translating": "Translating...",
     "notFound": "Conversation not found",
     "expectedPrice": "Expected Price",
+    "hostContactMethods": "Host can be contacted via:",
     "ticketCount": {
       "solo": "Solo Ticket",
       "duo": "Duo Ticket",
@@ -508,13 +509,12 @@
     "changeAvatar": "Change Avatar",
     "removeAvatar": "Remove Custom Avatar",
     "uploadHint": "Click to upload new avatar (max 2MB)",
-    "contactInfo": "Contact Information",
-    "contactInfoHint": "This information allows your matched companions to contact you when needed",
-    "phone": "Phone Number",
-    "phoneHint": "Optional, but allows others to contact you when needed",
-    "countryCode": "Country Code",
-    "phoneNumber": "Phone Number",
-    "phoneNumberPlaceholder": "Phone number (without country code)",
+    "phoneVerification": "Phone Verification",
+    "phoneVerified": "Phone Verified",
+    "phoneVerifiedHint": "Your phone is verified. You can now publish listings",
+    "phoneNotVerified": "Phone Not Verified",
+    "phoneVerificationRequired": "Phone verification is required to publish listings",
+    "verifyPhone": "Verify Now",
     "linkedAccounts": "Linked Accounts",
     "linkedAccountsHint": "Linked accounts will be shown as icons on your host page (visible only after application)",
     "lineId": "LINE",
@@ -879,7 +879,7 @@
     "resendIn": "Resend in",
     "sending": "Sending..."
   },
-  "help": {
+  "helpModal": {
     "title": "How can we help?",
     "cancelMatch": "Cancel Match",
     "cancelMatchDesc": "End the pairing with the other user",

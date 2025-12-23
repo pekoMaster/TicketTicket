@@ -48,7 +48,8 @@
       "Bash(git commit -m \"$\\(cat <<''EOF''\nV13：管理員後台系統\n\n功能新增：\n- 刊登管理頁面：列表顯示、搜尋篩選、強制編輯/移除\n- 會員管理頁面：列表顯示、強制改名/改頭像、封鎖功能\n- 黑名單系統：封鎖 Google 帳號、阻止登入/註冊\n- 操作可選擇是否通知相關用戶（透過系統訊息）\n\nAPI 新增：\n- /api/admin/listings - 刊登管理 CRUD\n- /api/admin/users - 會員管理、封鎖/解封\n- /api/admin/blacklist - 黑名單管理\n\n資料庫：\n- 新增 blacklist 表（封鎖帳號）\n- 新增 admin_logs 表（操作日誌）\n- messages 表新增系統訊息欄位\n\n其他：\n- 登入流程新增黑名單檢查\n- 管理員側邊欄新增導航連結\n- 新增 OpenSpec 提案文件\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git commit -m \"$\\(cat <<''EOF''\n修復：四項 Bug 修正\n\n- 刊登表單：票券警告只顯示給主辦方\n- 編輯頁面：移除活動表單未使用的圖片欄位\n- 訊息頁面：優化申請項目顯示與撤回流程\n- 翻譯補充：新增缺少的翻譯 key\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git commit -m \"$\\(cat <<''EOF''\n修復：後台刊登管理 API 欄位名稱錯誤\n\n- asking_price_twd 改為 asking_price_jpy\n- 修正 host 關聯查詢語法\n- 價格顯示同時顯示日幣和台幣\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(node:*)"
     ]
   }
 }

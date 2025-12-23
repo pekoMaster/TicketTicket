@@ -428,6 +428,7 @@
     "startConversation": "开始对话吧！",
     "notFound": "找不到此对话",
     "expectedPrice": "期望费用",
+    "hostContactMethods": "主办方可通过以下方式联系：",
     "ticketCount": {
       "solo": "单人票",
       "duo": "双人票",
@@ -508,13 +509,12 @@
     "changeAvatar": "更换头像",
     "removeAvatar": "移除自定义头像",
     "uploadHint": "点击上传新头像（最大 2MB）",
-    "contactInfo": "联络资料",
-    "contactInfoHint": "这些资料可让配对的同行伙伴在需要时联系您",
-    "phone": "手机电话",
-    "phoneHint": "非必填，但能让对方在需要时与您联络",
-    "countryCode": "国码",
-    "phoneNumber": "电话号码",
-    "phoneNumberPlaceholder": "电话号码（不含国码）",
+    "phoneVerification": "电话验证",
+    "phoneVerified": "电话已验证",
+    "phoneVerifiedHint": "您已完成电话验证，可以发布刊登",
+    "phoneNotVerified": "电话未验证",
+    "phoneVerificationRequired": "发布刊登需要先完成电话验证",
+    "verifyPhone": "前往验证",
     "linkedAccounts": "连结账号",
     "linkedAccountsHint": "连结的账号会以图标显示在您的主办页面上（仅申请后可见）",
     "lineId": "LINE",
@@ -879,7 +879,7 @@
     "resendIn": "重新发送倒数",
     "sending": "发送中..."
   },
-  "help": {
+  "helpModal": {
     "title": "请问您需要什么帮助？",
     "cancelMatch": "取消同行",
     "cancelMatchDesc": "解除与对方的配对关系",

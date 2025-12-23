@@ -26,7 +26,7 @@ export async function GET(
           ticket_type, ticket_count_type, meeting_time, meeting_location,
           seat_grade, will_assist_entry
         ),
-        host:users!host_id(id, username, avatar_url, custom_avatar_url, rating, review_count),
+        host:users!host_id(id, username, avatar_url, custom_avatar_url, rating, review_count, line_id, discord_id, show_line, show_discord),
         guest:users!guest_id(id, username, avatar_url, custom_avatar_url, rating, review_count)
       `)
       .eq('id', id)
@@ -82,6 +82,14 @@ export async function GET(
       };
     }
 
+    // 如果是已配對狀態且用戶是申請者，提供主辦方的聯繫方式
+    const isMatched = conversation.conversation_type === 'matched';
+    const isGuest = conversation.guest_id === userId;
+    const hostContactMethods = (isMatched && isGuest) ? {
+      hasLine: !!(conversation.host.line_id && conversation.host.show_line),
+      hasDiscord: !!(conversation.host.discord_id && conversation.host.show_discord),
+    } : null;
+
     return NextResponse.json({
       conversation: {
         ...conversation,
@@ -97,6 +105,8 @@ export async function GET(
         // 7天期限資訊
         deadlineInfo,
         conversationType: conversation.conversation_type,
+        // 主辦方聯繫方式（僅已配對的申請者可見）
+        hostContactMethods,
       },
       messages: messages || [],
     });

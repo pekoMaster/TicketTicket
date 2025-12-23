@@ -9,17 +9,17 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import Avatar from '@/components/ui/Avatar';
-import { PHONE_COUNTRY_CODES } from '@/types';
 import {
   User,
   Camera,
-  Phone,
   MessageCircle,
   Check,
   Loader2,
   X,
   ExternalLink,
   Unlink,
+  ShieldCheck,
+  AlertCircle,
 } from 'lucide-react';
 
 interface UserProfile {
@@ -28,6 +28,7 @@ interface UserProfile {
   email: string;
   avatarUrl?: string;
   customAvatarUrl?: string;
+  verificationLevel?: 'unverified' | 'applicant' | 'host';
   phoneCountryCode?: string;
   phoneNumber?: string;
   lineId?: string;
@@ -52,8 +53,6 @@ export default function ProfileSettingsPage() {
 
   // Form state
   const [username, setUsername] = useState('');
-  const [phoneCountryCode, setPhoneCountryCode] = useState('+81');
-  const [phoneNumber, setPhoneNumber] = useState('');
   const [showLine, setShowLine] = useState(false);
   const [showDiscord, setShowDiscord] = useState(false);
 
@@ -102,8 +101,6 @@ export default function ProfileSettingsPage() {
         setProfile(data);
         // Initialize form state
         setUsername(data.username || '');
-        setPhoneCountryCode(data.phoneCountryCode || '+81');
-        setPhoneNumber(data.phoneNumber || '');
         setShowLine(data.showLine || false);
         setShowDiscord(data.showDiscord || false);
       }
@@ -130,8 +127,6 @@ export default function ProfileSettingsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           username,
-          phoneCountryCode: phoneNumber ? phoneCountryCode : null,
-          phoneNumber: phoneNumber || null,
           showLine,
           showDiscord,
         }),
@@ -357,39 +352,45 @@ export default function ProfileSettingsPage() {
           />
         </Card>
 
-        {/* Contact Info Section */}
+        {/* Phone Verification Section */}
         <Card className="dark:bg-gray-800 dark:border-gray-700">
           <div className="flex items-center gap-2 mb-2">
-            <Phone className="w-5 h-5 text-indigo-500" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('contactInfo')}</h2>
+            <ShieldCheck className="w-5 h-5 text-indigo-500" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('phoneVerification')}</h2>
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('contactInfoHint')}</p>
 
-          {/* Phone */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('phone')}</label>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t('phoneHint')}</p>
-            <div className="flex gap-2">
-              <select
-                value={phoneCountryCode}
-                onChange={(e) => setPhoneCountryCode(e.target.value)}
-                className="w-32 px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-              >
-                {PHONE_COUNTRY_CODES.map((code) => (
-                  <option key={code.value} value={code.value}>
-                    {code.label} {code.country}
-                  </option>
-                ))}
-              </select>
-              <Input
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value.replace(/[^0-9]/g, ''))}
-                placeholder={t('phoneNumberPlaceholder')}
-                className="flex-1"
-                maxLength={15}
-              />
+          {profile?.verificationLevel === 'host' ? (
+            // Verified state
+            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+              <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
+                <Check className="w-5 h-5" />
+                <span className="font-medium">{t('phoneVerified')}</span>
+              </div>
+              <p className="text-sm text-green-600 dark:text-green-400 mt-1">
+                {t('phoneVerifiedHint')}
+              </p>
             </div>
-          </div>
+          ) : (
+            // Unverified state
+            <div className="space-y-4">
+              <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                <div className="flex items-center gap-2 text-amber-700 dark:text-amber-300">
+                  <AlertCircle className="w-5 h-5" />
+                  <span className="font-medium">{t('phoneNotVerified')}</span>
+                </div>
+                <p className="text-sm text-amber-600 dark:text-amber-400 mt-1">
+                  {t('phoneVerificationRequired')}
+                </p>
+              </div>
+              <Button
+                variant="primary"
+                fullWidth
+                onClick={() => router.push('/verify-phone')}
+              >
+                {t('verifyPhone')}
+              </Button>
+            </div>
+          )}
         </Card>
 
         {/* Linked Accounts Section */}
