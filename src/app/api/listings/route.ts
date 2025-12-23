@@ -26,9 +26,6 @@ export async function GET() {
   }
 }
 
-// 每個用戶每個活動最多刊登數量
-const MAX_LISTINGS_PER_EVENT = 2;
-
 // POST /api/listings - 新增刊登
 export async function POST(request: NextRequest) {
   try {
@@ -55,6 +52,15 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
+    // 獲取活動的刊登上限設定
+    const { data: eventData } = await supabaseAdmin
+      .from('events')
+      .select('id, max_listings_per_user')
+      .eq('name', body.eventName)
+      .single();
+
+    const maxListingsPerEvent = eventData?.max_listings_per_user || 2;
+
     // 檢查該用戶在此活動的刊登數量
     const { count: existingCount } = await supabaseAdmin
       .from('listings')
@@ -63,18 +69,19 @@ export async function POST(request: NextRequest) {
       .eq('event_name', body.eventName)
       .neq('status', 'closed'); // 不計算已關閉的
 
-    if (existingCount !== null && existingCount >= MAX_LISTINGS_PER_EVENT) {
+    if (existingCount !== null && existingCount >= maxListingsPerEvent) {
       return NextResponse.json({
         error: 'MAX_LISTINGS_REACHED',
-        message: `Maximum ${MAX_LISTINGS_PER_EVENT} listings per event`,
+        message: `Maximum ${maxListingsPerEvent} listings per event`,
         current: existingCount,
-        max: MAX_LISTINGS_PER_EVENT,
+        max: maxListingsPerEvent,
       }, { status: 400 });
     }
 
     // 準備插入資料
     const insertData: Record<string, unknown> = {
       host_id: session.user.dbId,
+      event_id: eventData?.id || null, // 關聯到活動
       event_name: body.eventName,
       artist_tags: body.artistTags || [],
       event_date: body.eventDate,

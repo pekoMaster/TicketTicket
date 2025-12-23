@@ -219,15 +219,21 @@ export default function CreateListingPage() {
     );
 
     if (isExchangeMode) {
-      // 換票模式驗證
+      // 換票模式驗證 - 確保選擇的活動和座位等級有效
+      const targetEvent = events.find(e => e.name === exchangeEventName);
+      const validSeatGrade = targetEvent?.ticketPriceTiers?.some(
+        tier => tier.seatGrade === exchangeSeatGrade
+      );
       return baseValid &&
         exchangeEventName.trim() !== '' &&
-        exchangeSeatGrade !== '';
+        targetEvent !== undefined &&
+        exchangeSeatGrade !== '' &&
+        validSeatGrade === true;
     } else {
       // 一般模式驗證
       return baseValid;
     }
-  }, [eventName, eventDate, venue, meetingTime, meetingLocation, identificationFeatures, hostLanguages, ticketType, seatGrade, ticketCountType, hostNationality, isExchangeMode, exchangeEventName, exchangeSeatGrade, isEventLimitReached]);
+  }, [eventName, eventDate, venue, meetingTime, meetingLocation, identificationFeatures, hostLanguages, ticketType, seatGrade, ticketCountType, hostNationality, isExchangeMode, exchangeEventName, exchangeSeatGrade, isEventLimitReached, events]);
 
   const handleLanguageToggle = (lang: string) => {
     setHostLanguages((prev) =>
@@ -252,6 +258,11 @@ export default function CreateListingPage() {
       }
       setVenue(event.venue || '');
       setVenueAddress(event.venueAddress || '');
+      // 自動填入活動日期
+      if (event.eventDate) {
+        const dateStr = new Date(event.eventDate).toISOString().split('T')[0];
+        setEventDate(dateStr);
+      }
     } else {
       setArtistTags([]);
       setVenue('');
