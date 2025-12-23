@@ -249,6 +249,7 @@
     "eventDate": "開催日",
     "venuePlaceholder": "例：東京ドーム",
     "meetingTimePlaceholder": "待ち合わせ時間",
+    "japanTimeHint": "※ 日本時間 (JST) で設定してください",
     "meetingLocationPlaceholder": "例：A入口",
     "priceSettings": "価格設定",
     "originalPriceJPY": "定価（円）",

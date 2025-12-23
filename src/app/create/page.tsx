@@ -335,8 +335,8 @@ export default function CreateListingPage() {
             <div className="mb-8 space-y-3">
               <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center ${verificationLevel !== 'unverified'
-                    ? 'bg-green-500 text-white'
-                    : 'bg-gray-300 dark:bg-gray-600'
+                  ? 'bg-green-500 text-white'
+                  : 'bg-gray-300 dark:bg-gray-600'
                   }`}>
                   {verificationLevel !== 'unverified' ? <Check className="w-4 h-4" /> : '1'}
                 </div>
@@ -457,6 +457,7 @@ export default function CreateListingPage() {
                   leftIcon={<Clock className="w-5 h-5" />}
                   required
                 />
+                <p className="text-xs text-amber-600 dark:text-amber-400 mt-1 -mb-2">{t('japanTimeHint')}</p>
               </div>
 
               {/* 活動現場地址（唯讀） */}

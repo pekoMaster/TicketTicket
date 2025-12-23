@@ -249,6 +249,7 @@
     "eventDate": "Event Date",
     "venuePlaceholder": "e.g., Tokyo Dome",
     "meetingTimePlaceholder": "Meeting time",
+    "japanTimeHint": "※ Time is in Japan Standard Time (JST)",
     "meetingLocationPlaceholder": "e.g., Gate A",
     "priceSettings": "Price Settings",
     "originalPriceJPY": "Original Price (JPY)",

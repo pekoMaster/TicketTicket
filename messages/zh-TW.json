@@ -249,6 +249,7 @@
     "eventDate": "活動日期",
     "venuePlaceholder": "例：東京巨蛋",
     "meetingTimePlaceholder": "見面時間",
+    "japanTimeHint": "※ 時間為日本時間 (JST)",
     "meetingLocationPlaceholder": "例：A 入口",
     "priceSettings": "價格設定",
     "originalPriceJPY": "原價（日圓）",
