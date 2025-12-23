@@ -132,10 +132,17 @@ export default function EditListingPage() {
 
     setVenue(listing.venue || '');
 
-    // 處理集合時間
+    // 處理集合時間 - 使用 JST 時區避免時差問題
     if (listing.meetingTime) {
       const timeObj = new Date(listing.meetingTime);
-      setMeetingTime(timeObj.toTimeString().slice(0, 5));
+      // 轉換為 JST (UTC+9) 時間字串
+      const jstTime = timeObj.toLocaleTimeString('ja-JP', {
+        timeZone: 'Asia/Tokyo',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+      setMeetingTime(jstTime);
     }
 
     setMeetingLocation(listing.meetingLocation || '');
@@ -437,7 +444,7 @@ export default function EditListingPage() {
               )}
 
               {/* 日期與時間 */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4 [&>*]:min-w-0">
                 <Input
                   label={t('companionDate')}
                   type="date"
