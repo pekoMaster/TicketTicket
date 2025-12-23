@@ -166,6 +166,14 @@ export default function ProfilePage() {
           reviewCount: profileData.reviewCount || 0,
           isVerified: profileData.isVerified || false,
         });
+      } else if (profileRes.status === 401) {
+        // 用戶被刪除，自動登出並導向登入頁
+        const errorData = await profileRes.json();
+        if (errorData.error === 'user_deleted') {
+          alert('此帳號已被刪除，請重新註冊');
+          await signOut({ callbackUrl: '/login' });
+          return;
+        }
       }
 
       if (reviewsRes.ok) {

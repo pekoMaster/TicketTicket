@@ -19,11 +19,21 @@ export async function GET() {
 
     if (error) {
       console.error('Error fetching user:', error);
+      // 如果用戶在資料庫中不存在（已被刪除），回傳特殊錯誤讓前端清除 session
+      if (error.code === 'PGRST116') {
+        return NextResponse.json(
+          { error: 'user_deleted', message: '此帳號已被刪除，請重新註冊' },
+          { status: 401 }
+        );
+      }
       return NextResponse.json({ error: '取得用戶資料失敗' }, { status: 500 });
     }
 
     if (!user) {
-      return NextResponse.json({ error: '用戶不存在' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'user_deleted', message: '此帳號已被刪除，請重新註冊' },
+        { status: 401 }
+      );
     }
 
     // 轉換欄位名稱為 camelCase
