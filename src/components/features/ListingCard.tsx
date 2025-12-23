@@ -42,6 +42,19 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
     return lang?.label || code;
   };
 
+  // 語言排序順序：繁體中文 -> 簡體中文 -> 日本語 -> English
+  const LANGUAGE_ORDER = ['zh-TW', 'zh-CN', 'ja', 'en'];
+  const sortLanguages = (langs: string[]) => {
+    return [...langs].sort((a, b) => {
+      const orderA = LANGUAGE_ORDER.indexOf(a);
+      const orderB = LANGUAGE_ORDER.indexOf(b);
+      // 如果不在列表中，放到最後
+      const idxA = orderA === -1 ? 999 : orderA;
+      const idxB = orderB === -1 ? 999 : orderB;
+      return idxA - idxB;
+    });
+  };
+
   // 取得票種數量類型標籤
   const getTicketCountLabel = (type: string) => {
     const info = TICKET_COUNT_TYPE_INFO[type as keyof typeof TICKET_COUNT_TYPE_INFO];
@@ -66,7 +79,7 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
 
   return (
     <>
-      <Card className="animate-fade-in">
+      <Card className="animate-fade-in flex flex-col h-full">
         {/* 主辦方資訊 - 移到頂部，可點擊顯示用戶資訊 */}
         {host && (
           <div
@@ -140,10 +153,10 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
             <span>{formatDate(listing.eventDate)}</span>
           </div>
 
-          {/* 可使用語言 */}
+          {/* 可使用語言 - 固定排序順序 */}
           {listing.hostLanguages && listing.hostLanguages.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
-              {listing.hostLanguages.map((lang) => (
+              {sortLanguages(listing.hostLanguages).map((lang) => (
                 <span
                   key={lang}
                   className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300"
@@ -155,8 +168,11 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
           )}
         </div>
 
-        {/* 查看按鈕 */}
-        <div className="flex items-center justify-end gap-3">
+        {/* 彈性空間確保按鈕固定在底部 */}
+        <div className="flex-grow" />
+
+        {/* 查看按鈕 - 固定在底部居中 */}
+        <div className="flex items-center justify-center mt-auto pt-3">
           <Link
             href={`/listing/${listing.id}`}
             className="flex items-center gap-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
