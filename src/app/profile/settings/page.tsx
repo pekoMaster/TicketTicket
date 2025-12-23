@@ -20,7 +20,9 @@ import {
   Unlink,
   ShieldCheck,
   AlertCircle,
+  Bug,
 } from 'lucide-react';
+import Modal from '@/components/ui/Modal';
 
 interface UserProfile {
   id: string;
@@ -55,6 +57,12 @@ export default function ProfileSettingsPage() {
   const [username, setUsername] = useState('');
   const [showLine, setShowLine] = useState(false);
   const [showDiscord, setShowDiscord] = useState(false);
+
+  // Bug report modal state
+  const [bugModalOpen, setBugModalOpen] = useState(false);
+  const [bugTitle, setBugTitle] = useState('');
+  const [bugDescription, setBugDescription] = useState('');
+  const [isSubmittingBug, setIsSubmittingBug] = useState(false);
 
   // Handle OAuth callback results
   useEffect(() => {
@@ -536,6 +544,23 @@ export default function ProfileSettingsPage() {
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">{t('visibilityNote')}</p>
         </Card>
 
+        {/* Bug Report Section */}
+        <Card className="dark:bg-gray-800 dark:border-gray-700">
+          <div className="flex items-center gap-2 mb-2">
+            <Bug className="w-5 h-5 text-red-500" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">BUG 回報</h2>
+          </div>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4"></p>
+          <Button
+            variant="secondary"
+            fullWidth
+            onClick={() => setBugModalOpen(true)}
+          >
+            <Bug className="w-4 h-4 mr-2" />
+            回報問題
+          </Button>
+        </Card>
+
         {/* Save Button */}
         <div className="fixed bottom-16 left-0 right-0 lg:left-64 lg:bottom-0 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-3 safe-area-bottom">
           <div className="max-w-2xl mx-auto">
@@ -545,6 +570,95 @@ export default function ProfileSettingsPage() {
           </div>
         </div>
       </div>
+
+      {/* Bug Report Modal */}
+      <Modal
+        isOpen={bugModalOpen}
+        onClose={() => {
+          setBugModalOpen(false);
+          setBugTitle('');
+          setBugDescription('');
+        }}
+        title="回報問題"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              標題 *
+            </label>
+            <input
+              type="text"
+              value={bugTitle}
+              onChange={(e) => setBugTitle(e.target.value)}
+              placeholder="簡要描述問題"
+              maxLength={200}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              問題描述 *
+            </label>
+            <textarea
+              value={bugDescription}
+              onChange={(e) => setBugDescription(e.target.value)}
+              placeholder="請詳細描述您遇到的問題，包括操作步驟和預期結果..."
+              rows={5}
+              maxLength={5000}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+            />
+            <p className="text-xs text-gray-500 mt-1">{bugDescription.length}/5000</p>
+          </div>
+          <div className="flex gap-3 pt-2">
+            <Button
+              variant="secondary"
+              fullWidth
+              onClick={() => {
+                setBugModalOpen(false);
+                setBugTitle('');
+                setBugDescription('');
+              }}
+            >
+              取消
+            </Button>
+            <Button
+              variant="primary"
+              fullWidth
+              loading={isSubmittingBug}
+              disabled={!bugTitle.trim() || !bugDescription.trim()}
+              onClick={async () => {
+                setIsSubmittingBug(true);
+                try {
+                  const response = await fetch('/api/bug-reports', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      title: bugTitle,
+                      description: bugDescription,
+                    }),
+                  });
+                  if (response.ok) {
+                    setSaveMessage({ type: 'success', text: '感謝您的回報！我們會盡快處理' });
+                    setBugModalOpen(false);
+                    setBugTitle('');
+                    setBugDescription('');
+                  } else {
+                    const error = await response.json();
+                    setSaveMessage({ type: 'error', text: error.error || '提交失敗' });
+                  }
+                } catch (error) {
+                  console.error('Error submitting bug report:', error);
+                  setSaveMessage({ type: 'error', text: '提交失敗' });
+                } finally {
+                  setIsSubmittingBug(false);
+                }
+              }}
+            >
+              提交回報
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useAdmin } from '@/contexts/AdminContext';
-import { Lock, LogOut, Ticket, Menu, X, Calendar, Home, ChevronRight, FileText, Users, Ban, Flag } from 'lucide-react';
+import { Lock, LogOut, Ticket, Menu, X, Calendar, Home, ChevronRight, FileText, Users, Ban, Flag, Bug } from 'lucide-react';
 import Link from 'next/link';
 
 const NAV_ITEMS = [
@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: '/admin/listings', label: '刊登管理', icon: FileText },
   { href: '/admin/users', label: '會員管理', icon: Users },
   { href: '/admin/reports', label: '檢舉管理', icon: Flag },
+  { href: '/admin/bugs', label: 'BUG 回報', icon: Bug },
   { href: '/admin/blacklist', label: '黑名單', icon: Ban },
 ];
 
@@ -255,11 +256,10 @@ export default function AdminLayout({
             </h2>
             <div className="flex items-center gap-4">
               {/* 角色徽章 */}
-              <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                isSuperAdmin
+              <span className={`px-3 py-1 rounded-full text-xs font-medium ${isSuperAdmin
                   ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
                   : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-              }`}>
+                }`}>
                 {isSuperAdmin ? '主管理員' : '副管理員'}
               </span>
               <Link
