@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Header from '@/components/layout/Header';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
@@ -16,6 +17,7 @@ export default function VerifyEmailPage() {
   const searchParams = useSearchParams();
   const { data: session, status } = useSession();
   const t = useTranslations('verification');
+  const { locale } = useLanguage();
 
   const [pageState, setPageState] = useState<PageState>('loading');
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -74,6 +76,8 @@ export default function VerifyEmailPage() {
     try {
       const response = await fetch('/api/auth/send-verification', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ locale }),
       });
 
       const data = await response.json();

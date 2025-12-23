@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { supabaseAdmin } from '@/lib/supabase';
 import { sendVerificationEmail, generateVerificationToken, getTokenExpiration } from '@/lib/email';
 
 // POST /api/auth/send-verification - 發送驗證信
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.dbId) {
@@ -12,6 +12,17 @@ export async function POST() {
     }
 
     const userId = session.user.dbId;
+
+    // 從 request body 獲取語言設定
+    let locale = 'zh-TW';
+    try {
+      const body = await request.json();
+      if (body.locale && ['zh-TW', 'zh-CN', 'ja', 'en'].includes(body.locale)) {
+        locale = body.locale;
+      }
+    } catch {
+      // body 為空或無效 JSON，使用預設語言
+    }
 
     // 獲取用戶資料
     const { data: user, error: userError } = await supabaseAdmin
@@ -56,8 +67,8 @@ export async function POST() {
     const token = generateVerificationToken();
     const expires = getTokenExpiration();
 
-    // 先發送驗證信（成功後才更新資料庫）
-    const result = await sendVerificationEmail(user.email, user.username, token);
+    // 先發送驗證信（成功後才更新資料庫）- 傳入用戶的語言設定
+    const result = await sendVerificationEmail(user.email, user.username, token, locale);
 
     if (!result.success) {
       console.error('Failed to send verification email:', result.error);
