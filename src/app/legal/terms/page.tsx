@@ -87,19 +87,19 @@ export default function TermsOfServicePage() {
 
           {/* Section 7: Account Termination */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('section7Title')}</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('section7Title')}</h2>
             <p className="text-gray-700 dark:text-gray-300">{t('section7Content')}</p>
           </Card>
 
           {/* Section 8: Changes to Terms */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('section8Title')}</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('section8Title')}</h2>
             <p className="text-gray-700 dark:text-gray-300">{t('section8Content')}</p>
           </Card>
 
           {/* Section 9: Contact */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('section9Title')}</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('section9Title')}</h2>
             <p className="text-gray-700 dark:text-gray-300">{t('section9Content')}</p>
           </Card>
         </div>

@@ -22,30 +22,30 @@ export default function TokushohoPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header title={t('title')} showBack />
 
-      <div className="pt-14 pb-20 px-4 py-6">
+      <div className="pt-14 pb-20 px-4 py-6 max-w-3xl mx-auto">
         <div className="space-y-4">
           {/* Title Card */}
           <Card>
-            <h1 className="text-xl font-bold text-gray-900 mb-2">{t('title')}</h1>
-            <p className="text-sm text-gray-500">{t('titleZh')}</p>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">{t('title')}</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('titleZh')}</p>
           </Card>
 
           {/* Information Items */}
           <Card>
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-gray-100 dark:divide-gray-700">
               {items.map((item, index) => (
                 <div key={index} className="py-4 first:pt-0 last:pb-0">
-                  <dt className="text-sm font-medium text-gray-500 mb-1">{item.label}</dt>
-                  <dd className="text-gray-900">{item.value}</dd>
+                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{item.label}</dt>
+                  <dd className="text-gray-900 dark:text-gray-100">{item.value}</dd>
                 </div>
               ))}
             </div>
           </Card>
 
           {/* Important Notice */}
-          <Card className="bg-orange-50 border border-orange-200">
-            <h3 className="font-semibold text-orange-800 mb-2">{t('importantNotice')}</h3>
-            <p className="text-sm text-orange-700">{t('importantNoticeContent')}</p>
+          <Card className="bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800">
+            <h3 className="font-semibold text-orange-800 dark:text-orange-300 mb-2">{t('importantNotice')}</h3>
+            <p className="text-sm text-orange-700 dark:text-orange-300">{t('importantNoticeContent')}</p>
           </Card>
         </div>
       </div>

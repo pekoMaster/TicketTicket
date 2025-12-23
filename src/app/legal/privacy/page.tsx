@@ -15,19 +15,19 @@ export default function PrivacyPolicyPage() {
         <div className="space-y-4">
           {/* Title */}
           <Card>
-            <h1 className="text-xl font-bold text-gray-900 mb-2">{t('title')}</h1>
-            <p className="text-sm text-gray-500">{t('lastUpdated')}: 2025-01-01</p>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">{t('title')}</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('lastUpdated')}: 2025-01-01</p>
           </Card>
 
           {/* Introduction */}
           <Card>
-            <p className="text-gray-700">{t('intro')}</p>
+            <p className="text-gray-700 dark:text-gray-300">{t('intro')}</p>
           </Card>
 
           {/* Section 1: Information We Collect */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('section1Title')}</h2>
-            <div className="space-y-2 text-gray-700">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('section1Title')}</h2>
+            <div className="space-y-2 text-gray-700 dark:text-gray-300">
               <p>{t('section1Content1')}</p>
               <ul className="list-disc list-inside space-y-1 ml-2">
                 <li>{t('section1Item1')}</li>
@@ -40,8 +40,8 @@ export default function PrivacyPolicyPage() {
 
           {/* Section 2: How We Use Information */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('section2Title')}</h2>
-            <div className="space-y-2 text-gray-700">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('section2Title')}</h2>
+            <div className="space-y-2 text-gray-700 dark:text-gray-300">
               <p>{t('section2Content1')}</p>
               <ul className="list-disc list-inside space-y-1 ml-2">
                 <li>{t('section2Item1')}</li>
@@ -54,26 +54,26 @@ export default function PrivacyPolicyPage() {
 
           {/* Section 3: Information Sharing */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('section3Title')}</h2>
-            <p className="text-gray-700">{t('section3Content')}</p>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('section3Title')}</h2>
+            <p className="text-gray-700 dark:text-gray-300">{t('section3Content')}</p>
           </Card>
 
           {/* Section 4: Data Security */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('section4Title')}</h2>
-            <p className="text-gray-700">{t('section4Content')}</p>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('section4Title')}</h2>
+            <p className="text-gray-700 dark:text-gray-300">{t('section4Content')}</p>
           </Card>
 
           {/* Section 5: Third-Party Services */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('section5Title')}</h2>
-            <p className="text-gray-700">{t('section5Content')}</p>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('section5Title')}</h2>
+            <p className="text-gray-700 dark:text-gray-300">{t('section5Content')}</p>
           </Card>
 
           {/* Section 6: Your Rights */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('section6Title')}</h2>
-            <div className="space-y-2 text-gray-700">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('section6Title')}</h2>
+            <div className="space-y-2 text-gray-700 dark:text-gray-300">
               <p>{t('section6Content1')}</p>
               <ul className="list-disc list-inside space-y-1 ml-2">
                 <li>{t('section6Item1')}</li>
@@ -85,8 +85,8 @@ export default function PrivacyPolicyPage() {
 
           {/* Section 7: Contact */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('section7Title')}</h2>
-            <p className="text-gray-700">{t('section7Content')}</p>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('section7Title')}</h2>
+            <p className="text-gray-700 dark:text-gray-300">{t('section7Content')}</p>
           </Card>
         </div>
       </div>
