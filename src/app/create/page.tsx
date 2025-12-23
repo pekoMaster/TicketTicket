@@ -280,7 +280,7 @@ export default function CreateListingPage() {
         artistTags,
         eventDate,
         venue,
-        meetingTime: `${eventDate}T${meetingTime}:00+09:00`,
+        meetingTime: `${eventDate}T${meetingTime.slice(0, 5)}:00+09:00`,
         meetingLocation,
         totalSlots: ticketCountType === 'duo' ? 2 : 1,
         ticketType: ticketType as TicketType,
