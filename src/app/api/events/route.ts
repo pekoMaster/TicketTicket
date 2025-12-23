@@ -66,6 +66,7 @@ export async function POST(request: NextRequest) {
         ticket_price_tiers: body.ticketPriceTiers || [],
         category: body.category || 'concert',
         is_active: body.isActive !== false,
+        max_listings_per_user: body.maxListingsPerUser || 2,
       })
       .select()
       .single();

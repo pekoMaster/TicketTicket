@@ -6,6 +6,7 @@ import { ChevronDown, Search, X } from 'lucide-react';
 interface SelectOption {
   value: string;
   label: string;
+  disabled?: boolean;
 }
 
 interface SelectProps {
@@ -155,10 +156,14 @@ export default function Select({
                   <button
                     key={option.value}
                     type="button"
-                    onClick={() => handleSelect(option.value)}
+                    onClick={() => !option.disabled && handleSelect(option.value)}
+                    disabled={option.disabled}
                     className={`
-                      w-full px-4 py-2.5 text-left text-sm hover:bg-indigo-50 dark:hover:bg-indigo-900/30
-                      ${value === option.value ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-medium' : 'text-gray-700 dark:text-gray-200'}
+                      w-full px-4 py-2.5 text-left text-sm
+                      ${option.disabled
+                        ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed bg-gray-50 dark:bg-gray-800'
+                        : `hover:bg-indigo-50 dark:hover:bg-indigo-900/30 ${value === option.value ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-medium' : 'text-gray-700 dark:text-gray-200'}`
+                      }
                     `}
                   >
                     {option.label}

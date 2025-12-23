@@ -50,7 +50,7 @@ const CLOTHING_TAG_KEYS = [
 export default function CreateListingPage() {
   const router = useRouter();
   const { data: session } = useSession();
-  const { addListing } = useApp();
+  const { addListing, listings } = useApp();
   const { events } = useAdmin();
   const t = useTranslations('create');
   const tCommon = useTranslations('common');
@@ -107,20 +107,48 @@ export default function CreateListingPage() {
     checkVerification();
   }, [session?.user?.dbId]);
 
-  // 從管理員活動獲取選項
+  // 計算用戶在每個活動的刊登數量
+  const userListingsCountByEvent = useMemo(() => {
+    if (!session?.user?.dbId) return {};
+    const counts: Record<string, number> = {};
+    listings
+      .filter((l) => l.hostId === session.user.dbId)
+      .forEach((l) => {
+        counts[l.eventName] = (counts[l.eventName] || 0) + 1;
+      });
+    return counts;
+  }, [listings, session?.user?.dbId]);
+
+  // 從管理員活動獲取選項（含刊登上限資訊）
   const eventOptions = useMemo(() => {
     return events
       .filter((e) => e.isActive)
-      .map((event) => ({
-        value: event.name,
-        label: event.name,
-      }));
-  }, [events]);
+      .map((event) => {
+        const currentCount = userListingsCountByEvent[event.name] || 0;
+        const maxAllowed = event.maxListingsPerUser || 2;
+        const isLimitReached = currentCount >= maxAllowed;
+        return {
+          value: event.name,
+          label: isLimitReached
+            ? `${event.name} (${t('limitReached', { defaultValue: '已達上限' })})`
+            : event.name,
+          disabled: isLimitReached,
+        };
+      });
+  }, [events, userListingsCountByEvent, t]);
 
   // 當選擇活動時，找到對應的管理員活動資料
   const selectedEvent = useMemo(() => {
     return events.find((e) => e.name === eventName);
   }, [events, eventName]);
+
+  // 檢查選擇的活動是否已達上限
+  const isEventLimitReached = useMemo(() => {
+    if (!selectedEvent || !session?.user?.dbId) return false;
+    const currentCount = userListingsCountByEvent[eventName] || 0;
+    const maxAllowed = selectedEvent.maxListingsPerUser || 2;
+    return currentCount >= maxAllowed;
+  }, [selectedEvent, eventName, userListingsCountByEvent, session?.user?.dbId]);
 
   // 從活動取得可用的座位等級（根據已設定的票價）- 現在返回字串陣列
   const availableSeatGrades = useMemo(() => {
@@ -173,6 +201,9 @@ export default function CreateListingPage() {
 
   // 表單驗證
   const isFormValid = useMemo(() => {
+    // 如果已達上限，表單無效
+    if (isEventLimitReached) return false;
+
     const baseValid = (
       eventName.trim() !== '' &&
       eventDate !== '' &&
@@ -196,7 +227,7 @@ export default function CreateListingPage() {
       // 一般模式驗證
       return baseValid;
     }
-  }, [eventName, eventDate, venue, meetingTime, meetingLocation, identificationFeatures, hostLanguages, ticketType, seatGrade, ticketCountType, hostNationality, isExchangeMode, exchangeEventName, exchangeSeatGrade]);
+  }, [eventName, eventDate, venue, meetingTime, meetingLocation, identificationFeatures, hostLanguages, ticketType, seatGrade, ticketCountType, hostNationality, isExchangeMode, exchangeEventName, exchangeSeatGrade, isEventLimitReached]);
 
   const handleLanguageToggle = (lang: string) => {
     setHostLanguages((prev) =>
@@ -423,6 +454,25 @@ export default function CreateListingPage() {
                 required
               />
 
+              {/* 刊登上限警告 */}
+              {isEventLimitReached && selectedEvent && (
+                <div className="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <AlertTriangle className="w-5 h-5 text-red-500 dark:text-red-400 shrink-0 mt-0.5" />
+                  <div className="text-sm">
+                    <p className="text-red-700 dark:text-red-300 font-medium">
+                      {t('listingLimitReached', { defaultValue: '已達此活動的刊登上限' })}
+                    </p>
+                    <p className="text-red-600 dark:text-red-400 mt-1">
+                      {t('listingLimitInfo', {
+                        current: userListingsCountByEvent[eventName] || 0,
+                        max: selectedEvent.maxListingsPerUser || 2,
+                        defaultValue: `您已在此活動發布 ${userListingsCountByEvent[eventName] || 0} 張票券（上限 ${selectedEvent.maxListingsPerUser || 2} 張）`
+                      })}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* 藝人標籤預覽 */}
               {artistTags.length > 0 && (
                 <div className="mt-2">
@@ -634,6 +684,23 @@ export default function CreateListingPage() {
                         </p>
                       </div>
                     </label>
+                  </div>
+                )}
+
+                {/* 參考原價顯示 - 僅供參考 */}
+                {selectedPriceTier?.priceJpy && (
+                  <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {t('referencePrice', { defaultValue: '參考原價' })}
+                      </span>
+                      <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                        ¥{selectedPriceTier.priceJpy.toLocaleString()}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {t('referencePriceNote', { defaultValue: '此為管理員設定的票券原價，僅供參考' })}
+                    </p>
                   </div>
                 )}
               </div>

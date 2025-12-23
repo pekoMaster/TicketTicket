@@ -167,6 +167,7 @@ export type EventCategory = 'concert' | 'fan_meeting' | 'expo' | 'streaming' | '
 export interface TicketPriceTier {
   seatGrade: SeatGrade;
   ticketCountType: TicketCountType;
+  priceJpy?: number; // 原價（日圓）
 }
 
 // HOLOLIVE 活動
@@ -183,6 +184,7 @@ export interface HololiveEvent {
   ticketPriceTiers: TicketPriceTier[];  // 票價等級列表
   category: EventCategory;
   isActive: boolean;               // 是否啟用顯示
+  maxListingsPerUser: number;      // 每帳號最多可創建刊登數量
   createdAt: Date;
   updatedAt: Date;
 }

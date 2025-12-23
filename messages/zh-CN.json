@@ -283,6 +283,8 @@
     "ticketCountType": "票种类型",
     "pleaseSelectSeatGrade": "请先选择座位等级",
     "noPriceSet": "此活动尚未设定票价",
+    "referencePrice": "参考原价",
+    "referencePriceNote": "此为管理员设定的票券原价，仅供参考",
     "seatNoPriceSet": "此座位等级尚未设定票价",
     "priceInfoByAdmin": "票价信息（由管理员设定）",
     "originalPriceJPYLabel": "原价（日元）",

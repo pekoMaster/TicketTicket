@@ -20,6 +20,7 @@ interface ApiEvent {
   }[];
   category: 'concert' | 'fan_meeting' | 'expo' | 'streaming' | 'other';
   is_active: boolean;
+  max_listings_per_user: number;
   created_at: string;
   updated_at: string;
 }
@@ -36,12 +37,13 @@ function convertApiEventToEvent(apiEvent: ApiEvent): HololiveEvent {
     venueAddress: apiEvent.venue_address,
     imageUrl: apiEvent.image_url,
     description: apiEvent.description,
-    ticketPriceTiers: apiEvent.ticket_price_tiers.map(tier => ({
+    ticketPriceTiers: (apiEvent.ticket_price_tiers || []).map(tier => ({
       seatGrade: tier.seat_grade as 'B' | 'A' | 'S' | 'SS',
       ticketCountType: tier.ticket_count_type as 'solo' | 'duo',
     })),
     category: apiEvent.category,
     isActive: apiEvent.is_active,
+    maxListingsPerUser: apiEvent.max_listings_per_user || 2,
     createdAt: new Date(apiEvent.created_at),
     updatedAt: new Date(apiEvent.updated_at),
   };
@@ -135,6 +137,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
           })),
           category: eventData.category,
           isActive: eventData.isActive,
+          maxListingsPerUser: eventData.maxListingsPerUser || 2,
         }),
       });
 
@@ -179,6 +182,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
           })),
           category: updates.category,
           isActive: updates.isActive,
+          maxListingsPerUser: updates.maxListingsPerUser,
         }),
       });
 

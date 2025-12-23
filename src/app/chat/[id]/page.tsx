@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useSupabaseClient } from '@/hooks/useSupabaseClient';
+import { useAdmin } from '@/contexts/AdminContext';
 import Header from '@/components/layout/Header';
 import SafetyBanner from '@/components/ui/SafetyBanner';
 import Avatar from '@/components/ui/Avatar';
@@ -14,7 +15,7 @@ import ReportModal from '@/components/ui/ReportModal';
 import HelpModal from '@/components/ui/HelpModal';
 import CancellationModal from '@/components/ui/CancellationModal';
 import BlockUserModal from '@/components/ui/BlockUserModal';
-import { Send, Calendar, MapPin, Clock, Ticket, Tag as TagIcon, Loader2, Languages, CheckCircle, Circle, Star, Flag, Armchair, HelpCircle } from 'lucide-react';
+import { Send, Calendar, MapPin, Clock, Ticket, Tag as TagIcon, Loader2, Languages, CheckCircle, Circle, Star, Flag, Armchair, HelpCircle, Banknote } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -98,6 +99,7 @@ export default function ChatPage() {
   const tListing = useTranslations('listing');
   const tChat = useTranslations('chat');
   const tVerification = useTranslations('verification');
+  const { events } = useAdmin();
 
   const [conversationData, setConversationData] = useState<ConversationData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -612,6 +614,25 @@ export default function ChatPage() {
                 {tChat(`listingType.${listing.ticket_type || 'find_companion'}`)}
               </Tag>
             </div>
+
+            {/* 參考票價原價 */}
+            {(() => {
+              const selectedEvent = events.find(e => e.name === listing.event_name);
+              const priceTier = selectedEvent?.ticketPriceTiers?.find(
+                tier => tier.seatGrade === listing.seat_grade && tier.ticketCountType === listing.ticket_count_type
+              );
+              if (priceTier?.priceJpy) {
+                return (
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 col-span-2 mt-1">
+                    <Banknote className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-500 dark:text-gray-400">{tChat('referencePrice', { defaultValue: '參考票價原價' })}:</span>
+                    <span className="font-semibold text-green-600 dark:text-green-400">¥{priceTier.priceJpy.toLocaleString()}</span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">({tChat('referencePriceNote', { defaultValue: '僅供參考' })})</span>
+                  </div>
+                );
+              }
+              return null;
+            })()}
           </div>
 
           {/* 主辦方聯繫方式圖標 - 僅已配對的申請者可見 */}

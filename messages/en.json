@@ -283,6 +283,8 @@
     "ticketCountType": "Ticket Count Type",
     "pleaseSelectSeatGrade": "Please select seat grade first",
     "noPriceSet": "No price set for this event",
+    "referencePrice": "Reference Price",
+    "referencePriceNote": "Original ticket price set by admin, for reference only",
     "seatNoPriceSet": "No price set for this seat grade",
     "priceInfoByAdmin": "Price Information (Set by Admin)",
     "originalPriceJPYLabel": "Original Price (JPY)",

@@ -65,6 +65,7 @@ export async function PATCH(
     if (body.ticketPriceTiers !== undefined) updates.ticket_price_tiers = body.ticketPriceTiers;
     if (body.category !== undefined) updates.category = body.category;
     if (body.isActive !== undefined) updates.is_active = body.isActive;
+    if (body.maxListingsPerUser !== undefined) updates.max_listings_per_user = body.maxListingsPerUser;
 
     // 使用 admin client 繞過 RLS
     const { data, error } = await supabaseAdmin

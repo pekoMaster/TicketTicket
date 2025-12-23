@@ -283,6 +283,8 @@
     "ticketCountType": "チケット種類",
     "pleaseSelectSeatGrade": "まず座席グレードを選択してください",
     "noPriceSet": "このイベントの価格が設定されていません",
+    "referencePrice": "参考定価",
+    "referencePriceNote": "管理者が設定したチケット定価です。参考までにご覧ください",
     "seatNoPriceSet": "この座席グレードの価格が設定されていません",
     "priceInfoByAdmin": "価格情報（管理者設定）",
     "originalPriceJPYLabel": "定価（円）",
