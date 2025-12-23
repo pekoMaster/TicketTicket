@@ -228,7 +228,7 @@ export async function sendVerificationEmail(
   token: string,
   locale: string = 'zh-TW'
 ): Promise<{ success: boolean; error?: string }> {
-  const verificationLink = `${BASE_URL}/verify-email?token=${token}`;
+  const verificationLink = `${BASE_URL}/api/auth/verify-email?token=${token}`;
   const t = getEmailTranslations(locale);
 
   try {
