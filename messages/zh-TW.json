@@ -131,7 +131,8 @@
     "clearFilters": "清除全部篩選",
     "foundResults": "找到 {count} 個同行機會",
     "noResults": "沒有符合條件的結果",
-    "activeFilters": "已啟用篩選"
+    "activeFilters": "已啟用篩選",
+    "willAssistEntry": "主辦協助入場"
   },
   "explore": {
     "title": "探索",
@@ -421,6 +422,23 @@
     "otherIsHost": "對方：主辦方",
     "willAssistEntry": "可協助入場"
   },
+  "notifications": {
+    "title": "通知",
+    "markAllRead": "全部標為已讀",
+    "markAsRead": "標為已讀",
+    "noNotifications": "沒有通知",
+    "viewAll": "查看全部",
+    "viewDetail": "查看詳情",
+    "delete": "刪除",
+    "minutesAgo": "分鐘前",
+    "hoursAgo": "小時前",
+    "daysAgo": "天前",
+    "newApplication": "有人申請了您的活動",
+    "applicationAccepted": "您的申請已被接受",
+    "applicationRejected": "您的申請已被拒絕",
+    "listingExpired": "您的活動已過期",
+    "newReview": "您收到了新的評價"
+  },
   "chat": {
     "title": "與 {name} 聊天",
     "inputPlaceholder": "輸入訊息...",
@@ -467,6 +485,11 @@
     "applications": "申請數",
     "reviews": "收到評價",
     "myListings": "我的刊登",
+    "activeListings": "進行中",
+    "historyListings": "歷史記錄",
+    "expired": "已過期",
+    "noHistory": "沒有歷史記錄",
+    "noActiveListings": "目前沒有進行中的刊登",
     "myApplications": "我的申請",
     "noListings": "還沒有發布任何刊登",
     "noApplications": "還沒有申請任何刊登",

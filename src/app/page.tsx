@@ -26,8 +26,9 @@ import {
   NATIONALITY_OPTIONS,
   LANGUAGE_OPTIONS,
 } from '@/types';
+import { isListingExpired } from '@/lib/listing-utils';
 
-type SortOption = 'date' | 'newest';
+type SortOption = 'date' | 'newest' | 'price_asc' | 'price_desc';
 type DateFilter = 'all' | 'week' | 'month' | '3months';
 
 export default function HomePage() {
@@ -36,6 +37,7 @@ export default function HomePage() {
   const t = useTranslations('home');
   const tFilter = useTranslations('filter');
   const tTicket = useTranslations('ticketType');
+  const tCreate = useTranslations('create');
   const tPrivacy = useTranslations('privacy');
   const tTerms = useTranslations('terms');
   const tTokushoho = useTranslations('tokushoho');
@@ -50,6 +52,7 @@ export default function HomePage() {
   const [minRating, setMinRating] = useState('');
   const [selectedNationality, setSelectedNationality] = useState('');
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [willAssistEntry, setWillAssistEntry] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>('date');
   const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
 
@@ -70,7 +73,8 @@ export default function HomePage() {
 
   // 篩選邏輯
   const filteredListings = useMemo(() => {
-    let result = listings.filter((l) => l.status === 'open');
+    // 首先過濾掉非 open 狀態和已過期的刊登
+    let result = listings.filter((l) => l.status === 'open' && !isListingExpired(l));
 
     // 關鍵字搜尋
     if (searchQuery) {
@@ -107,6 +111,11 @@ export default function HomePage() {
       result = result.filter((l) => l.ticketType === selectedTicketType);
     }
 
+    // 母票協助入場篩選
+    if (willAssistEntry) {
+      result = result.filter((l) => l.willAssistEntry);
+    }
+
     // 主辦人名稱搜尋
     if (hostNameQuery) {
       const query = hostNameQuery.toLowerCase();
@@ -139,10 +148,19 @@ export default function HomePage() {
       case 'newest':
         result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         break;
+      /*
+      case 'price_asc':
+        // Price sorting temporarily disabled or needs correct field
+        // result.sort((a, b) => (a.askingPriceTwd || 0) - (b.askingPriceTwd || 0));
+        break;
+      case 'price_desc':
+        // result.sort((a, b) => (b.askingPriceTwd || 0) - (a.askingPriceTwd || 0));
+        break;
+      */
     }
 
     return result;
-  }, [listings, searchQuery, selectedEvent, dateFilter, selectedTicketType, hostNameQuery, minRating, selectedNationality, selectedLanguages, sortBy]);
+  }, [listings, searchQuery, selectedEvent, dateFilter, selectedTicketType, willAssistEntry, hostNameQuery, minRating, selectedNationality, selectedLanguages, sortBy]);
 
   const toggleLanguage = (lang: string) => {
     setSelectedLanguages((prev) =>
@@ -159,6 +177,7 @@ export default function HomePage() {
     setMinRating('');
     setSelectedNationality('');
     setSelectedLanguages([]);
+    setWillAssistEntry(false);
     setSortBy('date');
   };
 
@@ -167,6 +186,7 @@ export default function HomePage() {
     selectedEvent !== '' ||
     dateFilter !== 'all' ||
     selectedTicketType !== '' ||
+    willAssistEntry ||
     hostNameQuery !== '' ||
     minRating !== '' ||
     selectedNationality !== '' ||
@@ -265,7 +285,7 @@ export default function HomePage() {
                   >
                     <option value="">{tFilter('allTypes')}</option>
                     {ticketTypes.map((type) => (
-                      <option key={type} value={type}>{TICKET_TYPE_INFO[type].label}</option>
+                      <option key={type} value={type}>{tCreate(`ticketTypes.${type}`)}</option>
                     ))}
                   </select>
                 </div>
@@ -326,6 +346,23 @@ export default function HomePage() {
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
                     ))}
                   </select>
+                </div>
+
+                {/* 其他選項 (Checkboxes) */}
+                <div className="flex items-end">
+                  <div className="h-10 flex items-center">
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={willAssistEntry}
+                        onChange={(e) => setWillAssistEntry(e.target.checked)}
+                        className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                        {tFilter('willAssistEntry')}
+                      </span>
+                    </label>
+                  </div>
                 </div>
               </div>
 

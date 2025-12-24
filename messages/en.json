@@ -131,7 +131,8 @@
     "clearFilters": "Clear All Filters",
     "foundResults": "Found {count} opportunities",
     "noResults": "No matching results",
-    "activeFilters": "Active Filters"
+    "activeFilters": "Active Filters",
+    "willAssistEntry": "Host assists with entry"
   },
   "explore": {
     "title": "Explore",
@@ -421,6 +422,23 @@
     "otherIsHost": "Other: Host",
     "willAssistEntry": "Can Assist Entry"
   },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "markAsRead": "Mark as read",
+    "noNotifications": "No notifications",
+    "viewAll": "View all",
+    "viewDetail": "View detail",
+    "delete": "Delete",
+    "minutesAgo": " min ago",
+    "hoursAgo": " hr ago",
+    "daysAgo": " days ago",
+    "newApplication": "Someone applied to your listing",
+    "applicationAccepted": "Your application was accepted",
+    "applicationRejected": "Your application was rejected",
+    "listingExpired": "Your listing has expired",
+    "newReview": "You received a new review"
+  },
   "chat": {
     "title": "Chat with {name}",
     "inputPlaceholder": "Type a message...",
@@ -467,6 +485,11 @@
     "applications": "Applications",
     "reviews": "Reviews",
     "myListings": "My Listings",
+    "activeListings": "Active",
+    "historyListings": "History",
+    "expired": "Expired",
+    "noHistory": "No history",
+    "noActiveListings": "No active listings",
     "myApplications": "My Applications",
     "noListings": "No listings yet",
     "noApplications": "No applications yet",

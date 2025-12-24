@@ -131,7 +131,8 @@
     "clearFilters": "フィルターをクリア",
     "foundResults": "{count}件の同行募集が見つかりました",
     "noResults": "条件に一致する結果がありません",
-    "activeFilters": "フィルター適用中"
+    "activeFilters": "フィルター適用中",
+    "willAssistEntry": "入場同行可"
   },
   "explore": {
     "title": "探索",
@@ -421,6 +422,23 @@
     "otherIsHost": "相手：主催者",
     "willAssistEntry": "入場サポート可"
   },
+  "notifications": {
+    "title": "通知",
+    "markAllRead": "すべて既読にする",
+    "markAsRead": "既読にする",
+    "noNotifications": "通知はありません",
+    "viewAll": "すべて見る",
+    "viewDetail": "詳細を見る",
+    "delete": "削除",
+    "minutesAgo": "分前",
+    "hoursAgo": "時間前",
+    "daysAgo": "日前",
+    "newApplication": "あなたの投稿に申請がありました",
+    "applicationAccepted": "あなたの申請が承認されました",
+    "applicationRejected": "あなたの申請が却下されました",
+    "listingExpired": "あなたの投稿が期限切れになりました",
+    "newReview": "新しいレビューが届きました"
+  },
   "chat": {
     "title": "{name}とチャット",
     "inputPlaceholder": "メッセージを入力...",
@@ -467,6 +485,11 @@
     "applications": "申請数",
     "reviews": "評価数",
     "myListings": "私の投稿",
+    "activeListings": "進行中",
+    "historyListings": "履歴",
+    "expired": "終了",
+    "noHistory": "履歴がありません",
+    "noActiveListings": "現在進行中の投稿はありません",
     "myApplications": "私の申請",
     "noListings": "まだ投稿がありません",
     "noApplications": "まだ申請がありません",
