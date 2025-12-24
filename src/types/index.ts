@@ -143,7 +143,8 @@ export interface Listing {
   description?: string;                    // 其他注意事項
   // 換票專用欄位
   exchangeEventName?: string;              // 想換的活動名稱
-  exchangeSeatGrade?: string;              // 想換的座位等級（'any' 為任意）
+  exchangeSeatGrade?: string;              // 舊欄位，向後相容
+  exchangeSeatGrades?: string[];           // 想換的座位等級（複選）
   createdAt: Date;
   updatedAt: Date;
   host?: User;                             // 刊登者資訊（從 API 載入時附帶）

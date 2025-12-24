@@ -43,6 +43,7 @@ interface ApiListing {
   // 換票專用欄位
   exchange_event_name?: string;
   exchange_seat_grade?: string;
+  exchange_seat_grades?: string[];
   created_at: string;
   updated_at: string;
   host?: ApiUser;
@@ -74,6 +75,8 @@ function convertApiListingToListing(apiListing: ApiListing): Listing {
     // 換票專用欄位
     exchangeEventName: apiListing.exchange_event_name,
     exchangeSeatGrade: apiListing.exchange_seat_grade,
+    exchangeSeatGrades: apiListing.exchange_seat_grades ||
+      (apiListing.exchange_seat_grade ? [apiListing.exchange_seat_grade] : []),
     createdAt: new Date(apiListing.created_at),
     updatedAt: new Date(apiListing.updated_at),
     host: apiListing.host ? {
@@ -140,6 +143,7 @@ interface CreateListingData {
   // 換票專用欄位
   exchangeEventName?: string;
   exchangeSeatGrade?: string;
+  exchangeSeatGrades?: string[];
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);

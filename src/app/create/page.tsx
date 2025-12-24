@@ -80,7 +80,7 @@ export default function CreateListingPage() {
 
   // 換票專用欄位
   const [exchangeEventName, setExchangeEventName] = useState('');
-  const [exchangeSeatGrade, setExchangeSeatGrade] = useState('');
+  const [exchangeSeatGrades, setExchangeSeatGrades] = useState<string[]>([]);
 
   // 驗證層級檢查
   const [verificationLevel, setVerificationLevel] = useState<VerificationLevel | null>(null);
@@ -224,19 +224,21 @@ export default function CreateListingPage() {
     if (isExchangeMode) {
       // 換票模式驗證 - 確保選擇的活動和座位等級有效
       const targetEvent = events.find(e => e.name === exchangeEventName);
-      const validSeatGrade = targetEvent?.ticketPriceTiers?.some(
-        tier => tier.seatGrade === exchangeSeatGrade
+      const hasValidGrades = exchangeSeatGrades.length > 0 && (
+        exchangeSeatGrades.includes('any') ||
+        exchangeSeatGrades.every(grade =>
+          targetEvent?.ticketPriceTiers?.some(tier => tier.seatGrade === grade)
+        )
       );
       return baseValid &&
         exchangeEventName.trim() !== '' &&
         targetEvent !== undefined &&
-        exchangeSeatGrade !== '' &&
-        validSeatGrade === true;
+        hasValidGrades;
     } else {
       // 一般模式驗證
       return baseValid;
     }
-  }, [eventName, eventDate, venue, meetingTime, meetingLocation, identificationFeatures, hostLanguages, ticketType, seatGrade, ticketCountType, hostNationality, isExchangeMode, exchangeEventName, exchangeSeatGrade, isEventLimitReached, events]);
+  }, [eventName, eventDate, venue, meetingTime, meetingLocation, identificationFeatures, hostLanguages, ticketType, seatGrade, ticketCountType, hostNationality, isExchangeMode, exchangeEventName, exchangeSeatGrades, isEventLimitReached, events]);
 
   const handleLanguageToggle = (lang: string) => {
     setHostLanguages((prev) =>
@@ -312,7 +314,7 @@ export default function CreateListingPage() {
       if (isExchangeMode) {
         Object.assign(listingData, {
           exchangeEventName,
-          exchangeSeatGrade,
+          exchangeSeatGrades,
         });
       }
 
@@ -776,25 +778,30 @@ export default function CreateListingPage() {
                   value={exchangeEventName}
                   onChange={(val) => {
                     setExchangeEventName(val);
-                    setExchangeSeatGrade(''); // 重置票種等級選擇
+                    setExchangeSeatGrades([]); // 重置票種等級選擇
                   }}
                   searchable
                   required
                 />
 
-                {/* 想換的票種等級 */}
+                {/* 想換的票種等級 (可複選) */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                    {t('exchangeSeatGrade', { defaultValue: '想換的票種等級' })} <span className="text-red-500">*</span>
+                    {t('exchangeSeatGrade', { defaultValue: '想換的票種等級' })}
+                    <span className="text-gray-400 text-xs ml-1">{t('multiSelect', { defaultValue: '(可複選)' })}</span>
+                    <span className="text-red-500"> *</span>
                   </label>
                   <div className="flex flex-wrap gap-2">
                     {/* 任意選項 */}
                     <button
                       type="button"
-                      onClick={() => setExchangeSeatGrade('any')}
+                      onClick={() => {
+                        // 選擇「任意」時清除其他選項
+                        setExchangeSeatGrades(['any']);
+                      }}
                       className={`
                         py-2 px-4 rounded-lg border-2 text-sm font-medium transition-all
-                        ${exchangeSeatGrade === 'any'
+                        ${exchangeSeatGrades.includes('any')
                           ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
                           : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 text-gray-700 dark:text-gray-200'}
                       `}
@@ -802,22 +809,40 @@ export default function CreateListingPage() {
                       {t('anyGrade', { defaultValue: '任意' })}
                     </button>
                     {/* 動態票種等級按鈕 */}
-                    {exchangeEventSeatGrades.map((grade: string) => (
-                      <button
-                        key={grade}
-                        type="button"
-                        onClick={() => setExchangeSeatGrade(grade)}
-                        className={`
-                          py-2 px-4 rounded-lg border-2 text-sm font-medium transition-all
-                          ${exchangeSeatGrade === grade
-                            ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
-                            : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 text-gray-700 dark:text-gray-200'}
-                        `}
-                      >
-                        {grade}
-                      </button>
-                    ))}
+                    {exchangeEventSeatGrades.map((grade: string) => {
+                      const isSelected = exchangeSeatGrades.includes(grade);
+                      return (
+                        <button
+                          key={grade}
+                          type="button"
+                          onClick={() => {
+                            if (isSelected) {
+                              // 取消選擇
+                              setExchangeSeatGrades(prev => prev.filter(g => g !== grade));
+                            } else {
+                              // 選擇時移除 'any'
+                              setExchangeSeatGrades(prev =>
+                                [...prev.filter(g => g !== 'any'), grade]
+                              );
+                            }
+                          }}
+                          className={`
+                            py-2 px-4 rounded-lg border-2 text-sm font-medium transition-all
+                            ${isSelected
+                              ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
+                              : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 text-gray-700 dark:text-gray-200'}
+                          `}
+                        >
+                          {grade}
+                        </button>
+                      );
+                    })}
                   </div>
+                  {exchangeSeatGrades.length > 0 && (
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                      {t('selectedGrades', { defaultValue: '已選擇' })}: {exchangeSeatGrades.join(', ')}
+                    </p>
+                  )}
                 </div>
               </div>
             </Card>

@@ -107,7 +107,10 @@ export async function POST(request: NextRequest) {
     // 如果是換票類型，添加換票專用欄位
     if (body.ticketType === 'ticket_exchange') {
       insertData.exchange_event_name = body.exchangeEventName || '';
-      insertData.exchange_seat_grade = body.exchangeSeatGrade || '';
+      // 支援新陣列格式和舊單一值格式
+      const grades = body.exchangeSeatGrades || (body.exchangeSeatGrade ? [body.exchangeSeatGrade] : []);
+      insertData.exchange_seat_grades = grades;
+      insertData.exchange_seat_grade = grades.join(','); // 向後相容
       insertData.subsidy_amount = 0;  // 補貼功能已移除，預設為 0
       insertData.subsidy_direction = null; // 補貼功能已移除
     }

@@ -480,12 +480,19 @@ export default function ListingDetailPage() {
                   )}
 
                   {/* 想換的票種等級 */}
-                  {listing.exchangeSeatGrade && (
+                  {((listing.exchangeSeatGrades && listing.exchangeSeatGrades.length > 0) || listing.exchangeSeatGrade) && (
                     <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
                       <span className="text-gray-500 dark:text-gray-400">{t('wantSeatGrade')}</span>
-                      <span className="font-medium text-gray-900 dark:text-gray-100">
-                        {listing.exchangeSeatGrade === 'any' ? tCreate('anyGrade') : listing.exchangeSeatGrade}
-                      </span>
+                      <div className="flex flex-wrap gap-1 justify-end">
+                        {(listing.exchangeSeatGrades || (listing.exchangeSeatGrade ? [listing.exchangeSeatGrade] : [])).map((grade) => (
+                          <span
+                            key={grade}
+                            className="px-2 py-0.5 rounded text-sm font-medium bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300"
+                          >
+                            {grade === 'any' ? tCreate('anyGrade') : grade}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </>
