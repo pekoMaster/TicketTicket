@@ -10,7 +10,7 @@ import {
   TicketCountType,
   TICKET_COUNT_TYPE_INFO,
 } from '@/types';
-import { Calendar, MapPin, Ticket, FileText, Plus, Trash2, Settings } from 'lucide-react';
+import { Calendar, MapPin, Ticket, FileText, Plus, Trash2, Settings, Bell } from 'lucide-react';
 
 interface EventFormProps {
   initialData?: HololiveEvent;
@@ -44,6 +44,7 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
     category: initialData?.category || 'concert',
     isActive: initialData?.isActive ?? true,
     maxListingsPerUser: initialData?.maxListingsPerUser || 2,
+    discordWebhookUrl: (initialData as { discordWebhookUrl?: string })?.discordWebhookUrl || '',
   });
 
   const [priceTiers, setPriceTiers] = useState<TicketPriceTier[]>(
@@ -139,7 +140,8 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
         category: formData.category as EventCategory,
         isActive: formData.isActive,
         maxListingsPerUser: formData.maxListingsPerUser,
-      });
+        discordWebhookUrl: formData.discordWebhookUrl.trim() || undefined,
+      } as Omit<HololiveEvent, 'id' | 'createdAt' | 'updatedAt'> & { discordWebhookUrl?: string });
     } finally {
       setIsSubmitting(false);
     }
@@ -490,6 +492,35 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
             <label htmlFor="isActive" className="text-sm font-medium text-gray-700 dark:text-gray-200">
               啟用顯示（關閉後前台不會顯示此活動）
             </label>
+          </div>
+        </div>
+      </section>
+
+      {/* Discord Webhook 通知 */}
+      <section className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 lg:p-8 shadow-sm border border-gray-200 dark:border-gray-700">
+        <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4 lg:mb-6 flex items-center gap-2">
+          <Bell className="w-5 h-5 text-indigo-500" />
+          Discord Webhook 通知
+        </h2>
+        <div className="space-y-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            設定 Discord Webhook URL 後，當有新刊登發布時會自動發送通知到指定的 Discord 頻道。
+          </p>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+              Discord Webhook URL
+            </label>
+            <input
+              type="url"
+              name="discordWebhookUrl"
+              value={formData.discordWebhookUrl}
+              onChange={handleChange}
+              placeholder="https://discord.com/api/webhooks/..."
+              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              在 Discord 頻道設定 → 整合 → Webhook 中建立
+            </p>
           </div>
         </div>
       </section>

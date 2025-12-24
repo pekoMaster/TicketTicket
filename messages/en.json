@@ -572,7 +572,25 @@
     "saving": "Saving...",
     "saveSuccess": "Saved successfully",
     "saveError": "Failed to save, please try again",
-    "uploading": "Uploading..."
+    "uploading": "Uploading...",
+    "webhook": {
+      "title": "Discord Webhook Notifications",
+      "description": "Set up a Discord Webhook to receive notifications when new listings are posted for events you subscribe to",
+      "name": "Name (Optional)",
+      "namePlaceholder": "e.g., My Notification Channel",
+      "url": "Webhook URL",
+      "urlHint": "Create in Discord channel settings → Integrations → Webhooks",
+      "save": "Save Webhook",
+      "test": "Test",
+      "delete": "Delete",
+      "active": "Webhook Active",
+      "activeHint": "You will receive Discord notifications when subscribed events have new listings",
+      "saved": "Webhook saved",
+      "deleted": "Webhook deleted",
+      "testSuccess": "Test message sent, please check your Discord channel",
+      "testFailed": "Test failed, please verify the Webhook URL",
+      "invalidUrl": "Please enter a valid Discord Webhook URL"
+    }
   },
   "status": {
     "open": "Open",

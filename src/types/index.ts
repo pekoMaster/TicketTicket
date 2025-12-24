@@ -390,3 +390,45 @@ export const REPORT_STATUS_INFO: Record<ReportStatus, {
   resolved: { label: '已解決', color: 'bg-green-100 text-green-800' },
   dismissed: { label: '已駁回', color: 'bg-gray-100 text-gray-800' },
 };
+
+// ==================== Discord Webhook 相關 ====================
+
+// 用戶 Discord Webhook 設定
+export interface UserDiscordWebhook {
+  id: string;
+  userId: string;
+  webhookUrl: string;
+  webhookName?: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// 用戶 Webhook 訂閱（訂閱特定活動的通知）
+export interface UserWebhookSubscription {
+  id: string;
+  userId: string;
+  eventId: string;
+  webhookUrl: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  // 關聯資料
+  event?: HololiveEvent;
+}
+
+// Webhook 發送日誌
+export type WebhookLogStatus = 'pending' | 'sent' | 'failed';
+
+export interface WebhookLog {
+  id: string;
+  webhookType: 'event_admin' | 'user_subscription';
+  eventId?: string;
+  listingId?: string;
+  userId?: string;
+  webhookUrl: string;
+  status: WebhookLogStatus;
+  errorMessage?: string;
+  createdAt: Date;
+  sentAt?: Date;
+}

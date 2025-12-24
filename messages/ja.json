@@ -572,7 +572,25 @@
     "saving": "保存中...",
     "saveSuccess": "保存しました",
     "saveError": "保存に失敗しました。もう一度お試しください",
-    "uploading": "アップロード中..."
+    "uploading": "アップロード中...",
+    "webhook": {
+      "title": "Discord Webhook 通知",
+      "description": "Discord Webhook を設定すると、購読しているイベントに新しい出品があった際に通知を受け取れます",
+      "name": "名前（任意）",
+      "namePlaceholder": "例：通知チャンネル",
+      "url": "Webhook URL",
+      "urlHint": "Discord チャンネル設定 → 連携サービス → Webhook で作成",
+      "save": "Webhook を保存",
+      "test": "テスト",
+      "delete": "削除",
+      "active": "Webhook 有効",
+      "activeHint": "購読しているイベントに新しい出品があると Discord で通知を受け取れます",
+      "saved": "Webhook を保存しました",
+      "deleted": "Webhook を削除しました",
+      "testSuccess": "テストメッセージを送信しました。Discord チャンネルを確認してください",
+      "testFailed": "テストに失敗しました。Webhook URL を確認してください",
+      "invalidUrl": "有効な Discord Webhook URL を入力してください"
+    }
   },
   "status": {
     "open": "募集中",

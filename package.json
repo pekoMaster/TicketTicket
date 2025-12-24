@@ -13,6 +13,7 @@
     "deepl-node": "^1.24.0",
     "firebase": "^12.7.0",
     "google-translate-api-x": "^10.7.2",
+    "inngest": "^3.48.1",
     "lucide-react": "^0.561.0",
     "next": "16.0.10",
     "next-auth": "^5.0.0-beta.30",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/debug": "^4.1.12",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

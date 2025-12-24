@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { auth } from '@/auth';
+import { inngest } from '@/lib/inngest';
 
 // GET /api/listings - 獲取所有刊登
 export async function GET() {
@@ -124,6 +125,87 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Error creating listing:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    // Send Discord webhook notifications (background job via Inngest)
+    try {
+      // Get event's admin webhook URL
+      const { data: eventWithWebhook } = await supabaseAdmin
+        .from('events')
+        .select('id, discord_webhook_url')
+        .eq('name', body.eventName)
+        .single();
+
+      // Get user subscriptions for this event
+      const { data: subscriptions } = await supabaseAdmin
+        .from('user_webhook_subscriptions')
+        .select('webhook_url, event_id')
+        .eq('event_id', eventWithWebhook?.id)
+        .eq('is_active', true);
+
+      // Get host info
+      const { data: hostInfo } = await supabaseAdmin
+        .from('users')
+        .select('username')
+        .eq('id', session.user.dbId)
+        .single();
+
+      // Prepare webhook data
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ticketticket.live';
+      const listingUrl = `${baseUrl}/listing/${data.id}`;
+
+      const ticketTypeLabels: Record<string, string> = {
+        find_companion: 'Find Companion',
+        sub_ticket_transfer: 'Sub-ticket Transfer',
+        ticket_exchange: 'Ticket Exchange',
+      };
+
+      const webhookData = {
+        eventName: body.eventName,
+        listingId: data.id,
+        listingTitle: body.description || body.eventName,
+        hostName: hostInfo?.username || 'Anonymous',
+        eventDate: new Date(body.eventDate).toLocaleDateString('ja-JP'),
+        price: 0, // Price feature removed
+        ticketType: ticketTypeLabels[body.ticketType] || body.ticketType,
+        seatGrade: body.seatGrade || '-',
+        listingUrl,
+      };
+
+      // Collect all webhooks to send
+      const webhooksToSend: Array<{ webhookUrl: string; eventId: string }> = [];
+
+      // Add admin webhook if configured
+      if (eventWithWebhook?.discord_webhook_url) {
+        webhooksToSend.push({
+          webhookUrl: eventWithWebhook.discord_webhook_url,
+          eventId: eventWithWebhook.id,
+        });
+      }
+
+      // Add user subscription webhooks
+      if (subscriptions && subscriptions.length > 0) {
+        for (const sub of subscriptions) {
+          webhooksToSend.push({
+            webhookUrl: sub.webhook_url,
+            eventId: sub.event_id,
+          });
+        }
+      }
+
+      // Send webhooks via Inngest (non-blocking)
+      if (webhooksToSend.length > 0) {
+        await inngest.send({
+          name: 'webhook/batch.discord',
+          data: {
+            webhooks: webhooksToSend,
+            ...webhookData,
+          },
+        });
+      }
+    } catch (webhookError) {
+      // Log but don't fail the request if webhook sending fails
+      console.error('Error sending webhooks:', webhookError);
     }
 
     return NextResponse.json(data);

@@ -572,7 +572,25 @@
     "saving": "儲存中...",
     "saveSuccess": "儲存成功",
     "saveError": "儲存失敗，請稍後再試",
-    "uploading": "上傳中..."
+    "uploading": "上傳中...",
+    "webhook": {
+      "title": "Discord Webhook 通知",
+      "description": "設定 Discord Webhook 後，當您訂閱的活動有新刊登時會自動發送通知",
+      "name": "名稱（選填）",
+      "namePlaceholder": "例：我的通知頻道",
+      "url": "Webhook URL",
+      "urlHint": "在 Discord 頻道設定 → 整合 → Webhook 中建立",
+      "save": "儲存 Webhook",
+      "test": "測試",
+      "delete": "刪除",
+      "active": "Webhook 已啟用",
+      "activeHint": "當訂閱的活動有新刊登時，您會收到 Discord 通知",
+      "saved": "Webhook 已儲存",
+      "deleted": "Webhook 已刪除",
+      "testSuccess": "測試訊息已發送，請檢查您的 Discord 頻道",
+      "testFailed": "測試失敗，請確認 Webhook URL 是否正確",
+      "invalidUrl": "請輸入有效的 Discord Webhook URL"
+    }
   },
   "status": {
     "open": "開放中",

@@ -21,6 +21,9 @@ import {
   ShieldCheck,
   AlertCircle,
   Bug,
+  Bell,
+  Send,
+  Trash2,
 } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
 
@@ -63,6 +66,14 @@ export default function ProfileSettingsPage() {
   const [bugTitle, setBugTitle] = useState('');
   const [bugDescription, setBugDescription] = useState('');
   const [isSubmittingBug, setIsSubmittingBug] = useState(false);
+
+  // Discord Webhook state
+  const [webhookUrl, setWebhookUrl] = useState('');
+  const [webhookName, setWebhookName] = useState('');
+  const [webhookActive, setWebhookActive] = useState(false);
+  const [isSavingWebhook, setIsSavingWebhook] = useState(false);
+  const [isTestingWebhook, setIsTestingWebhook] = useState(false);
+  const [isDeletingWebhook, setIsDeletingWebhook] = useState(false);
 
   // Handle OAuth callback results
   useEffect(() => {
@@ -272,6 +283,119 @@ export default function ProfileSettingsPage() {
       setIsUploading(false);
     }
   };
+
+  // Fetch webhook settings
+  const fetchWebhookSettings = async () => {
+    try {
+      const response = await fetch('/api/webhooks');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.webhook) {
+          setWebhookUrl(data.webhook.webhook_url || '');
+          setWebhookName(data.webhook.webhook_name || '');
+          setWebhookActive(data.webhook.is_active || false);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching webhook settings:', error);
+    }
+  };
+
+  // Save webhook settings
+  const handleSaveWebhook = async () => {
+    if (!webhookUrl.startsWith('https://discord.com/api/webhooks/')) {
+      setSaveMessage({ type: 'error', text: t('webhook.invalidUrl') });
+      return;
+    }
+
+    setIsSavingWebhook(true);
+    setSaveMessage(null);
+
+    try {
+      const response = await fetch('/api/webhooks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          webhookUrl,
+          webhookName,
+        }),
+      });
+
+      if (response.ok) {
+        setWebhookActive(true);
+        setSaveMessage({ type: 'success', text: t('webhook.saved') });
+        setTimeout(() => setSaveMessage(null), 3000);
+      } else {
+        const error = await response.json();
+        setSaveMessage({ type: 'error', text: error.error || t('saveError') });
+      }
+    } catch (error) {
+      console.error('Error saving webhook:', error);
+      setSaveMessage({ type: 'error', text: t('saveError') });
+    } finally {
+      setIsSavingWebhook(false);
+    }
+  };
+
+  // Test webhook
+  const handleTestWebhook = async () => {
+    setIsTestingWebhook(true);
+    setSaveMessage(null);
+
+    try {
+      const response = await fetch('/api/webhooks/test', {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        setSaveMessage({ type: 'success', text: t('webhook.testSuccess') });
+        setTimeout(() => setSaveMessage(null), 3000);
+      } else {
+        const error = await response.json();
+        setSaveMessage({ type: 'error', text: error.details || t('webhook.testFailed') });
+      }
+    } catch (error) {
+      console.error('Error testing webhook:', error);
+      setSaveMessage({ type: 'error', text: t('webhook.testFailed') });
+    } finally {
+      setIsTestingWebhook(false);
+    }
+  };
+
+  // Delete webhook
+  const handleDeleteWebhook = async () => {
+    setIsDeletingWebhook(true);
+    setSaveMessage(null);
+
+    try {
+      const response = await fetch('/api/webhooks', {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setWebhookUrl('');
+        setWebhookName('');
+        setWebhookActive(false);
+        setSaveMessage({ type: 'success', text: t('webhook.deleted') });
+        setTimeout(() => setSaveMessage(null), 3000);
+      } else {
+        const error = await response.json();
+        setSaveMessage({ type: 'error', text: error.error || t('saveError') });
+      }
+    } catch (error) {
+      console.error('Error deleting webhook:', error);
+      setSaveMessage({ type: 'error', text: t('saveError') });
+    } finally {
+      setIsDeletingWebhook(false);
+    }
+  };
+
+  // Fetch webhook settings on mount
+  useEffect(() => {
+    if (session?.user?.dbId) {
+      fetchWebhookSettings();
+    }
+  }, [session]);
 
   if (status === 'loading' || isLoading) {
     return (
@@ -542,6 +666,96 @@ export default function ProfileSettingsPage() {
           </div>
 
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">{t('visibilityNote')}</p>
+        </Card>
+
+        {/* Discord Webhook Section */}
+        <Card className="dark:bg-gray-800 dark:border-gray-700">
+          <div className="flex items-center gap-2 mb-2">
+            <Bell className="w-5 h-5 text-indigo-500" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('webhook.title')}</h2>
+          </div>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('webhook.description')}</p>
+
+          <div className="space-y-4">
+            {/* Webhook Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {t('webhook.name')}
+              </label>
+              <input
+                type="text"
+                value={webhookName}
+                onChange={(e) => setWebhookName(e.target.value)}
+                placeholder={t('webhook.namePlaceholder')}
+                maxLength={100}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+
+            {/* Webhook URL */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {t('webhook.url')} <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="url"
+                value={webhookUrl}
+                onChange={(e) => setWebhookUrl(e.target.value)}
+                placeholder="https://discord.com/api/webhooks/..."
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {t('webhook.urlHint')}
+              </p>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex gap-2">
+              <Button
+                variant="primary"
+                onClick={handleSaveWebhook}
+                loading={isSavingWebhook}
+                disabled={!webhookUrl}
+                className="flex-1"
+              >
+                {t('webhook.save')}
+              </Button>
+              {webhookActive && (
+                <>
+                  <Button
+                    variant="secondary"
+                    onClick={handleTestWebhook}
+                    loading={isTestingWebhook}
+                    disabled={!webhookActive}
+                  >
+                    <Send className="w-4 h-4 mr-1" />
+                    {t('webhook.test')}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={handleDeleteWebhook}
+                    loading={isDeletingWebhook}
+                    className="text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </>
+              )}
+            </div>
+
+            {/* Status indicator */}
+            {webhookActive && (
+              <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
+                  <Check className="w-4 h-4" />
+                  <span className="text-sm font-medium">{t('webhook.active')}</span>
+                </div>
+                <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                  {t('webhook.activeHint')}
+                </p>
+              </div>
+            )}
+          </div>
         </Card>
 
         {/* Bug Report Section */}

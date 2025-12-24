@@ -72,6 +72,7 @@ export async function PATCH(
     if (body.category !== undefined) updates.category = body.category;
     if (body.isActive !== undefined) updates.is_active = body.isActive;
     if (body.maxListingsPerUser !== undefined) updates.max_listings_per_user = body.maxListingsPerUser;
+    if (body.discordWebhookUrl !== undefined) updates.discord_webhook_url = body.discordWebhookUrl;
 
     // 使用 admin client 繞過 RLS
     const { data, error } = await supabaseAdmin

@@ -572,7 +572,25 @@
     "saving": "保存中...",
     "saveSuccess": "保存成功",
     "saveError": "保存失败，请稍后再试",
-    "uploading": "上传中..."
+    "uploading": "上传中...",
+    "webhook": {
+      "title": "Discord Webhook 通知",
+      "description": "设置 Discord Webhook 后，当您订阅的活动有新刊登时会自动发送通知",
+      "name": "名称（选填）",
+      "namePlaceholder": "例：我的通知频道",
+      "url": "Webhook URL",
+      "urlHint": "在 Discord 频道设置 → 整合 → Webhook 中创建",
+      "save": "保存 Webhook",
+      "test": "测试",
+      "delete": "删除",
+      "active": "Webhook 已启用",
+      "activeHint": "当订阅的活动有新刊登时，您会收到 Discord 通知",
+      "saved": "Webhook 已保存",
+      "deleted": "Webhook 已删除",
+      "testSuccess": "测试消息已发送，请检查您的 Discord 频道",
+      "testFailed": "测试失败，请确认 Webhook URL 是否正确",
+      "invalidUrl": "请输入有效的 Discord Webhook URL"
+    }
   },
   "status": {
     "open": "开放中",
