@@ -148,7 +148,9 @@
     "newest": "最新發布",
     "clearFilters": "清除全部篩選",
     "foundResults": "找到 {count} 個同行機會",
-    "noResults": "沒有符合條件的結果"
+    "noResults": "沒有符合條件的結果",
+    "ticketSource": "票源",
+    "allSources": "全部票源"
   },
   "listing": {
     "detail": "刊登詳情",
@@ -280,6 +282,9 @@
     "meetingPointWithHint": "同行集合地點（線上交換請直接寫線上）",
     "meetingPointPlaceholder": "例：A入口、北門、7-11門口、線上",
     "ticketInfo": "票券資訊",
+    "ticketSource": "票源",
+    "zaikoNote": "ZAIKO 電子票券系統",
+    "lawsonNote": "LAWSON 票券不支援子票轉讓",
     "seatGrade": "座位等級",
     "ticketCountType": "票種類型",
     "pleaseSelectSeatGrade": "請先選擇座位等級",

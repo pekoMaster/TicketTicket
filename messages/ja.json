@@ -148,7 +148,9 @@
     "newest": "新着順",
     "clearFilters": "フィルターをクリア",
     "foundResults": "{count}件の同行募集が見つかりました",
-    "noResults": "条件に一致する結果がありません"
+    "noResults": "条件に一致する結果がありません",
+    "ticketSource": "チケット購入先",
+    "allSources": "すべての購入先"
   },
   "listing": {
     "detail": "募集詳細",
@@ -280,6 +282,9 @@
     "meetingPointWithHint": "集合場所（オンライン交換の場合は「オンライン」と記入）",
     "meetingPointPlaceholder": "例：A入口、北門、セブンイレブン前、オンライン",
     "ticketInfo": "チケット情報",
+    "ticketSource": "チケット購入先",
+    "zaikoNote": "ZAIKO 電子チケットシステム",
+    "lawsonNote": "LAWSON チケットはサブチケット譲渡に対応していません",
     "seatGrade": "座席グレード",
     "ticketCountType": "チケット種類",
     "pleaseSelectSeatGrade": "まず座席グレードを選択してください",

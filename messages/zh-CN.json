@@ -148,7 +148,9 @@
     "newest": "最新发布",
     "clearFilters": "清除全部筛选",
     "foundResults": "找到 {count} 个同行机会",
-    "noResults": "没有符合条件的结果"
+    "noResults": "没有符合条件的结果",
+    "ticketSource": "票源",
+    "allSources": "全部票源"
   },
   "listing": {
     "detail": "刊登详情",
@@ -280,6 +282,9 @@
     "meetingPointWithHint": "同行集合地点（线上交换请直接写线上）",
     "meetingPointPlaceholder": "例：A入口、北门、7-11门口、线上",
     "ticketInfo": "票券信息",
+    "ticketSource": "票源",
+    "zaikoNote": "ZAIKO 电子票券系统",
+    "lawsonNote": "LAWSON 票券不支持子票转让",
     "seatGrade": "座位等级",
     "ticketCountType": "票种类型",
     "pleaseSelectSeatGrade": "请先选择座位等级",

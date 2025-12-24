@@ -148,7 +148,9 @@
     "newest": "Newest",
     "clearFilters": "Clear All Filters",
     "foundResults": "Found {count} companion opportunities",
-    "noResults": "No matching results"
+    "noResults": "No matching results",
+    "ticketSource": "Ticket Source",
+    "allSources": "All Sources"
   },
   "listing": {
     "detail": "Listing Details",
@@ -280,6 +282,9 @@
     "meetingPointWithHint": "Meeting Point (Write 'online' for online exchange)",
     "meetingPointPlaceholder": "e.g., Gate A, North Entrance, 7-11, Online",
     "ticketInfo": "Ticket Information",
+    "ticketSource": "Ticket Source",
+    "zaikoNote": "ZAIKO Electronic Ticket System",
+    "lawsonNote": "LAWSON tickets do not support sub-ticket transfer",
     "seatGrade": "Seat Grade",
     "ticketCountType": "Ticket Count Type",
     "pleaseSelectSeatGrade": "Please select seat grade first",
