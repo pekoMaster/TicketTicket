@@ -106,7 +106,7 @@ export default function UserReviewsPage() {
         showBack
       />
 
-      <div className="pt-14 pb-20 px-4 py-6 max-w-2xl mx-auto">
+      <div className="pt-20 pb-20 px-4 max-w-2xl mx-auto">
         {/* 用戶資訊卡片 */}
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm mb-6">
           <div className="flex items-center gap-4">

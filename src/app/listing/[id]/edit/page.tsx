@@ -391,7 +391,7 @@ export default function EditListingPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header title={tEdit('title')} showBack />
 
-      <div className="pt-14 pb-24 px-4 py-6">
+      <div className="pt-20 pb-24 px-4">
         <div className="space-y-6 max-w-2xl mx-auto">
 
           {/* 重要提醒 */}

@@ -290,7 +290,7 @@ export default function ProfileSettingsPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header title={t('title')} showBack />
 
-      <div className="pt-14 pb-24 px-4 py-6 max-w-2xl mx-auto space-y-6">
+      <div className="pt-20 pb-24 px-4 max-w-2xl mx-auto space-y-6">
         {/* Save Message */}
         {saveMessage && (
           <div

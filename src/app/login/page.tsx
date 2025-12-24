@@ -23,7 +23,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header title={t('login')} showBack />
 
-      <div className="pt-14 pb-20 px-4 py-8 max-w-md mx-auto">
+      <div className="pt-20 pb-20 px-4 max-w-md mx-auto">
         {/* Logo and Title */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 dark:bg-indigo-900/50 rounded-full mb-4">

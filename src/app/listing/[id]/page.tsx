@@ -367,7 +367,7 @@ export default function ListingDetailPage() {
         ) : undefined}
       />
 
-      <div className="pt-14 pb-24">
+      <div className="pt-20 pb-24">
         {/* 主要資訊 */}
         <div className="bg-white dark:bg-gray-800 px-4 py-6 border-b border-gray-100 dark:border-gray-700">
           {/* 票券類型標籤 */}

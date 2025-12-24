@@ -34,7 +34,9 @@ import {
   Trash2,
   X,
   Check,
+  History,
 } from 'lucide-react';
+import { isListingExpired } from '@/lib/listing-utils';
 
 interface ApiReview {
   id: string;
@@ -217,11 +219,22 @@ export default function ProfilePage() {
     isVerified: false,
   } : null);
 
-  // 我的刊登
+  // 我的刊登 (分為進行中與歷史記錄)
   const myListings = useMemo(() => {
     if (!currentUser) return [];
     return listings.filter((l) => l.hostId === currentUser.id);
   }, [currentUser, listings]);
+
+  const activeListings = useMemo(() =>
+    myListings.filter((l) => !isListingExpired(l))
+    , [myListings]);
+
+  const expiredListings = useMemo(() =>
+    myListings.filter((l) => isListingExpired(l))
+    , [myListings]);
+
+  // 刊登分頁狀態
+  const [listingsTab, setListingsTab] = useState<'active' | 'history'>('active');
 
   const formatDate = (date: Date | string) => {
     return new Date(date).toLocaleDateString(locale, {
@@ -283,7 +296,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header title={t('title')} />
 
-      <div className="pt-14 pb-20 px-4 py-6 space-y-6">
+      <div className="pt-20 pb-20 px-4 space-y-6">
         {/* 個人資訊卡片 */}
         <Card className="dark:bg-gray-800 dark:border-gray-700">
           <div className="flex items-center gap-4">
@@ -333,9 +346,36 @@ export default function ProfilePage() {
             )}
           </div>
 
-          {myListings.length > 0 ? (
+          {/* 分頁標籤 */}
+          {myListings.length > 0 && (
+            <div className="flex gap-2 mb-3">
+              <button
+                onClick={() => setListingsTab('active')}
+                className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${listingsTab === 'active'
+                    ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300'
+                    : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
+                  }`}
+              >
+                <Ticket className="w-3.5 h-3.5 inline mr-1" />
+                {t('activeListings')} ({activeListings.length})
+              </button>
+              <button
+                onClick={() => setListingsTab('history')}
+                className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${listingsTab === 'history'
+                    ? 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                    : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
+                  }`}
+              >
+                <History className="w-3.5 h-3.5 inline mr-1" />
+                {t('historyListings')} ({expiredListings.length})
+              </button>
+            </div>
+          )}
+
+          {/* 進行中的刊登 */}
+          {listingsTab === 'active' && activeListings.length > 0 && (
             <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
-              {myListings.map((listing) => (
+              {activeListings.map((listing) => (
                 <Card key={listing.id} className="dark:bg-gray-800 dark:border-gray-700">
                   <Link href={`/listing/${listing.id}`}>
                     <div className="flex items-center gap-3">
@@ -411,7 +451,62 @@ export default function ProfilePage() {
                 </Card>
               ))}
             </div>
-          ) : (
+          )}
+
+          {/* 歷史記錄 (過期的刊登) */}
+          {listingsTab === 'history' && expiredListings.length > 0 && (
+            <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
+              {expiredListings.map((listing) => (
+                <Card key={listing.id} className="dark:bg-gray-800 dark:border-gray-700 opacity-75">
+                  <Link href={`/listing/${listing.id}`}>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <TicketTypeTag type={listing.ticketType} size="sm" />
+                          <Tag variant="default" size="sm">
+                            {t('expired')}
+                          </Tag>
+                        </div>
+                        <p className="font-medium text-gray-600 dark:text-gray-400 truncate">
+                          {listing.eventName}
+                        </p>
+                        <div className="flex items-center gap-3 text-sm text-gray-400 dark:text-gray-500 mt-1">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5" />
+                            {formatDate(listing.eventDate)}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <MapPin className="w-3.5 h-3.5" />
+                            {listing.venue}
+                          </span>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-gray-300 flex-shrink-0" />
+                    </div>
+                  </Link>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {/* 歷史記錄為空時的提示 */}
+          {listingsTab === 'history' && expiredListings.length === 0 && (
+            <Card className="text-center py-6 dark:bg-gray-800 dark:border-gray-700">
+              <History className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{t('noHistory')}</p>
+            </Card>
+          )}
+
+          {/* 進行中為空時的提示 */}
+          {listingsTab === 'active' && activeListings.length === 0 && myListings.length > 0 && (
+            <Card className="text-center py-6 dark:bg-gray-800 dark:border-gray-700">
+              <Ticket className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{t('noActiveListings')}</p>
+            </Card>
+          )}
+
+          {/* 完全沒有刊登時的提示 */}
+          {myListings.length === 0 && (
             <Card className="text-center py-8 dark:bg-gray-800 dark:border-gray-700">
               <Ticket className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
               <p className="text-gray-500 dark:text-gray-400 text-sm">{t('noListings')}</p>
