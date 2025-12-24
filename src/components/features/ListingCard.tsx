@@ -10,7 +10,7 @@ import Tag from '@/components/ui/Tag';
 import Avatar from '@/components/ui/Avatar';
 import StarRating from '@/components/ui/StarRating';
 import UserProfileModal from '@/components/ui/UserProfileModal';
-import { Listing, User, LANGUAGE_OPTIONS, TICKET_COUNT_TYPE_INFO } from '@/types';
+import { Listing, User, LANGUAGE_OPTIONS, TICKET_COUNT_TYPE_INFO, TICKET_SOURCE_INFO } from '@/types';
 
 interface ListingCardProps {
   listing: Listing;
@@ -142,6 +142,15 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
 
           {/* 4. Listing Type */}
           <div className="mt-1">
+            {/* Ticket Source TAG */}
+            <span className={`px-2 py-0.5 rounded text-xs font-semibold ${listing.ticketSource === 'lawson'
+                ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
+              }`}>
+              {TICKET_SOURCE_INFO[listing.ticketSource || 'zaiko'].label}
+            </span>
+
+            {/* Listing Type TAG */}
             <Tag variant={mainTag.variant} size="sm" className="w-fit">
               {mainTag.label}
             </Tag>

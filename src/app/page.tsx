@@ -22,7 +22,9 @@ import {
 import Link from 'next/link';
 import {
   TicketType,
+  TicketSource,
   TICKET_TYPE_INFO,
+  TICKET_SOURCE_INFO,
   NATIONALITY_OPTIONS,
   LANGUAGE_OPTIONS,
 } from '@/types';
@@ -48,6 +50,7 @@ export default function HomePage() {
   const [selectedEvent, setSelectedEvent] = useState('');
   const [dateFilter, setDateFilter] = useState<DateFilter>('all');
   const [selectedTicketType, setSelectedTicketType] = useState<TicketType | ''>('');
+  const [selectedTicketSource, setSelectedTicketSource] = useState<TicketSource | ''>('');
   const [hostNameQuery, setHostNameQuery] = useState('');
   const [minRating, setMinRating] = useState('');
   const [selectedNationality, setSelectedNationality] = useState('');
@@ -109,6 +112,11 @@ export default function HomePage() {
     // 票券類型篩選
     if (selectedTicketType) {
       result = result.filter((l) => l.ticketType === selectedTicketType);
+    }
+
+    // 票源篩選
+    if (selectedTicketSource) {
+      result = result.filter((l) => l.ticketSource === selectedTicketSource);
     }
 
     // 母票協助入場篩選
@@ -287,6 +295,20 @@ export default function HomePage() {
                     {ticketTypes.map((type) => (
                       <option key={type} value={type}>{tCreate(`ticketTypes.${type}`)}</option>
                     ))}
+                  </select>
+                </div>
+
+                {/* 票源 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('ticketSource', { defaultValue: '票源' })}</label>
+                  <select
+                    value={selectedTicketSource}
+                    onChange={(e) => setSelectedTicketSource(e.target.value as TicketSource | '')}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
+                  >
+                    <option value="">{tFilter('allSources', { defaultValue: '全部票源' })}</option>
+                    <option value="zaiko">{TICKET_SOURCE_INFO.zaiko.label}</option>
+                    <option value="lawson">{TICKET_SOURCE_INFO.lawson.label}</option>
                   </select>
                 </div>
 

@@ -31,6 +31,7 @@ interface ApiListing {
   total_slots: number;
   available_slots: number;
   ticket_type: 'find_companion' | 'sub_ticket_transfer' | 'ticket_exchange';
+  ticket_source?: 'zaiko' | 'lawson';
   seat_grade: string;
   ticket_count_type: 'solo' | 'duo';
   host_nationality: string;
@@ -61,6 +62,7 @@ function convertApiListingToListing(apiListing: ApiListing): Listing {
     totalSlots: apiListing.total_slots,
     availableSlots: apiListing.available_slots,
     ticketType: apiListing.ticket_type,
+    ticketSource: apiListing.ticket_source || 'zaiko',
     seatGrade: apiListing.seat_grade,
     ticketCountType: apiListing.ticket_count_type,
     hostNationality: apiListing.host_nationality,
@@ -126,6 +128,7 @@ interface CreateListingData {
   meetingTime: string;
   meetingLocation: string;
   totalSlots?: number;
+  ticketSource?: 'zaiko' | 'lawson';
   ticketType: 'find_companion' | 'sub_ticket_transfer' | 'ticket_exchange';
   seatGrade: string;
   ticketCountType: 'solo' | 'duo';

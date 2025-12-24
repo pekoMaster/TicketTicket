@@ -14,9 +14,11 @@ import Select from '@/components/ui/Select';
 import AgreementModal from '@/components/ui/AgreementModal';
 import {
   TicketType,
+  TicketSource,
   TicketCountType,
   TICKET_COUNT_TYPE_INFO,
   TICKET_TYPE_INFO,
+  TICKET_SOURCE_INFO,
   NATIONALITY_OPTIONS,
   LANGUAGE_OPTIONS,
   getSeatGradeColor,
@@ -63,6 +65,7 @@ export default function CreateListingPage() {
   const [venueAddress, setVenueAddress] = useState('');
   const [meetingTime, setMeetingTime] = useState('');
   const [meetingLocation, setMeetingLocation] = useState('');
+  const [ticketSource, setTicketSource] = useState<TicketSource>('zaiko'); // 票源預設 ZAIKO
   const [ticketType, setTicketType] = useState<TicketType | ''>('');
   const [seatGrade, setSeatGrade] = useState<string>('');
   const [ticketCountType, setTicketCountType] = useState<TicketCountType | ''>('');
@@ -294,6 +297,7 @@ export default function CreateListingPage() {
         meetingTime: `${eventDate}T${meetingTime.slice(0, 5)}:00+09:00`,
         meetingLocation,
         totalSlots: ticketCountType === 'duo' ? 2 : 1,
+        ticketSource,
         ticketType: ticketType as TicketType,
         seatGrade: seatGrade,
         ticketCountType: ticketCountType as TicketCountType,
@@ -560,6 +564,43 @@ export default function CreateListingPage() {
             </h3>
 
             <div className="space-y-4">
+              {/* 票源選擇 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                  {t('ticketSource', { defaultValue: '票源' })} <span className="text-red-500">*</span>
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {(['zaiko', 'lawson'] as const).map((source) => (
+                    <button
+                      key={source}
+                      type="button"
+                      onClick={() => {
+                        setTicketSource(source);
+                        // 切換到 LAWSON 時，如果選了子票轉讓，清除刊登類型
+                        if (source === 'lawson' && ticketType === 'sub_ticket_transfer') {
+                          setTicketType('');
+                        }
+                      }}
+                      className={`
+                        py-2.5 px-4 rounded-lg border-2 text-sm font-semibold transition-all
+                        ${ticketSource === source
+                          ? source === 'zaiko'
+                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                            : 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 text-gray-700 dark:text-gray-200'}
+                      `}
+                    >
+                      {TICKET_SOURCE_INFO[source].label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  {ticketSource === 'lawson'
+                    ? t('lawsonNote', { defaultValue: 'LAWSON 票券不支援子票轉讓' })
+                    : t('zaikoNote', { defaultValue: 'ZAIKO 電子票券系統' })}
+                </p>
+              </div>
+
               {/* 座位等級 */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
@@ -631,8 +672,8 @@ export default function CreateListingPage() {
                     // 必須先選擇活動、座位等級和票種類型（人數）
                     const isPrerequisitesMet = eventName && seatGrade && ticketCountType;
 
-                    // 轉讓子票僅限二人票以上（一人票無子票可轉讓）
-                    const isSubTicketDisabled = type === 'sub_ticket_transfer' && ticketCountType === 'solo';
+                    // 轉讓子票僅限：1. 二人票以上（一人票無子票可轉讓）2. ZAIKO 票源（LAWSON 不支援子票）
+                    const isSubTicketDisabled = type === 'sub_ticket_transfer' && (ticketCountType === 'solo' || ticketSource === 'lawson');
                     const isDisabled = !isPrerequisitesMet || isSubTicketDisabled;
 
                     // 使用翻譯或預設標籤

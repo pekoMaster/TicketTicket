@@ -93,6 +93,7 @@ export async function POST(request: NextRequest) {
       total_slots: body.totalSlots || 1,
       available_slots: body.totalSlots || 1,
       ticket_type: body.ticketType,
+      ticket_source: body.ticketSource || 'zaiko', // 票源預設為 ZAIKO
       seat_grade: body.seatGrade,
       ticket_count_type: body.ticketCountType,
       host_nationality: body.hostNationality,

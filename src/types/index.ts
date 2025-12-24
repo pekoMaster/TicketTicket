@@ -86,6 +86,29 @@ export const PHONE_COUNTRY_CODES = [
 // ticket_exchange: 換票（與其他用戶交換票券）
 export type TicketType = 'find_companion' | 'sub_ticket_transfer' | 'ticket_exchange';
 
+// 票源類型
+// zaiko: ZAIKO 電子票券系統（支援子票）
+// lawson: LAWSON 便利商店購票（不支援子票）
+export type TicketSource = 'zaiko' | 'lawson';
+
+// 票源資訊
+export const TICKET_SOURCE_INFO: Record<TicketSource, {
+  label: string;
+  color: string;
+  darkColor: string;
+}> = {
+  zaiko: {
+    label: 'ZAIKO',
+    color: 'bg-blue-100 text-blue-800',
+    darkColor: 'dark:bg-blue-900/30 dark:text-blue-300',
+  },
+  lawson: {
+    label: 'LAWSON',
+    color: 'bg-green-100 text-green-800',
+    darkColor: 'dark:bg-green-900/30 dark:text-green-300',
+  },
+};
+
 // 座位等級（改為動態字串，由管理員自訂）
 export type SeatGrade = string;
 
@@ -108,6 +131,7 @@ export interface Listing {
   meetingLocation: string;
   totalSlots: number;
   availableSlots: number;
+  ticketSource: TicketSource;               // 票源 (ZAIKO/LAWSON)
   ticketType: TicketType;
   seatGrade: SeatGrade;                    // 座位等級
   ticketCountType: TicketCountType;        // 票種類型

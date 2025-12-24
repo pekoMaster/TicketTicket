@@ -14,10 +14,12 @@ import Select from '@/components/ui/Select';
 import Modal from '@/components/ui/Modal';
 import {
   TicketType,
+  TicketSource,
   SeatGrade,
   TicketCountType,
   SEAT_GRADE_INFO,
   TICKET_COUNT_TYPE_INFO,
+  TICKET_SOURCE_INFO,
   NATIONALITY_OPTIONS,
   LANGUAGE_OPTIONS,
 } from '@/types';
@@ -74,6 +76,7 @@ export default function EditListingPage() {
   const [meetingLocation, setMeetingLocation] = useState('');
   const [seatGrade, setSeatGrade] = useState<SeatGrade | ''>('');
   const [ticketCountType, setTicketCountType] = useState<TicketCountType | ''>('');
+  const [ticketSource, setTicketSource] = useState<TicketSource>('zaiko');
   const [ticketType, setTicketType] = useState<TicketType | ''>('');
   const [willAssistEntry, setWillAssistEntry] = useState(false);
   const [hostNationality, setHostNationality] = useState('');
@@ -147,6 +150,7 @@ export default function EditListingPage() {
     setMeetingLocation(listing.meetingLocation || '');
     setSeatGrade(listing.seatGrade || '');
     setTicketCountType(listing.ticketCountType || '');
+    setTicketSource(listing.ticketSource || 'zaiko');
     setTicketType(listing.ticketType || '');
     setWillAssistEntry(listing.willAssistEntry || false);
     setHostNationality(listing.hostNationality || '');
@@ -511,6 +515,43 @@ export default function EditListingPage() {
             </h3>
 
             <div className="space-y-4">
+              {/* 票源選擇 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t('ticketSource', { defaultValue: '票源' })} <span className="text-red-500">*</span>
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {(['zaiko', 'lawson'] as const).map((source) => (
+                    <button
+                      key={source}
+                      type="button"
+                      onClick={() => {
+                        setTicketSource(source);
+                        // 切換到 LAWSON 時，如果選了子票轉讓，清除刊登類型
+                        if (source === 'lawson' && ticketType === 'sub_ticket_transfer') {
+                          setTicketType('');
+                        }
+                      }}
+                      className={`
+                        py-2.5 px-4 rounded-lg border-2 text-sm font-semibold transition-all
+                        ${ticketSource === source
+                          ? source === 'zaiko'
+                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                            : 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 text-gray-700 dark:text-gray-200'}
+                      `}
+                    >
+                      {TICKET_SOURCE_INFO[source].label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  {ticketSource === 'lawson'
+                    ? t('lawsonNote', { defaultValue: 'LAWSON 票券不支援子票轉讓' })
+                    : t('zaikoNote', { defaultValue: 'ZAIKO 電子票券系統' })}
+                </p>
+              </div>
+
               {/* 座位等級 */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -637,8 +678,8 @@ export default function EditListingPage() {
                 </label>
                 <div className="space-y-2">
                   {TICKET_TYPES.map((type) => {
-                    // 轉讓子票僅限二人票以上
-                    const isSubTicketDisabled = type === 'sub_ticket_transfer' && ticketCountType === 'solo';
+                    // 轉讓子票僅限：1. 二人票以上（一人票無子票可轉讓）2. ZAIKO 票源（LAWSON 不支援子票）
+                    const isSubTicketDisabled = type === 'sub_ticket_transfer' && (ticketCountType === 'solo' || ticketSource === 'lawson');
 
                     return (
                       <label

@@ -8,7 +8,7 @@ import { Calendar, Users, Armchair } from 'lucide-react';
 import Tag from '@/components/ui/Tag';
 import Avatar from '@/components/ui/Avatar';
 import UserProfileModal from '@/components/ui/UserProfileModal';
-import { Listing, User, LANGUAGE_OPTIONS, TICKET_COUNT_TYPE_INFO } from '@/types';
+import { Listing, User, LANGUAGE_OPTIONS, TICKET_COUNT_TYPE_INFO, TICKET_SOURCE_INFO } from '@/types';
 
 interface ListingListItemProps {
     listing: Listing;
@@ -85,6 +85,14 @@ export default function ListingListItem({ listing, host }: ListingListItemProps)
                                 <Calendar className="w-3.5 h-3.5 text-gray-400" />
                                 <span>{formatDate(listing.eventDate)}</span>
                             </div>
+
+                            {/* Ticket Source TAG */}
+                            <span className={`px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap ${listing.ticketSource === 'lawson'
+                                    ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                                    : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
+                                }`}>
+                                {TICKET_SOURCE_INFO[listing.ticketSource || 'zaiko'].label}
+                            </span>
 
                             {/* Listing Type */}
                             <Tag variant={mainTag.variant} size="sm" className="whitespace-nowrap">
