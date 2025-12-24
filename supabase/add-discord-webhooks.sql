@@ -97,12 +97,16 @@ CREATE POLICY "Users can view their own webhook logs"
 
 -- 10. Function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_webhook_updated_at()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- 11. Triggers for updated_at
 CREATE TRIGGER update_user_webhook_subscriptions_updated_at
