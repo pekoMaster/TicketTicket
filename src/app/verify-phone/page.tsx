@@ -26,8 +26,56 @@ export default function VerifyPhonePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [cooldown, setCooldown] = useState(0);
+  const [resendAttempts, setResendAttempts] = useState(0);
 
   const recaptchaContainerRef = useRef<HTMLDivElement>(null);
+
+  // 漸進式冷卻時間（秒）
+  const getCooldownSeconds = (attempts: number): number => {
+    switch (attempts) {
+      case 0: return 10;      // 第一次：10秒
+      case 1: return 60;      // 第二次：1分鐘
+      case 2: return 300;     // 第三次：5分鐘
+      case 3: return 1800;    // 第四次：30分鐘
+      default: return 3600;   // 第五次以上：1小時
+    }
+  };
+
+  // 格式化冷卻時間顯示
+  const formatCooldown = (seconds: number): string => {
+    if (seconds < 60) {
+      return `${seconds}s`;
+    } else if (seconds < 3600) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return secs > 0 ? `${mins}:${secs.toString().padStart(2, '0')}` : `${mins}:00`;
+    } else {
+      const hours = Math.floor(seconds / 3600);
+      const mins = Math.floor((seconds % 3600) / 60);
+      return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+    }
+  };
+
+  // 從 localStorage 載入嘗試次數和冷卻狀態
+  useEffect(() => {
+    const savedData = localStorage.getItem('phoneVerificationState');
+    if (savedData) {
+      try {
+        const { attempts, cooldownEnd } = JSON.parse(savedData);
+        setResendAttempts(attempts || 0);
+
+        // 檢查是否還在冷卻中
+        if (cooldownEnd) {
+          const remaining = Math.ceil((cooldownEnd - Date.now()) / 1000);
+          if (remaining > 0) {
+            setCooldown(remaining);
+          }
+        }
+      } catch (e) {
+        // 忽略解析錯誤
+      }
+    }
+  }, []);
 
   // 冷卻時間倒數
   useEffect(() => {
@@ -74,7 +122,18 @@ export default function VerifyPhonePage() {
       const result = await sendPhoneVerificationCode(fullPhoneNumber, recaptcha);
       setConfirmationResult(result);
       setPageState('verify');
-      setCooldown(60);
+
+      // 設定漸進式冷卻時間
+      const cooldownSeconds = getCooldownSeconds(resendAttempts);
+      setCooldown(cooldownSeconds);
+
+      // 更新嘗試次數並儲存到 localStorage
+      const newAttempts = resendAttempts + 1;
+      setResendAttempts(newAttempts);
+      localStorage.setItem('phoneVerificationState', JSON.stringify({
+        attempts: newAttempts,
+        cooldownEnd: Date.now() + cooldownSeconds * 1000,
+      }));
     } catch (error: any) {
       console.error('Failed to send verification code:', error);
       // 顯示詳細錯誤以便除錯
@@ -108,6 +167,8 @@ export default function VerifyPhonePage() {
 
       if (response.ok) {
         setPageState('success');
+        // 驗證成功，清除嘗試次數記錄
+        localStorage.removeItem('phoneVerificationState');
       } else {
         const data = await response.json();
         if (data.error === 'Phone number already in use') {
@@ -290,7 +351,7 @@ export default function VerifyPhonePage() {
                       className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline disabled:text-gray-400 disabled:no-underline"
                     >
                       {cooldown > 0
-                        ? `${t('verify.resendIn')} ${cooldown}s`
+                        ? `${t('verify.resendIn')} ${formatCooldown(cooldown)}`
                         : t('verify.resend')
                       }
                     </button>
