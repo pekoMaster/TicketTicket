@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useApp } from '@/contexts/AppContext';
+import { useAdmin } from '@/contexts/AdminContext';
 import { useTranslations } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Header from '@/components/layout/Header';
@@ -47,6 +48,7 @@ export default function ListingDetailPage() {
   const router = useRouter();
   const { data: session } = useSession();
   const { listings, deleteListing, updateListing } = useApp();
+  const { events } = useAdmin();
   const t = useTranslations('listing');
   const tApply = useTranslations('apply');
   const tTicket = useTranslations('ticketType');
@@ -423,6 +425,29 @@ export default function ListingDetailPage() {
                   {listing.ticketCountType === 'duo' ? t('duoTicket') : t('soloTicket')}
                 </span>
               </div>
+
+              {/* 參考原價 */}
+              {(() => {
+                const selectedEvent = events.find(e => e.name === listing.eventName);
+                const priceTier = selectedEvent?.ticketPriceTiers?.find(
+                  tier => tier.seatGrade === listing.seatGrade && tier.ticketCountType === listing.ticketCountType
+                );
+                if (priceTier?.priceJpy) {
+                  return (
+                    <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
+                      <div className="flex items-center gap-2">
+                        <Banknote className="w-4 h-4 text-green-500" />
+                        <span className="text-gray-500 dark:text-gray-400">{t('referencePrice', { defaultValue: '參考原價' })}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-semibold text-green-600 dark:text-green-400">¥{priceTier.priceJpy.toLocaleString()}</span>
+                        <p className="text-xs text-gray-400 dark:text-gray-500">{t('referencePriceNote', { defaultValue: '僅供參考' })}</p>
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
 
               {/* 票種類型 */}
               <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">

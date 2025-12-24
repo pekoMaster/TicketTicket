@@ -62,7 +62,13 @@ export async function PATCH(
     if (body.venueAddress !== undefined) updates.venue_address = body.venueAddress;
     if (body.imageUrl !== undefined) updates.image_url = body.imageUrl;
     if (body.description !== undefined) updates.description = body.description;
-    if (body.ticketPriceTiers !== undefined) updates.ticket_price_tiers = body.ticketPriceTiers;
+    if (body.ticketPriceTiers !== undefined) {
+      updates.ticket_price_tiers = body.ticketPriceTiers.map((tier: { seatGrade: string; ticketCountType: string; priceJpy?: number }) => ({
+        seat_grade: tier.seatGrade,
+        ticket_count_type: tier.ticketCountType,
+        price_jpy: tier.priceJpy,
+      }));
+    }
     if (body.category !== undefined) updates.category = body.category;
     if (body.isActive !== undefined) updates.is_active = body.isActive;
     if (body.maxListingsPerUser !== undefined) updates.max_listings_per_user = body.maxListingsPerUser;

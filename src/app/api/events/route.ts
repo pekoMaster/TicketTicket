@@ -51,6 +51,13 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
+    // 轉換 ticketPriceTiers 從 camelCase 到 snake_case
+    const ticketPriceTiers = (body.ticketPriceTiers || []).map((tier: { seatGrade: string; ticketCountType: string; priceJpy?: number }) => ({
+      seat_grade: tier.seatGrade,
+      ticket_count_type: tier.ticketCountType,
+      price_jpy: tier.priceJpy,
+    }));
+
     // 使用 admin client 繞過 RLS
     const { data, error } = await supabaseAdmin
       .from('events')
@@ -63,7 +70,7 @@ export async function POST(request: NextRequest) {
         venue_address: body.venueAddress || null,
         image_url: body.imageUrl || null,
         description: body.description || null,
-        ticket_price_tiers: body.ticketPriceTiers || [],
+        ticket_price_tiers: ticketPriceTiers,
         category: body.category || 'concert',
         is_active: body.isActive !== false,
         max_listings_per_user: body.maxListingsPerUser || 2,

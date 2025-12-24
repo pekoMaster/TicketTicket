@@ -201,6 +201,14 @@ export default function EditListingPage() {
     return Array.from(new Set(types)) as TicketCountType[];
   }, [selectedEvent, seatGrade]);
 
+  // === 已選擇的價格等級 ===
+  const selectedPriceTier = useMemo(() => {
+    if (!selectedEvent?.ticketPriceTiers || !seatGrade || !ticketCountType) return null;
+    return selectedEvent.ticketPriceTiers.find(
+      tier => tier.seatGrade === seatGrade && tier.ticketCountType === ticketCountType
+    );
+  }, [selectedEvent, seatGrade, ticketCountType]);
+
   // === 表單驗證 ===
   const isFormValid = useMemo(() => {
     return (
@@ -604,6 +612,23 @@ export default function EditListingPage() {
                   </div>
                 )}
               </div>
+
+              {/* 參考原價顯示 - 僅供參考 */}
+              {selectedPriceTier?.priceJpy && (
+                <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {t('referencePrice', { defaultValue: '參考原價' })}
+                    </span>
+                    <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                      ¥{selectedPriceTier.priceJpy.toLocaleString()}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    {t('referencePriceNote', { defaultValue: '此為管理員設定的票券原價，僅供參考' })}
+                  </p>
+                </div>
+              )}
 
               {/* 票券類型選擇 */}
               <div>

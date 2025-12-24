@@ -17,6 +17,7 @@ interface ApiEvent {
   ticket_price_tiers: {
     seat_grade: string;
     ticket_count_type: string;
+    price_jpy?: number;
   }[];
   category: 'concert' | 'fan_meeting' | 'expo' | 'streaming' | 'other';
   is_active: boolean;
@@ -40,6 +41,7 @@ function convertApiEventToEvent(apiEvent: ApiEvent): HololiveEvent {
     ticketPriceTiers: (apiEvent.ticket_price_tiers || []).map(tier => ({
       seatGrade: tier.seat_grade as 'B' | 'A' | 'S' | 'SS',
       ticketCountType: tier.ticket_count_type as 'solo' | 'duo',
+      priceJpy: tier.price_jpy,
     })),
     category: apiEvent.category,
     isActive: apiEvent.is_active,
