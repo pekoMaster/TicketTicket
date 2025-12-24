@@ -50,7 +50,9 @@
       "Bash(git commit -m \"$\\(cat <<''EOF''\n修復：後台刊登管理 API 欄位名稱錯誤\n\n- asking_price_twd 改為 asking_price_jpy\n- 修正 host 關聯查詢語法\n- 價格顯示同時顯示日幣和台幣\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git rm:*)",
       "Bash(node:*)",
-      "Bash(git remote prune:*)"
+      "Bash(git remote prune:*)",
+      "Bash(cd /d \"H:\\\\OneDrive\\\\RB\\\\TRPG\\\\TicketTicket\")",
+      "Bash(npx tsc:*)"
     ]
   }
 }
