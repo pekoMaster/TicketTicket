@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useFormatter } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Calendar, Users, Armchair } from 'lucide-react';
+import { Calendar, Users, Armchair, Clock } from 'lucide-react';
 import Tag from '@/components/ui/Tag';
 import Avatar from '@/components/ui/Avatar';
 import UserProfileModal from '@/components/ui/UserProfileModal';
@@ -19,6 +19,7 @@ export default function ListingListItem({ listing, host }: ListingListItemProps)
     const t = useTranslations('listing');
     const tTicket = useTranslations('ticketType');
     const { locale } = useLanguage();
+    const format = useFormatter();
     const [showUserModal, setShowUserModal] = useState(false);
 
     const formatDate = (date: Date) => {
@@ -86,10 +87,16 @@ export default function ListingListItem({ listing, host }: ListingListItemProps)
                                 <span>{formatDate(listing.eventDate)}</span>
                             </div>
 
+                            {/* Posted Time */}
+                            <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
+                                <Clock className="w-3 h-3" />
+                                <span>{format.relativeTime(new Date(listing.createdAt))}</span>
+                            </div>
+
                             {/* Ticket Source TAG */}
                             <span className={`px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap ${listing.ticketSource === 'lawson'
-                                    ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
-                                    : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
+                                ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                                : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
                                 }`}>
                                 {TICKET_SOURCE_INFO[listing.ticketSource || 'zaiko'].label}
                             </span>

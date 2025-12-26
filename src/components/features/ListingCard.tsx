@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useFormatter } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Calendar, Eye, Users, Armchair } from 'lucide-react';
+import { Calendar, Eye, Users, Armchair, Clock } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import Tag from '@/components/ui/Tag';
 import Avatar from '@/components/ui/Avatar';
@@ -21,6 +21,7 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
   const t = useTranslations('listing');
   const tTicket = useTranslations('ticketType');
   const { locale } = useLanguage();
+  const format = useFormatter();
   const [showUserModal, setShowUserModal] = useState(false);
 
   const formatDate = (date: Date) => {
@@ -144,8 +145,8 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
           <div className="mt-1">
             {/* Ticket Source TAG */}
             <span className={`px-2 py-0.5 rounded text-xs font-semibold ${listing.ticketSource === 'lawson'
-                ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
-                : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
+              ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+              : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
               }`}>
               {TICKET_SOURCE_INFO[listing.ticketSource || 'zaiko'].label}
             </span>
@@ -172,6 +173,12 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
               <Calendar className="w-3.5 h-3.5" />
               <span>{formatDate(listing.eventDate)}</span>
             </div>
+          </div>
+
+          {/* Posted Time */}
+          <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500">
+            <Clock className="w-3 h-3" />
+            <span>{format.relativeTime(new Date(listing.createdAt))}</span>
           </div>
 
           {/* Languages */}

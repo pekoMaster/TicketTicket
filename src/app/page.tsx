@@ -6,6 +6,7 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { useTranslations } from 'next-intl';
 import ListingCard from '@/components/features/ListingCard';
 import ListingListItem from '@/components/features/ListingListItem';
+import ListingCardSkeleton from '@/components/features/ListingCardSkeleton';
 
 import { Input } from '@/components/ui/Input';
 import {
@@ -201,6 +202,20 @@ export default function HomePage() {
     selectedLanguages.length > 0 ||
     sortBy !== 'date';
 
+  // Count active filters for badge
+  const activeFilterCount = [
+    searchQuery !== '',
+    selectedEvent !== '',
+    dateFilter !== 'all',
+    selectedTicketType !== '',
+    selectedTicketSource !== '',
+    willAssistEntry,
+    hostNameQuery !== '',
+    minRating !== '',
+    selectedNationality !== '',
+    selectedLanguages.length > 0,
+  ].filter(Boolean).length;
+
   const ticketTypes: TicketType[] = ['find_companion', 'sub_ticket_transfer', 'ticket_exchange'];
 
   return (
@@ -237,11 +252,18 @@ export default function HomePage() {
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`
-                px-4 py-2.5 rounded-lg border transition-colors flex items-center gap-2
+                px-4 py-2.5 rounded-lg border transition-colors flex items-center gap-2 relative
                 ${hasActiveFilters ? 'bg-indigo-50 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-700 text-indigo-600 dark:text-indigo-400' : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'}
               `}
             >
-              <Filter className="w-5 h-5" />
+              <div className="relative">
+                <Filter className="w-5 h-5" />
+                {activeFilterCount > 0 && (
+                  <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold bg-indigo-600 text-white rounded-full px-1">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </div>
               <span className="hidden sm:inline">
                 {showFilters ? tFilter('hideFilters') : tFilter('showFilters')}
               </span>
@@ -457,8 +479,10 @@ export default function HomePage() {
       <div className="flex-1 px-4 lg:px-6 py-6">
         <div className="max-w-7xl mx-auto">
           {isLoadingListings ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+            <div className="space-y-4 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-4 lg:space-y-0">
+              {[...Array(6)].map((_, i) => (
+                <ListingCardSkeleton key={i} />
+              ))}
             </div>
           ) : filteredListings.length > 0 ? (
             <>
