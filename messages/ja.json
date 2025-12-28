@@ -592,6 +592,13 @@
       "invalidUrl": "有効な Discord Webhook URL を入力してください"
     }
   },
+  "share": {
+    "title": "共有",
+    "nativeShare": "共有...",
+    "orShareVia": "または選択",
+    "copyLink": "リンクをコピー",
+    "copied": "コピーしました！"
+  },
   "status": {
     "open": "募集中",
     "matched": "マッチング済",

@@ -39,9 +39,11 @@ import {
   Globe,
   Languages,
   Flag,
+  Share2,
 } from 'lucide-react';
 import ReviewModal from '@/components/features/ReviewModal';
 import ReportModal from '@/components/ui/ReportModal';
+import ShareModal from '@/components/ui/ShareModal';
 
 export default function ListingDetailPage() {
   const params = useParams();
@@ -93,6 +95,9 @@ export default function ListingDetailPage() {
   const [existingConversationId, setExistingConversationId] = useState<string | null>(null);
   const [inquiryCount, setInquiryCount] = useState(0);
   const [applicationCount, setApplicationCount] = useState(0);
+
+  // Share state
+  const [showShareModal, setShowShareModal] = useState(false);
 
   const listing = listings.find((l) => l.id === params.id);
   const host = listing?.host;
@@ -377,8 +382,17 @@ export default function ListingDetailPage() {
             <TicketTypeTag type={listing.ticketType} size="md" />
           </div>
 
-          {/* 活動名稱 */}
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">{listing.eventName}</h1>
+          {/* 活動名稱 + 分享按鈕 */}
+          <div className="flex items-start justify-between gap-2 mb-4">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{listing.eventName}</h1>
+            <button
+              onClick={() => setShowShareModal(true)}
+              className="flex-shrink-0 p-2 rounded-lg text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400 transition-colors"
+              title={t('share', { defaultValue: '分享' })}
+            >
+              <Share2 className="w-5 h-5" />
+            </button>
+          </div>
 
           {/* 活動資訊 */}
           <div className="space-y-3">
@@ -888,6 +902,15 @@ export default function ListingDetailPage() {
           listingId={listing.id}
         />
       )}
+
+      {/* 分享彈窗 */}
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        url={typeof window !== 'undefined' ? window.location.href : `https://ticketticket.live/listing/${listing.id}`}
+        title={listing.eventName}
+        description={`📅 ${formatDate(listing.eventDate)} | 📍 ${listing.venue}`}
+      />
     </div>
   );
 }

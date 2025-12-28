@@ -592,6 +592,13 @@
       "invalidUrl": "請輸入有效的 Discord Webhook URL"
     }
   },
+  "share": {
+    "title": "分享",
+    "nativeShare": "分享...",
+    "orShareVia": "或選擇平台",
+    "copyLink": "複製連結",
+    "copied": "已複製！"
+  },
   "status": {
     "open": "開放中",
     "matched": "已配對",

@@ -592,6 +592,13 @@
       "invalidUrl": "Please enter a valid Discord Webhook URL"
     }
   },
+  "share": {
+    "title": "Share",
+    "nativeShare": "Share...",
+    "orShareVia": "or share via",
+    "copyLink": "Copy Link",
+    "copied": "Copied!"
+  },
   "status": {
     "open": "Open",
     "matched": "Matched",
