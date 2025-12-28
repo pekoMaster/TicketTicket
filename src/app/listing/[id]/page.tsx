@@ -909,7 +909,20 @@ export default function ListingDetailPage() {
         onClose={() => setShowShareModal(false)}
         url={typeof window !== 'undefined' ? window.location.href : `https://ticketticket.live/listing/${listing.id}`}
         title={listing.eventName}
-        description={`📅 ${formatDate(listing.eventDate)} | 📍 ${listing.venue}`}
+        description={(() => {
+          const ticketTypeLabels: Record<string, string> = {
+            find_companion: '🎫 尋找一起去的夥伴！',
+            sub_ticket_transfer: '🎟️ 子票轉讓中！',
+            ticket_exchange: '🔄 換票募集中！',
+          };
+          const typeText = ticketTypeLabels[listing.ticketType] || '';
+          const dateText = `📅 ${formatDate(listing.eventDate)}`;
+          const venueText = `📍 ${listing.venue}`;
+          const seatText = listing.seatGrade ? `💺 ${listing.seatGrade}席` : '';
+          const callToAction = '\n\n👉 快來看看詳情！';
+
+          return [typeText, dateText, venueText, seatText].filter(Boolean).join('\n') + callToAction;
+        })()}
       />
     </div>
   );
