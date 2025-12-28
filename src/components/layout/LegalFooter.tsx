@@ -23,6 +23,10 @@ export default function LegalFooter() {
             <Link href="/legal/tokushoho" className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400">
               {t('tokushoho')}
             </Link>
+            <span className="text-gray-300 dark:text-gray-600">|</span>
+            <Link href="/legal/ticket-regulations" className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400">
+              {t('ticketRegulations')}
+            </Link>
           </div>
 
           {/* Japanese Law Compliance Notice */}
