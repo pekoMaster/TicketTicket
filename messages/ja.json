@@ -210,7 +210,13 @@
     "inquiryDesc": "質問がありますか？申請前に主催者に聞いてみましょう",
     "inquiryLabel": "あなたの質問（任意）",
     "inquiryPlaceholder": "何を聞きたいですか？例：集合時間は早められますか？",
-    "startChat": "チャットを開始"
+    "startChat": "チャットを開始",
+    "shareCompanion": "一緒に行く仲間を探しています！",
+    "shareTransfer": "サブチケット譲渡中！",
+    "shareExchange": "チケット交換募集中！",
+    "shareSeatSuffix": "席",
+    "shareCallToAction": "詳細をチェック！",
+    "share": "共有"
   },
   "applicants": {
     "title": "申請者管理",

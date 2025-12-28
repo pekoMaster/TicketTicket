@@ -210,7 +210,13 @@
     "inquiryDesc": "有任何问题可以先向主办询问，再决定是否要申请",
     "inquiryLabel": "您的问题（选填）",
     "inquiryPlaceholder": "想问什么呢？例如：请问集合时间可以提早吗？",
-    "startChat": "开始对话"
+    "startChat": "开始对话",
+    "shareCompanion": "寻找一起去的伙伴！",
+    "shareTransfer": "子票转让中！",
+    "shareExchange": "换票募集中！",
+    "shareSeatSuffix": "席",
+    "shareCallToAction": "快来看看详情！",
+    "share": "分享"
   },
   "applicants": {
     "title": "申请者管理",

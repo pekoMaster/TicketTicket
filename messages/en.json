@@ -210,7 +210,13 @@
     "inquiryDesc": "Have questions? Ask the host first before deciding to apply",
     "inquiryLabel": "Your Question (Optional)",
     "inquiryPlaceholder": "What would you like to ask? e.g., Can we meet earlier?",
-    "startChat": "Start Chat"
+    "startChat": "Start Chat",
+    "shareCompanion": "Looking for a companion!",
+    "shareTransfer": "Sub-ticket available!",
+    "shareExchange": "Ticket exchange wanted!",
+    "shareSeatSuffix": " seat",
+    "shareCallToAction": "Check it out!",
+    "share": "Share"
   },
   "applicants": {
     "title": "Manage Applicants",

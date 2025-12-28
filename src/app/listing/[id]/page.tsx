@@ -911,15 +911,15 @@ export default function ListingDetailPage() {
         title={listing.eventName}
         description={(() => {
           const ticketTypeLabels: Record<string, string> = {
-            find_companion: '🎫 尋找一起去的夥伴！',
-            sub_ticket_transfer: '🎟️ 子票轉讓中！',
-            ticket_exchange: '🔄 換票募集中！',
+            find_companion: `🎫 ${t('shareCompanion', { defaultValue: '尋找一起去的夥伴！' })}`,
+            sub_ticket_transfer: `🎟️ ${t('shareTransfer', { defaultValue: '子票轉讓中！' })}`,
+            ticket_exchange: `🔄 ${t('shareExchange', { defaultValue: '換票募集中！' })}`,
           };
           const typeText = ticketTypeLabels[listing.ticketType] || '';
           const dateText = `📅 ${formatDate(listing.eventDate)}`;
           const venueText = `📍 ${listing.venue}`;
-          const seatText = listing.seatGrade ? `💺 ${listing.seatGrade}席` : '';
-          const callToAction = '\n\n👉 快來看看詳情！';
+          const seatText = listing.seatGrade ? `💺 ${listing.seatGrade}${t('shareSeatSuffix', { defaultValue: '席' })}` : '';
+          const callToAction = `\n\n👉 ${t('shareCallToAction', { defaultValue: '快來看看詳情！' })}`;
 
           return [typeText, dateText, venueText, seatText].filter(Boolean).join('\n') + callToAction;
         })()}
