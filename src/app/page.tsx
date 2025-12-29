@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useTranslations } from 'next-intl';
@@ -60,6 +60,11 @@ export default function HomePage() {
   const [willAssistEntry, setWillAssistEntry] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>('date');
   const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
+
+  // 無限滾動狀態
+  const [displayCount, setDisplayCount] = useState(10);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const ITEMS_PER_PAGE = 10;
 
   // 取得所有唯一的活動名稱
   const allEventNames = useMemo(() => {
@@ -190,6 +195,43 @@ export default function HomePage() {
     setWillAssistEntry(false);
     setSortBy('date');
   };
+
+  // 無限滾動: 顯示的刊登 (根據 displayCount 切片)
+  const displayedListings = useMemo(() => {
+    return filteredListings.slice(0, displayCount);
+  }, [filteredListings, displayCount]);
+
+  const hasMore = displayCount < filteredListings.length;
+
+  // 載入更多
+  const loadMore = useCallback(() => {
+    if (hasMore) {
+      setDisplayCount((prev) => Math.min(prev + ITEMS_PER_PAGE, filteredListings.length));
+    }
+  }, [hasMore, filteredListings.length]);
+
+  // IntersectionObserver 監聽底部元素
+  useEffect(() => {
+    const target = loadMoreRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoadingListings) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [hasMore, loadMore, isLoadingListings]);
+
+  // 當篩選條件改變時，重置顯示數量
+  useEffect(() => {
+    setDisplayCount(ITEMS_PER_PAGE);
+  }, [searchQuery, selectedEvent, dateFilter, selectedTicketType, willAssistEntry, hostNameQuery, minRating, selectedNationality, selectedLanguages, sortBy]);
 
   const hasActiveFilters =
     searchQuery !== '' ||
@@ -489,7 +531,7 @@ export default function HomePage() {
             <>
               {/* Card View - 手機永遠用卡片，PC根據切換 */}
               <div className={`space-y-4 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-4 lg:space-y-0 ${viewMode === 'list' ? 'lg:hidden' : ''}`}>
-                {filteredListings.map((listing) => (
+                {displayedListings.map((listing) => (
                   <ListingCard
                     key={listing.id}
                     listing={listing}
@@ -501,7 +543,7 @@ export default function HomePage() {
               {viewMode === 'list' && (
                 <div className="hidden lg:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                   <div className="flex flex-col">
-                    {filteredListings.map((listing) => (
+                    {displayedListings.map((listing) => (
                       <ListingListItem
                         key={listing.id}
                         listing={listing}
@@ -511,6 +553,19 @@ export default function HomePage() {
                   </div>
                 </div>
               )}
+              {/* 無限滾動觸發器 */}
+              <div ref={loadMoreRef} className="py-4">
+                {hasMore ? (
+                  <div className="flex justify-center items-center gap-2 text-gray-400 dark:text-gray-500">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span className="text-sm">{t('loadingMore', { defaultValue: '載入更多...' })}</span>
+                  </div>
+                ) : displayedListings.length > ITEMS_PER_PAGE && (
+                  <p className="text-center text-sm text-gray-400 dark:text-gray-500">
+                    {t('noMoreListings', { defaultValue: '已顯示全部刊登' })}
+                  </p>
+                )}
+              </div>
             </>
           ) : (
             <div className="text-center py-12">
