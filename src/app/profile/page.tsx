@@ -352,8 +352,8 @@ export default function ProfilePage() {
               <button
                 onClick={() => setListingsTab('active')}
                 className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${listingsTab === 'active'
-                    ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300'
-                    : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
+                  ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300'
+                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
                   }`}
               >
                 <Ticket className="w-3.5 h-3.5 inline mr-1" />
@@ -362,8 +362,8 @@ export default function ProfilePage() {
               <button
                 onClick={() => setListingsTab('history')}
                 className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${listingsTab === 'history'
-                    ? 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
-                    : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
+                  ? 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
                   }`}
               >
                 <History className="w-3.5 h-3.5 inline mr-1" />
@@ -727,9 +727,19 @@ export default function ProfilePage() {
               href="/legal/terms"
             />
             <MenuItem
+              icon={<FileText className="w-5 h-5" />}
+              label={t('privacy')}
+              href="/legal/privacy"
+            />
+            <MenuItem
               icon={<Scale className="w-5 h-5" />}
               label={tLegal('tokushoho')}
               href="/legal/tokushoho"
+            />
+            <MenuItem
+              icon={<Ticket className="w-5 h-5" />}
+              label={tLegal('ticketRegulations')}
+              href="/legal/ticket-regulations"
             />
             <button
               onClick={() => signOut({ callbackUrl: '/login' })}

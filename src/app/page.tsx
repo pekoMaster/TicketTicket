@@ -44,6 +44,7 @@ export default function HomePage() {
   const tPrivacy = useTranslations('privacy');
   const tTerms = useTranslations('terms');
   const tTokushoho = useTranslations('tokushoho');
+  const tLegal = useTranslations('legal');
 
   // 搜尋和篩選狀態
   const [searchQuery, setSearchQuery] = useState('');
@@ -575,6 +576,10 @@ export default function HomePage() {
               <span className="text-gray-300 dark:text-gray-600">|</span>
               <Link href="/legal/tokushoho" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                 {tTokushoho('title')}
+              </Link>
+              <span className="text-gray-300 dark:text-gray-600">|</span>
+              <Link href="/legal/ticket-regulations" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                {tLegal('ticketRegulations')}
               </Link>
             </div>
           </div>
