@@ -83,7 +83,7 @@ export default function SideNav() {
       <div className="px-4 py-4 border-t border-gray-100 dark:border-gray-700 space-y-3">
         <LanguageSwitcher />
         <p className="text-xs text-gray-400 dark:text-gray-500 text-center">
-          TicketTicket v1.02
+          TicketTicket v1.03
         </p>
       </div>
     </aside>

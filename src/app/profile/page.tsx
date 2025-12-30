@@ -754,7 +754,7 @@ export default function ProfilePage() {
 
         {/* 版本資訊 */}
         <p className="text-center text-xs text-gray-400 dark:text-gray-500">
-          TicketTicket v1.02 ({t('version')})
+          TicketTicket v1.03 ({t('version')})
         </p>
       </div>
 

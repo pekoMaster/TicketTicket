@@ -37,6 +37,10 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
     const [showShareModal, setShowShareModal] = useState(false);
     const [editingReplyId, setEditingReplyId] = useState<string | null>(null);
     const [editContent, setEditContent] = useState('');
+    // 主題編輯狀態
+    const [isEditingTopic, setIsEditingTopic] = useState(false);
+    const [editTopicTitle, setEditTopicTitle] = useState('');
+    const [editTopicContent, setEditTopicContent] = useState('');
 
     // 分類名稱翻譯
     const getCategoryLabel = (cat: ForumCategory) => {
@@ -64,7 +68,7 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
         fetchTopic();
     }, [id]);
 
-    const isAuthor = session?.user?.id === topic?.authorId;
+    const isAuthor = session?.user?.dbId === topic?.authorId;
     const isAdmin = session?.user?.role === 'super_admin' || session?.user?.role === 'sub_admin';
 
     const handleLike = async (topicId?: string, replyId?: string) => {
@@ -208,6 +212,36 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
         }
     };
 
+    const handleEditTopic = async () => {
+        if (!editTopicTitle.trim() || !editTopicContent.trim()) return;
+
+        try {
+            const res = await fetch(`/api/forum/topics/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: editTopicTitle,
+                    content: editTopicContent
+                }),
+            });
+
+            if (res.ok) {
+                setIsEditingTopic(false);
+                fetchTopic();
+            }
+        } catch (error) {
+            console.error('Error editing topic:', error);
+        }
+    };
+
+    const startEditTopic = () => {
+        if (topic) {
+            setEditTopicTitle(topic.title);
+            setEditTopicContent(topic.content);
+            setIsEditingTopic(true);
+        }
+    };
+
     const formatDate = (date: Date) => {
         return new Date(date).toLocaleString();
     };
@@ -250,11 +284,32 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
                         >
                             <Share2 className="w-5 h-5" />
                         </button>
+
+                        {/* 作者編輯按鈕 */}
+                        {(isAuthor || isAdmin) && !topic.isLocked && !isEditingTopic && (
+                            <button
+                                onClick={startEditTopic}
+                                className="p-2 text-gray-400 hover:text-indigo-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                                title={t('edit')}
+                            >
+                                <Edit className="w-5 h-5" />
+                            </button>
+                        )}
                     </div>
 
-                    <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-                        {topic.title}
-                    </h1>
+                    {/* 標題 */}
+                    {isEditingTopic ? (
+                        <input
+                            type="text"
+                            value={editTopicTitle}
+                            onChange={(e) => setEditTopicTitle(e.target.value)}
+                            className="w-full text-xl font-bold px-3 py-2 mb-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        />
+                    ) : (
+                        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                            {topic.title}
+                        </h1>
+                    )}
 
                     {/* 作者資訊 */}
                     <div className="flex items-center gap-3 mb-4">
@@ -274,9 +329,28 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
                     </div>
 
                     {/* 內容 */}
-                    <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 whitespace-pre-wrap mb-4">
-                        {topic.content}
-                    </div>
+                    {isEditingTopic ? (
+                        <div className="mb-4 space-y-3">
+                            <textarea
+                                value={editTopicContent}
+                                onChange={(e) => setEditTopicContent(e.target.value)}
+                                rows={8}
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 resize-none"
+                            />
+                            <div className="flex gap-2">
+                                <Button onClick={handleEditTopic}>
+                                    {t('save')}
+                                </Button>
+                                <Button variant="secondary" onClick={() => setIsEditingTopic(false)}>
+                                    {t('cancel')}
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 whitespace-pre-wrap mb-4">
+                            {topic.content}
+                        </div>
+                    )}
 
                     {/* 投票區 */}
                     {topic.poll && (
@@ -295,8 +369,8 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
                                             onClick={() => !hasVoted && handleVote(option.id)}
                                             disabled={hasVoted || !session}
                                             className={`w-full text-left p-3 rounded-lg border transition-colors relative overflow-hidden ${isSelected
-                                                    ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30'
-                                                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                                                ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30'
+                                                : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                                                 } ${hasVoted || !session ? 'cursor-default' : 'cursor-pointer'}`}
                                         >
                                             {hasVoted && (
@@ -441,7 +515,7 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
                                                 </button>
 
                                                 {/* 編輯按鈕（作者且未鎖定） */}
-                                                {session?.user?.id === reply.authorId && !topic.isLocked && (
+                                                {session?.user?.dbId === reply.authorId && !topic.isLocked && (
                                                     <button
                                                         onClick={() => { setEditingReplyId(reply.id); setEditContent(reply.content); }}
                                                         className="text-xs text-gray-400 hover:text-indigo-500"

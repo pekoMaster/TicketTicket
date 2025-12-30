@@ -1075,6 +1075,7 @@
     "lock": "Lock",
     "unlock": "Unlock",
     "delete": "Delete",
+    "edit": "Edit",
     "edited": "Edited"
   }
 }
