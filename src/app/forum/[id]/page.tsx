@@ -21,7 +21,6 @@ import {
     Trash2,
     Send,
     Loader2,
-    AlertCircle,
     CheckCircle
 } from 'lucide-react';
 
@@ -38,6 +37,12 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
     const [showShareModal, setShowShareModal] = useState(false);
     const [editingReplyId, setEditingReplyId] = useState<string | null>(null);
     const [editContent, setEditContent] = useState('');
+
+    // 分類名稱翻譯
+    const getCategoryLabel = (cat: ForumCategory) => {
+        const labelKey = FORUM_CATEGORY_INFO[cat].labelKey;
+        return t(labelKey);
+    };
 
     const fetchTopic = async () => {
         try {
@@ -157,7 +162,7 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
 
     const handleDeleteTopic = async () => {
         if (!isAdmin) return;
-        if (!confirm(t('confirmDelete', { defaultValue: '確定要刪除這個主題嗎？' }))) return;
+        if (!confirm(t('confirmDelete'))) return;
 
         try {
             const res = await fetch(`/api/forum/topics/${id}`, { method: 'DELETE' });
@@ -171,7 +176,7 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
 
     const handleDeleteReply = async (replyId: string) => {
         if (!isAdmin) return;
-        if (!confirm(t('confirmDeleteReply', { defaultValue: '確定要刪除這則回覆嗎？' }))) return;
+        if (!confirm(t('confirmDeleteReply'))) return;
 
         try {
             const res = await fetch(`/api/forum/topics/${id}/replies/${replyId}`, { method: 'DELETE' });
@@ -235,7 +240,7 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
                             {topic.isPinned && <Pin className="w-4 h-4 text-orange-500" />}
                             {topic.isLocked && <Lock className="w-4 h-4 text-gray-400" />}
                             <span className={`text-xs px-2 py-0.5 rounded-full ${FORUM_CATEGORY_INFO[topic.category].color}`}>
-                                {FORUM_CATEGORY_INFO[topic.category].icon} {FORUM_CATEGORY_INFO[topic.category].label}
+                                {FORUM_CATEGORY_INFO[topic.category].icon} {getCategoryLabel(topic.category)}
                             </span>
                         </div>
 
@@ -316,7 +321,7 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
                                 })}
                             </div>
                             <p className="text-xs text-gray-400 mt-2">
-                                {t('totalVotes', { count: totalVotes, defaultValue: `共 ${totalVotes} 票` })}
+                                {t('totalVotes', { count: totalVotes })}
                             </p>
                         </Card>
                     )}
@@ -372,7 +377,7 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
                 {/* 回覆區 */}
                 <div className="mb-6">
                     <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">
-                        {t('replies', { defaultValue: '回覆' })} ({topic.replyCount})
+                        {t('replies')} ({topic.replyCount})
                     </h2>
 
                     {topic.replies && topic.replies.length > 0 ? (
@@ -397,8 +402,8 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
                                                 <span className="text-xs text-gray-400">
                                                     {formatDate(reply.createdAt)}
                                                 </span>
-                                                {reply.updatedAt > reply.createdAt && (
-                                                    <span className="text-xs text-gray-400">(已編輯)</span>
+                                                {new Date(reply.updatedAt).getTime() > new Date(reply.createdAt).getTime() + 1000 && (
+                                                    <span className="text-xs text-gray-400">({t('edited')})</span>
                                                 )}
                                             </div>
 
@@ -412,10 +417,10 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
                                                     />
                                                     <div className="flex gap-2">
                                                         <Button size="sm" onClick={() => handleEditReply(reply.id)}>
-                                                            {t('save', { defaultValue: '儲存' })}
+                                                            {t('save')}
                                                         </Button>
                                                         <Button size="sm" variant="secondary" onClick={() => setEditingReplyId(null)}>
-                                                            {t('cancel', { defaultValue: '取消' })}
+                                                            {t('cancel')}
                                                         </Button>
                                                     </div>
                                                 </div>
@@ -462,7 +467,7 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
                         </div>
                     ) : (
                         <Card className="text-center py-8 text-gray-500 dark:text-gray-400">
-                            {t('noReplies', { defaultValue: '還沒有回覆，成為第一個回覆的人吧！' })}
+                            {t('noReplies')}
                         </Card>
                     )}
                 </div>
@@ -472,7 +477,7 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
                     <Card className="bg-gray-100 dark:bg-gray-800 text-center py-4">
                         <div className="flex items-center justify-center gap-2 text-gray-500 dark:text-gray-400">
                             <Lock className="w-4 h-4" />
-                            {t('topicLocked', { defaultValue: '此主題已鎖定，無法回覆' })}
+                            {t('topicLocked')}
                         </div>
                     </Card>
                 ) : session ? (
@@ -481,7 +486,7 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
                             <textarea
                                 value={replyContent}
                                 onChange={(e) => setReplyContent(e.target.value)}
-                                placeholder={t('replyPlaceholder', { defaultValue: '輸入您的回覆...' })}
+                                placeholder={t('replyPlaceholder')}
                                 rows={4}
                                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none mb-3"
                             />
@@ -492,7 +497,7 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
                                     ) : (
                                         <>
                                             <Send className="w-4 h-4 mr-2" />
-                                            {t('postReply', { defaultValue: '發布回覆' })}
+                                            {t('postReply')}
                                         </>
                                     )}
                                 </Button>
@@ -502,10 +507,10 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
                 ) : (
                     <Card className="text-center py-4">
                         <p className="text-gray-500 dark:text-gray-400 mb-2">
-                            {t('loginToReply', { defaultValue: '登入後即可回覆' })}
+                            {t('loginToReply')}
                         </p>
                         <Button onClick={() => router.push(`/login?callbackUrl=/forum/${id}`)}>
-                            {t('login', { defaultValue: '登入' })}
+                            {t('login')}
                         </Button>
                     </Card>
                 )}

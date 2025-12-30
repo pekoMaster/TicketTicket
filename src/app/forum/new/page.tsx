@@ -28,6 +28,12 @@ export default function NewTopicPage() {
     const [pollOptions, setPollOptions] = useState(['', '']);
     const [isMultipleChoice, setIsMultipleChoice] = useState(false);
 
+    // 分類名稱翻譯
+    const getCategoryLabel = (cat: ForumCategory) => {
+        const labelKey = FORUM_CATEGORY_INFO[cat].labelKey;
+        return t(labelKey);
+    };
+
     if (status === 'loading') {
         return null;
     }
@@ -60,23 +66,23 @@ export default function NewTopicPage() {
         setError('');
 
         if (!title.trim()) {
-            setError(t('titleRequired', { defaultValue: '請輸入標題' }));
+            setError(t('titleRequired'));
             return;
         }
 
         if (!content.trim()) {
-            setError(t('contentRequired', { defaultValue: '請輸入內容' }));
+            setError(t('contentRequired'));
             return;
         }
 
         if (enablePoll) {
             if (!pollQuestion.trim()) {
-                setError(t('pollQuestionRequired', { defaultValue: '請輸入投票問題' }));
+                setError(t('pollQuestionRequired'));
                 return;
             }
             const validOptions = pollOptions.filter(opt => opt.trim());
             if (validOptions.length < 2) {
-                setError(t('pollOptionsRequired', { defaultValue: '請至少提供兩個投票選項' }));
+                setError(t('pollOptionsRequired'));
                 return;
             }
         }
@@ -109,11 +115,11 @@ export default function NewTopicPage() {
             if (res.ok) {
                 router.push(`/forum/${data.topic.id}`);
             } else {
-                setError(data.error || t('createFailed', { defaultValue: '發起討論失敗' }));
+                setError(data.error || t('createFailed'));
             }
         } catch (err) {
             console.error('Error creating topic:', err);
-            setError(t('createFailed', { defaultValue: '發起討論失敗' }));
+            setError(t('createFailed'));
         } finally {
             setSubmitting(false);
         }
@@ -121,7 +127,7 @@ export default function NewTopicPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-            <Header title={t('newTopic', { defaultValue: '發起討論' })} showBack />
+            <Header title={t('newTopic')} showBack />
 
             <div className="pt-20 pb-24 px-4 max-w-2xl mx-auto">
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -138,7 +144,7 @@ export default function NewTopicPage() {
                     {/* 分類選擇 */}
                     <Card>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                            {t('category', { defaultValue: '分類' })}
+                            {t('category')}
                         </label>
                         <div className="grid grid-cols-2 gap-2">
                             {(Object.keys(FORUM_CATEGORY_INFO) as ForumCategory[]).map((cat) => (
@@ -153,7 +159,7 @@ export default function NewTopicPage() {
                                 >
                                     <span className="text-lg">{FORUM_CATEGORY_INFO[cat].icon}</span>
                                     <span className={`block text-sm mt-1 ${category === cat ? 'text-indigo-600 dark:text-indigo-400 font-medium' : 'text-gray-600 dark:text-gray-400'}`}>
-                                        {FORUM_CATEGORY_INFO[cat].label}
+                                        {getCategoryLabel(cat)}
                                     </span>
                                 </button>
                             ))}
@@ -163,12 +169,12 @@ export default function NewTopicPage() {
                     {/* 標題 */}
                     <Card>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                            {t('topicTitle', { defaultValue: '標題' })}
+                            {t('topicTitle')}
                         </label>
                         <Input
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            placeholder={t('titlePlaceholder', { defaultValue: '請輸入討論標題' })}
+                            placeholder={t('titlePlaceholder')}
                             maxLength={100}
                         />
                         <p className="text-xs text-gray-400 mt-1 text-right">{title.length}/100</p>
@@ -177,12 +183,12 @@ export default function NewTopicPage() {
                     {/* 內容 */}
                     <Card>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                            {t('topicContent', { defaultValue: '內容' })}
+                            {t('topicContent')}
                         </label>
                         <textarea
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
-                            placeholder={t('contentPlaceholder', { defaultValue: '請詳細描述您的問題或建議...' })}
+                            placeholder={t('contentPlaceholder')}
                             rows={8}
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
                         />
@@ -198,7 +204,7 @@ export default function NewTopicPage() {
                                 className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
                             />
                             <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                {t('addPoll', { defaultValue: '新增投票' })}
+                                {t('addPoll')}
                             </span>
                         </label>
 
@@ -208,7 +214,7 @@ export default function NewTopicPage() {
                                     <Input
                                         value={pollQuestion}
                                         onChange={(e) => setPollQuestion(e.target.value)}
-                                        placeholder={t('pollQuestion', { defaultValue: '投票問題' })}
+                                        placeholder={t('pollQuestion')}
                                     />
                                 </div>
 
@@ -218,7 +224,7 @@ export default function NewTopicPage() {
                                             <Input
                                                 value={option}
                                                 onChange={(e) => updatePollOption(index, e.target.value)}
-                                                placeholder={`${t('option', { defaultValue: '選項' })} ${index + 1}`}
+                                                placeholder={`${t('option')} ${index + 1}`}
                                             />
                                             {pollOptions.length > 2 && (
                                                 <button
@@ -240,7 +246,7 @@ export default function NewTopicPage() {
                                         className="flex items-center gap-1 text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
                                     >
                                         <Plus className="w-4 h-4" />
-                                        {t('addOption', { defaultValue: '新增選項' })}
+                                        {t('addOption')}
                                     </button>
                                 )}
 
@@ -252,7 +258,7 @@ export default function NewTopicPage() {
                                         className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
                                     />
                                     <span className="text-sm text-gray-600 dark:text-gray-400">
-                                        {t('multipleChoice', { defaultValue: '允許多選' })}
+                                        {t('multipleChoice')}
                                     </span>
                                 </label>
                             </div>
@@ -265,7 +271,7 @@ export default function NewTopicPage() {
                         fullWidth
                         disabled={submitting}
                     >
-                        {submitting ? t('submitting', { defaultValue: '發布中...' }) : t('submit', { defaultValue: '發布討論' })}
+                        {submitting ? t('submitting') : t('submit')}
                     </Button>
                 </form>
             </div>

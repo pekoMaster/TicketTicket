@@ -31,6 +31,12 @@ export default function ForumPage() {
     const [totalPages, setTotalPages] = useState(1);
     const [showCategoryFilter, setShowCategoryFilter] = useState(false);
 
+    // 分類名稱翻譯
+    const getCategoryLabel = (cat: ForumCategory) => {
+        const labelKey = FORUM_CATEGORY_INFO[cat].labelKey;
+        return t(labelKey);
+    };
+
     const fetchTopics = async () => {
         setLoading(true);
         try {
@@ -65,33 +71,33 @@ export default function ForumPage() {
         const diffHours = Math.floor(diffMs / 3600000);
         const diffDays = Math.floor(diffMs / 86400000);
 
-        if (diffMins < 1) return t('justNow', { defaultValue: '剛剛' });
-        if (diffMins < 60) return t('minutesAgo', { count: diffMins, defaultValue: `${diffMins} 分鐘前` });
-        if (diffHours < 24) return t('hoursAgo', { count: diffHours, defaultValue: `${diffHours} 小時前` });
-        if (diffDays < 7) return t('daysAgo', { count: diffDays, defaultValue: `${diffDays} 天前` });
+        if (diffMins < 1) return t('justNow');
+        if (diffMins < 60) return t('minutesAgo', { count: diffMins });
+        if (diffHours < 24) return t('hoursAgo', { count: diffHours });
+        if (diffDays < 7) return t('daysAgo', { count: diffDays });
         return d.toLocaleDateString();
     };
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-            <Header title={t('title', { defaultValue: '討論區' })} showBack />
+            <Header title={t('title')} showBack />
 
             <div className="pt-20 pb-24 px-4 max-w-4xl mx-auto">
                 {/* 標題和發帖按鈕 */}
                 <div className="flex items-center justify-between mb-6">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                            {t('title', { defaultValue: '討論區' })}
+                            {t('title')}
                         </h1>
                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                            {t('subtitle', { defaultValue: '回報問題、提供建議、參與討論' })}
+                            {t('subtitle')}
                         </p>
                     </div>
                     {session && (
                         <Link href="/forum/new">
                             <Button className="flex items-center gap-2">
                                 <Plus className="w-4 h-4" />
-                                {t('newTopic', { defaultValue: '發起討論' })}
+                                {t('newTopic')}
                             </Button>
                         </Link>
                     )}
@@ -105,7 +111,7 @@ export default function ForumPage() {
                             className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm"
                         >
                             <Filter className="w-4 h-4" />
-                            {category ? FORUM_CATEGORY_INFO[category].label : t('allCategories', { defaultValue: '全部分類' })}
+                            {category ? `${FORUM_CATEGORY_INFO[category].icon} ${getCategoryLabel(category)}` : t('allCategories')}
                             <ChevronDown className="w-4 h-4" />
                         </button>
 
@@ -115,7 +121,7 @@ export default function ForumPage() {
                                     onClick={() => { setCategory(''); setShowCategoryFilter(false); setPage(1); }}
                                     className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 ${!category ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' : ''}`}
                                 >
-                                    {t('allCategories', { defaultValue: '全部分類' })}
+                                    {t('allCategories')}
                                 </button>
                                 {(Object.keys(FORUM_CATEGORY_INFO) as ForumCategory[]).map((cat) => (
                                     <button
@@ -123,7 +129,7 @@ export default function ForumPage() {
                                         onClick={() => { setCategory(cat); setShowCategoryFilter(false); setPage(1); }}
                                         className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 ${category === cat ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' : ''}`}
                                     >
-                                        {FORUM_CATEGORY_INFO[cat].icon} {FORUM_CATEGORY_INFO[cat].label}
+                                        {FORUM_CATEGORY_INFO[cat].icon} {getCategoryLabel(cat)}
                                     </button>
                                 ))}
                             </div>
@@ -140,12 +146,12 @@ export default function ForumPage() {
                     <Card className="text-center py-12">
                         <MessageSquare className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
                         <p className="text-gray-500 dark:text-gray-400">
-                            {t('noTopics', { defaultValue: '目前沒有討論主題' })}
+                            {t('noTopics')}
                         </p>
                         {session && (
                             <Link href="/forum/new">
                                 <Button variant="secondary" className="mt-4">
-                                    {t('beFirst', { defaultValue: '成為第一個發起討論的人' })}
+                                    {t('beFirst')}
                                 </Button>
                             </Link>
                         )}
@@ -173,7 +179,7 @@ export default function ForumPage() {
                                                     <Lock className="w-4 h-4 text-gray-400 flex-shrink-0" />
                                                 )}
                                                 <span className={`text-xs px-2 py-0.5 rounded-full ${FORUM_CATEGORY_INFO[topic.category].color}`}>
-                                                    {FORUM_CATEGORY_INFO[topic.category].icon} {FORUM_CATEGORY_INFO[topic.category].label}
+                                                    {FORUM_CATEGORY_INFO[topic.category].icon} {getCategoryLabel(topic.category)}
                                                 </span>
                                                 <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">
                                                     {topic.title}
@@ -217,7 +223,7 @@ export default function ForumPage() {
                             disabled={page === 1}
                             onClick={() => setPage(p => Math.max(1, p - 1))}
                         >
-                            {t('prevPage', { defaultValue: '上一頁' })}
+                            {t('prevPage')}
                         </Button>
                         <span className="px-4 py-2 text-sm text-gray-500">
                             {page} / {totalPages}
@@ -228,7 +234,7 @@ export default function ForumPage() {
                             disabled={page === totalPages}
                             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                         >
-                            {t('nextPage', { defaultValue: '下一頁' })}
+                            {t('nextPage')}
                         </Button>
                     </div>
                 )}
