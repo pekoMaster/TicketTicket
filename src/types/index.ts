@@ -432,3 +432,108 @@ export interface WebhookLog {
   createdAt: Date;
   sentAt?: Date;
 }
+
+// ===========================================
+// 論壇類型 (Forum Types)
+// ===========================================
+
+export type ForumCategory = 'bug' | 'feature' | 'question' | 'discussion';
+
+export const FORUM_CATEGORY_INFO: Record<ForumCategory, {
+  label: string;
+  labelKey: string;
+  color: string;
+  icon: string;
+}> = {
+  bug: {
+    label: 'Bug 回報',
+    labelKey: 'categoryBug',
+    color: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+    icon: '🐛',
+  },
+  feature: {
+    label: '功能建議',
+    labelKey: 'categoryFeature',
+    color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+    icon: '💡',
+  },
+  question: {
+    label: '使用問題',
+    labelKey: 'categoryQuestion',
+    color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+    icon: '❓',
+  },
+  discussion: {
+    label: '一般討論',
+    labelKey: 'categoryDiscussion',
+    color: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+    icon: '💬',
+  },
+};
+
+// 論壇作者簡化類型
+export interface ForumAuthor {
+  id: string;
+  username: string;
+  avatarUrl?: string;
+  customAvatarUrl?: string;
+}
+
+export interface ForumTopic {
+  id: string;
+  authorId: string;
+  category: ForumCategory;
+  title: string;
+  content: string;
+  isPinned: boolean;
+  isLocked: boolean;
+  viewCount: number;
+  replyCount: number;
+  likeCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+  // 關聯資料
+  author?: ForumAuthor;
+  replies?: ForumReply[];
+  poll?: ForumPoll;
+  isLikedByMe?: boolean;
+}
+
+export interface ForumReply {
+  id: string;
+  topicId: string;
+  authorId: string;
+  content: string;
+  likeCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+  // 關聯資料
+  author?: ForumAuthor;
+  isLikedByMe?: boolean;
+}
+
+export interface ForumPoll {
+  id: string;
+  topicId: string;
+  question: string;
+  isMultipleChoice: boolean;
+  endsAt?: Date;
+  createdAt: Date;
+  options: ForumPollOption[];
+  myVotes?: string[]; // option IDs
+}
+
+export interface ForumPollOption {
+  id: string;
+  pollId: string;
+  optionText: string;
+  voteCount: number;
+}
+
+export interface ForumLike {
+  id: string;
+  userId: string;
+  topicId?: string;
+  replyId?: string;
+  createdAt: Date;
+}

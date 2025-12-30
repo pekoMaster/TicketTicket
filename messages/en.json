@@ -65,6 +65,7 @@
     "create": "Post",
     "messages": "Messages",
     "profile": "Profile",
+    "forum": "Forum",
     "help": "Help"
   },
   "language": {
