@@ -39,8 +39,8 @@ function convertApiEventToEvent(apiEvent: ApiEvent): HololiveEvent {
     imageUrl: apiEvent.image_url,
     description: apiEvent.description,
     ticketPriceTiers: (apiEvent.ticket_price_tiers || []).map(tier => ({
-      seatGrade: tier.seat_grade as 'B' | 'A' | 'S' | 'SS',
-      ticketCountType: tier.ticket_count_type as 'solo' | 'duo',
+      seatGrade: tier.seat_grade || '',
+      ticketCountType: (tier.ticket_count_type as 'solo' | 'duo') || 'solo',
       priceJpy: tier.price_jpy,
     })),
     category: apiEvent.category,
@@ -199,11 +199,11 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       });
 
       if (response.ok) {
-        setEvents((prev) =>
-          prev.map((e) =>
-            e.id === id ? { ...e, ...updates, updatedAt: new Date() } : e
-          )
-        );
+        // 重新獲取活動列表以確保資料同步
+        await fetchEvents();
+      } else {
+        const error = await response.json();
+        console.error('Failed to update event:', error);
       }
     } catch (error) {
       console.error('Error updating event:', error);
