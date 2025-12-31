@@ -131,7 +131,40 @@ export async function DELETE(
     const messageContent = notifyMessage || reason;
 
     if (notify && messageContent) {
-      // 取得相關對話
+      const notificationContent = `您的刊登「${listing.event_name}」已被管理員移除。原因：${messageContent}`;
+
+      // 1. 通知主辦方（插入 notifications 表）
+      await supabaseAdmin.from('notifications').insert({
+        user_id: listing.host_id,
+        type: 'listing_removed',
+        title: '刊登已被移除',
+        content: notificationContent,
+        related_listing_id: id,
+        is_read: false,
+      });
+      notifiedUsers += 1;
+
+      // 2. 取得所有申請者並通知
+      const { data: applications } = await supabaseAdmin
+        .from('applications')
+        .select('applicant_id')
+        .eq('listing_id', id);
+
+      if (applications && applications.length > 0) {
+        const applicantNotifications = applications.map(app => ({
+          user_id: app.applicant_id,
+          type: 'listing_removed',
+          title: '您申請的刊登已被移除',
+          content: `您申請的刊登「${listing.event_name}」已被管理員移除。`,
+          related_listing_id: id,
+          is_read: false,
+        }));
+
+        await supabaseAdmin.from('notifications').insert(applicantNotifications);
+        notifiedUsers += applications.length;
+      }
+
+      // 3. 同時也發送系統訊息到對話（如果有）
       const { data: conversations } = await supabaseAdmin
         .from('conversations')
         .select('id, host_id, guest_id')
@@ -146,14 +179,7 @@ export async function DELETE(
             is_system_message: true,
             system_message_type: 'admin_listing_deleted',
           });
-          notifiedUsers += 2;
         }
-      }
-
-      // 也通知主辦方（如果沒有對話）
-      if (!conversations || conversations.length === 0) {
-        // 建立一個臨時通知（使用 notifications 表如果存在）
-        // 或者使用其他方式通知
       }
     }
 
