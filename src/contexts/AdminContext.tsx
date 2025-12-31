@@ -162,30 +162,40 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   // 更新活動
   const updateEvent = async (id: string, updates: Partial<HololiveEvent>) => {
     try {
+      // 只發送有定義的欄位，避免意外覆蓋資料
+      const payload: Record<string, unknown> = {};
+
+      if (updates.name !== undefined) payload.name = updates.name;
+      if (updates.artist !== undefined) payload.artist = updates.artist;
+      if (updates.eventDate !== undefined) {
+        payload.eventDate = updates.eventDate instanceof Date
+          ? updates.eventDate.toISOString().split('T')[0]
+          : updates.eventDate;
+      }
+      if (updates.eventEndDate !== undefined) {
+        payload.eventEndDate = updates.eventEndDate instanceof Date
+          ? updates.eventEndDate.toISOString().split('T')[0]
+          : updates.eventEndDate;
+      }
+      if (updates.venue !== undefined) payload.venue = updates.venue;
+      if (updates.venueAddress !== undefined) payload.venueAddress = updates.venueAddress;
+      if (updates.imageUrl !== undefined) payload.imageUrl = updates.imageUrl;
+      if (updates.description !== undefined) payload.description = updates.description;
+      if (updates.ticketPriceTiers !== undefined) {
+        payload.ticketPriceTiers = updates.ticketPriceTiers.map(tier => ({
+          seatGrade: tier.seatGrade,
+          ticketCountType: tier.ticketCountType,
+          priceJpy: tier.priceJpy,
+        }));
+      }
+      if (updates.category !== undefined) payload.category = updates.category;
+      if (updates.isActive !== undefined) payload.isActive = updates.isActive;
+      if (updates.maxListingsPerUser !== undefined) payload.maxListingsPerUser = updates.maxListingsPerUser;
+
       const response = await fetch(`/api/events/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: updates.name,
-          artist: updates.artist,
-          eventDate: updates.eventDate instanceof Date
-            ? updates.eventDate.toISOString().split('T')[0]
-            : updates.eventDate,
-          eventEndDate: updates.eventEndDate instanceof Date
-            ? updates.eventEndDate.toISOString().split('T')[0]
-            : updates.eventEndDate,
-          venue: updates.venue,
-          venueAddress: updates.venueAddress,
-          imageUrl: updates.imageUrl,
-          description: updates.description,
-          ticketPriceTiers: updates.ticketPriceTiers?.map(tier => ({
-            seat_grade: tier.seatGrade,
-            ticket_count_type: tier.ticketCountType,
-          })),
-          category: updates.category,
-          isActive: updates.isActive,
-          maxListingsPerUser: updates.maxListingsPerUser,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
