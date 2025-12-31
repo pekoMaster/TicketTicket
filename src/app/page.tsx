@@ -19,6 +19,7 @@ import {
   ChevronUp,
   LayoutGrid,
   List,
+  PartyPopper,
 } from 'lucide-react';
 import Link from 'next/link';
 import {
@@ -65,6 +66,25 @@ export default function HomePage() {
   const [displayCount, setDisplayCount] = useState(10);
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const ITEMS_PER_PAGE = 10;
+
+  // 成功同行統計
+  const [successfulMeetups, setSuccessfulMeetups] = useState<number | null>(null);
+
+  // 獲取統計資料
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch('/api/stats');
+        if (res.ok) {
+          const data = await res.json();
+          setSuccessfulMeetups(data.successfulMeetups);
+        }
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      }
+    };
+    fetchStats();
+  }, []);
 
   // 取得所有唯一的活動名稱
   const allEventNames = useMemo(() => {
@@ -270,13 +290,31 @@ export default function HomePage() {
             <Ticket className="w-7 h-7 text-indigo-500" />
             <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">TicketTicket</h1>
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('subtitle')}</p>
+          <div className="flex items-center justify-between mt-1">
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('subtitle')}</p>
+            {successfulMeetups !== null && successfulMeetups > 0 && (
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-sm">
+                <PartyPopper className="w-3.5 h-3.5 text-white" />
+                <span className="text-xs font-bold text-white">{successfulMeetups}</span>
+                <span className="text-xs text-white/80">{t('successfulMeetups', { defaultValue: '次成功同行' })}</span>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
       {/* Desktop Header */}
       <header className="hidden lg:block bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 px-6 py-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('subtitle')}</h1>
+        <div className="flex items-center justify-between max-w-7xl mx-auto">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('subtitle')}</h1>
+          {successfulMeetups !== null && successfulMeetups > 0 && (
+            <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-md hover:shadow-lg transition-shadow">
+              <PartyPopper className="w-5 h-5 text-white" />
+              <span className="text-lg font-bold text-white">{successfulMeetups.toLocaleString()}</span>
+              <span className="text-sm text-white/90">{t('successfulMeetups', { defaultValue: '次成功同行' })}</span>
+            </div>
+          )}
+        </div>
       </header>
 
       {/* 搜尋與篩選區 */}
