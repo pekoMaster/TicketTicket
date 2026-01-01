@@ -108,6 +108,12 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
     const validPriceTiers = priceTiers.filter((tier) => tier.seatGrade.trim() !== '');
     if (validPriceTiers.length === 0) {
       newErrors.priceTiers = '請至少設定一個票種（須填寫座位等級名稱）';
+    } else {
+      // 檢查每個有效票種是否都有設定價格
+      const missingPrice = validPriceTiers.some((tier) => tier.priceJpy === undefined || tier.priceJpy === null || tier.priceJpy <= 0);
+      if (missingPrice) {
+        newErrors.priceTiers = '所有票種都必須設定有效的價格（大於 0）';
+      }
     }
 
     setErrors(newErrors);
