@@ -30,6 +30,8 @@ interface ApiListing {
   meeting_location: string;
   total_slots: number;
   available_slots: number;
+  original_price_jpy: number;
+  asking_price_jpy: number;
   ticket_type: 'find_companion' | 'sub_ticket_transfer' | 'ticket_exchange';
   ticket_source?: 'zaiko' | 'lawson';
   seat_grade: string;
@@ -62,6 +64,8 @@ function convertApiListingToListing(apiListing: ApiListing): Listing {
     meetingLocation: apiListing.meeting_location,
     totalSlots: apiListing.total_slots,
     availableSlots: apiListing.available_slots,
+    originalPriceJpy: apiListing.original_price_jpy || 0,
+    askingPriceJpy: apiListing.asking_price_jpy || 0,
     ticketType: apiListing.ticket_type,
     ticketSource: apiListing.ticket_source || 'zaiko',
     seatGrade: apiListing.seat_grade,
@@ -131,6 +135,8 @@ interface CreateListingData {
   meetingTime: string;
   meetingLocation: string;
   totalSlots?: number;
+  originalPriceJpy?: number;
+  askingPriceJpy?: number;
   ticketSource?: 'zaiko' | 'lawson';
   ticketType: 'find_companion' | 'sub_ticket_transfer' | 'ticket_exchange';
   seatGrade: string;

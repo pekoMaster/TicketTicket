@@ -82,6 +82,9 @@ export default function CreateListingPage() {
   const [exchangeEventName, setExchangeEventName] = useState('');
   const [exchangeSeatGrades, setExchangeSeatGrades] = useState<string[]>([]);
 
+  // 價格欄位
+  const [askingPriceJpy, setAskingPriceJpy] = useState<number>(0);
+
   // 驗證層級檢查
   const [verificationLevel, setVerificationLevel] = useState<VerificationLevel | null>(null);
   const [isCheckingVerification, setIsCheckingVerification] = useState(true);
@@ -212,13 +215,12 @@ export default function CreateListingPage() {
       eventDate !== '' &&
       venue.trim() !== '' &&
       meetingTime !== '' &&
-      meetingLocation.trim() !== '' &&
-      identificationFeatures.trim() !== '' &&
       hostLanguages.length > 0 &&
       ticketType !== '' &&
       seatGrade !== '' &&
       ticketCountType !== '' &&
-      hostNationality !== ''
+      hostNationality !== '' &&
+      askingPriceJpy > 0
     );
 
     if (isExchangeMode) {
@@ -238,7 +240,7 @@ export default function CreateListingPage() {
       // 一般模式驗證
       return baseValid;
     }
-  }, [eventName, eventDate, venue, meetingTime, meetingLocation, identificationFeatures, hostLanguages, ticketType, seatGrade, ticketCountType, hostNationality, isExchangeMode, exchangeEventName, exchangeSeatGrades, isEventLimitReached, events]);
+  }, [eventName, eventDate, venue, meetingTime, hostLanguages, ticketType, seatGrade, ticketCountType, hostNationality, askingPriceJpy, isExchangeMode, exchangeEventName, exchangeSeatGrades, isEventLimitReached, events]);
 
   const handleLanguageToggle = (lang: string) => {
     setHostLanguages((prev) =>
@@ -297,7 +299,7 @@ export default function CreateListingPage() {
         eventDate,
         venue,
         meetingTime: `${eventDate}T${meetingTime.slice(0, 5)}:00+09:00`,
-        meetingLocation,
+        meetingLocation: '', // 欄位已移除，固定為空白
         totalSlots: ticketCountType === 'duo' ? 2 : 1,
         ticketSource,
         ticketType: ticketType as TicketType,
@@ -305,9 +307,11 @@ export default function CreateListingPage() {
         ticketCountType: ticketCountType as TicketCountType,
         hostNationality,
         hostLanguages,
-        identificationFeatures,
+        identificationFeatures: '', // 欄位已移除，固定為空白
         description: description || undefined,
         willAssistEntry: ticketType === 'find_companion' ? willAssistEntry : undefined,
+        originalPriceJpy: selectedPriceTier?.priceJpy || 0,
+        askingPriceJpy,
       };
 
       // 如果是換票模式，添加換票相關欄位
@@ -545,16 +549,6 @@ export default function CreateListingPage() {
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('autoFillAfterSelect')}</p>
                 )}
               </div>
-
-              {/* 同行集合地點 */}
-              <Input
-                label={t('meetingPointWithHint', { defaultValue: '同行集合地點（線上交換請直接寫線上）' })}
-                placeholder={t('meetingPointPlaceholder')}
-                value={meetingLocation}
-                onChange={(e) => setMeetingLocation(e.target.value)}
-                leftIcon={<MapPin className="w-5 h-5" />}
-                required
-              />
             </div>
           </Card>
 
@@ -741,20 +735,63 @@ export default function CreateListingPage() {
                   </div>
                 )}
 
-                {/* 參考原價顯示 - 僅供參考 */}
+                {/* 價格設定 */}
                 {selectedPriceTier?.priceJpy && (
-                  <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
-                        {t('referencePrice', { defaultValue: '參考原價' })}
-                      </span>
-                      <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                        ¥{selectedPriceTier.priceJpy.toLocaleString()}
-                      </span>
+                  <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                      {t('priceSettings', { defaultValue: '價格設定' })}
+                    </h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* 原始票價（唯讀） */}
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                          {t('originalPrice', { defaultValue: '原始票價' })}
+                        </label>
+                        <div className="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold">
+                          ¥{selectedPriceTier.priceJpy.toLocaleString()}
+                        </div>
+                      </div>
+                      {/* 希望價格（可編輯） */}
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                          {t('askingPrice', { defaultValue: '希望價格' })} <span className="text-red-500">*</span>
+                        </label>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">¥</span>
+                          <input
+                            type="number"
+                            value={askingPriceJpy || ''}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value) || 0;
+                              // 計算最大價格：二人票 + (子票轉讓或尋找同行) = 原價/2
+                              const priceJpy = selectedPriceTier?.priceJpy || 0;
+                              const maxPrice = (ticketCountType === 'duo' &&
+                                (ticketType === 'sub_ticket_transfer' || ticketType === 'find_companion'))
+                                ? Math.floor(priceJpy / 2)
+                                : priceJpy;
+                              setAskingPriceJpy(Math.min(value, maxPrice));
+                            }}
+                            max={(ticketCountType === 'duo' &&
+                              (ticketType === 'sub_ticket_transfer' || ticketType === 'find_companion'))
+                              ? Math.floor((selectedPriceTier?.priceJpy || 0) / 2)
+                              : (selectedPriceTier?.priceJpy || 0)}
+                            min={0}
+                            className="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-semibold"
+                            placeholder="0"
+                          />
+                        </div>
+                        {/* 價格上限提示 */}
+                        {ticketCountType === 'duo' && (ticketType === 'sub_ticket_transfer' || ticketType === 'find_companion') && (
+                          <p className="text-xs text-orange-600 dark:text-orange-400 mt-1 flex items-center gap-1">
+                            <AlertTriangle className="w-3 h-3" />
+                            {t('halfPriceLimit', {
+                              defaultValue: '二人票子票/同行上限為原價一半：¥',
+                              max: Math.floor(selectedPriceTier.priceJpy / 2).toLocaleString()
+                            })}{Math.floor(selectedPriceTier.priceJpy / 2).toLocaleString()}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      {t('referencePriceNote', { defaultValue: '此為管理員設定的票券原價，僅供參考' })}
-                    </p>
                   </div>
                 )}
               </div>
@@ -902,38 +939,6 @@ export default function CreateListingPage() {
                 {hostLanguages.length === 0 && (
                   <p className="text-red-500 text-sm mt-1">{t('selectAtLeastOneLanguage')}</p>
                 )}
-              </div>
-
-              {/* 辨識特徵 */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 flex items-center gap-1">
-                  <Shirt className="w-4 h-4" />
-                  {t('identificationFeatures')} <span className="text-red-500">*</span>
-                </label>
-                <Textarea
-                  placeholder={t('identificationPlaceholder')}
-                  value={identificationFeatures}
-                  onChange={(e) => setIdentificationFeatures(e.target.value)}
-                  rows={2}
-                  maxLength={200}
-                  showCount
-                />
-                {/* 快速標籤 */}
-                <div className="mt-2">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t('quickAdd')}</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {CLOTHING_TAG_KEYS.map((tagKey) => (
-                      <button
-                        key={tagKey}
-                        type="button"
-                        onClick={() => handleAddClothingTag(t(`clothingTags.${tagKey}`))}
-                        className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-md transition-colors"
-                      >
-                        + {t(`clothingTags.${tagKey}`)}
-                      </button>
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
           </Card>

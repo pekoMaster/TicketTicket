@@ -83,6 +83,7 @@ export default function EditListingPage() {
   const [hostLanguages, setHostLanguages] = useState<string[]>([]);
   const [identificationFeatures, setIdentificationFeatures] = useState('');
   const [description, setDescription] = useState('');
+  const [askingPriceJpy, setAskingPriceJpy] = useState<number>(0);
 
   // === 取得現有刊登 ===
   const listing = useMemo(() => {
@@ -220,26 +221,24 @@ export default function EditListingPage() {
       eventDate !== '' &&
       venue.trim() !== '' &&
       meetingTime !== '' &&
-      meetingLocation.trim() !== '' &&
       seatGrade !== '' &&
       ticketCountType !== '' &&
       ticketType !== '' &&
       hostNationality !== '' &&
       hostLanguages.length > 0 &&
-      identificationFeatures.trim() !== ''
+      askingPriceJpy > 0
     );
   }, [
     eventName,
     eventDate,
     venue,
     meetingTime,
-    meetingLocation,
     seatGrade,
     ticketCountType,
     ticketType,
     hostNationality,
     hostLanguages,
-    identificationFeatures,
+    askingPriceJpy,
   ]);
 
   // === 事件處理 ===
@@ -310,16 +309,18 @@ export default function EditListingPage() {
         event_date: eventDate,
         venue,
         meeting_time: `${eventDate}T${meetingTime}:00+09:00`,
-        meeting_location: meetingLocation,
+        meeting_location: '', // 欄位已移除，固定為空白
         total_slots: ticketCountType === 'duo' ? 2 : 1,
         ticket_type: ticketType as TicketType,
         seat_grade: seatGrade as SeatGrade,
         ticket_count_type: ticketCountType as TicketCountType,
         host_nationality: hostNationality,
         host_languages: hostLanguages,
-        identification_features: identificationFeatures,
+        identification_features: '', // 欄位已移除，固定為空白
         description: description || null,
         will_assist_entry: ticketType === 'find_companion' ? willAssistEntry : undefined,
+        original_price_jpy: selectedPriceTier?.priceJpy || 0,
+        asking_price_jpy: askingPriceJpy,
       };
 
       const response = await fetch(`/api/listings/${listing.id}`, {

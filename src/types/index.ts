@@ -131,6 +131,8 @@ export interface Listing {
   meetingLocation: string;
   totalSlots: number;
   availableSlots: number;
+  originalPriceJpy: number;                 // 票券原價（日圓）
+  askingPriceJpy: number;                   // 希望價格（日圓）
   ticketSource: TicketSource;               // 票源 (ZAIKO/LAWSON)
   ticketType: TicketType;
   seatGrade: SeatGrade;                    // 座位等級

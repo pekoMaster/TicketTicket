@@ -106,26 +106,7 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
             {listing.eventName}
           </h3>
 
-          {/* 2. Artist Tags */}
-          {listing.artistTags && listing.artistTags.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {listing.artistTags.slice(0, 3).map((tag, index) => (
-                <span
-                  key={index}
-                  className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-pink-50 dark:bg-pink-900/30 text-pink-600 dark:text-pink-300"
-                >
-                  {tag}
-                </span>
-              ))}
-              {listing.artistTags.length > 3 && (
-                <span className="text-[10px] text-gray-400 dark:text-gray-500 self-center">
-                  +{listing.artistTags.length - 3}
-                </span>
-              )}
-            </div>
-          )}
-
-          {/* 3. Seat Grade & Ticket Count */}
+          {/* 2. Seat Grade & Ticket Count */}
           <div className="flex flex-wrap gap-2 items-center text-sm">
             {listing.seatGrade && (
               <span className="flex items-center gap-1 font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">
@@ -141,7 +122,7 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
             )}
           </div>
 
-          {/* 4. Listing Type */}
+          {/* 3. Listing Type */}
           <div className="mt-1">
             {/* Ticket Source TAG */}
             <span className={`px-2 py-0.5 rounded text-xs font-semibold ${listing.ticketSource === 'lawson'
@@ -156,6 +137,19 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
               {mainTag.label}
             </Tag>
           </div>
+
+          {/* 4. Price Display */}
+          {listing.originalPriceJpy > 0 && (
+            <div className="flex items-center gap-1.5 text-sm">
+              <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                ¥{listing.askingPriceJpy.toLocaleString()}
+              </span>
+              <span className="text-gray-400 dark:text-gray-500">/</span>
+              <span className="text-gray-500 dark:text-gray-400">
+                ¥{listing.originalPriceJpy.toLocaleString()}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Footer: Date, Nationality, Languages */}

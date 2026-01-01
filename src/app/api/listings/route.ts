@@ -92,9 +92,9 @@ export async function POST(request: NextRequest) {
       event_date: body.eventDate,
       venue: body.venue,
       meeting_time: body.meetingTime,
-      meeting_location: body.meetingLocation,
-      original_price_jpy: 0, // 價格功能已移除，預設為 0
-      asking_price_jpy: 0,   // 價格功能已移除，預設為 0
+      meeting_location: body.meetingLocation || '',
+      original_price_jpy: body.originalPriceJpy || 0,
+      asking_price_jpy: body.askingPriceJpy || 0,
       total_slots: body.totalSlots || 1,
       available_slots: body.totalSlots || 1,
       ticket_type: body.ticketType,

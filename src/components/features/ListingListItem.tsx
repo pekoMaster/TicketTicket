@@ -106,6 +106,19 @@ export default function ListingListItem({ listing, host }: ListingListItemProps)
                                 {mainTag.label}
                             </Tag>
 
+                            {/* Price Display */}
+                            {listing.originalPriceJpy > 0 && (
+                                <div className="flex items-center gap-1.5 text-sm whitespace-nowrap">
+                                    <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                                        ¥{listing.askingPriceJpy.toLocaleString()}
+                                    </span>
+                                    <span className="text-gray-400 dark:text-gray-500">/</span>
+                                    <span className="text-gray-500 dark:text-gray-400">
+                                        ¥{listing.originalPriceJpy.toLocaleString()}
+                                    </span>
+                                </div>
+                            )}
+
                             {/* Spacer to push Host to right */}
                             <div className="flex-1 min-w-[20px]" />
 
@@ -125,20 +138,6 @@ export default function ListingListItem({ listing, host }: ListingListItemProps)
                                 </div>
                             )}
                         </div>
-
-                        {/* Row 2: Artist Tags */}
-                        {listing.artistTags && listing.artistTags.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-1">
-                                {listing.artistTags.map((tag, index) => (
-                                    <span
-                                        key={index}
-                                        className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-pink-50 dark:bg-pink-900/30 text-pink-600 dark:text-pink-300"
-                                    >
-                                        #{tag}
-                                    </span>
-                                ))}
-                            </div>
-                        )}
                     </div>
                 </Link>
             </div>
