@@ -84,7 +84,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const fetchEvents = useCallback(async () => {
     setIsLoadingEvents(true);
     try {
-      const response = await fetch('/api/events?includeInactive=true');
+      const response = await fetch('/api/events?includeInactive=true', { cache: 'no-store' });
       if (response.ok) {
         const data: ApiEvent[] = await response.json();
         setEvents(data.map(convertApiEventToEvent));
@@ -136,6 +136,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
           ticketPriceTiers: eventData.ticketPriceTiers?.map(tier => ({
             seat_grade: tier.seatGrade,
             ticket_count_type: tier.ticketCountType,
+            price_jpy: tier.priceJpy,
           })),
           category: eventData.category,
           isActive: eventData.isActive,
