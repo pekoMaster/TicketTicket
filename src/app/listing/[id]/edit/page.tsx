@@ -655,20 +655,63 @@ export default function EditListingPage() {
                 )}
               </div>
 
-              {/* 參考原價顯示 - 僅供參考 */}
+              {/* 價格設定 */}
               {selectedPriceTier?.priceJpy && (
-                <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {t('referencePrice', { defaultValue: '參考原價' })}
-                    </span>
-                    <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                      ¥{selectedPriceTier.priceJpy.toLocaleString()}
-                    </span>
+                <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                  <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                    {t('priceSettings', { defaultValue: '價格設定' })}
+                  </h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* 原始票價（唯讀） */}
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        {t('originalPrice', { defaultValue: '原始票價' })}
+                      </label>
+                      <div className="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold">
+                        ¥{selectedPriceTier.priceJpy.toLocaleString()}
+                      </div>
+                    </div>
+                    {/* 希望價格（可編輯） */}
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        {t('askingPrice', { defaultValue: '希望價格' })} <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">¥</span>
+                        <input
+                          type="number"
+                          value={askingPriceJpy || ''}
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value) || 0;
+                            // 計算最大價格：二人票 + (子票轉讓或尋找同行) = 原價/2
+                            const priceJpy = selectedPriceTier?.priceJpy || 0;
+                            const maxPrice = (ticketCountType === 'duo' &&
+                              (ticketType === 'sub_ticket_transfer' || ticketType === 'find_companion'))
+                              ? Math.floor(priceJpy / 2)
+                              : priceJpy;
+                            setAskingPriceJpy(Math.min(value, maxPrice));
+                          }}
+                          max={(ticketCountType === 'duo' &&
+                            (ticketType === 'sub_ticket_transfer' || ticketType === 'find_companion'))
+                            ? Math.floor((selectedPriceTier?.priceJpy || 0) / 2)
+                            : (selectedPriceTier?.priceJpy || 0)}
+                          min={0}
+                          className="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-semibold"
+                          placeholder="0"
+                        />
+                      </div>
+                      {/* 價格上限提示 */}
+                      {ticketCountType === 'duo' && (ticketType === 'sub_ticket_transfer' || ticketType === 'find_companion') && (
+                        <p className="text-xs text-orange-600 dark:text-orange-400 mt-1 flex items-center gap-1">
+                          <AlertTriangle className="w-3 h-3" />
+                          {t('halfPriceLimit', {
+                            defaultValue: '二人票子票/同行上限為原價一半：¥',
+                            max: Math.floor(selectedPriceTier.priceJpy / 2).toLocaleString()
+                          })}{Math.floor(selectedPriceTier.priceJpy / 2).toLocaleString()}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    {t('referencePriceNote', { defaultValue: '此為管理員設定的票券原價，僅供參考' })}
-                  </p>
                 </div>
               )}
 
