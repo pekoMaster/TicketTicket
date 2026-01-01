@@ -168,17 +168,14 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
               </span>
             )}
 
-            {/* Date */}
+            {/* Date and Posted Time */}
             <div className="flex items-center gap-1.5 ml-auto">
               <Calendar className="w-3.5 h-3.5" />
               <span>{formatDate(listing.eventDate)}</span>
+              <span className="text-gray-300 dark:text-gray-600 mx-0.5">•</span>
+              <Clock className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+              <span className="text-gray-400 dark:text-gray-500">{format.relativeTime(new Date(listing.createdAt))}</span>
             </div>
-          </div>
-
-          {/* Posted Time */}
-          <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500">
-            <Clock className="w-3 h-3" />
-            <span>{format.relativeTime(new Date(listing.createdAt))}</span>
           </div>
 
           {/* Languages */}
