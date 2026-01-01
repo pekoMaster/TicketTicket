@@ -765,14 +765,12 @@ export default function CreateListingPage() {
                               const value = parseInt(e.target.value) || 0;
                               // 計算最大價格：二人票 + (子票轉讓或尋找同行) = 原價/2
                               const priceJpy = selectedPriceTier?.priceJpy || 0;
-                              const maxPrice = (ticketCountType === 'duo' &&
-                                (ticketType === 'sub_ticket_transfer' || ticketType === 'find_companion'))
+                              const maxPrice = (ticketCountType === 'duo' && ticketType === 'sub_ticket_transfer')
                                 ? Math.floor(priceJpy / 2)
                                 : priceJpy;
                               setAskingPriceJpy(Math.min(value, maxPrice));
                             }}
-                            max={(ticketCountType === 'duo' &&
-                              (ticketType === 'sub_ticket_transfer' || ticketType === 'find_companion'))
+                            max={(ticketCountType === 'duo' && ticketType === 'sub_ticket_transfer')
                               ? Math.floor((selectedPriceTier?.priceJpy || 0) / 2)
                               : (selectedPriceTier?.priceJpy || 0)}
                             min={0}
@@ -781,7 +779,7 @@ export default function CreateListingPage() {
                           />
                         </div>
                         {/* 價格上限提示 */}
-                        {ticketCountType === 'duo' && (ticketType === 'sub_ticket_transfer' || ticketType === 'find_companion') && (
+                        {ticketCountType === 'duo' && ticketType === 'sub_ticket_transfer' && (
                           <p className="text-xs text-orange-600 dark:text-orange-400 mt-1 flex items-center gap-1">
                             <AlertTriangle className="w-3 h-3" />
                             {t('halfPriceLimit', {
