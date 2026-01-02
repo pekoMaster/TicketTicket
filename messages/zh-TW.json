@@ -135,7 +135,9 @@
     "foundResults": "找到 {count} 個同行機會",
     "noResults": "沒有符合條件的結果",
     "activeFilters": "已啟用篩選",
-    "willAssistEntry": "主辦協助入場"
+    "willAssistEntry": "主辦協助入場",
+    "ticketSource": "票源",
+    "allSources": "全部票源"
   },
   "explore": {
     "title": "探索",

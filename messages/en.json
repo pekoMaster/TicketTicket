@@ -135,7 +135,9 @@
     "foundResults": "Found {count} opportunities",
     "noResults": "No matching results",
     "activeFilters": "Active Filters",
-    "willAssistEntry": "Host assists with entry"
+    "willAssistEntry": "Host assists with entry",
+    "ticketSource": "Ticket Source",
+    "allSources": "All Sources"
   },
   "explore": {
     "title": "Explore",

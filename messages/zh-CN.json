@@ -135,7 +135,9 @@
     "foundResults": "找到 {count} 个同行机会",
     "noResults": "没有符合条件的结果",
     "activeFilters": "已启用筛选",
-    "willAssistEntry": "主办协助入场"
+    "willAssistEntry": "主办协助入场",
+    "ticketSource": "票源",
+    "allSources": "全部票源"
   },
   "explore": {
     "title": "探索",

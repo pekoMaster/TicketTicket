@@ -135,7 +135,9 @@
     "foundResults": "{count}件の同行募集が見つかりました",
     "noResults": "条件に一致する結果がありません",
     "activeFilters": "フィルター適用中",
-    "willAssistEntry": "入場同行可"
+    "willAssistEntry": "入場同行可",
+    "ticketSource": "チケット購入先",
+    "allSources": "すべて"
   },
   "explore": {
     "title": "探索",

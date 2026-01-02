@@ -61,6 +61,8 @@ export default function HomePage() {
   const [willAssistEntry, setWillAssistEntry] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>('date');
   const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
+  const [minPriceFilter, setMinPriceFilter] = useState<string>('');
+  const [maxPriceFilter, setMaxPriceFilter] = useState<string>('');
 
   // 無限滾動狀態
   const [displayCount, setDisplayCount] = useState(10);
@@ -175,6 +177,20 @@ export default function HomePage() {
       );
     }
 
+    // 價格篩選
+    if (minPriceFilter) {
+      const minPrice = parseInt(minPriceFilter);
+      if (!isNaN(minPrice)) {
+        result = result.filter((l) => (l.askingPriceJpy || 0) >= minPrice);
+      }
+    }
+    if (maxPriceFilter) {
+      const maxPrice = parseInt(maxPriceFilter);
+      if (!isNaN(maxPrice)) {
+        result = result.filter((l) => (l.askingPriceJpy || 0) <= maxPrice);
+      }
+    }
+
     // 排序
     switch (sortBy) {
       case 'date':
@@ -183,19 +199,16 @@ export default function HomePage() {
       case 'newest':
         result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         break;
-      /*
       case 'price_asc':
-        // Price sorting temporarily disabled or needs correct field
-        // result.sort((a, b) => (a.askingPriceTwd || 0) - (b.askingPriceTwd || 0));
+        result.sort((a, b) => (a.askingPriceJpy || 0) - (b.askingPriceJpy || 0));
         break;
       case 'price_desc':
-        // result.sort((a, b) => (b.askingPriceTwd || 0) - (a.askingPriceTwd || 0));
+        result.sort((a, b) => (b.askingPriceJpy || 0) - (a.askingPriceJpy || 0));
         break;
-      */
     }
 
     return result;
-  }, [listings, searchQuery, selectedEvent, dateFilter, selectedTicketType, willAssistEntry, hostNameQuery, minRating, selectedNationality, selectedLanguages, sortBy]);
+  }, [listings, searchQuery, selectedEvent, dateFilter, selectedTicketType, selectedTicketSource, willAssistEntry, hostNameQuery, minRating, selectedNationality, selectedLanguages, sortBy, minPriceFilter, maxPriceFilter]);
 
   const toggleLanguage = (lang: string) => {
     setSelectedLanguages((prev) =>
@@ -413,6 +426,33 @@ export default function HomePage() {
                     <option value="zaiko">{TICKET_SOURCE_INFO.zaiko.label}</option>
                     <option value="lawson">{TICKET_SOURCE_INFO.lawson.label}</option>
                   </select>
+                </div>
+
+                {/* 價格範圍 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('priceRange')}</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="relative">
+                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 text-xs">¥</span>
+                      <input
+                        type="number"
+                        value={minPriceFilter}
+                        onChange={(e) => setMinPriceFilter(e.target.value)}
+                        placeholder={tFilter('minPrice')}
+                        className="w-full pl-6 pr-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
+                      />
+                    </div>
+                    <div className="relative">
+                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 text-xs">¥</span>
+                      <input
+                        type="number"
+                        value={maxPriceFilter}
+                        onChange={(e) => setMaxPriceFilter(e.target.value)}
+                        placeholder={tFilter('maxPrice')}
+                        className="w-full pl-6 pr-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 {/* 排序 */}
