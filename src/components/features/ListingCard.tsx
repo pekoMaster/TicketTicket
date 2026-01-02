@@ -140,14 +140,23 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
 
           {/* 4. Price Display */}
           {listing.originalPriceJpy > 0 && (
-            <div className="flex items-center gap-1.5 text-sm">
-              <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                ¥{listing.askingPriceJpy.toLocaleString()}
-              </span>
-              <span className="text-gray-400 dark:text-gray-500">/</span>
-              <span className="text-gray-500 dark:text-gray-400">
-                ¥{listing.originalPriceJpy.toLocaleString()}
-              </span>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <div className="flex flex-col items-center justify-center p-1.5 rounded border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20">
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 mb-0.5">
+                  {t('askingPrice')}
+                </span>
+                <span className="font-bold text-emerald-700 dark:text-emerald-300 leading-tight">
+                  ¥{listing.askingPriceJpy.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex flex-col items-center justify-center p-1.5 rounded border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                <span className="text-[10px] text-gray-500 dark:text-gray-400 mb-0.5">
+                  {t('originalPrice')}
+                </span>
+                <span className="text-gray-600 dark:text-gray-300 leading-tight">
+                  ¥{listing.originalPriceJpy.toLocaleString()}
+                </span>
+              </div>
             </div>
           )}
         </div>

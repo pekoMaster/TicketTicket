@@ -202,6 +202,7 @@
     "soloTicket": "Solo Ticket",
     "ticketTypeLabel": "Ticket Category",
     "askingPrice": "Asking Price",
+    "originalPrice": "Original Price",
     "perPersonUnit": " person(s)",
     "willAssistEntryLabel": "Entry Assistance",
     "hostWillAssist": "Host will assist entry",
