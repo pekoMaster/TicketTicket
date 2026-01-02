@@ -1,4 +1,4 @@
-{
+﻿{
   "agreement": {
     "createTitle": "發布前重要提醒",
     "createWarning": "禁止行為警告",
@@ -202,7 +202,7 @@
     "duoTicket": "二人票",
     "soloTicket": "一人票",
     "ticketTypeLabel": "券種類型",
-    "askingPrice": "希望費用",
+    "askingPrice": "希望分攤",
     "originalPrice": "原價",
     "perPersonUnit": "人",
     "willAssistEntryLabel": "協助入場",
@@ -269,7 +269,7 @@
     "originalPriceJPY": "原價（日圓）",
     "totalSlots": "總名額",
     "convertedTWD": "換算台幣",
-    "askingPrice": "希望費用（台幣/人）",
+    "askingPrice": "希望分攤（台幣/人）",
     "ticketTypeLabel": "票券類型",
     "descriptionLabel": "描述（選填）",
     "descriptionPlaceholder": "補充說明，例如注意事項、期望的同行者類型等...",
@@ -306,13 +306,13 @@
     "priceInfoByAdmin": "票價資訊（由管理員設定）",
     "originalPriceJPYLabel": "原價（日圓）",
     "listingType": "刊登類型",
-    "askingPriceSection": "希望費用",
+    "askingPriceSection": "希望分攤",
     "companionPriceLimit": "尋找同行者：價格上限為票價的一半+¥1000，最高 ¥{max}",
     "subTicketPriceLimit": "轉讓子票：價格上限為票價的一半+¥1000，最高 ¥{max}",
     "priceLimit": "價格上限：¥{max}",
     "originalPrice": "原始票價",
     "halfPriceLimit": "二人票子票/同行上限為原價一半：¥",
-    "askingPriceJPY": "希望費用（日圓）",
+    "askingPriceJPY": "希望分攤（日圓）",
     "maxPrice": "最高 {max}",
     "pleaseSelectTicket": "請先選擇票券",
     "cannotExceed": "不可超過 ¥{max}",
@@ -466,7 +466,7 @@
     "translated": "翻譯結果",
     "translating": "翻譯中...",
     "notFound": "找不到此對話",
-    "expectedPrice": "希望費用",
+    "expectedPrice": "希望分攤",
     "hostContactMethods": "主辦方可透過以下方式聯繫：",
     "ticketCount": {
       "solo": "一人票",
