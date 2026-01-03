@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import {
-    Calendar, Clock, MapPin, Ticket, User, Globe, Languages,
+    Calendar, MapPin, Ticket, User, Globe, Languages,
     Check, ChevronRight, ChevronLeft, Sparkles, AlertTriangle,
-    Users, ArrowRight
+    ArrowRight
 } from 'lucide-react';
 
 // 模擬資料
@@ -39,8 +39,6 @@ export default function TestCreatePage() {
     // 表單狀態
     const [currentStep, setCurrentStep] = useState(1);
     const [eventName, setEventName] = useState('');
-    const [eventDate, setEventDate] = useState('');
-    const [meetingTime, setMeetingTime] = useState('');
     const [ticketSource, setTicketSource] = useState('');
     const [seatGrade, setSeatGrade] = useState('');
     const [ticketCountType, setTicketCountType] = useState('');
@@ -61,7 +59,6 @@ export default function TestCreatePage() {
     // 欄位驗證
     const validateField = (field: string, value: string | string[]) => {
         if (field === 'eventName' && !value) return '請選擇活動';
-        if (field === 'eventDate' && !value) return '請選擇日期';
         if (field === 'nationality' && !value) return '請選擇國籍';
         if (field === 'languages' && (value as string[]).length === 0) return '請至少選擇一種語言';
         return '';
@@ -81,7 +78,7 @@ export default function TestCreatePage() {
 
     const canProceed = () => {
         switch (currentStep) {
-            case 1: return eventName && eventDate && meetingTime;
+            case 1: return eventName; // 只需要選擇活動
             case 2: return ticketSource && seatGrade && ticketCountType && listingType;
             case 3: return nationality && selectedLanguages.length > 0;
             default: return true;
@@ -212,56 +209,16 @@ export default function TestCreatePage() {
                                         )}
                                     </div>
 
-                                    {/* 日期時間 */}
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-200 mb-2">
-                                                活動日期 <span className="text-pink-400">*</span>
-                                            </label>
-                                            <div className="relative">
-                                                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                                <input
-                                                    type="date"
-                                                    value={eventDate}
-                                                    onChange={(e) => setEventDate(e.target.value)}
-                                                    onBlur={() => handleBlur('eventDate', eventDate)}
-                                                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-200 mb-2">
-                                                集合時間 <span className="text-pink-400">*</span>
-                                            </label>
-                                            <div className="relative">
-                                                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                                <input
-                                                    type="time"
-                                                    value={meetingTime}
-                                                    onChange={(e) => setMeetingTime(e.target.value)}
-                                                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"
-                                                />
-                                            </div>
+                                    {/* 提示訊息 */}
+                                    <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 flex gap-3">
+                                        <Calendar className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+                                        <div className="text-sm text-blue-200">
+                                            <p className="font-medium">關於集合時間與地點</p>
+                                            <p className="text-blue-300/80 mt-1">
+                                                活動日期、集合時間與地點由雙方在配對成功後自行協調。
+                                            </p>
                                         </div>
                                     </div>
-                                    <p className="text-xs text-amber-400">⏰ 時間以日本時間 (JST) 為準</p>
-
-                                    {/* 場地地址（自動填入） */}
-                                    {selectedEvent && (
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-200 mb-2">場地地址</label>
-                                            <div className="relative">
-                                                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                                <input
-                                                    type="text"
-                                                    value={selectedEvent.venue}
-                                                    readOnly
-                                                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-gray-400 cursor-not-allowed"
-                                                />
-                                            </div>
-                                            <p className="text-xs text-gray-500 mt-1">✓ 已根據選擇的活動自動填入</p>
-                                        </div>
-                                    )}
                                 </div>
                             </GlassCard>
                         </div>
@@ -526,8 +483,6 @@ export default function TestCreatePage() {
 
                                         <div className="space-y-4">
                                             <SummaryRow label="活動" value={eventName} />
-                                            <SummaryRow label="日期" value={eventDate} />
-                                            <SummaryRow label="集合時間" value={meetingTime} />
                                             <SummaryRow label="票源" value={ticketSource} />
                                             <SummaryRow label="座位" value={seatGrade} />
                                             <SummaryRow label="票種" value={ticketCountTypes.find(t => t.value === ticketCountType)?.label || ''} />
