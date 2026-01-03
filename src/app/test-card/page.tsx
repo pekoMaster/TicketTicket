@@ -28,11 +28,11 @@ const mockHost = {
 };
 
 export default function TestCardPage() {
-  const [selectedDesign, setSelectedDesign] = useState<'current' | 'v2' | 'v3'>('current');
+  const [selectedDesign, setSelectedDesign] = useState<'current' | 'v2' | 'v3' | 'v4'>('current');
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 p-8">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-white mb-2 flex items-center justify-center gap-2">
@@ -44,20 +44,26 @@ export default function TestCardPage() {
         </div>
 
         {/* Design Selector */}
-        <div className="flex justify-center gap-4 mb-8">
+        <div className="flex justify-center gap-3 mb-8 flex-wrap">
           {[
-            { key: 'current', label: '目前設計' },
-            { key: 'v2', label: '改進版 V2 (Glassmorphism)' },
-            { key: 'v3', label: '改進版 V3 (Aurora UI)' },
+            { key: 'current', label: '目前設計', color: 'indigo' },
+            { key: 'v2', label: 'V2 (Glassmorphism)', color: 'cyan' },
+            { key: 'v3', label: 'V3 (Aurora UI)', color: 'purple' },
+            { key: 'v4', label: 'V4 (混合版)', color: 'pink' },
           ].map((option) => (
             <button
               key={option.key}
-              onClick={() => setSelectedDesign(option.key as 'current' | 'v2' | 'v3')}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                selectedDesign === option.key
+              onClick={() => setSelectedDesign(option.key as 'current' | 'v2' | 'v3' | 'v4')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${selectedDesign === option.key
+                ? option.color === 'indigo'
                   ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
+                  : option.color === 'cyan'
+                    ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
+                    : option.color === 'purple'
+                      ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30'
+                      : 'bg-pink-600 text-white shadow-lg shadow-pink-500/30'
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }`}
             >
               {option.label}
             </button>
@@ -65,7 +71,7 @@ export default function TestCardPage() {
         </div>
 
         {/* Cards Display */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Current Design */}
           <div className={selectedDesign === 'current' ? 'ring-2 ring-indigo-500 rounded-xl' : 'opacity-50'}>
             <CurrentCard listing={mockListing} host={mockHost} />
@@ -80,12 +86,17 @@ export default function TestCardPage() {
           <div className={selectedDesign === 'v3' ? 'ring-2 ring-purple-500 rounded-xl' : 'opacity-50'}>
             <AuroraCard listing={mockListing} host={mockHost} />
           </div>
+
+          {/* V4 - Hybrid (Glassmorphism + Aurora Price) */}
+          <div className={selectedDesign === 'v4' ? 'ring-2 ring-pink-500 rounded-xl' : 'opacity-50'}>
+            <HybridCard listing={mockListing} host={mockHost} />
+          </div>
         </div>
 
         {/* Analysis */}
         <div className="mt-12 bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
           <h2 className="text-xl font-bold text-white mb-4">📊 UI/UX Pro Max 分析報告</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
             <div className="space-y-2">
               <h3 className="font-semibold text-gray-300">目前設計</h3>
               <ul className="space-y-1 text-gray-400">
@@ -111,6 +122,15 @@ export default function TestCardPage() {
                 <li>✅ 動態光暈背景</li>
                 <li>✅ 高級視覺體驗</li>
                 <li>⚠️ 效能消耗較高</li>
+              </ul>
+            </div>
+            <div className="space-y-2">
+              <h3 className="font-semibold text-pink-400">混合版 V4 ⭐</h3>
+              <ul className="space-y-1 text-gray-400">
+                <li>✅ V2 玻璃擬態基底</li>
+                <li>✅ V3 極光價格設計</li>
+                <li>✅ 最佳視覺平衡</li>
+                <li>✅ 效能優秀</li>
               </ul>
             </div>
           </div>
@@ -199,7 +219,7 @@ function GlassmorphismCard({ listing, host }: { listing: typeof mockListing; hos
     <div className="group relative bg-gray-900/40 backdrop-blur-xl rounded-2xl p-4 flex flex-col h-full border border-white/10 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/10">
       {/* Gradient border effect */}
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-500/20 via-transparent to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
-      
+
       {/* Header with glass effect */}
       <div className="flex items-center gap-3 mb-3 pb-3 border-b border-white/10 cursor-pointer group/header hover:bg-white/5 transition-all -mx-4 -mt-4 px-4 pt-4 rounded-t-2xl">
         <div className="relative">
@@ -296,10 +316,10 @@ function AuroraCard({ listing, host }: { listing: typeof mockListing; host: type
       <div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 via-indigo-900/50 to-cyan-900/50" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-purple-500/20 via-transparent to-transparent animate-pulse" style={{ animationDuration: '4s' }} />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-cyan-500/20 via-transparent to-transparent animate-pulse" style={{ animationDuration: '3s', animationDelay: '1s' }} />
-      
+
       {/* Glass overlay */}
       <div className="absolute inset-0 backdrop-blur-sm bg-black/20 rounded-2xl border border-white/10" />
-      
+
       {/* Content */}
       <div className="relative z-10">
         {/* Header */}
@@ -338,7 +358,7 @@ function AuroraCard({ listing, host }: { listing: typeof mockListing; host: type
         {/* Status badges */}
         <div className="flex gap-2 mb-4">
           <span className="px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-500/30 text-blue-200 border border-blue-400/30 backdrop-blur-sm">
-            ZAIKO 
+            ZAIKO
           </span>
           <span className="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/30 text-emerald-200 border border-emerald-400/30 backdrop-blur-sm">
             ✓ 可協助入場
@@ -380,6 +400,99 @@ function AuroraCard({ listing, host }: { listing: typeof mockListing; host: type
             <Eye className="w-5 h-5" />
             查看詳細
           </span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// V4 - Hybrid 設計 (Glassmorphism Base + Aurora Price)
+function HybridCard({ listing, host }: { listing: typeof mockListing; host: typeof mockHost }) {
+  return (
+    <div className="group relative bg-gray-900/40 backdrop-blur-xl rounded-2xl p-4 flex flex-col h-full border border-white/10 hover:border-pink-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-pink-500/10">
+      {/* Gradient border effect */}
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+
+      {/* Header with glass effect */}
+      <div className="flex items-center gap-3 mb-3 pb-3 border-b border-white/10 cursor-pointer group/header hover:bg-white/5 transition-all -mx-4 -mt-4 px-4 pt-4 rounded-t-2xl">
+        <div className="relative">
+          <img src={host.avatarUrl} className="w-10 h-10 rounded-full ring-2 ring-pink-500/30 group-hover/header:ring-pink-500/60 transition-all" alt="" />
+          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <span className="text-sm font-semibold text-white block truncate">{host.username}</span>
+          <div className="flex items-center gap-1 text-xs text-pink-400">
+            <span>★★★★★</span>
+            <span className="text-gray-400">({host.reviewCount})</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Body */}
+      <div className="flex flex-col gap-3 mb-4">
+        <h3 className="text-lg font-bold text-white line-clamp-2 leading-tight group-hover:text-pink-100 transition-colors">
+          {listing.eventName}
+        </h3>
+
+        <div className="flex flex-wrap gap-2">
+          <span className="flex items-center gap-1.5 text-sm font-medium text-white/90 bg-white/10 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-white/10">
+            <Armchair className="w-4 h-4 text-pink-400" />
+            {listing.seatGrade}
+          </span>
+          <span className="flex items-center gap-1.5 text-sm text-white/70 bg-white/5 px-2.5 py-1 rounded-lg border border-white/5">
+            <Users className="w-4 h-4 text-purple-400" />
+            二人票
+          </span>
+        </div>
+
+        <div className="flex gap-2">
+          <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/20">
+            ZAIKO
+          </span>
+          <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-gradient-to-r from-emerald-600 to-green-500 text-white shadow-lg shadow-green-500/20">
+            ✓ 可協助入場
+          </span>
+        </div>
+
+        {/* Price with Aurora effect (from V3) */}
+        <div className="relative rounded-xl overflow-hidden mt-1">
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20" />
+          <div className="relative grid grid-cols-2 divide-x divide-white/10 backdrop-blur-sm">
+            <div className="p-3 text-center">
+              <span className="text-xs text-emerald-300 block mb-1">希望分攤</span>
+              <span className="text-2xl font-bold text-white">¥{listing.askingPriceJpy.toLocaleString()}</span>
+            </div>
+            <div className="p-3 text-center bg-black/20">
+              <span className="text-xs text-white/50 block mb-1">定價</span>
+              <span className="text-2xl font-medium text-white/70">¥{listing.originalPriceJpy.toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="space-y-2 text-xs text-gray-400 mt-auto">
+        <div className="flex items-center justify-between">
+          <span className="bg-pink-500/20 px-2 py-1 rounded-lg text-pink-300 font-medium">🇹🇼 繁體中文</span>
+          <div className="flex items-center gap-2 text-gray-400">
+            <Calendar className="w-3.5 h-3.5" />
+            <span>2026/01/17</span>
+          </div>
+        </div>
+        <div className="flex gap-1 flex-wrap">
+          {['繁體中文', '日本語', 'English'].map(lang => (
+            <span key={lang} className="px-2 py-0.5 rounded-md text-[10px] bg-purple-500/10 text-purple-300 border border-purple-500/20">
+              {lang}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Button */}
+      <div className="mt-4 pt-3">
+        <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white rounded-xl font-semibold transition-all text-sm shadow-lg shadow-pink-500/25 hover:shadow-pink-500/40 hover:scale-[1.02] active:scale-[0.98]">
+          <Eye className="w-4 h-4" />
+          查看詳細
         </button>
       </div>
     </div>
