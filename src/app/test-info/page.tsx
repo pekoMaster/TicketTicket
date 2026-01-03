@@ -136,8 +136,8 @@ export default function TestInfoPage() {
                             label="票源"
                             value={
                                 <span className={`px-2.5 py-1 rounded-lg text-xs font-bold ${mockListing.ticketSource === 'zaiko'
-                                        ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white'
-                                        : 'bg-gradient-to-r from-green-600 to-green-500 text-white'
+                                    ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white'
+                                    : 'bg-gradient-to-r from-green-600 to-green-500 text-white'
                                     }`}>
                                     {mockListing.ticketSource.toUpperCase()}
                                 </span>
@@ -283,13 +283,18 @@ export default function TestInfoPage() {
             <div className="fixed bottom-0 left-0 right-0 z-30 bg-gray-900/90 backdrop-blur-xl border-t border-white/10 px-4 py-4 safe-area-bottom">
                 <div className="max-w-3xl mx-auto">
                     {hasApplied ? (
-                        <button
-                            disabled
-                            className="w-full py-3.5 px-6 rounded-xl font-semibold bg-gray-700 text-gray-400 cursor-not-allowed flex items-center justify-center gap-2"
-                        >
-                            <Check className="w-5 h-5" />
-                            已申請 - 等待回覆中
-                        </button>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setHasApplied(false)}
+                                className="flex-1 py-3.5 px-6 rounded-xl font-semibold bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-all flex items-center justify-center gap-2"
+                            >
+                                取消申請
+                            </button>
+                            <div className="flex-1 py-3.5 px-6 rounded-xl font-semibold bg-gray-700/50 text-gray-400 flex items-center justify-center gap-2">
+                                <Check className="w-5 h-5" />
+                                等待回覆中
+                            </div>
+                        </div>
                     ) : (
                         <div className="flex gap-3">
                             <button className="flex-1 py-3.5 px-6 rounded-xl font-semibold bg-white/10 text-white hover:bg-white/20 transition-all flex items-center justify-center gap-2">
