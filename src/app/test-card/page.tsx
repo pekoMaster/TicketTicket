@@ -31,8 +31,8 @@ export default function TestCardPage() {
   const [selectedDesign, setSelectedDesign] = useState<'current' | 'v2' | 'v3' | 'v4'>('current');
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 p-4 md:p-8">
+      <div className="w-full max-w-[1800px] mx-auto">
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-white mb-2 flex items-center justify-center gap-2">
@@ -55,14 +55,14 @@ export default function TestCardPage() {
               key={option.key}
               onClick={() => setSelectedDesign(option.key as 'current' | 'v2' | 'v3' | 'v4')}
               className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${selectedDesign === option.key
-                ? option.color === 'indigo'
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
-                  : option.color === 'cyan'
-                    ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
-                    : option.color === 'purple'
-                      ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30'
-                      : 'bg-pink-600 text-white shadow-lg shadow-pink-500/30'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  ? option.color === 'indigo'
+                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+                    : option.color === 'cyan'
+                      ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
+                      : option.color === 'purple'
+                        ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30'
+                        : 'bg-pink-600 text-white shadow-lg shadow-pink-500/30'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 }`}
             >
               {option.label}
@@ -70,8 +70,8 @@ export default function TestCardPage() {
           ))}
         </div>
 
-        {/* Cards Display */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Cards Display - Responsive grid with larger cards on PC */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
           {/* Current Design */}
           <div className={selectedDesign === 'current' ? 'ring-2 ring-indigo-500 rounded-xl' : 'opacity-50'}>
             <CurrentCard listing={mockListing} host={mockHost} />
