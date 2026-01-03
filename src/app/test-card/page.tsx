@@ -70,8 +70,8 @@ export default function TestCardPage() {
           ))}
         </div>
 
-        {/* Cards Display - Responsive grid with larger cards on PC */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
+        {/* Cards Display - Auto-fill grid with minimum card width */}
+        <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
           {/* Current Design */}
           <div className={selectedDesign === 'current' ? 'ring-2 ring-indigo-500 rounded-xl' : 'opacity-50'}>
             <CurrentCard listing={mockListing} host={mockHost} />
