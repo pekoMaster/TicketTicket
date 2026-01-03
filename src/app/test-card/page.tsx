@@ -32,7 +32,7 @@ export default function TestCardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 p-4 md:p-8">
-      <div className="w-full max-w-[1800px] mx-auto">
+      <div className="w-full px-2 md:px-4 lg:px-8">
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-white mb-2 flex items-center justify-center gap-2">
@@ -55,14 +55,14 @@ export default function TestCardPage() {
               key={option.key}
               onClick={() => setSelectedDesign(option.key as 'current' | 'v2' | 'v3' | 'v4')}
               className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${selectedDesign === option.key
-                  ? option.color === 'indigo'
-                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
-                    : option.color === 'cyan'
-                      ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
-                      : option.color === 'purple'
-                        ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30'
-                        : 'bg-pink-600 text-white shadow-lg shadow-pink-500/30'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                ? option.color === 'indigo'
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+                  : option.color === 'cyan'
+                    ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
+                    : option.color === 'purple'
+                      ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30'
+                      : 'bg-pink-600 text-white shadow-lg shadow-pink-500/30'
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 }`}
             >
               {option.label}
