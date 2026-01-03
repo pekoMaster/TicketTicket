@@ -423,6 +423,7 @@ function HybridCard({ listing, host }: { listing: typeof mockListing; host: type
           <span className="text-sm font-semibold text-white block truncate">{host.username}</span>
           <div className="flex items-center gap-1 text-xs text-pink-400">
             <span>★★★★★</span>
+            <span className="text-white font-medium">{host.rating}</span>
             <span className="text-gray-400">({host.reviewCount})</span>
           </div>
         </div>
