@@ -407,21 +407,21 @@ export default function TestCreatePage() {
                                             <div className="relative p-4 backdrop-blur-sm">
                                                 <label className="block text-sm font-medium text-gray-200 mb-3">價格設定</label>
                                                 <div className="grid grid-cols-2 divide-x divide-white/10">
-                                                    <div className="pr-4 text-center">
+                                                    <div className="pr-6 py-2 text-center">
                                                         <span className="text-xs text-emerald-300 block mb-1">希望分攤</span>
                                                         <div className="flex items-center justify-center gap-1">
-                                                            <span className="text-3xl font-bold text-white">¥</span>
+                                                            <span className="text-2xl font-bold text-white">¥</span>
                                                             <input
                                                                 type="number"
                                                                 value={askingPrice}
                                                                 onChange={(e) => setAskingPrice(Number(e.target.value))}
-                                                                className="w-24 text-3xl font-bold text-white bg-transparent border-b-2 border-emerald-500/50 focus:border-emerald-400 focus:outline-none text-center"
+                                                                className="w-28 text-2xl font-bold text-white bg-transparent border-b-2 border-emerald-500/50 focus:border-emerald-400 focus:outline-none text-center"
                                                             />
                                                         </div>
                                                     </div>
-                                                    <div className="pl-4 text-center bg-black/20">
+                                                    <div className="pl-6 py-2 text-center bg-black/20">
                                                         <span className="text-xs text-white/50 block mb-1">定價</span>
-                                                        <span className="text-3xl font-medium text-white/70">¥{originalPrice.toLocaleString()}</span>
+                                                        <span className="text-2xl font-medium text-white/70">¥{originalPrice.toLocaleString()}</span>
                                                     </div>
                                                 </div>
                                                 {ticketCountType === 'duo' && listingType === 'sub_ticket_transfer' && (
