@@ -298,7 +298,7 @@ export default function ProfilePage() {
 
       <div className="pt-20 pb-20 px-4 space-y-6">
         {/* 個人資訊卡片 */}
-        <Card className="dark:bg-gray-800 dark:border-gray-700">
+        <Card variant="glass">
           <div className="flex items-center gap-4">
             <Avatar src={currentUser.customAvatarUrl || currentUser.avatarUrl} size="xl" />
             <div className="flex-1">

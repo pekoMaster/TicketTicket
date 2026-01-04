@@ -433,7 +433,7 @@ export default function ProfileSettingsPage() {
         )}
 
         {/* Basic Info Section */}
-        <Card className="dark:bg-gray-800 dark:border-gray-700">
+        <Card variant="glass">
           <div className="flex items-center gap-2 mb-4">
             <User className="w-5 h-5 text-indigo-500" />
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('basicInfo')}</h2>
@@ -485,7 +485,7 @@ export default function ProfileSettingsPage() {
         </Card>
 
         {/* Phone Verification Section */}
-        <Card className="dark:bg-gray-800 dark:border-gray-700">
+        <Card variant="glass">
           <div className="flex items-center gap-2 mb-2">
             <ShieldCheck className="w-5 h-5 text-indigo-500" />
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('phoneVerification')}</h2>
@@ -526,7 +526,7 @@ export default function ProfileSettingsPage() {
         </Card>
 
         {/* Linked Accounts Section */}
-        <Card className="dark:bg-gray-800 dark:border-gray-700">
+        <Card variant="glass">
           <div className="flex items-center gap-2 mb-2">
             <MessageCircle className="w-5 h-5 text-indigo-500" />
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('linkedAccounts')}</h2>
@@ -669,7 +669,7 @@ export default function ProfileSettingsPage() {
         </Card>
 
         {/* Discord Webhook Section */}
-        <Card className="dark:bg-gray-800 dark:border-gray-700">
+        <Card variant="glass">
           <div className="flex items-center gap-2 mb-2">
             <Bell className="w-5 h-5 text-indigo-500" />
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('webhook.title')}</h2>
@@ -759,7 +759,7 @@ export default function ProfileSettingsPage() {
         </Card>
 
         {/* Bug Report Section */}
-        <Card className="dark:bg-gray-800 dark:border-gray-700">
+        <Card variant="glass">
           <div className="flex items-center gap-2 mb-2">
             <Bug className="w-5 h-5 text-red-500" />
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">BUG 回報</h2>
