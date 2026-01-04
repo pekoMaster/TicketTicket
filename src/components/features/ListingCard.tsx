@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useTranslations, useFormatter } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Calendar, Eye, Users, Armchair, Clock } from 'lucide-react';
+import { MapPin, Eye, Users, Armchair, Clock } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import Tag from '@/components/ui/Tag';
 import Avatar from '@/components/ui/Avatar';
@@ -171,11 +171,15 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
               </span>
             )}
 
-            {/* Date and Posted Time */}
+            {/* Venue and Posted Time */}
             <div className="flex items-center gap-1.5 ml-auto">
-              <Calendar className="w-3.5 h-3.5" />
-              <span>{formatDate(listing.eventDate)}</span>
-              <span className="text-gray-300 dark:text-gray-600 mx-0.5">•</span>
+              {listing.venue && (
+                <>
+                  <MapPin className="w-3.5 h-3.5" />
+                  <span className="truncate max-w-[100px]">{listing.venue}</span>
+                  <span className="text-gray-300 dark:text-gray-600 mx-0.5">•</span>
+                </>
+              )}
               <Clock className="w-3 h-3 text-gray-400 dark:text-gray-500" />
               <span className="text-gray-400 dark:text-gray-500">{format.relativeTime(new Date(listing.createdAt))}</span>
             </div>

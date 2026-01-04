@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useTranslations, useFormatter } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Calendar, Users, Armchair, Clock } from 'lucide-react';
+import { MapPin, Users, Armchair, Clock } from 'lucide-react';
 import Tag from '@/components/ui/Tag';
 import Avatar from '@/components/ui/Avatar';
 import UserProfileModal from '@/components/ui/UserProfileModal';
@@ -81,11 +81,13 @@ export default function ListingListItem({ listing, host }: ListingListItemProps)
                                 </span>
                             )}
 
-                            {/* Event Date */}
-                            <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
-                                <Calendar className="w-3.5 h-3.5 text-gray-400" />
-                                <span>{formatDate(listing.eventDate)}</span>
-                            </div>
+                            {/* Venue */}
+                            {listing.venue && (
+                                <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                                    <MapPin className="w-3.5 h-3.5 text-gray-400" />
+                                    <span className="truncate max-w-[120px]">{listing.venue}</span>
+                                </div>
+                            )}
 
                             {/* Posted Time */}
                             <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
