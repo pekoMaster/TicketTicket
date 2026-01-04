@@ -80,7 +80,7 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
 
   return (
     <>
-      <Card className="animate-fade-in flex flex-col h-full hover:shadow-md transition-shadow">
+      <Card variant="glass" className="animate-fade-in flex flex-col h-full hover:shadow-lg dark:hover:shadow-indigo-500/10 hover:border-indigo-300/50 dark:hover:border-indigo-500/30 transition-all duration-300">
         {/* Header: User Info */}
         {host && (
           <div
@@ -205,7 +205,7 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
         <div className="mt-4 pt-3 flex justify-center">
           <Link
             href={`/listing/${listing.id}`}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors text-sm shadow-sm hover:shadow"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-lg font-medium transition-all text-sm shadow-lg shadow-indigo-500/25 dark:shadow-indigo-500/20 hover:shadow-xl"
           >
             <Eye className="w-4 h-4" />
             <span>{t('view')}</span>
