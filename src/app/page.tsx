@@ -300,17 +300,17 @@ export default function HomePage() {
       {/* Aurora 背景效果 */}
       <AuroraBackground />
 
-      {/* Header - mobile only */}
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 sticky top-0 z-30 lg:hidden">
+      {/* Header - mobile only - Glassmorphism Style */}
+      <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/10 sticky top-0 z-30 lg:hidden">
         <div className="px-4 py-4">
           <div className="flex items-center gap-2">
-            <Ticket className="w-7 h-7 text-indigo-500" />
-            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">TicketTicket</h1>
+            <Ticket className="w-7 h-7 text-pink-500" />
+            <h1 className="text-xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">TicketTicket</h1>
           </div>
           <div className="flex items-center justify-between mt-1">
             <p className="text-sm text-gray-500 dark:text-gray-400">{t('subtitle')}</p>
             {successfulMeetups !== null && successfulMeetups > 0 && (
-              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-sm">
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full shadow-lg shadow-pink-500/30">
                 <PartyPopper className="w-3.5 h-3.5 text-white" />
                 <span className="text-xs font-bold text-white">{successfulMeetups}</span>
                 <span className="text-xs text-white/80">{t('successfulMeetups', { defaultValue: '次成功同行' })}</span>
@@ -320,12 +320,12 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Desktop Header */}
-      <header className="hidden lg:block bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 px-6 py-6">
+      {/* Desktop Header - Glassmorphism Style */}
+      <header className="hidden lg:block bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/10 px-6 py-6">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('subtitle')}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('subtitle')}</h1>
           {successfulMeetups !== null && successfulMeetups > 0 && (
-            <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-md hover:shadow-lg transition-shadow">
+            <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 transition-shadow">
               <PartyPopper className="w-5 h-5 text-white" />
               <span className="text-lg font-bold text-white">{successfulMeetups.toLocaleString()}</span>
               <span className="text-sm text-white/90">{t('successfulMeetups', { defaultValue: '次成功同行' })}</span>
@@ -334,11 +334,11 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* 搜尋與篩選區 */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 px-4 lg:px-6 py-4">
+      {/* 搜尋與篩選區 - Glassmorphism Style */}
+      <div className="bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/10 px-4 lg:px-6 py-4">
         <div className="max-w-7xl mx-auto">
           {/* 搜尋列 */}
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <div className="flex-1">
               <Input
                 placeholder={tFilter('searchPlaceholder')}
@@ -350,14 +350,16 @@ export default function HomePage() {
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`
-                px-4 py-2.5 rounded-lg border transition-colors flex items-center gap-2 relative
-                ${hasActiveFilters ? 'bg-indigo-50 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-700 text-indigo-600 dark:text-indigo-400' : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'}
+                px-4 py-2.5 rounded-xl border transition-all flex items-center gap-2 relative
+                ${hasActiveFilters
+                  ? 'bg-pink-500/10 dark:bg-pink-500/20 border-pink-300 dark:border-pink-500/30 text-pink-600 dark:text-pink-400'
+                  : 'bg-white/80 dark:bg-white/10 border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/20'}
               `}
             >
               <div className="relative">
                 <Filter className="w-5 h-5" />
                 {activeFilterCount > 0 && (
-                  <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold bg-indigo-600 text-white rounded-full px-1">
+                  <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold bg-pink-600 text-white rounded-full px-1">
                     {activeFilterCount}
                   </span>
                 )}
@@ -371,7 +373,7 @@ export default function HomePage() {
 
           {/* 篩選面板 */}
           {showFilters && (
-            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 space-y-4 animate-fade-in">
+            <div className="mt-4 pt-4 border-t border-gray-200/50 dark:border-white/10 space-y-4 animate-fade-in">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {/* 活動篩選 */}
                 <div>
