@@ -378,41 +378,60 @@ export default function ListingDetailPage() {
         ) : undefined}
       />
 
-      <div className="pt-20 pb-24">
-        {/* 主要資訊 */}
-        <div className="bg-white dark:bg-gray-800 px-4 py-6 border-b border-gray-100 dark:border-gray-700">
-          {/* 票券類型標籤 */}
-          <div className="mb-3">
-            <TicketTypeTag type={listing.ticketType} size="md" />
+      <div className="relative z-10 pt-20 pb-32 max-w-3xl mx-auto px-4">
+        {/* 主要資訊卡片 - Glassmorphism */}
+        <GlassCard className="mb-6">
+          {/* 票券類型標籤 - 漸層風格 */}
+          <div className="mb-4">
+            {(() => {
+              const typeStyles: Record<string, { color: string; icon: string }> = {
+                find_companion: { color: 'from-blue-500 to-cyan-500', icon: '🤝' },
+                sub_ticket_transfer: { color: 'from-purple-500 to-pink-500', icon: '🎫' },
+                ticket_exchange: { color: 'from-orange-500 to-amber-500', icon: '🔄' },
+              };
+              const style = typeStyles[listing.ticketType] || typeStyles.find_companion;
+              const labels: Record<string, string> = {
+                find_companion: tTicket('findCompanion'),
+                sub_ticket_transfer: tTicket('subTicketTransfer'),
+                ticket_exchange: tTicket('ticketExchange'),
+              };
+              return (
+                <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-white font-semibold bg-gradient-to-r ${style.color} shadow-lg`}>
+                  <span className="text-xl">{style.icon}</span>
+                  {labels[listing.ticketType]}
+                </span>
+              );
+            })()}
           </div>
 
-          {/* 活動名稱 + 分享按鈕 */}
-          <div className="flex items-start justify-between gap-2 mb-4">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{listing.eventName}</h1>
+          {/* 活動名稱 */}
+          <div className="flex items-start justify-between gap-3 mb-4">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{listing.eventName}</h1>
             <button
               onClick={() => setShowShareModal(true)}
-              className="flex-shrink-0 p-2 rounded-lg text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400 transition-colors"
-              title={t('share', { defaultValue: '分享' })}
+              className="flex-shrink-0 p-2 rounded-lg text-gray-400 dark:text-gray-400 hover:text-pink-500 dark:hover:text-white hover:bg-pink-50 dark:hover:bg-white/10 transition-all"
             >
               <Share2 className="w-5 h-5" />
             </button>
           </div>
 
-          {/* 活動資訊 */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
-              <MapPin className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-              <span>{listing.venue}</span>
-            </div>
+          {/* 場館資訊 */}
+          <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300 mb-4">
+            <MapPin className="w-5 h-5 text-cyan-500 dark:text-cyan-400" />
+            <span>{listing.venue}</span>
+          </div>
 
-            {/* 協調提示 */}
-            <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-3">
-              <p className="text-sm text-blue-700 dark:text-blue-200">
-                {t('coordinationNote', { defaultValue: '集合時間與地點由雙方在配對成功後自行協調' })}
+          {/* 協調提示 - Glassmorphism 風格 */}
+          <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 rounded-xl p-4 flex gap-3">
+            <AlertTriangle className="w-5 h-5 text-blue-500 dark:text-blue-400 shrink-0 mt-0.5" />
+            <div className="text-sm text-blue-700 dark:text-blue-200">
+              <p className="font-medium">{t('aboutMeetup', { defaultValue: '關於集合時間與地點' })}</p>
+              <p className="text-blue-600 dark:text-blue-300/80 mt-1">
+                {t('coordinationNote', { defaultValue: '活動日期、集合時間與地點由雙方在配對成功後自行協調。' })}
               </p>
             </div>
           </div>
-        </div>
+        </GlassCard>
 
         {/* 票種資訊 */}
         <div className="px-4 py-4">
@@ -510,6 +529,23 @@ export default function ListingDetailPage() {
                 <></>
               )}
             </div>
+
+            {/* 價格區塊 - Aurora Style (如 test-info) */}
+            {listing.originalPriceJpy > 0 && (
+              <div className="relative rounded-xl overflow-hidden mt-6">
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-100 to-cyan-100 dark:from-emerald-500/20 dark:to-cyan-500/20" />
+                <div className="relative grid grid-cols-2 divide-x divide-gray-200 dark:divide-white/10 backdrop-blur-sm">
+                  <div className="p-4 text-center">
+                    <span className="text-xs text-emerald-600 dark:text-emerald-300 block mb-1">{t('askingPrice', { defaultValue: '希望分攤' })}</span>
+                    <span className="text-3xl font-bold text-emerald-700 dark:text-white">¥{listing.askingPriceJpy.toLocaleString()}</span>
+                  </div>
+                  <div className="p-4 text-center bg-gray-50/50 dark:bg-black/20">
+                    <span className="text-xs text-gray-500 dark:text-white/50 block mb-1">{t('originalPrice', { defaultValue: '定價' })}</span>
+                    <span className="text-3xl font-medium text-gray-600 dark:text-white/70">¥{listing.originalPriceJpy.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </GlassCard>
         </div>
 
@@ -656,46 +692,54 @@ export default function ListingDetailPage() {
         </div>
       </div>
 
-      {/* 底部操作列 */}
-      <div className="fixed bottom-16 left-0 right-0 lg:left-64 lg:bottom-0 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-3 safe-area-bottom">
-        {isCheckingApplication ? (
-          <Button fullWidth disabled variant="secondary">
-            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-            {tCommon('loading')}
-          </Button>
-        ) : isHost ? (
-          <Button fullWidth disabled variant="secondary">
-            {t('ownListing', { defaultValue: '自己主辦的活動' })}
-          </Button>
-        ) : hasApplied ? (
-          <Button fullWidth disabled variant="secondary">
-            <Check className="w-5 h-5 mr-2" />
-            {applicationStatus === 'pending' && t('applied')}
-            {applicationStatus === 'accepted' && t('matched')}
-            {applicationStatus === 'rejected' && t('rejected')}
-          </Button>
-        ) : listing.availableSlots === 0 ? (
-          <Button fullWidth disabled variant="secondary">
-            {t('full')}
-          </Button>
-        ) : (
-          <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              className="flex-1"
-              onClick={() => setShowInquiryModal(true)}
-            >
-              <MessageCircle className="w-5 h-5 mr-2" />
-              {t('askQuestion', { defaultValue: '發問' })}
-            </Button>
-            <Button
-              className="flex-1"
-              onClick={() => setShowApplyAgreement(true)}
-            >
-              {t('apply')}
-            </Button>
-          </div>
-        )}
+      {/* 底部操作列 - Glassmorphism Style (如 test-info) */}
+      <div className="fixed bottom-0 left-0 right-0 z-30 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/50 dark:border-white/10 px-4 py-4 safe-area-bottom">
+        <div className="max-w-3xl mx-auto">
+          {isCheckingApplication ? (
+            <div className="flex-1 py-3.5 px-6 rounded-xl font-semibold bg-gray-200 dark:bg-gray-700/50 text-gray-400 flex items-center justify-center gap-2">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              {tCommon('loading')}
+            </div>
+          ) : isHost ? (
+            <div className="flex-1 py-3.5 px-6 rounded-xl font-semibold bg-gray-200 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 flex items-center justify-center">
+              {t('ownListing', { defaultValue: '自己主辦的活動' })}
+            </div>
+          ) : hasApplied ? (
+            <div className="flex gap-3">
+              <button
+                className="flex-1 py-3.5 px-6 rounded-xl font-semibold bg-red-500/20 text-red-500 dark:text-red-400 border border-red-300 dark:border-red-500/30 hover:bg-red-500/30 transition-all flex items-center justify-center gap-2"
+              >
+                {t('cancelApply', { defaultValue: '取消申請' })}
+              </button>
+              <div className="flex-1 py-3.5 px-6 rounded-xl font-semibold bg-gray-200 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 flex items-center justify-center gap-2">
+                <Check className="w-5 h-5" />
+                {applicationStatus === 'pending' && t('applied')}
+                {applicationStatus === 'accepted' && t('matched')}
+                {applicationStatus === 'rejected' && t('rejected')}
+              </div>
+            </div>
+          ) : listing.availableSlots === 0 ? (
+            <div className="flex-1 py-3.5 px-6 rounded-xl font-semibold bg-gray-200 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 flex items-center justify-center">
+              {t('full')}
+            </div>
+          ) : (
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowInquiryModal(true)}
+                className="flex-1 py-3.5 px-6 rounded-xl font-semibold bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-white hover:bg-gray-200 dark:hover:bg-white/20 transition-all flex items-center justify-center gap-2"
+              >
+                <MessageCircle className="w-5 h-5" />
+                {t('askQuestion', { defaultValue: '發問' })}
+              </button>
+              <button
+                onClick={() => setShowApplyAgreement(true)}
+                className="flex-1 py-3.5 px-6 rounded-xl font-semibold bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
+              >
+                {t('apply')}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* 申請警告彈窗 */}
