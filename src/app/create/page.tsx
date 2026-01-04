@@ -8,6 +8,7 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { useTranslations } from 'next-intl';
 import Header from '@/components/layout/Header';
 import Card from '@/components/ui/Card';
+import AuroraBackground from '@/components/ui/AuroraBackground';
 import Button from '@/components/ui/Button';
 import { Input, Textarea } from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
@@ -418,7 +419,10 @@ export default function CreateListingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 relative">
+      {/* Aurora 背景效果 */}
+      <AuroraBackground />
+
       {/* 創建警告彈窗 */}
       <AgreementModal
         isOpen={showAgreement}

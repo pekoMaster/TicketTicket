@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import { useSupabaseClient } from '@/hooks/useSupabaseClient';
 import { useAdmin } from '@/contexts/AdminContext';
 import Header from '@/components/layout/Header';
+import AuroraBackground from '@/components/ui/AuroraBackground';
 import SafetyBanner from '@/components/ui/SafetyBanner';
 import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
@@ -499,7 +500,10 @@ export default function ChatPage() {
   // 注意：自動顯示取消請求回應彈窗的邏輯已移至下方的 JSX 渲染中處理
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col relative">
+      {/* Aurora 背景效果 */}
+      <AuroraBackground />
+
       {/* Header */}
       <Header
         title={otherUser ? tCommon('chatWith', { name: otherUser.username }) : tCommon('chat')}

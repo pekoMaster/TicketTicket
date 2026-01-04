@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import ListingCard from '@/components/features/ListingCard';
 import ListingListItem from '@/components/features/ListingListItem';
 import ListingCardSkeleton from '@/components/features/ListingCardSkeleton';
+import AuroraBackground from '@/components/ui/AuroraBackground';
 
 import { Input } from '@/components/ui/Input';
 import {
@@ -295,7 +296,10 @@ export default function HomePage() {
   const ticketTypes: TicketType[] = ['find_companion', 'sub_ticket_transfer', 'ticket_exchange'];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col relative">
+      {/* Aurora 背景效果 */}
+      <AuroraBackground />
+
       {/* Header - mobile only */}
       <header className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 sticky top-0 z-30 lg:hidden">
         <div className="px-4 py-4">
