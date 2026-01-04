@@ -365,7 +365,7 @@ export default function EditListingPage() {
   if (loadError || !listing) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
-        <Card className="text-center max-w-sm w-full dark:bg-gray-800">
+        <Card variant="glass" className="text-center max-w-sm w-full">
           <p className="text-gray-500 dark:text-gray-400">
             {loadError === 'Matched' && tEdit('cannotEditMatched')}
             {loadError === 'Forbidden' && tEdit('forbidden', { defaultValue: '您沒有權限編輯此刊登' })}
@@ -384,7 +384,7 @@ export default function EditListingPage() {
   if (showSuccess) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
-        <Card className="text-center max-w-sm w-full dark:bg-gray-800">
+        <Card variant="glass" className="text-center max-w-sm w-full">
           <div className="w-16 h-16 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
             <Check className="w-8 h-8 text-green-500" />
           </div>
@@ -419,7 +419,7 @@ export default function EditListingPage() {
           </Card>
 
           {/* 活動資訊 */}
-          <Card>
+          <Card variant="glass">
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">
               {t('eventInfo')}
             </h3>
@@ -477,7 +477,7 @@ export default function EditListingPage() {
           </Card>
 
           {/* 票券資訊 */}
-          <Card>
+          <Card variant="glass">
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
               <Ticket className="w-5 h-5 text-indigo-500" />
               {t('ticketInfo')}
@@ -757,7 +757,7 @@ export default function EditListingPage() {
           </Card>
 
           {/* 發布者資訊 */}
-          <Card>
+          <Card variant="glass">
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
               <User className="w-5 h-5 text-indigo-500" />
               {t('publisherInfo')}

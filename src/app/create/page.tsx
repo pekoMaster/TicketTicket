@@ -351,7 +351,7 @@ export default function CreateListingPage() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Header title={t('title')} showBack />
         <main className="max-w-md mx-auto px-4 py-12">
-          <Card className="p-8 text-center">
+          <Card variant="glass" className="p-8 text-center">
             <div className="w-16 h-16 mx-auto mb-6 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center">
               {needsEmailVerification ? (
                 <Mail className="w-8 h-8 text-amber-600 dark:text-amber-400" />
@@ -406,7 +406,7 @@ export default function CreateListingPage() {
   if (showSuccess) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
-        <Card className="text-center max-w-sm w-full">
+        <Card variant="glass" className="text-center max-w-sm w-full">
           <div className="w-16 h-16 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
             <Check className="w-8 h-8 text-green-500" />
           </div>
@@ -447,7 +447,7 @@ export default function CreateListingPage() {
           </Card>
 
           {/* 活動資訊 */}
-          <Card>
+          <Card variant="glass">
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('eventInfo')}</h3>
 
             <div className="space-y-4">
@@ -519,7 +519,7 @@ export default function CreateListingPage() {
           </Card>
 
           {/* 票券資訊 */}
-          <Card>
+          <Card variant="glass">
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
               <Ticket className="w-5 h-5 text-indigo-500" />
               {t('ticketInfo')}
@@ -764,7 +764,7 @@ export default function CreateListingPage() {
 
           {/* 換票專用欄位 - 只在換票模式顯示 */}
           {isExchangeMode && (
-            <Card>
+            <Card variant="glass">
               <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
                 <span className="text-orange-500 text-lg">🔄</span>
                 {t('exchangeSection', { defaultValue: '換票設定' })}
@@ -850,7 +850,7 @@ export default function CreateListingPage() {
           )}
 
           {/* 發布者資訊 */}
-          <Card>
+          <Card variant="glass">
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
               <User className="w-5 h-5 text-indigo-500" />
               {t('publisherInfo')}
@@ -908,7 +908,7 @@ export default function CreateListingPage() {
           </Card>
 
           {/* 其他注意事項 */}
-          <Card>
+          <Card variant="glass">
             <Textarea
               label={t('otherNotes')}
               placeholder={t('otherNotesPlaceholder')}

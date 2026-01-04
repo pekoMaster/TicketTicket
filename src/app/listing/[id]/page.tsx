@@ -412,7 +412,7 @@ export default function ListingDetailPage() {
 
         {/* 票種資訊 */}
         <div className="px-4 py-4">
-          <Card>
+          <Card variant="glass">
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
               <Ticket className="w-5 h-5 text-indigo-500" />
               {t('ticketInfo')}
@@ -529,7 +529,7 @@ export default function ListingDetailPage() {
         {/* 描述 */}
         {listing.description && (
           <div className="px-4 pb-4">
-            <Card>
+            <Card variant="glass">
               <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">{t('description')}</h3>
               <p className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{listing.description}</p>
             </Card>
@@ -539,7 +539,7 @@ export default function ListingDetailPage() {
         {/* 主辦方資訊 */}
         {host && (
           <div className="px-4 pb-4">
-            <Card>
+            <Card variant="glass">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('host')}</h3>
                 {!isHost && session?.user && (
