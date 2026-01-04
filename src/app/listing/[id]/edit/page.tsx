@@ -455,56 +455,24 @@ export default function EditListingPage() {
                 </div>
               )}
 
-              {/* 日期與時間 */}
-              <div className="grid grid-cols-2 gap-4 [&>*]:min-w-0">
-                <Input
-                  label={t('companionDate')}
-                  type="date"
-                  value={eventDate}
-                  onChange={(e) => setEventDate(e.target.value)}
-                  leftIcon={<Calendar className="w-5 h-5" />}
-                  required
-                />
-                <Input
-                  label={t('gatherTime')}
-                  type="time"
-                  value={meetingTime}
-                  onChange={(e) => setMeetingTime(e.target.value)}
-                  leftIcon={<Clock className="w-5 h-5" />}
-                  required
-                />
-              </div>
-
-              {/* 場地地址（唯讀） */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {t('venueAddress')}
-                </label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    value={venueAddress || venue || t('pleaseSelectEvent')}
-                    readOnly
-                    className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed"
-                  />
-                </div>
-                {!eventName && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    {t('autoFillAfterSelect')}
+              {/* 協調提示 */}
+              <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4 flex gap-3">
+                <Calendar className="w-5 h-5 text-blue-500 dark:text-blue-400 shrink-0 mt-0.5" />
+                <div className="text-sm text-blue-700 dark:text-blue-200">
+                  <p className="font-medium">{t('coordinationTitle', { defaultValue: '關於集合時間與地點' })}</p>
+                  <p className="text-blue-600 dark:text-blue-300 mt-1">
+                    {t('coordinationNote', { defaultValue: '活動日期、集合時間與地點由雙方在配對成功後自行協調。' })}
                   </p>
-                )}
+                </div>
               </div>
 
-              {/* 集合地點 */}
-              <Input
-                label={t('meetingPoint')}
-                placeholder={t('meetingPointPlaceholder')}
-                value={meetingLocation}
-                onChange={(e) => setMeetingLocation(e.target.value)}
-                leftIcon={<MapPin className="w-5 h-5" />}
-                required
-              />
+              {/* 場館名稱（唯讀） */}
+              {venue && (
+                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                  <MapPin className="w-4 h-4 text-gray-400" />
+                  <span>{venue}</span>
+                </div>
+              )}
             </div>
           </Card>
 

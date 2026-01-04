@@ -60,11 +60,7 @@ export default function CreateListingPage() {
   // 表單狀態
   const [eventName, setEventName] = useState('');
   const [artistTags, setArtistTags] = useState<string[]>([]);
-  const [eventDate, setEventDate] = useState('');
   const [venue, setVenue] = useState('');
-  const [venueAddress, setVenueAddress] = useState('');
-  const [meetingTime, setMeetingTime] = useState('');
-  const [meetingLocation, setMeetingLocation] = useState('');
   const [ticketSource, setTicketSource] = useState<TicketSource>('zaiko'); // 票源預設 ZAIKO
   const [ticketType, setTicketType] = useState<TicketType | ''>('');
   const [seatGrade, setSeatGrade] = useState<string>('');
@@ -212,9 +208,6 @@ export default function CreateListingPage() {
 
     const baseValid = (
       eventName.trim() !== '' &&
-      eventDate !== '' &&
-      venue.trim() !== '' &&
-      meetingTime !== '' &&
       hostLanguages.length > 0 &&
       ticketType !== '' &&
       seatGrade !== '' &&
@@ -240,7 +233,7 @@ export default function CreateListingPage() {
       // 一般模式驗證
       return baseValid;
     }
-  }, [eventName, eventDate, venue, meetingTime, hostLanguages, ticketType, seatGrade, ticketCountType, hostNationality, askingPriceJpy, isExchangeMode, exchangeEventName, exchangeSeatGrades, isEventLimitReached, events]);
+  }, [eventName, hostLanguages, ticketType, seatGrade, ticketCountType, hostNationality, askingPriceJpy, isExchangeMode, exchangeEventName, exchangeSeatGrades, isEventLimitReached, events]);
 
   const handleLanguageToggle = (lang: string) => {
     setHostLanguages((prev) =>
@@ -264,16 +257,9 @@ export default function CreateListingPage() {
         setArtistTags([]);
       }
       setVenue(event.venue || '');
-      setVenueAddress(event.venueAddress || '');
-      // 自動填入活動日期
-      if (event.eventDate) {
-        const dateStr = new Date(event.eventDate).toISOString().split('T')[0];
-        setEventDate(dateStr);
-      }
     } else {
       setArtistTags([]);
       setVenue('');
-      setVenueAddress('');
     }
   };
 
@@ -296,10 +282,10 @@ export default function CreateListingPage() {
       const listingData: Parameters<typeof addListing>[0] = {
         eventName,
         artistTags,
-        eventDate,
+        eventDate: null, // 由雙方自行協調
         venue,
-        meetingTime: `${eventDate}T${meetingTime.slice(0, 5)}:00+09:00`,
-        meetingLocation: '', // 欄位已移除，固定為空白
+        meetingTime: null, // 由雙方自行協調
+        meetingLocation: null, // 由雙方自行協調
         totalSlots: ticketCountType === 'duo' ? 2 : 1,
         ticketSource,
         ticketType: ticketType as TicketType,
@@ -511,44 +497,24 @@ export default function CreateListingPage() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label={t('companionDate')}
-                  type="date"
-                  value={eventDate}
-                  onChange={(e) => setEventDate(e.target.value)}
-                  leftIcon={<Calendar className="w-5 h-5" />}
-                  required
-                />
-                <Input
-                  label={t('gatherTime')}
-                  type="time"
-                  value={meetingTime}
-                  onChange={(e) => setMeetingTime(e.target.value)}
-                  leftIcon={<Clock className="w-5 h-5" />}
-                  required
-                />
-                <p className="text-xs text-amber-600 dark:text-amber-400 mt-1 -mb-2">{t('japanTimeHint')}</p>
+              {/* 協調提示 */}
+              <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4 flex gap-3">
+                <Calendar className="w-5 h-5 text-blue-500 dark:text-blue-400 shrink-0 mt-0.5" />
+                <div className="text-sm text-blue-700 dark:text-blue-200">
+                  <p className="font-medium">{t('coordinationTitle', { defaultValue: '關於集合時間與地點' })}</p>
+                  <p className="text-blue-600 dark:text-blue-300 mt-1">
+                    {t('coordinationNote', { defaultValue: '活動日期、集合時間與地點由雙方在配對成功後自行協調。' })}
+                  </p>
+                </div>
               </div>
 
-              {/* 活動現場地址（唯讀） */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                  {t('venueAddress')}
-                </label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
-                  <input
-                    type="text"
-                    value={venueAddress || venue || t('pleaseSelectEvent')}
-                    readOnly
-                    className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 cursor-not-allowed"
-                  />
+              {/* 場館名稱（唯讀） */}
+              {venue && (
+                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                  <MapPin className="w-4 h-4 text-gray-400" />
+                  <span>{venue}</span>
                 </div>
-                {!eventName && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('autoFillAfterSelect')}</p>
-                )}
-              </div>
+              )}
             </div>
           </Card>
 

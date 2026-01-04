@@ -130,10 +130,10 @@ interface AppContextType {
 interface CreateListingData {
   eventName: string;
   artistTags?: string[];
-  eventDate: string;
+  eventDate: string | null;
   venue: string;
-  meetingTime: string;
-  meetingLocation: string;
+  meetingTime: string | null;
+  meetingLocation: string | null;
   totalSlots?: number;
   originalPriceJpy?: number;
   askingPriceJpy?: number;

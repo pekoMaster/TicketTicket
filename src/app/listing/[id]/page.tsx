@@ -397,20 +397,15 @@ export default function ListingDetailPage() {
           {/* 活動資訊 */}
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
-              <Calendar className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-              <span>{formatDate(listing.eventDate)}</span>
-            </div>
-            <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
               <MapPin className="w-5 h-5 text-gray-400 dark:text-gray-500" />
               <span>{listing.venue}</span>
             </div>
-            <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
-              <Clock className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-              <span>{t('meetingTime')}: {formatTime(listing.meetingTime)}</span>
-            </div>
-            <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
-              <MapPin className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-              <span>{t('meetingLocation')}: {listing.meetingLocation}</span>
+
+            {/* 協調提示 */}
+            <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-3">
+              <p className="text-sm text-blue-700 dark:text-blue-200">
+                {t('coordinationNote', { defaultValue: '集合時間與地點由雙方在配對成功後自行協調' })}
+              </p>
             </div>
           </div>
         </div>
