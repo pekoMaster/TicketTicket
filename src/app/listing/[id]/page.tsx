@@ -10,6 +10,8 @@ import { useTranslations } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Header from '@/components/layout/Header';
 import Card from '@/components/ui/Card';
+import GlassCard, { InfoRow, AuroraPriceDisplay } from '@/components/ui/GlassCard';
+import AuroraBackground from '@/components/ui/AuroraBackground';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
 import { Textarea } from '@/components/ui/Input';
@@ -318,7 +320,9 @@ export default function ListingDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 relative">
+      {/* Aurora 背景效果 */}
+      <AuroraBackground />
       <Header
         title={t('detail')}
         showBack
@@ -412,11 +416,7 @@ export default function ListingDetailPage() {
 
         {/* 票種資訊 */}
         <div className="px-4 py-4">
-          <Card variant="glass">
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-              <Ticket className="w-5 h-5 text-indigo-500" />
-              {t('ticketInfo')}
-            </h3>
+          <GlassCard title={t('ticketInfo')} icon={Ticket}>
 
             <div className="space-y-3">
               {/* 座位等級 */}
@@ -510,7 +510,7 @@ export default function ListingDetailPage() {
                 <></>
               )}
             </div>
-          </Card>
+          </GlassCard>
         </div>
 
         {/* 票券類型警告 - 只有主辦方看得到，且排除尋找同行者 */}
@@ -529,19 +529,19 @@ export default function ListingDetailPage() {
         {/* 描述 */}
         {listing.description && (
           <div className="px-4 pb-4">
-            <Card variant="glass">
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">{t('description')}</h3>
-              <p className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{listing.description}</p>
-            </Card>
+            <GlassCard>
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">{t('description')}</h3>
+              <p className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{listing.description}</p>
+            </GlassCard>
           </div>
         )}
 
         {/* 主辦方資訊 */}
         {host && (
           <div className="px-4 pb-4">
-            <Card variant="glass">
+            <GlassCard>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('host')}</h3>
+                <h3 className="font-bold text-gray-900 dark:text-white">{t('host')}</h3>
                 {!isHost && session?.user && (
                   <button
                     onClick={() => setShowReportModal(true)}
@@ -607,7 +607,7 @@ export default function ListingDetailPage() {
                   )}
                 </div>
               </div>
-            </Card>
+            </GlassCard>
           </div>
         )}
 
@@ -888,15 +888,17 @@ export default function ListingDetailPage() {
       </Modal>
 
       {/* 檢舉彈窗 */}
-      {host && (
-        <ReportModal
-          isOpen={showReportModal}
-          onClose={() => setShowReportModal(false)}
-          reportedUserId={host.id}
-          reportedUserName={host.username}
-          listingId={listing.id}
-        />
-      )}
+      {
+        host && (
+          <ReportModal
+            isOpen={showReportModal}
+            onClose={() => setShowReportModal(false)}
+            reportedUserId={host.id}
+            reportedUserName={host.username}
+            listingId={listing.id}
+          />
+        )
+      }
 
       {/* 分享彈窗 */}
       <ShareModal
@@ -919,6 +921,6 @@ export default function ListingDetailPage() {
           return [typeText, dateText, venueText, seatText].filter(Boolean).join('\n') + callToAction;
         })()}
       />
-    </div>
+    </div >
   );
 }
