@@ -167,43 +167,6 @@ export async function POST(
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    // 發送 Email 通知給對方（背景執行）
-    (async () => {
-      try {
-        const { sendNotificationEmail } = await import('@/lib/email');
-
-        // 判斷接收者是哪個用戶
-        const recipientId = conversation.host_id === userId ? conversation.guest_id : conversation.host_id;
-
-        // 獲取對話詳情（含刊登資訊）和用戶資訊
-        const [convoResult, senderResult, recipientResult] = await Promise.all([
-          supabaseAdmin.from('conversations')
-            .select('listing:listings!listing_id(event_name)')
-            .eq('id', id)
-            .single(),
-          supabaseAdmin.from('users').select('username').eq('id', userId).single(),
-          supabaseAdmin.from('users').select('email, preferred_locale').eq('id', recipientId).single(),
-        ]);
-
-        if (recipientResult.data?.email && convoResult.data?.listing) {
-          const listing = convoResult.data.listing as unknown as { event_name: string };
-          await sendNotificationEmail(
-            recipientResult.data.email,
-            'new_message',
-            {
-              eventName: listing.event_name || '',
-              senderName: senderResult.data?.username || '用戶',
-              messagePreview: content.trim().slice(0, 100),
-              conversationId: id,
-            },
-            recipientResult.data.preferred_locale || 'zh-TW'
-          );
-        }
-      } catch (emailError) {
-        console.error('Failed to send message email:', emailError);
-      }
-    })();
-
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error in POST /api/conversations/[id]:', error);
