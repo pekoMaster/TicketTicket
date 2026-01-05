@@ -38,7 +38,7 @@ export default function Avatar({ src, alt = '', size = 'md', className = '' }: A
           alt={alt}
           width={sizeInfo.pixels}
           height={sizeInfo.pixels}
-          className="rounded-full object-cover"
+          className="rounded-full object-cover w-full h-full"
           loading="lazy"
           onError={() => setHasError(true)}
           unoptimized={src.startsWith('data:')} // data URL 不需要優化
