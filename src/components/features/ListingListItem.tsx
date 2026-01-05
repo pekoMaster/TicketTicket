@@ -4,8 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useTranslations, useFormatter } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { MapPin, Users, Armchair, Clock } from 'lucide-react';
-import Tag from '@/components/ui/Tag';
+import { MapPin, Users, Armchair, Clock, Check } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
 import UserProfileModal from '@/components/ui/UserProfileModal';
 import { Listing, User, LANGUAGE_OPTIONS, TICKET_COUNT_TYPE_INFO, TICKET_SOURCE_INFO } from '@/types';
@@ -39,106 +38,122 @@ export default function ListingListItem({ listing, host }: ListingListItemProps)
         return info?.label || type;
     };
 
-    const getMainTagInfo = () => {
-        if (listing.ticketType === 'find_companion' && listing.willAssistEntry) {
-            return { label: t('canAssistEntry', { defaultValue: '可協助入場' }), variant: 'success' as const };
-        }
-        const typeLabels: Record<string, { label: string; variant: 'success' | 'info' | 'warning' }> = {
-            find_companion: { label: tTicket('findCompanion', { defaultValue: '尋找同行者' }), variant: 'success' },
-            sub_ticket_transfer: { label: tTicket('subTicketTransfer', { defaultValue: '子票轉讓' }), variant: 'info' },
-            ticket_exchange: { label: tTicket('ticketExchange', { defaultValue: '換票' }), variant: 'warning' },
-        };
-        return typeLabels[listing.ticketType] || { label: listing.ticketType, variant: 'info' as const };
-    };
-
-    const mainTag = getMainTagInfo();
-
     return (
         <>
-            <div className="block bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                <Link href={`/listing/${listing.id}`} className="block p-4">
-                    <div className="flex flex-col gap-2">
-                        {/* Row 1: Event Info & Host */}
-                        <div className="flex items-center gap-4 flex-wrap">
-                            {/* Event Name */}
-                            <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 truncate max-w-[200px] lg:max-w-[300px]" title={listing.eventName}>
-                                {listing.eventName}
-                            </h3>
-
-                            {/* Seat Grade */}
-                            {listing.seatGrade && (
-                                <span className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded whitespace-nowrap">
-                                    <Armchair className="w-3.5 h-3.5" />
-                                    {listing.seatGrade}
-                                </span>
-                            )}
-
-                            {/* Ticket Count Type */}
-                            {listing.ticketCountType && (
-                                <span className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 px-2 py-0.5 rounded border border-gray-100 dark:border-gray-700 whitespace-nowrap">
-                                    <Users className="w-3.5 h-3.5" />
-                                    {getTicketCountLabel(listing.ticketCountType)}
-                                </span>
-                            )}
-
-                            {/* Venue */}
-                            {listing.venue && (
-                                <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
-                                    <MapPin className="w-3.5 h-3.5 text-gray-400" />
-                                    <span className="truncate max-w-[120px]">{listing.venue}</span>
+            {/* V4 Glassmorphism List Item - 3-Row Layout */}
+            <div className="group relative bg-white/90 dark:bg-gray-900/40 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/10 hover:bg-pink-50/50 dark:hover:bg-pink-500/5 transition-all duration-200 cursor-pointer">
+                <Link href={`/listing/${listing.id}`} className="block p-4 sm:p-5">
+                    <div className="flex flex-col gap-3">
+                        
+                        {/* Row 1: Host Info + Price */}
+                        <div className="flex items-center justify-between gap-4">
+                            {/* Left: Host */}
+                            {host && (
+                                <div
+                                    className="flex items-center gap-3 z-10 min-w-0"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setShowUserModal(true);
+                                    }}
+                                >
+                                    <Avatar 
+                                        src={getDisplayAvatar(host)} 
+                                        size="sm" 
+                                        className="ring-2 ring-pink-300/30 dark:ring-pink-500/30 flex-shrink-0" 
+                                    />
+                                    <div className="flex flex-col min-w-0">
+                                        <span className="text-sm font-semibold text-gray-800 dark:text-white truncate">
+                                            {host.username}
+                                        </span>
+                                        <div className="flex items-center gap-1 text-xs text-pink-500 dark:text-pink-400">
+                                            <span>★★★★★</span>
+                                            <span className="text-gray-700 dark:text-white font-medium">{host.rating.toFixed(1)}</span>
+                                            <span className="text-gray-400">({host.reviewCount})</span>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
-
-                            {/* Posted Time */}
-                            <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
-                                <Clock className="w-3 h-3" />
-                                <span>{format.relativeTime(new Date(listing.createdAt))}</span>
-                            </div>
-
-                            {/* Ticket Source TAG */}
-                            <span className={`px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap ${listing.ticketSource === 'lawson'
-                                ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
-                                : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
-                                }`}>
-                                {TICKET_SOURCE_INFO[listing.ticketSource || 'zaiko'].label}
-                            </span>
-
-                            {/* Listing Type */}
-                            <Tag variant={mainTag.variant} size="sm" className="whitespace-nowrap">
-                                {mainTag.label}
-                            </Tag>
-
-                            {/* Price Display */}
+                            
+                            {/* Right: Price - Aurora Style */}
                             {listing.originalPriceJpy > 0 && (
-                                <div className="flex items-center gap-1.5 text-sm whitespace-nowrap">
-                                    <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-50 to-cyan-50 dark:from-emerald-500/10 dark:to-cyan-500/10 flex-shrink-0">
+                                    <span className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">
                                         ¥{listing.askingPriceJpy.toLocaleString()}
                                     </span>
-                                    <span className="text-gray-400 dark:text-gray-500">/</span>
-                                    <span className="text-gray-500 dark:text-gray-400">
+                                    <span className="text-gray-400 text-xs">/</span>
+                                    <span className="text-gray-500 dark:text-gray-400 text-sm">
                                         ¥{listing.originalPriceJpy.toLocaleString()}
                                     </span>
                                 </div>
                             )}
+                        </div>
 
-                            {/* Spacer to push Host to right */}
-                            <div className="flex-1 min-w-[20px]" />
-
-                            {/* Host Info */}
-                            {host && (
-                                <div
-                                    className="flex items-center gap-2 cursor-pointer z-10"
-                                    onClick={(e) => {
-                                        e.preventDefault(); // Prevent navigating to listing
-                                        setShowUserModal(true);
-                                    }}
-                                >
-                                    <Avatar src={getDisplayAvatar(host)} size="sm" />
-                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate max-w-[150px]">
-                                        {host.username}
+                        {/* Row 2: Event Name + Tags */}
+                        <div className="flex items-start sm:items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
+                            <h3 className="text-base font-bold text-gray-900 dark:text-white line-clamp-2 sm:truncate flex-1 group-hover:text-pink-600 dark:group-hover:text-pink-300 transition-colors">
+                                {listing.eventName}
+                            </h3>
+                            
+                            {/* Tags */}
+                            <div className="flex gap-2 flex-shrink-0 flex-wrap sm:flex-nowrap">
+                                {/* Ticket Source - Gradient */}
+                                <span className={`px-2.5 py-1 rounded-lg text-xs font-bold shadow-sm ${
+                                    listing.ticketSource === 'lawson'
+                                        ? 'bg-gradient-to-r from-green-600 to-green-500 text-white'
+                                        : 'bg-gradient-to-r from-blue-600 to-blue-500 text-white'
+                                }`}>
+                                    {TICKET_SOURCE_INFO[listing.ticketSource || 'zaiko'].label}
+                                </span>
+                                
+                                {/* Entry Assist */}
+                                {listing.ticketType === 'find_companion' && listing.willAssistEntry && (
+                                    <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-gradient-to-r from-emerald-600 to-green-500 text-white shadow-sm flex items-center gap-1">
+                                        <Check className="w-3 h-3" />
+                                        <span className="hidden sm:inline">{t('canAssistEntry', { defaultValue: '可協助入場' })}</span>
+                                        <span className="sm:hidden">協助</span>
                                     </span>
-                                </div>
+                                )}
+                                
+                                {/* Sub-ticket transfer */}
+                                {listing.ticketType === 'sub_ticket_transfer' && (
+                                    <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-sm">
+                                        {tTicket('subTicketTransfer', { defaultValue: '子票轉讓' })}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Row 3: Details - Icon + Text */}
+                        <div className="flex items-center gap-3 sm:gap-5 text-xs text-gray-500 dark:text-gray-400 flex-wrap">
+                            {/* Seat Grade */}
+                            {listing.seatGrade && (
+                                <span className="flex items-center gap-1.5 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded-md">
+                                    <Armchair className="w-3.5 h-3.5 text-pink-500 dark:text-pink-400" />
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">{listing.seatGrade}</span>
+                                </span>
                             )}
+                            
+                            {/* Ticket Count */}
+                            {listing.ticketCountType && (
+                                <span className="flex items-center gap-1.5 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded-md">
+                                    <Users className="w-3.5 h-3.5 text-purple-500 dark:text-purple-400" />
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">{getTicketCountLabel(listing.ticketCountType)}</span>
+                                </span>
+                            )}
+                            
+                            {/* Venue */}
+                            {listing.venue && (
+                                <span className="flex items-center gap-1.5">
+                                    <MapPin className="w-3.5 h-3.5 text-gray-400" />
+                                    <span className="truncate max-w-[100px] sm:max-w-[150px]">{listing.venue}</span>
+                                </span>
+                            )}
+                            
+                            {/* Posted Time - Push to right */}
+                            <span className="flex items-center gap-1.5 ml-auto text-gray-400">
+                                <Clock className="w-3 h-3" />
+                                {format.relativeTime(new Date(listing.createdAt))}
+                            </span>
                         </div>
                     </div>
                 </Link>
