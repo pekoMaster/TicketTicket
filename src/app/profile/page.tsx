@@ -755,7 +755,7 @@ export default function ProfilePage() {
         {/* Discord 社群連結 - 手機版 */}
         <div className="flex justify-center lg:hidden mb-3">
           <a
-            href="https://discord.gg/7u4jKE7c5V"
+            href="https://discord.gg/KpPD9cpdH8"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#5865F2] hover:bg-[#4752C4] text-white text-sm font-medium transition-colors shadow-sm"

@@ -91,7 +91,7 @@ export default function SideNav() {
         <div className="flex gap-2">
           <LanguageSwitcher />
           <a
-            href="https://discord.gg/7u4jKE7c5V"
+            href="https://discord.gg/KpPD9cpdH8"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#5865F2] hover:bg-[#4752C4] text-white text-sm font-medium transition-colors"
