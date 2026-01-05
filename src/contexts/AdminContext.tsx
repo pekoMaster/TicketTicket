@@ -134,9 +134,9 @@ export function AdminProvider({ children }: { children: ReactNode }) {
           imageUrl: eventData.imageUrl,
           description: eventData.description,
           ticketPriceTiers: eventData.ticketPriceTiers?.map(tier => ({
-            seat_grade: tier.seatGrade,
-            ticket_count_type: tier.ticketCountType,
-            price_jpy: tier.priceJpy,
+            seatGrade: tier.seatGrade,
+            ticketCountType: tier.ticketCountType,
+            priceJpy: tier.priceJpy,
           })),
           category: eventData.category,
           isActive: eventData.isActive,
