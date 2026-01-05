@@ -85,7 +85,7 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
               <Avatar
                 src={getDisplayAvatar(host)}
                 size="md"
-                className="ring-2 ring-pink-300/30 dark:ring-pink-500/30 group-hover/header:ring-pink-400/60 dark:group-hover/header:ring-pink-500/60 transition-all"
+                className="transition-all"
               />
               {/* 上線狀態指示器 */}
               <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900" />

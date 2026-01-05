@@ -44,7 +44,7 @@ export default function ListingListItem({ listing, host }: ListingListItemProps)
             <div className="group relative bg-white/90 dark:bg-gray-900/40 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/10 hover:bg-pink-50/50 dark:hover:bg-pink-500/5 transition-all duration-200 cursor-pointer">
                 <Link href={`/listing/${listing.id}`} className="block p-4 sm:p-5">
                     <div className="flex flex-col gap-3">
-                        
+
                         {/* Row 1: Host Info + Price */}
                         <div className="flex items-center justify-between gap-4">
                             {/* Left: Host */}
@@ -56,10 +56,10 @@ export default function ListingListItem({ listing, host }: ListingListItemProps)
                                         setShowUserModal(true);
                                     }}
                                 >
-                                    <Avatar 
-                                        src={getDisplayAvatar(host)} 
-                                        size="sm" 
-                                        className="ring-2 ring-pink-300/30 dark:ring-pink-500/30 flex-shrink-0" 
+                                    <Avatar
+                                        src={getDisplayAvatar(host)}
+                                        size="sm"
+                                        className="flex-shrink-0"
                                     />
                                     <div className="flex flex-col min-w-0">
                                         <span className="text-sm font-semibold text-gray-800 dark:text-white truncate">
@@ -73,7 +73,7 @@ export default function ListingListItem({ listing, host }: ListingListItemProps)
                                     </div>
                                 </div>
                             )}
-                            
+
                             {/* Right: Price - Aurora Style */}
                             {listing.originalPriceJpy > 0 && (
                                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-50 to-cyan-50 dark:from-emerald-500/10 dark:to-cyan-500/10 flex-shrink-0">
@@ -93,18 +93,17 @@ export default function ListingListItem({ listing, host }: ListingListItemProps)
                             <h3 className="text-base font-bold text-gray-900 dark:text-white line-clamp-2 sm:truncate flex-1 group-hover:text-pink-600 dark:group-hover:text-pink-300 transition-colors">
                                 {listing.eventName}
                             </h3>
-                            
+
                             {/* Tags */}
                             <div className="flex gap-2 flex-shrink-0 flex-wrap sm:flex-nowrap">
                                 {/* Ticket Source - Gradient */}
-                                <span className={`px-2.5 py-1 rounded-lg text-xs font-bold shadow-sm ${
-                                    listing.ticketSource === 'lawson'
+                                <span className={`px-2.5 py-1 rounded-lg text-xs font-bold shadow-sm ${listing.ticketSource === 'lawson'
                                         ? 'bg-gradient-to-r from-green-600 to-green-500 text-white'
                                         : 'bg-gradient-to-r from-blue-600 to-blue-500 text-white'
-                                }`}>
+                                    }`}>
                                     {TICKET_SOURCE_INFO[listing.ticketSource || 'zaiko'].label}
                                 </span>
-                                
+
                                 {/* Entry Assist */}
                                 {listing.ticketType === 'find_companion' && listing.willAssistEntry && (
                                     <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-gradient-to-r from-emerald-600 to-green-500 text-white shadow-sm flex items-center gap-1">
@@ -113,7 +112,7 @@ export default function ListingListItem({ listing, host }: ListingListItemProps)
                                         <span className="sm:hidden">協助</span>
                                     </span>
                                 )}
-                                
+
                                 {/* Sub-ticket transfer */}
                                 {listing.ticketType === 'sub_ticket_transfer' && (
                                     <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-sm">
@@ -132,7 +131,7 @@ export default function ListingListItem({ listing, host }: ListingListItemProps)
                                     <span className="font-medium text-gray-700 dark:text-gray-300">{listing.seatGrade}</span>
                                 </span>
                             )}
-                            
+
                             {/* Ticket Count */}
                             {listing.ticketCountType && (
                                 <span className="flex items-center gap-1.5 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded-md">
@@ -140,7 +139,7 @@ export default function ListingListItem({ listing, host }: ListingListItemProps)
                                     <span className="font-medium text-gray-700 dark:text-gray-300">{getTicketCountLabel(listing.ticketCountType)}</span>
                                 </span>
                             )}
-                            
+
                             {/* Venue */}
                             {listing.venue && (
                                 <span className="flex items-center gap-1.5">
@@ -148,7 +147,7 @@ export default function ListingListItem({ listing, host }: ListingListItemProps)
                                     <span className="truncate max-w-[100px] sm:max-w-[150px]">{listing.venue}</span>
                                 </span>
                             )}
-                            
+
                             {/* Posted Time - Push to right */}
                             <span className="flex items-center gap-1.5 ml-auto text-gray-400">
                                 <Clock className="w-3 h-3" />
