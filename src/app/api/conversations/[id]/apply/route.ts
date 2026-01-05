@@ -90,6 +90,35 @@ export async function POST(
         is_read: false,
       });
 
+    // 發送 Email 通知給主辦方（背景執行，不阻塞回應）
+    (async () => {
+      try {
+        const { sendNotificationEmail } = await import('@/lib/email');
+
+        // 獲取申請者和主辦方資訊
+        const [guestResult, hostResult] = await Promise.all([
+          supabaseAdmin.from('users').select('username').eq('id', userId).single(),
+          supabaseAdmin.from('users').select('email, preferred_locale').eq('id', conversation.host_id).single(),
+        ]);
+
+        if (hostResult.data?.email) {
+          await sendNotificationEmail(
+            hostResult.data.email,
+            'new_application',
+            {
+              eventName: conversation.listing?.event_name || '',
+              senderName: guestResult.data?.username || '用戶',
+              conversationId: id,
+              listingId: conversation.listing_id,
+            },
+            hostResult.data.preferred_locale || 'zh-TW'
+          );
+        }
+      } catch (emailError) {
+        console.error('Failed to send application email:', emailError);
+      }
+    })();
+
     return NextResponse.json({
       success: true,
       conversation_type: 'pending',

@@ -106,6 +106,34 @@ export async function POST(
         is_read: false,
       });
 
+    // 6. 發送 Email 通知給申請人（背景執行）
+    (async () => {
+      try {
+        const { sendNotificationEmail } = await import('@/lib/email');
+
+        const { data: guestData } = await supabaseAdmin
+          .from('users')
+          .select('email, preferred_locale')
+          .eq('id', conversation.guest_id)
+          .single();
+
+        if (guestData?.email) {
+          await sendNotificationEmail(
+            guestData.email,
+            'application_accepted',
+            {
+              eventName: conversation.listing?.event_name || '',
+              conversationId: id,
+              listingId: listingId,
+            },
+            guestData.preferred_locale || 'zh-TW'
+          );
+        }
+      } catch (emailError) {
+        console.error('Failed to send acceptance email:', emailError);
+      }
+    })();
+
     return NextResponse.json({
       success: true,
       conversation_type: 'matched',
