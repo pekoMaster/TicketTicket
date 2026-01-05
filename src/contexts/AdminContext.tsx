@@ -141,6 +141,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
           category: eventData.category,
           isActive: eventData.isActive,
           maxListingsPerUser: eventData.maxListingsPerUser || 2,
+          discordWebhookUrl: (eventData as { discordWebhookUrl?: string }).discordWebhookUrl,
         }),
       });
 
