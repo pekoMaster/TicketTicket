@@ -22,6 +22,7 @@ interface ApiEvent {
   category: 'concert' | 'fan_meeting' | 'expo' | 'streaming' | 'other';
   is_active: boolean;
   max_listings_per_user: number;
+  discord_webhook_url?: string;
   created_at: string;
   updated_at: string;
 }
@@ -46,9 +47,10 @@ function convertApiEventToEvent(apiEvent: ApiEvent): HololiveEvent {
     category: apiEvent.category,
     isActive: apiEvent.is_active,
     maxListingsPerUser: apiEvent.max_listings_per_user || 2,
+    discordWebhookUrl: apiEvent.discord_webhook_url,
     createdAt: new Date(apiEvent.created_at),
     updatedAt: new Date(apiEvent.updated_at),
-  };
+  } as HololiveEvent & { discordWebhookUrl?: string };
 }
 
 interface AdminContextType {
