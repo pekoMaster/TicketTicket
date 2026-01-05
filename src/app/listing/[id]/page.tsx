@@ -588,8 +588,12 @@ export default function ListingDetailPage() {
                   </button>
                 )}
               </div>
-              <div className="flex items-center gap-3">
-                <Avatar src={host.customAvatarUrl || host.avatarUrl} size="lg" />
+              <div className="flex items-start gap-4">
+                {/* 頭像 with gradient glow */}
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full blur-sm opacity-50" />
+                  <Avatar src={host.customAvatarUrl || host.avatarUrl} size="lg" className="relative ring-2 ring-white/30 dark:ring-white/30" />
+                </div>
                 <div className="flex-1">
                   <p className="font-medium text-gray-900 dark:text-gray-100">{host.username}</p>
                   {/* 評價 - 可點擊跳轉 */}
@@ -680,13 +684,18 @@ export default function ListingDetailPage() {
           <SafetyBanner variant="listing" />
         </div>
 
-        {/* 零手續費聲明 */}
+        {/* 零手續費聲明 - Glassmorphism Style */}
         <div className="px-4 pb-4">
-          <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-4 flex items-start gap-3">
-            <ShieldCheck className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="font-medium text-green-800 dark:text-green-300">{t('noFeeTitle')}</p>
-              <p className="text-sm text-green-700 dark:text-green-400 mt-1">{t('noFeeDesc')}</p>
+          <div className="relative bg-white/80 dark:bg-gray-900/40 backdrop-blur-xl rounded-2xl p-5 border border-emerald-200/50 dark:border-emerald-500/30 shadow-xl">
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-50/50 dark:from-white/5 to-transparent pointer-events-none" />
+            <div className="relative flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              <div>
+                <p className="font-semibold text-emerald-700 dark:text-emerald-300">{t('noFeeTitle')}</p>
+                <p className="text-sm text-emerald-600/80 dark:text-emerald-400/80 mt-1">{t('noFeeDesc')}</p>
+              </div>
             </div>
           </div>
         </div>

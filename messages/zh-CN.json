@@ -222,6 +222,7 @@
     "shareExchange": "换票募集中！",
     "shareSeatSuffix": "席",
     "shareCallToAction": "快来看看详情！",
+    "aboutMeetup": "关于集合时间与地点",
     "share": "分享"
   },
   "applicants": {
@@ -386,7 +387,9 @@
     "stepEmailVerification": "电子邮件验证",
     "stepPhoneVerification": "手机号码验证",
     "goVerifyEmail": "前往验证电子邮件",
-    "goVerifyPhone": "前往验证手机号码"
+    "goVerifyPhone": "前往验证手机号码",
+    "confirmPublish": "确认发布信息",
+    "confirmSubmitHint": "请确认以上信息正确无误，点击下方「发布」按钮完成发布。"
   },
   "ticketType": {
     "findCompanion": "寻找同行者",

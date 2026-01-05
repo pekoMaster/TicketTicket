@@ -408,19 +408,19 @@ export default function EditListingPage() {
 
       <Header title={tEdit('title')} showBack />
 
-      <div className="pt-20 pb-24 px-4">
+      <div className="relative z-10 pt-20 pb-24 px-4">
         <div className="space-y-6 max-w-2xl mx-auto">
 
-          {/* 重要提醒 */}
-          <Card className="bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800">
+          {/* 重要提醒 - Glassmorphism Style */}
+          <div className="bg-amber-50/80 dark:bg-amber-500/10 backdrop-blur-xl border border-amber-200/50 dark:border-amber-500/30 rounded-2xl p-5 shadow-lg">
             <div className="flex gap-3">
               <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
               <div className="text-sm text-amber-800 dark:text-amber-200">
-                <p className="font-medium mb-1">{t('importantReminder')}</p>
-                <p>{t('platformNotice')}</p>
+                <p className="font-semibold mb-1">{t('importantReminder')}</p>
+                <p className="text-amber-700 dark:text-amber-300">{t('platformNotice')}</p>
               </div>
             </div>
-          </Card>
+          </div>
 
           {/* 活動資訊 */}
           <Card variant="glass">
@@ -506,12 +506,12 @@ export default function EditListingPage() {
                         }
                       }}
                       className={`
-                        py-2.5 px-4 rounded-lg border-2 text-sm font-semibold transition-all
+                        py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-300
                         ${ticketSource === source
                           ? source === 'zaiko'
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                            : 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 text-gray-700 dark:text-gray-200'}
+                            ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/30 scale-105'
+                            : 'bg-gradient-to-r from-green-600 to-green-500 text-white shadow-lg shadow-green-500/30 scale-105'
+                          : 'bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-700 dark:text-gray-200'}
                       `}
                     >
                       {TICKET_SOURCE_INFO[source].label}
@@ -539,10 +539,10 @@ export default function EditListingPage() {
                         type="button"
                         onClick={() => setSeatGrade(grade)}
                         className={`
-                          py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all
+                          py-2.5 px-4 rounded-xl text-sm font-medium transition-all duration-300
                           ${seatGrade === grade
-                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300'
-                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 text-gray-700 dark:text-gray-300'}
+                            ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30 scale-105'
+                            : 'bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300'}
                         `}
                       >
                         {SEAT_GRADE_INFO[grade]?.label || grade}
@@ -561,10 +561,10 @@ export default function EditListingPage() {
                         type="button"
                         onClick={() => setSeatGrade(grade)}
                         className={`
-                          py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all
+                          py-2.5 px-4 rounded-xl text-sm font-medium transition-all duration-300
                           ${seatGrade === grade
-                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300'
-                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 text-gray-700 dark:text-gray-300'}
+                            ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30 scale-105'
+                            : 'bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300'}
                         `}
                       >
                         {SEAT_GRADE_INFO[grade]?.label || grade}
@@ -592,10 +592,10 @@ export default function EditListingPage() {
                         type="button"
                         onClick={() => setTicketCountType(type)}
                         className={`
-                          py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all
+                          py-3 px-4 rounded-xl text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2
                           ${ticketCountType === type
-                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300'
-                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 text-gray-700 dark:text-gray-300'}
+                            ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30 scale-105'
+                            : 'bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300'}
                         `}
                       >
                         {TICKET_COUNT_TYPE_INFO[type].label}
@@ -869,19 +869,24 @@ export default function EditListingPage() {
         </div >
       </div >
 
-      {/* 底部提交按鈕 */}
-      < div className="fixed bottom-16 left-0 right-0 lg:left-64 lg:bottom-0 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-3 safe-area-bottom" >
+      {/* 底部提交按鈕 - Glassmorphism Style */}
+      <div className="fixed bottom-0 left-0 right-0 z-30 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/50 dark:border-white/10 px-4 py-4 safe-area-bottom">
         <div className="max-w-2xl mx-auto">
-          <Button
-            fullWidth
+          <button
             onClick={handleEditClick}
-            disabled={!isFormValid}
-            loading={isSubmitting}
+            disabled={!isFormValid || isSubmitting}
+            className={`
+              w-full py-3.5 px-6 rounded-xl font-semibold transition-all flex items-center justify-center gap-2
+              ${isFormValid && !isSubmitting
+                ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 hover:scale-[1.02]'
+                : 'bg-gray-200 dark:bg-gray-700/50 text-gray-400 dark:text-gray-500 cursor-not-allowed'}
+            `}
           >
+            {isSubmitting && <Loader2 className="w-5 h-5 animate-spin" />}
             {tEdit('update')}
-          </Button>
+          </button>
         </div>
-      </div >
+      </div>
 
       {/* 編輯警告 Modal */}
       < Modal

@@ -222,6 +222,7 @@
     "shareExchange": "Ticket exchange wanted!",
     "shareSeatSuffix": " seat",
     "shareCallToAction": "Check it out!",
+    "aboutMeetup": "About Meeting Time & Location",
     "share": "Share"
   },
   "applicants": {
@@ -386,7 +387,9 @@
     "stepEmailVerification": "Email Verification",
     "stepPhoneVerification": "Phone Verification",
     "goVerifyEmail": "Go to Verify Email",
-    "goVerifyPhone": "Go to Verify Phone"
+    "goVerifyPhone": "Go to Verify Phone",
+    "confirmPublish": "Confirm Publish Info",
+    "confirmSubmitHint": "Please confirm the above information is correct, then click Publish button below."
   },
   "ticketType": {
     "findCompanion": "Find Companion",

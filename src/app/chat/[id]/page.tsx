@@ -530,10 +530,10 @@ export default function ChatPage() {
         }
       />
 
-      <div className="flex-1 flex flex-col pt-14">
+      <div className="relative z-10 flex-1 flex flex-col pt-14">
         {/* 安全警告 - 只在已配對時顯示 */}
         {isMatched && (
-          <div className="px-4 py-3 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+          <div className="px-4 py-3 bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/10">
             <SafetyBanner variant="chat" />
           </div>
         )}
@@ -563,11 +563,11 @@ export default function ChatPage() {
           </div>
         )}
 
-        {/* 交易資訊區塊 */}
-        <div className="px-4 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 border-b border-indigo-100 dark:border-indigo-800">
+        {/* 交易資訊區塊 - Glassmorphism Style */}
+        <div className="px-4 py-3 bg-white/80 dark:bg-gray-900/40 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/10">
           {/* 活動名稱 */}
-          <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
-            <Ticket className="w-4 h-4 text-indigo-500" />
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+            <Ticket className="w-4 h-4 text-cyan-500 dark:text-cyan-400" />
             {listing.event_name}
           </h3>
 
@@ -666,9 +666,9 @@ export default function ChatPage() {
 
       </div>
 
-      {/* 票券驗證區塊 - 只在已配對時顯示 */}
+      {/* 票券驗證區塊 - 只在已配對時顯示 - Glassmorphism Style */}
       {isMatched && (
-        <div className="px-4 py-3 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+        <div className="px-4 py-3 bg-white/80 dark:bg-gray-900/40 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/10">
           <div className="flex items-center justify-between mb-3">
             <h4 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
               <CheckCircle className="w-4 h-4 text-green-500" />
@@ -822,43 +822,39 @@ export default function ChatPage() {
 
                 <div
                   className={`
-                      max-w-[70%] rounded-2xl px-4 py-2
+                      max-w-[70%] rounded-2xl px-4 py-2.5
                       ${isMe
-                      ? 'bg-indigo-500 text-white rounded-tr-sm'
-                      : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-tl-sm shadow-sm'}
+                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-br-md'
+                      : 'bg-white/80 dark:bg-white/10 text-gray-900 dark:text-white rounded-bl-md shadow-sm backdrop-blur-sm'}
                     `}
                 >
                   <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
                   {/* 翻譯結果 */}
                   {translations[msg.id] && (
-                    <div className={`mt-2 pt-2 border-t ${isMe ? 'border-indigo-400' : 'border-gray-200 dark:border-gray-600'}`}>
-                      <p className={`text-xs mb-1 ${isMe ? 'text-indigo-200' : 'text-gray-400'}`}>
+                    <div className={`mt-2 pt-2 border-t ${isMe ? 'border-white/30' : 'border-gray-200 dark:border-white/10'}`}>
+                      <p className={`text-xs mb-1 ${isMe ? 'text-white/70' : 'text-gray-400 dark:text-gray-500'}`}>
                         {tChat('translated')}
                       </p>
                       <p className="text-sm whitespace-pre-wrap">{translations[msg.id]}</p>
                     </div>
                   )}
-                  <p className={`text-xs mt-1 ${isMe ? 'text-indigo-200' : 'text-gray-400'}`}>
+                  <p className={`text-xs mt-1 ${isMe ? 'text-white/70' : 'text-gray-400 dark:text-gray-500'}`}>
                     {formatTime(msg.created_at)}
                   </p>
                 </div>
 
-                {/* 翻譯按鈕 - 只有接收方才顯示，放在對話框外右側 */}
+                {/* 翻譯按鈕 - 只有接收方才顯示 */}
                 {!isMe && !translations[msg.id] && (
                   <button
                     onClick={() => handleTranslate(msg.id, msg.content)}
                     disabled={translatingIds.has(msg.id)}
-                    className={`
-                        p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors
-                        text-gray-400 hover:text-gray-600 dark:hover:text-gray-300
-                        ${translatingIds.has(msg.id) ? 'opacity-50' : ''}
-                      `}
+                    className="text-xs text-cyan-500 dark:text-cyan-400 hover:text-cyan-600 dark:hover:text-cyan-300 flex items-center gap-1 p-1 transition-colors"
                     title={tChat('translate')}
                   >
                     {translatingIds.has(msg.id) ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     ) : (
-                      <Languages className="w-4 h-4" />
+                      <Languages className="w-3.5 h-3.5" />
                     )}
                   </button>
                 )}
@@ -869,11 +865,12 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* 輸入區域 */}
-      <div className="bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-3 pb-6 safe-area-bottom">
+      {/* 輸入區域 - Glassmorphism Style */}
+      <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/50 dark:border-white/10 px-4 py-4 pb-6 safe-area-bottom">
         {/* 申請人在 pending 狀態時顯示提示 */}
         {isPending && !conversation.isHost && (
-          <div className="mb-3 p-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 text-sm text-amber-700 dark:text-amber-300 text-center">
+          <div className="mb-3 py-3 px-4 rounded-xl font-medium bg-amber-500/10 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 text-center flex items-center justify-center gap-2">
+            <Clock className="w-4 h-4" />
             {tChat('pendingStatus', { defaultValue: '申請中，等待主辦方回覆' })}
           </div>
         )}
@@ -881,21 +878,18 @@ export default function ChatPage() {
         {/* 主辦方在 pending 狀態時顯示同意按鈕 */}
         {isPending && conversation.isHost && (
           <div className="mb-3">
-            <Button
-              variant="primary"
-              className="w-full"
+            <button
               onClick={handleAccept}
               disabled={isAccepting}
+              className="w-full py-3 px-4 rounded-xl font-semibold bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:shadow-lg hover:shadow-green-500/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              {isAccepting ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : null}
+              {isAccepting && <Loader2 className="w-4 h-4 animate-spin" />}
               {tChat('acceptApplication', { defaultValue: '同意申請' })}
-            </Button>
+            </button>
           </div>
         )}
 
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <input
             type="text"
             placeholder={tCommon('inputMessage')}
@@ -904,39 +898,38 @@ export default function ChatPage() {
             onKeyPress={handleKeyPress}
             disabled={isSending}
             className="
-                flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-full
-                focus:outline-none focus:ring-2 focus:ring-indigo-500
+                flex-1 px-4 py-3 bg-gray-100 dark:bg-white/10 border border-gray-200 dark:border-white/10 rounded-xl
+                focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50
                 text-sm disabled:opacity-50
-                text-gray-900 dark:text-gray-100
+                text-gray-900 dark:text-white
                 placeholder-gray-500 dark:placeholder-gray-400
               "
           />
-          <Button
+          <button
             onClick={handleSend}
             disabled={!inputMessage.trim() || isSending}
-            className="!rounded-full !px-4"
+            className="p-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:shadow-lg hover:shadow-cyan-500/30 transition-all disabled:opacity-50 disabled:hover:shadow-none"
           >
             {isSending ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
               <Send className="w-5 h-5" />
             )}
-          </Button>
+          </button>
 
           {/* 申請人在 inquiry 狀態時顯示申請按鈕 */}
           {isInquiry && !conversation.isHost && (
-            <Button
-              variant="primary"
+            <button
               onClick={() => setShowApplyConfirm(true)}
               disabled={isApplying}
-              className="whitespace-nowrap"
+              className="py-3 px-6 rounded-xl font-semibold bg-gradient-to-r from-pink-600 to-purple-600 text-white hover:shadow-lg hover:shadow-pink-500/30 transition-all whitespace-nowrap disabled:opacity-50 flex items-center gap-2"
             >
               {isApplying ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 tChat('apply', { defaultValue: '申請加入' })
               )}
-            </Button>
+            </button>
           )}
         </div>
       </div>
