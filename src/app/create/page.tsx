@@ -1067,7 +1067,7 @@ export default function CreateListingPage() {
       </div>
 
       {/* 底部導航列 - Glassmorphism Style */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/50 dark:border-white/10 px-4 py-4 safe-area-bottom">
+      <div className="fixed bottom-16 lg:bottom-0 left-0 right-0 z-30 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/50 dark:border-white/10 px-4 py-4 safe-area-bottom">
         <div className="max-w-2xl mx-auto flex gap-3">
           {/* 上一步按鈕 */}
           {currentStep > 1 && (
