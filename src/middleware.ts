@@ -39,6 +39,6 @@ export default auth((req) => {
 export const config = {
   // 匹配所有路由，但排除 API routes、_next/static、_next/image、favicon.ico
   matcher: [
-    "/((?!api/auth|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
   ],
 };
