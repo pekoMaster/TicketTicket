@@ -702,7 +702,7 @@ export default function ListingDetailPage() {
       </div>
 
       {/* 底部操作列 - Glassmorphism Style (如 test-info) */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/50 dark:border-white/10 px-4 py-4 safe-area-bottom">
+      <div className="fixed bottom-16 lg:bottom-0 left-0 right-0 z-30 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/50 dark:border-white/10 px-4 py-4 safe-area-bottom">
         <div className="max-w-3xl mx-auto">
           {isCheckingApplication ? (
             <div className="flex-1 py-3.5 px-6 rounded-xl font-semibold bg-gray-200 dark:bg-gray-700/50 text-gray-400 flex items-center justify-center gap-2">
