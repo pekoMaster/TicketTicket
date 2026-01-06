@@ -224,7 +224,9 @@
     "shareSeatSuffix": "席",
     "shareCallToAction": "快來看看詳情！",
     "aboutMeetup": "關於集合時間與地點",
-    "share": "分享"
+    "share": "分享",
+    "referencePrice": "參考原價",
+    "referencePriceNote": "僅供參考"
   },
   "applicants": {
     "title": "申請者管理",
