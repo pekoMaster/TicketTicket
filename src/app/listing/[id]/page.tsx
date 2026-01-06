@@ -589,11 +589,8 @@ export default function ListingDetailPage() {
                 )}
               </div>
               <div className="flex items-start gap-4">
-                {/* 頭像 with gradient glow */}
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full blur-sm opacity-50" />
-                  <Avatar src={host.customAvatarUrl || host.avatarUrl} size="lg" className="relative ring-2 ring-white/30 dark:ring-white/30" />
-                </div>
+                {/* 頭像 */}
+                <Avatar src={host.customAvatarUrl || host.avatarUrl} size="lg" />
                 <div className="flex-1">
                   <p className="font-medium text-gray-900 dark:text-gray-100">{host.username}</p>
                   {/* 評價 - 可點擊跳轉 */}
