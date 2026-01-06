@@ -443,7 +443,7 @@ export default function TestEditPage() {
             </div>
 
             {/* 底部操作列 */}
-            <div className="fixed bottom-0 left-0 right-0 z-30 bg-gray-900/90 backdrop-blur-xl border-t border-white/10 px-4 py-4 safe-area-bottom">
+            <div className="fixed bottom-16 lg:bottom-0 left-0 right-0 z-30 bg-gray-900/90 backdrop-blur-xl border-t border-white/10 px-4 py-4 safe-area-bottom">
                 <div className="max-w-3xl mx-auto flex gap-3">
                     <button className="flex-1 py-3.5 px-6 rounded-xl font-semibold bg-white/10 text-white hover:bg-white/20 transition-all flex items-center justify-center gap-2">
                         <X className="w-5 h-5" />

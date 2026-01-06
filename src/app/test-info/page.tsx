@@ -280,7 +280,7 @@ export default function TestInfoPage() {
             </div>
 
             {/* 底部操作列 */}
-            <div className="fixed bottom-0 left-0 right-0 z-30 bg-gray-900/90 backdrop-blur-xl border-t border-white/10 px-4 py-4 safe-area-bottom">
+            <div className="fixed bottom-16 lg:bottom-0 left-0 right-0 z-30 bg-gray-900/90 backdrop-blur-xl border-t border-white/10 px-4 py-4 safe-area-bottom">
                 <div className="max-w-3xl mx-auto">
                     {hasApplied ? (
                         <div className="flex gap-3">
