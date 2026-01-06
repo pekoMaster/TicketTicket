@@ -92,9 +92,11 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
             </div>
             <div className="flex-1 min-w-0">
               <span className="text-sm font-semibold text-gray-800 dark:text-white block truncate">{host.username}</span>
-              <div className="flex items-center gap-1 text-xs text-pink-500 dark:text-pink-400">
-                <span>★★★★★</span>
-                <span className="text-gray-700 dark:text-white font-medium">{host.rating.toFixed(1)}</span>
+              <div className="flex items-center gap-1 text-xs">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <span key={i} className={i <= Math.round(host.rating) ? 'text-pink-400' : 'text-gray-300 dark:text-gray-600'}>★</span>
+                ))}
+                <span className="text-gray-700 dark:text-white font-medium ml-1">{host.rating.toFixed(1)}</span>
                 <span className="text-gray-400">({host.reviewCount})</span>
               </div>
             </div>
