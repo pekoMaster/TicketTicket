@@ -81,13 +81,15 @@ export async function GET(request: NextRequest) {
 
     const profileData = await profileResponse.json();
 
-    // Save Discord username to database
-    const discordUsername = profileData.global_name || profileData.username || profileData.id;
+    // Save Discord ID (numeric) and username (display) to database
+    const discordNumericId = profileData.id; // 數字 ID，用於 Bot 發送 DM
+    const discordDisplayName = profileData.global_name || profileData.username || profileData.id; // 顯示名稱
 
     const { error: dbError } = await supabaseAdmin
       .from('users')
       .update({
-        discord_id: discordUsername,
+        discord_id: discordNumericId,
+        discord_username: discordDisplayName,
         show_discord: true,
         updated_at: new Date().toISOString(),
       })
