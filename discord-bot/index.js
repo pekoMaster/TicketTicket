@@ -202,8 +202,9 @@ async function start() {
             console.log(`✅ API 伺服器已啟動: http://0.0.0.0:${API_PORT}`);
             console.log('');
             console.log('📡 端點:');
-            console.log(`   GET  /health     - 健康檢查`);
-            console.log(`   POST /api/dm     - 發送 DM`);
+            console.log(`   GET  /health      - 健康檢查`);
+            console.log(`   POST /api/dm      - 發送 DM`);
+            console.log(`   POST /api/channel - 發送頻道訊息`);
             console.log('');
             console.log('🎫 TicketTicket Discord Bot 已就緒!');
         });
