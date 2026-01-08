@@ -236,11 +236,11 @@ export async function POST(request: NextRequest) {
             listing: {
               id: data.id,
               eventName: body.eventName,
-              venue: body.venue,
               ticketType: body.ticketType,
               seatGrade: body.seatGrade,
               ticketCountType: body.ticketCountType,
               askingPriceJpy: body.askingPriceJpy,
+              originalPriceJpy: body.originalPriceJpy,
               description: body.description,
             },
           }),

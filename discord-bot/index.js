@@ -145,11 +145,6 @@ app.post('/api/channel', authMiddleware, async (req, res) => {
             url: `https://ticketticket.live/listing/${listing.id}`,
             fields: [
                 {
-                    name: '📍 場地',
-                    value: listing.venue || '待定',
-                    inline: true,
-                },
-                {
                     name: '🎫 類型',
                     value: typeInfo.label,
                     inline: true,
@@ -160,8 +155,8 @@ app.post('/api/channel', authMiddleware, async (req, res) => {
                     inline: true,
                 },
                 {
-                    name: '💰 希望價格',
-                    value: `¥${listing.askingPriceJpy?.toLocaleString() || 0}`,
+                    name: '💰 價格（希望/原價）',
+                    value: `¥${listing.askingPriceJpy?.toLocaleString() || 0} / ¥${listing.originalPriceJpy?.toLocaleString() || 0}`,
                     inline: true,
                 },
             ],
