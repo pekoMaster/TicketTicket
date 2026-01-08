@@ -140,23 +140,17 @@ export async function POST(
             .update({ status: 'matched' })
             .eq('id', listingId);
 
-        // 6. 通知被選中的申請者
-        await supabaseAdmin
-            .from('notifications')
-            .insert({
-                user_id: application.guest_id,
-                type: 'application_accepted',
-                title: '配對成功！',
-                message: `恭喜！您對「${listing.event_name}」的申請已被接受`,
-                data: {
-                    listing_id: listingId,
-                    conversation_id: conversationId,
-                    event_name: listing.event_name,
-                },
-                is_read: false,
-            });
+        // 6. 通知被選中的申請者（包含 Discord DM）
+        const { createNotification } = await import('@/app/api/notifications/route');
+        await createNotification({
+            user_id: application.guest_id,
+            type: 'application_accepted',
+            title: '配對成功！',
+            message: `恭喜！您對「${listing.event_name}」的申請已被接受`,
+            link: `/messages?conversation=${conversationId}`,
+        });
 
-        // 7. 通知被拒絕的申請者
+        // 7. 通知被拒絕的申請者（包含 Discord DM）
         const { data: rejectedApps } = await supabaseAdmin
             .from('applications')
             .select('guest_id')
@@ -165,19 +159,16 @@ export async function POST(
             .eq('rejection_notified', false);
 
         if (rejectedApps && rejectedApps.length > 0) {
-            const notifications = rejectedApps.map((app) => ({
-                user_id: app.guest_id,
-                type: 'application_rejected',
-                title: '未配對成功',
-                message: `您對「${listing.event_name}」的申請未配對成功`,
-                data: {
-                    listing_id: listingId,
-                    event_name: listing.event_name,
-                },
-                is_read: false,
-            }));
-
-            await supabaseAdmin.from('notifications').insert(notifications);
+            // 逐一發送拒絕通知（含 Discord DM）
+            for (const app of rejectedApps) {
+                await createNotification({
+                    user_id: app.guest_id,
+                    type: 'application_rejected',
+                    title: '未配對成功',
+                    message: `您對「${listing.event_name}」的申請未配對成功`,
+                    link: '/',
+                });
+            }
 
             // 標記已通知
             await supabaseAdmin

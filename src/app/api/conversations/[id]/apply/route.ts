@@ -74,21 +74,15 @@ export async function POST(
       return NextResponse.json({ error: updateError.message }, { status: 500 });
     }
 
-    // 發送通知給主辦方
-    await supabaseAdmin
-      .from('notifications')
-      .insert({
-        user_id: conversation.host_id,
-        type: 'new_application',
-        title: '新的申請',
-        message: `有人申請加入您的「${conversation.listing?.event_name}」同行`,
-        data: {
-          listing_id: conversation.listing_id,
-          conversation_id: id,
-          event_name: conversation.listing?.event_name
-        },
-        is_read: false,
-      });
+    // 發送通知給主辦方（包含 Discord DM）
+    const { createNotification } = await import('@/app/api/notifications/route');
+    await createNotification({
+      user_id: conversation.host_id,
+      type: 'new_application',
+      title: '新的申請',
+      message: `有人申請加入您的「${conversation.listing?.event_name}」同行`,
+      link: `/messages?conversation=${id}`,
+    });
 
     // 發送 Email 通知給主辦方（背景執行，不阻塞回應）
     (async () => {

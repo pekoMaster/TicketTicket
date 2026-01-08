@@ -90,21 +90,15 @@ export async function POST(
         deadline_at: deadline,
       });
 
-    // 5. 發送通知給申請人
-    await supabaseAdmin
-      .from('notifications')
-      .insert({
-        user_id: conversation.guest_id,
-        type: 'application_accepted',
-        title: '申請已通過',
-        message: `您的「${conversation.listing?.event_name}」同行申請已被接受！`,
-        data: {
-          listing_id: listingId,
-          conversation_id: id,
-          event_name: conversation.listing?.event_name
-        },
-        is_read: false,
-      });
+    // 5. 發送通知給申請人（包含 Discord DM）
+    const { createNotification } = await import('@/app/api/notifications/route');
+    await createNotification({
+      user_id: conversation.guest_id,
+      type: 'application_accepted',
+      title: '申請已通過',
+      message: `您的「${conversation.listing?.event_name}」同行申請已被接受！`,
+      link: `/messages?conversation=${id}`,
+    });
 
     // 6. 發送 Email 通知給申請人（背景執行）
     (async () => {
