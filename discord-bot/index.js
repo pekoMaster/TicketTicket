@@ -112,6 +112,75 @@ app.post('/api/dm', authMiddleware, async (req, res) => {
     }
 });
 
+// 發送頻道訊息端點（用於新刊登通知）
+app.post('/api/channel', authMiddleware, async (req, res) => {
+    const { channelId, listing } = req.body;
+
+    if (!channelId || !listing) {
+        return res.status(400).json({ error: 'channelId and listing are required' });
+    }
+
+    try {
+        const channel = await client.channels.fetch(channelId);
+
+        if (!channel || !channel.isTextBased()) {
+            return res.status(404).json({ error: 'Channel not found or not a text channel' });
+        }
+
+        // 票種類型對應的顏色和標籤
+        const ticketTypeInfo = {
+            find_companion: { color: 0x3b82f6, label: '🤝 尋找同行者', emoji: '🎫' },
+            sub_ticket_transfer: { color: 0x22c55e, label: '🎟️ 子票轉讓', emoji: '🎟️' },
+            ticket_exchange: { color: 0xf59e0b, label: '🔄 換票', emoji: '🔄' },
+        };
+
+        const typeInfo = ticketTypeInfo[listing.ticketType] || { color: 0x6366f1, label: '🎫 票券', emoji: '🎫' };
+
+        // 構建 Embed
+        const embed = {
+            title: `${typeInfo.emoji} ${listing.eventName}`,
+            description: listing.description || '快來看看這個刊登！',
+            color: typeInfo.color,
+            url: `https://ticketticket.live/listing/${listing.id}`,
+            fields: [
+                {
+                    name: '📍 場地',
+                    value: listing.venue || '待定',
+                    inline: true,
+                },
+                {
+                    name: '🎫 類型',
+                    value: typeInfo.label,
+                    inline: true,
+                },
+                {
+                    name: '💺 座位',
+                    value: `${listing.seatGrade} / ${listing.ticketCountType === 'duo' ? '二人票' : '一人票'}`,
+                    inline: true,
+                },
+                {
+                    name: '💰 希望價格',
+                    value: `¥${listing.askingPriceJpy?.toLocaleString() || 0}`,
+                    inline: true,
+                },
+            ],
+            footer: {
+                text: 'TicketTicket - 找到你的演唱會同行夥伴',
+            },
+            timestamp: new Date().toISOString(),
+        };
+
+        await channel.send({ embeds: [embed] });
+
+        console.log(`[Channel] 成功發送到頻道 ${channelId}`);
+        res.json({ success: true, channelId });
+
+    } catch (error) {
+        console.error('[Channel] 發送失敗:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // ========== 啟動 ==========
 async function start() {
     // 檢查 Token

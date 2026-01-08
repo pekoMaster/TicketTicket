@@ -212,6 +212,39 @@ export async function POST(request: NextRequest) {
       console.error('Error sending webhooks:', webhookError);
     }
 
+    // 發送 Discord 頻道通知（新刊登公告）
+    try {
+      const endpoint = process.env.DISCORD_BOT_DM_API?.replace('/api/dm', '/api/channel');
+      const secret = process.env.DISCORD_BOT_DM_SECRET;
+      const channelId = process.env.DISCORD_LISTING_CHANNEL_ID;
+
+      if (endpoint && secret && channelId) {
+        await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${secret}`,
+          },
+          body: JSON.stringify({
+            channelId,
+            listing: {
+              id: data.id,
+              eventName: body.eventName,
+              venue: body.venue,
+              ticketType: body.ticketType,
+              seatGrade: body.seatGrade,
+              ticketCountType: body.ticketCountType,
+              askingPriceJpy: body.askingPriceJpy,
+              description: body.description,
+            },
+          }),
+        });
+        console.log('[Discord] Channel notification sent for listing', data.id);
+      }
+    } catch (discordError) {
+      console.error('[Discord] Channel notification failed:', discordError);
+    }
+
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error in POST /api/listings:', error);
