@@ -331,8 +331,10 @@ export default function CreateListingPage() {
           ? new Date(selectedEvent.eventDate).toISOString()
           : new Date().toISOString(), // 從活動取得日期
         venue,
-        meetingTime: null, // 由雙方自行協調
-        meetingLocation: null, // 由雙方自行協調
+        meetingTime: selectedEvent?.eventDate
+          ? new Date(selectedEvent.eventDate).toISOString()
+          : new Date().toISOString(), // 預設為活動日期
+        meetingLocation: venue || '待協調', // 預設為活動場地
         totalSlots: ticketCountType === 'duo' ? 2 : 1,
         ticketSource,
         ticketType: ticketType as TicketType,
