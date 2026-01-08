@@ -218,8 +218,14 @@ export async function POST(request: NextRequest) {
       const secret = process.env.DISCORD_BOT_DM_SECRET;
       const channelId = process.env.DISCORD_LISTING_CHANNEL_ID;
 
+      console.log('[Discord] Attempting channel notification:', {
+        endpoint: endpoint ? 'SET' : 'NOT SET',
+        secret: secret ? 'SET' : 'NOT SET',
+        channelId: channelId || 'NOT SET',
+      });
+
       if (endpoint && secret && channelId) {
-        await fetch(endpoint, {
+        const response = await fetch(endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -239,7 +245,11 @@ export async function POST(request: NextRequest) {
             },
           }),
         });
-        console.log('[Discord] Channel notification sent for listing', data.id);
+
+        const responseText = await response.text();
+        console.log('[Discord] Channel notification response:', response.status, responseText);
+      } else {
+        console.log('[Discord] Skipped - missing environment variables');
       }
     } catch (discordError) {
       console.error('[Discord] Channel notification failed:', discordError);
