@@ -327,7 +327,7 @@ export default function CreateListingPage() {
       const listingData: Parameters<typeof addListing>[0] = {
         eventName,
         artistTags,
-        eventDate: null, // 由雙方自行協調
+        eventDate: selectedEvent?.eventDate || new Date(), // 從活動取得日期
         venue,
         meetingTime: null, // 由雙方自行協調
         meetingLocation: null, // 由雙方自行協調
