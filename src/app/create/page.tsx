@@ -87,6 +87,7 @@ export default function CreateListingPage() {
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [createdListingId, setCreatedListingId] = useState<string | null>(null);
   const [showAgreement, setShowAgreement] = useState(true); // 展示創建警告彈窗
   const [willAssistEntry, setWillAssistEntry] = useState(false); // 協助入場
 
@@ -360,6 +361,7 @@ export default function CreateListingPage() {
       const result = await addListing(listingData);
 
       if (result) {
+        setCreatedListingId(result.id);
         setShowSuccess(true);
       }
     } catch (error) {
@@ -496,6 +498,38 @@ export default function CreateListingPage() {
                 {t('joinDiscord', { defaultValue: '加入社群' })}
               </a>
             </div>
+          </div>
+
+          {/* Twitter 分享區塊 */}
+          <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 mb-6 border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <svg className="w-5 h-5 text-black dark:text-white" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                {t('shareToTwitter', { defaultValue: '📢 分享到 X (Twitter)' })}
+              </h3>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+              {t('shareToTwitterDesc', { defaultValue: '透過 X 分享讓更多人看到你的刊登！' })}
+            </p>
+            <a
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                `【譲】${eventName}\n` +
+                `【座席】${seatGrade} ${ticketCountType === 'duo' ? '二人票' : '一人票'}\n` +
+                `【求】¥${askingPriceJpy.toLocaleString()}（相談可）\n` +
+                `リプまたはDMでお願いします🙇\n\n` +
+                `https://ticketticket.live/listing/${createdListingId || ''}`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-200 text-white dark:text-black rounded-lg font-medium transition-colors text-sm"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+              {t('shareNow', { defaultValue: '立即分享' })}
+            </a>
           </div>
 
           {/* 返回首頁按鈕 */}
