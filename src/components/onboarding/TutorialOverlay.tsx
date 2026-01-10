@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 
 interface TutorialStep {
@@ -18,25 +18,42 @@ export function TutorialOverlay({ onComplete, hasListings }: TutorialOverlayProp
     const t = useTranslations('onboarding');
     const [currentStep, setCurrentStep] = useState(0);
     const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
 
-    // 定義教學步驟
-    const steps: TutorialStep[] = [];
+    // 檢測是否為手機
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 1024); // lg breakpoint
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
-    // 步驟 1：刊登卡片（只在有刊登時顯示）
-    if (hasListings) {
-        steps.push({
-            targetSelector: '[data-tutorial="listing-card"]',
-            message: t('tutorialStep1'),
-            position: 'bottom',
+    // 使用 useMemo 來穩定 steps 陣列
+    const steps: TutorialStep[] = useMemo(() => {
+        const result: TutorialStep[] = [];
+
+        // 步驟 1：刊登卡片（只在有刊登時顯示）
+        if (hasListings) {
+            result.push({
+                targetSelector: '[data-tutorial="listing-card"]',
+                message: t('tutorialStep1'),
+                position: 'bottom',
+            });
+        }
+
+        // 步驟 2：發布按鈕（手機版用底部導航，PC版用側邊欄）
+        result.push({
+            targetSelector: isMobile
+                ? '[data-tutorial="mobile-publish-button"]'
+                : '[data-tutorial="publish-button"]',
+            message: t('tutorialStep2'),
+            position: isMobile ? 'top' : 'right',
         });
-    }
 
-    // 步驟 2：發布按鈕
-    steps.push({
-        targetSelector: '[data-tutorial="publish-button"]',
-        message: t('tutorialStep2'),
-        position: 'right',
-    });
+        return result;
+    }, [hasListings, isMobile, t]);
 
     // 取得目標元素位置
     useEffect(() => {
@@ -52,16 +69,26 @@ export function TutorialOverlay({ onComplete, hasListings }: TutorialOverlayProp
             const element = document.querySelector(step.targetSelector);
             if (element) {
                 setTargetRect(element.getBoundingClientRect());
+            } else {
+                // 如果找不到元素，跳過這個步驟
+                if (currentStep < steps.length - 1) {
+                    setCurrentStep(prev => prev + 1);
+                } else {
+                    localStorage.setItem('hasCompletedTutorial', 'true');
+                    onComplete();
+                }
             }
         };
 
-        updateRect();
+        // 延遲一下確保 DOM 已渲染
+        const timer = setTimeout(updateRect, 100);
         window.addEventListener('resize', updateRect);
-        window.addEventListener('scroll', updateRect);
+        window.addEventListener('scroll', updateRect, true);
 
         return () => {
+            clearTimeout(timer);
             window.removeEventListener('resize', updateRect);
-            window.removeEventListener('scroll', updateRect);
+            window.removeEventListener('scroll', updateRect, true);
         };
     }, [currentStep, steps, onComplete]);
 
@@ -87,10 +114,10 @@ export function TutorialOverlay({ onComplete, hasListings }: TutorialOverlayProp
     const step = steps[currentStep];
     const isLastStep = currentStep === steps.length - 1;
 
-    // 計算泡泡框位置
+    // 計算泡泡框位置（改進手機支援）
     const getBubbleStyle = () => {
         const padding = 16;
-        const bubbleWidth = 300;
+        const bubbleWidth = Math.min(300, window.innerWidth - 32);
         const bubbleHeight = 150;
 
         switch (step.position) {
@@ -164,9 +191,9 @@ export function TutorialOverlay({ onComplete, hasListings }: TutorialOverlayProp
                 {/* 箭頭 */}
                 <div
                     className={`absolute w-4 h-4 bg-white dark:bg-gray-800 transform rotate-45 ${step.position === 'bottom' ? '-top-2 left-1/2 -translate-x-1/2' :
-                            step.position === 'top' ? '-bottom-2 left-1/2 -translate-x-1/2' :
-                                step.position === 'right' ? '-left-2 top-1/2 -translate-y-1/2' :
-                                    '-right-2 top-1/2 -translate-y-1/2'
+                        step.position === 'top' ? '-bottom-2 left-1/2 -translate-x-1/2' :
+                            step.position === 'right' ? '-left-2 top-1/2 -translate-y-1/2' :
+                                '-right-2 top-1/2 -translate-y-1/2'
                         }`}
                 />
 
@@ -197,10 +224,10 @@ export function TutorialOverlay({ onComplete, hasListings }: TutorialOverlayProp
                         <div
                             key={index}
                             className={`w-2 h-2 rounded-full transition-colors ${index === currentStep
-                                    ? 'bg-cyan-500'
-                                    : index < currentStep
-                                        ? 'bg-cyan-300'
-                                        : 'bg-gray-300 dark:bg-gray-600'
+                                ? 'bg-cyan-500'
+                                : index < currentStep
+                                    ? 'bg-cyan-300'
+                                    : 'bg-gray-300 dark:bg-gray-600'
                                 }`}
                         />
                     ))}

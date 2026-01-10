@@ -43,6 +43,7 @@ export default function BottomNav() {
             <Link
               key={href}
               href={href}
+              data-tutorial={href === '/create' ? 'mobile-publish-button' : undefined}
               className={`
                 flex flex-col items-center justify-center
                 w-full h-full gap-1
