@@ -12,9 +12,10 @@ import { Listing, User, LANGUAGE_OPTIONS, TICKET_COUNT_TYPE_INFO, TICKET_SOURCE_
 interface ListingCardProps {
   listing: Listing;
   host?: User;
+  isFirstCard?: boolean;
 }
 
-export default function ListingCard({ listing, host }: ListingCardProps) {
+export default function ListingCard({ listing, host, isFirstCard }: ListingCardProps) {
   const t = useTranslations('listing');
   const tTicket = useTranslations('ticketType');
   const { locale } = useLanguage();
@@ -70,7 +71,10 @@ export default function ListingCard({ listing, host }: ListingCardProps) {
   return (
     <>
       {/* V4 HybridCard 設計 - Glassmorphism + Aurora Price */}
-      <div className="group relative bg-white/90 dark:bg-gray-900/40 backdrop-blur-xl rounded-2xl p-4 flex flex-col h-full border border-gray-200/50 dark:border-white/10 hover:border-pink-300 dark:hover:border-pink-500/50 transition-all duration-300 hover:shadow-xl dark:hover:shadow-pink-500/10 animate-fade-in">
+      <div
+        data-tutorial={isFirstCard ? 'listing-card' : undefined}
+        className="group relative bg-white/90 dark:bg-gray-900/40 backdrop-blur-xl rounded-2xl p-4 flex flex-col h-full border border-gray-200/50 dark:border-white/10 hover:border-pink-300 dark:hover:border-pink-500/50 transition-all duration-300 hover:shadow-xl dark:hover:shadow-pink-500/10 animate-fade-in"
+      >
 
         {/* Gradient border effect (深色模式懸停效果) */}
         <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 dark:block hidden" />

@@ -1096,5 +1096,16 @@
     "delete": "削除",
     "edit": "編集",
     "edited": "編集済み"
+  },
+  "onboarding": {
+    "welcomeTitle": "TicketTicketへようこそ",
+    "welcomeDescription": "Googleでログインすると、すぐに同行者を申請できます！",
+    "loginWithGoogle": "Googleでログイン",
+    "continueAsGuest": "ゲストとして続ける",
+    "tutorialStep1": "こちらは現在募集中のイベントカードです。興味があれば「詳細」をクリックして申請できます",
+    "tutorialStep2": "チケットを譲りたい時はここをクリックして掲載を作成",
+    "skipTutorial": "チュートリアルをスキップ",
+    "nextStep": "確認",
+    "finishTutorial": "完了"
   }
 }

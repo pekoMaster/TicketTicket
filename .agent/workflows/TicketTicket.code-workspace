@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"path": "../../../../DISCORDBOT/4.0"
+		}
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true
+	}
+}

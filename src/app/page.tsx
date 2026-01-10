@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { useApp } from '@/contexts/AppContext';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useTranslations } from 'next-intl';
@@ -8,6 +9,7 @@ import ListingCard from '@/components/features/ListingCard';
 import ListingListItem from '@/components/features/ListingListItem';
 import ListingCardSkeleton from '@/components/features/ListingCardSkeleton';
 import AuroraBackground from '@/components/ui/AuroraBackground';
+import { LoginPromptModal, TutorialOverlay } from '@/components/onboarding';
 
 import { Input } from '@/components/ui/Input';
 import {
@@ -37,6 +39,7 @@ type SortOption = 'date' | 'newest' | 'price_asc' | 'price_desc';
 type DateFilter = 'all' | 'week' | 'month' | '3months';
 
 export default function HomePage() {
+  const { data: session } = useSession();
   const { listings, isLoadingListings } = useApp();
   const { events } = useAdmin();
   const t = useTranslations('home');
@@ -47,6 +50,40 @@ export default function HomePage() {
   const tTerms = useTranslations('terms');
   const tTokushoho = useTranslations('tokushoho');
   const tLegal = useTranslations('legal');
+
+  // 新手引導狀態
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
+
+  // 檢查是否需要顯示登入提示
+  useEffect(() => {
+    // 只在客戶端執行
+    if (typeof window === 'undefined') return;
+
+    const hasSeenLoginPrompt = localStorage.getItem('hasSeenLoginPrompt');
+    const hasSelectedLanguage = localStorage.getItem('hasSelectedLanguage');
+
+    // 如果已選擇語言但還沒看過登入提示，且未登入
+    if (hasSelectedLanguage && !hasSeenLoginPrompt && !session) {
+      setShowLoginPrompt(true);
+    }
+  }, [session]);
+
+  // 檢查是否需要顯示教學（首次登入後）
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const hasCompletedTutorial = localStorage.getItem('hasCompletedTutorial');
+
+    // 如果已登入且還沒完成教學，且不在載入中
+    if (session && !hasCompletedTutorial && !isLoadingListings) {
+      // 延遲一下讓頁面渲染完成
+      const timer = setTimeout(() => {
+        setShowTutorial(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [session, isLoadingListings]);
 
   // 搜尋和篩選狀態
   const [searchQuery, setSearchQuery] = useState('');
@@ -615,11 +652,12 @@ export default function HomePage() {
             <>
               {/* Card View - 手機永遠用卡片，PC根據切換 */}
               <div className={`space-y-4 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-4 lg:space-y-0 ${viewMode === 'list' ? 'lg:hidden' : ''}`}>
-                {displayedListings.map((listing) => (
+                {displayedListings.map((listing, index) => (
                   <ListingCard
                     key={listing.id}
                     listing={listing}
                     host={listing.host}
+                    isFirstCard={index === 0}
                   />
                 ))}
               </div>
@@ -730,6 +768,24 @@ export default function HomePage() {
           </p>
         </div>
       </footer>
+
+      {/* 登入提示彈窗 */}
+      {showLoginPrompt && (
+        <LoginPromptModal
+          onClose={() => {
+            setShowLoginPrompt(false);
+            localStorage.setItem('hasSeenLoginPrompt', 'true');
+          }}
+        />
+      )}
+
+      {/* 新手教學覆蓋層 */}
+      {showTutorial && (
+        <TutorialOverlay
+          hasListings={filteredListings.length > 0}
+          onComplete={() => setShowTutorial(false)}
+        />
+      )}
     </div>
   );
 }

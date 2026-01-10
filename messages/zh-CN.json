@@ -1096,5 +1096,16 @@
     "delete": "删除",
     "edit": "编辑",
     "edited": "已编辑"
+  },
+  "onboarding": {
+    "welcomeTitle": "欢迎来到 TicketTicket",
+    "welcomeDescription": "使用 Google 登录后可以立即申请同行，找到你的演唱会伙伴！",
+    "loginWithGoogle": "使用 Google 登录",
+    "continueAsGuest": "作为访客继续",
+    "tutorialStep1": "这是当前有人举办活动的卡片，有兴趣时点击「详细」就能进入查看并申请同行",
+    "tutorialStep2": "当您有票想转让时，点击这里发布刊登",
+    "skipTutorial": "略过教程",
+    "nextStep": "确定",
+    "finishTutorial": "完成教程"
   }
 }
