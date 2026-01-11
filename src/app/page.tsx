@@ -354,7 +354,7 @@ export default function HomePage() {
   const ticketTypes: TicketType[] = ['find_companion', 'sub_ticket_transfer', 'ticket_exchange'];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col relative">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col relative overflow-x-hidden">
       {/* Aurora 背景效果 */}
       <AuroraBackground />
 
