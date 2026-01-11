@@ -39,7 +39,7 @@ type SortOption = 'date' | 'newest' | 'price_asc' | 'price_desc';
 type DateFilter = 'all' | 'week' | 'month' | '3months';
 
 export default function HomePage() {
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const { listings, isLoadingListings } = useApp();
   const { events } = useAdmin();
   const t = useTranslations('home');
@@ -60,14 +60,17 @@ export default function HomePage() {
     // 只在客戶端執行
     if (typeof window === 'undefined') return;
 
+    // 等待 session 載入完成
+    if (sessionStatus === 'loading') return;
+
     const hasSeenLoginPrompt = localStorage.getItem('hasSeenLoginPrompt');
     const hasSelectedLanguage = localStorage.getItem('hasSelectedLanguage');
 
-    // 如果已選擇語言但還沒看過登入提示，且未登入
-    if (hasSelectedLanguage && !hasSeenLoginPrompt && !session) {
+    // 只有在：已選語言 + 沒看過提示 + 明確未登入（不是 loading）
+    if (hasSelectedLanguage && !hasSeenLoginPrompt && sessionStatus === 'unauthenticated') {
       setShowLoginPrompt(true);
     }
-  }, [session]);
+  }, [sessionStatus]);
 
   // 檢查是否需要顯示教學（首次登入後）
   useEffect(() => {
