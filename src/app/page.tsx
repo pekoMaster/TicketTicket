@@ -6,7 +6,7 @@ import { useApp } from '@/contexts/AppContext';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useTranslations } from 'next-intl';
 import ListingCard from '@/components/features/ListingCard';
-import ListingListItem from '@/components/features/ListingListItem';
+import MobileListingItem from '@/components/features/MobileListingItem';
 import ListingCardSkeleton from '@/components/features/ListingCardSkeleton';
 import AuroraBackground from '@/components/ui/AuroraBackground';
 import { LoginPromptModal, TutorialOverlay } from '@/components/onboarding';
@@ -671,9 +671,20 @@ export default function HomePage() {
             </div>
           ) : filteredListings.length > 0 ? (
             <>
-              {/* Card View - 手機用卡片，PC 根據螢幕寬度自動增加欄數 */}
+              {/* 手機版：緊湊列表視圖 */}
+              <div className="lg:hidden space-y-2">
+                {displayedListings.map((listing) => (
+                  <MobileListingItem
+                    key={listing.id}
+                    listing={listing}
+                    host={listing.host}
+                  />
+                ))}
+              </div>
+
+              {/* PC版：卡片網格視圖 */}
               <div
-                className={`space-y-4 lg:grid lg:gap-4 lg:space-y-0 lg:[grid-template-columns:repeat(auto-fill,280px)] ${viewMode === 'list' ? 'lg:hidden' : ''}`}
+                className="hidden lg:grid lg:gap-4 lg:[grid-template-columns:repeat(auto-fill,280px)]"
               >
                 {displayedListings.map((listing, index) => (
                   <ListingCard
@@ -684,20 +695,6 @@ export default function HomePage() {
                   />
                 ))}
               </div>
-              {/* List View - PC限定 */}
-              {viewMode === 'list' && (
-                <div className="hidden lg:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                  <div className="flex flex-col">
-                    {displayedListings.map((listing) => (
-                      <ListingListItem
-                        key={listing.id}
-                        listing={listing}
-                        host={listing.host}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
               {/* 無限滾動觸發器 */}
               <div ref={loadMoreRef} className="py-4">
                 {hasMore ? (
