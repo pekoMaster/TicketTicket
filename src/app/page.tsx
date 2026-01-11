@@ -72,21 +72,36 @@ export default function HomePage() {
     }
   }, [sessionStatus]);
 
-  // 檢查是否需要顯示教學（首次登入後）
+  // 檢查是否需要顯示教學（登入後或訪客選擇繼續後）
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const hasCompletedTutorial = localStorage.getItem('hasCompletedTutorial');
+    // 等待 session 狀態確定
+    if (sessionStatus === 'loading') return;
 
-    // 如果已登入且還沒完成教學，且不在載入中
-    if (session && !hasCompletedTutorial && !isLoadingListings) {
+    const hasCompletedTutorial = localStorage.getItem('hasCompletedTutorial');
+    const hasSeenLoginPrompt = localStorage.getItem('hasSeenLoginPrompt');
+
+    // 載入中不顯示
+    if (isLoadingListings) return;
+
+    // 不要在登入提示顯示時同時顯示教學
+    if (showLoginPrompt) return;
+
+    // 條件：還沒完成教學 + (已登入 或 訪客已看過登入提示)
+    const shouldShowTutorial = !hasCompletedTutorial && (
+      sessionStatus === 'authenticated' ||
+      (sessionStatus === 'unauthenticated' && hasSeenLoginPrompt)
+    );
+
+    if (shouldShowTutorial) {
       // 延遲一下讓頁面渲染完成
       const timer = setTimeout(() => {
         setShowTutorial(true);
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [session, isLoadingListings]);
+  }, [sessionStatus, isLoadingListings, showLoginPrompt]);
 
   // 搜尋和篩選狀態
   const [searchQuery, setSearchQuery] = useState('');
