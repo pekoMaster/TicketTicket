@@ -47,9 +47,14 @@ export default function MainLayout({ children }: MainLayoutProps) {
         <SideNav />
         <div className="flex-1 flex flex-col lg:ml-64">
           <main className="flex-1 pb-20 lg:pb-0">
-            <div className="lg:max-w-4xl lg:mx-auto">
-              {children}
-            </div>
+            {/* 首頁使用全寬，其他頁面使用限制寬度 */}
+            {isHomePage ? (
+              <>{children}</>
+            ) : (
+              <div className="lg:max-w-4xl lg:mx-auto">
+                {children}
+              </div>
+            )}
           </main>
           {/* Desktop-only footer (mobile uses profile page for legal links) */}
           {/* Skip on home page and chat page since they have their own layouts */}
