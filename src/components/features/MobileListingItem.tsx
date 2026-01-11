@@ -74,7 +74,7 @@ export default function MobileListingItem({ listing, host }: MobileListingItemPr
                 </div>
 
                 {/* 第二列：用戶名 + 評分 + 日期 + 價格 */}
-                <div className="flex items-center gap-2 mb-1.5 pl-10">
+                <div className="flex items-center gap-2 mb-1.5 pl-10 flex-wrap">
                     {host && (
                         <>
                             <span className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[80px]">{host.username}</span>
@@ -85,7 +85,8 @@ export default function MobileListingItem({ listing, host }: MobileListingItemPr
                     )}
                     <span className="text-[10px] text-gray-400 dark:text-gray-500">•</span>
                     <span className="text-[10px] text-gray-500 dark:text-gray-400">{formatDate(listing.eventDate)}</span>
-                    <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400 ml-auto">
+                    <span className="text-[10px] text-gray-400 dark:text-gray-500">•</span>
+                    <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
                         ¥{listing.askingPriceJpy?.toLocaleString() || listing.originalPriceJpy?.toLocaleString()}
                     </span>
                 </div>
