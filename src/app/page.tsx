@@ -6,6 +6,7 @@ import { useApp } from '@/contexts/AppContext';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useTranslations } from 'next-intl';
 import ListingCard from '@/components/features/ListingCard';
+import ListingListItem from '@/components/features/ListingListItem';
 import MobileListingItem from '@/components/features/MobileListingItem';
 import ListingCardSkeleton from '@/components/features/ListingCardSkeleton';
 import AuroraBackground from '@/components/ui/AuroraBackground';
@@ -685,7 +686,7 @@ export default function HomePage() {
 
               {/* PC版：卡片網格視圖 */}
               <div
-                className="hidden lg:grid lg:gap-4 lg:[grid-template-columns:repeat(auto-fill,280px)]"
+                className={`hidden lg:grid lg:gap-4 lg:[grid-template-columns:repeat(auto-fill,280px)] ${viewMode === 'list' ? 'lg:hidden' : ''}`}
               >
                 {displayedListings.map((listing, index) => (
                   <ListingCard
@@ -696,6 +697,21 @@ export default function HomePage() {
                   />
                 ))}
               </div>
+
+              {/* PC版：列表視圖 */}
+              {viewMode === 'list' && (
+                <div className="hidden lg:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                  <div className="flex flex-col">
+                    {displayedListings.map((listing) => (
+                      <ListingListItem
+                        key={listing.id}
+                        listing={listing}
+                        host={listing.host}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
               {/* 無限滾動觸發器 */}
               <div ref={loadMoreRef} className="py-4">
                 {hasMore ? (
