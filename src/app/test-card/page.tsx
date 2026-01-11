@@ -173,7 +173,7 @@ export default function TestCardPage() {
           <div className="mb-12">
             <h3 className="text-xl font-bold text-purple-400 mb-4">方案 C: 緊湊列表視圖</h3>
             <p className="text-gray-400 text-sm mb-4">單行顯示關鍵資訊，點擊展開詳情</p>
-            <div className="space-y-2 max-w-md">
+            <div className="space-y-2 w-full">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <MobileListItem key={i} listing={mockListing} host={mockHost} />
               ))}
