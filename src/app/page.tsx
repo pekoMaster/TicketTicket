@@ -658,18 +658,18 @@ export default function HomePage() {
         </div>
       </div>
 
-      <div className="flex-1 px-4 lg:px-6 py-6">
-        <div className="max-w-7xl mx-auto">
+      <div className="flex-1 px-4 lg:px-6 xl:px-8 py-6">
+        <div className="w-full">
           {isLoadingListings ? (
-            <div className="space-y-4 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-4 lg:space-y-0">
-              {[...Array(6)].map((_, i) => (
+            <div className="space-y-4 lg:grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 lg:gap-4 xl:gap-5 lg:space-y-0">
+              {[...Array(8)].map((_, i) => (
                 <ListingCardSkeleton key={i} />
               ))}
             </div>
           ) : filteredListings.length > 0 ? (
             <>
               {/* Card View - 手機永遠用卡片，PC根據切換 */}
-              <div className={`space-y-4 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-4 lg:space-y-0 ${viewMode === 'list' ? 'lg:hidden' : ''}`}>
+              <div className={`space-y-4 lg:grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 lg:gap-4 xl:gap-5 lg:space-y-0 ${viewMode === 'list' ? 'lg:hidden' : ''}`}>
                 {displayedListings.map((listing, index) => (
                   <ListingCard
                     key={listing.id}
