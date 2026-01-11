@@ -664,7 +664,7 @@ export default function HomePage() {
       <div className="flex-1 px-4 lg:px-6 py-6">
         <div className="w-full">
           {isLoadingListings ? (
-            <div className="space-y-4 lg:grid lg:gap-4 lg:space-y-0" style={{ gridTemplateColumns: 'repeat(auto-fill, 280px)' }}>
+            <div className="space-y-4 lg:grid lg:gap-4 lg:space-y-0 lg:[grid-template-columns:repeat(auto-fill,280px)]">
               {[...Array(8)].map((_, i) => (
                 <ListingCardSkeleton key={i} />
               ))}
@@ -673,8 +673,7 @@ export default function HomePage() {
             <>
               {/* Card View - 手機用卡片，PC 根據螢幕寬度自動增加欄數 */}
               <div
-                className={`space-y-4 lg:grid lg:gap-4 lg:space-y-0 ${viewMode === 'list' ? 'lg:hidden' : ''}`}
-                style={{ gridTemplateColumns: 'repeat(auto-fill, 280px)' }}
+                className={`space-y-4 lg:grid lg:gap-4 lg:space-y-0 lg:[grid-template-columns:repeat(auto-fill,280px)] ${viewMode === 'list' ? 'lg:hidden' : ''}`}
               >
                 {displayedListings.map((listing, index) => (
                   <ListingCard
