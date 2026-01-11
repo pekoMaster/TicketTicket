@@ -14,6 +14,7 @@ interface MobileListingItemProps {
 export default function MobileListingItem({ listing, host }: MobileListingItemProps) {
     const t = useTranslations('listing');
     const tTicket = useTranslations('ticketType');
+    const tFilter = useTranslations('filter');
     const { locale } = useLanguage();
     const format = useFormatter();
 
@@ -117,7 +118,7 @@ export default function MobileListingItem({ listing, host }: MobileListingItemPr
                     {/* 協助入場 */}
                     {listing.willAssistEntry && (
                         <span className="text-[10px] bg-emerald-100 dark:bg-emerald-600/30 text-emerald-600 dark:text-emerald-300 px-1.5 py-0.5 rounded">
-                            {t('willAssistEntry')}
+                            {tFilter('willAssistEntry')}
                         </span>
                     )}
                 </div>
