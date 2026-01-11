@@ -135,6 +135,86 @@ export default function TestCardPage() {
             </div>
           </div>
         </div>
+
+        {/* ========== 手機版卡片研究區 ========== */}
+        <div className="mt-16">
+          <h2 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+            📱 手機版卡片佈局研究
+          </h2>
+          <p className="text-gray-400 mb-8">解決一頁一欄難以查詢的問題</p>
+
+          {/* 方案 1: 雙欄小卡片 */}
+          <div className="mb-12">
+            <h3 className="text-xl font-bold text-emerald-400 mb-4">方案 A: 雙欄小卡片</h3>
+            <p className="text-gray-400 text-sm mb-4">一次顯示更多資訊，快速瀏覽</p>
+            <div className="grid grid-cols-2 gap-3 max-w-md">
+              {[1, 2, 3, 4].map((i) => (
+                <MobileCompactCard key={i} listing={mockListing} host={mockHost} />
+              ))}
+            </div>
+          </div>
+
+          {/* 方案 2: 橫向滑動輪播 */}
+          <div className="mb-12">
+            <h3 className="text-xl font-bold text-cyan-400 mb-4">方案 B: 橫向滑動輪播</h3>
+            <p className="text-gray-400 text-sm mb-4">類似 App Store / Instagram 的體驗</p>
+            <div className="overflow-x-auto pb-4 -mx-4 px-4">
+              <div className="flex gap-3" style={{ width: 'max-content' }}>
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="w-56 flex-shrink-0">
+                    <MobileSwipeCard listing={mockListing} host={mockHost} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* 方案 3: 緊湊列表視圖 */}
+          <div className="mb-12">
+            <h3 className="text-xl font-bold text-purple-400 mb-4">方案 C: 緊湊列表視圖</h3>
+            <p className="text-gray-400 text-sm mb-4">單行顯示關鍵資訊，點擊展開詳情</p>
+            <div className="space-y-2 max-w-md">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <MobileListItem key={i} listing={mockListing} host={mockHost} />
+              ))}
+            </div>
+          </div>
+
+          {/* 比較分析 */}
+          <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700 max-w-2xl">
+            <h3 className="text-lg font-bold text-white mb-4">📊 手機版方案比較</h3>
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-gray-400 border-b border-gray-700">
+                  <th className="pb-2">方案</th>
+                  <th className="pb-2">一屏數量</th>
+                  <th className="pb-2">資訊量</th>
+                  <th className="pb-2">推薦</th>
+                </tr>
+              </thead>
+              <tbody className="text-gray-300">
+                <tr className="border-b border-gray-700/50">
+                  <td className="py-2 text-emerald-400">A. 雙欄</td>
+                  <td>4-6 張</td>
+                  <td>中等</td>
+                  <td>⭐⭐⭐</td>
+                </tr>
+                <tr className="border-b border-gray-700/50">
+                  <td className="py-2 text-cyan-400">B. 輪播</td>
+                  <td>2-3 張</td>
+                  <td>較多</td>
+                  <td>⭐⭐</td>
+                </tr>
+                <tr>
+                  <td className="py-2 text-purple-400">C. 列表</td>
+                  <td>6-8 張</td>
+                  <td>精簡</td>
+                  <td>⭐⭐⭐⭐</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -495,6 +575,107 @@ function HybridCard({ listing, host }: { listing: typeof mockListing; host: type
           <Eye className="w-4 h-4" />
           查看詳細
         </button>
+      </div>
+    </div>
+  );
+}
+
+// ========== 手機版卡片組件 ==========
+
+// 方案 A: 雙欄小卡片
+function MobileCompactCard({ listing, host }: { listing: typeof mockListing; host: typeof mockHost }) {
+  return (
+    <div className="bg-gray-800/80 backdrop-blur rounded-xl p-3 border border-gray-700 hover:border-pink-500/50 transition-all">
+      {/* 頭像 + 評分 */}
+      <div className="flex items-center gap-2 mb-2">
+        <img src={host.avatarUrl} className="w-6 h-6 rounded-full" alt="" />
+        <span className="text-xs text-gray-400 truncate flex-1">{host.username}</span>
+        <span className="text-[10px] text-yellow-400">★{host.rating}</span>
+      </div>
+
+      {/* 活動名稱 */}
+      <h4 className="text-xs font-bold text-white line-clamp-2 mb-2 leading-tight">
+        {listing.eventName.substring(0, 20)}...
+      </h4>
+
+      {/* 價格 */}
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-bold text-emerald-400">¥{(listing.askingPriceJpy / 1000).toFixed(0)}K</span>
+        <span className="text-[10px] text-gray-500 bg-gray-700 px-1.5 py-0.5 rounded">{listing.seatGrade.split(' ')[0]}</span>
+      </div>
+
+      {/* 日期 */}
+      <div className="text-[10px] text-gray-500 mt-2">
+        01/17
+      </div>
+    </div>
+  );
+}
+
+// 方案 B: 橫向滑動卡片
+function MobileSwipeCard({ listing, host }: { listing: typeof mockListing; host: typeof mockHost }) {
+  return (
+    <div className="bg-gray-800/80 backdrop-blur rounded-xl p-3 border border-gray-700 h-full">
+      {/* 頭像 + 用戶 */}
+      <div className="flex items-center gap-2 mb-2">
+        <img src={host.avatarUrl} className="w-8 h-8 rounded-full ring-1 ring-cyan-500/30" alt="" />
+        <div className="flex-1 min-w-0">
+          <span className="text-sm font-medium text-white block truncate">{host.username}</span>
+          <span className="text-xs text-cyan-400">★{host.rating} ({host.reviewCount})</span>
+        </div>
+      </div>
+
+      {/* 活動名稱 */}
+      <h4 className="text-sm font-bold text-white line-clamp-2 mb-2">
+        {listing.eventName}
+      </h4>
+
+      {/* 標籤 */}
+      <div className="flex gap-1 mb-2">
+        <span className="text-[10px] bg-blue-600/30 text-blue-300 px-1.5 py-0.5 rounded">ZAIKO</span>
+        <span className="text-[10px] bg-emerald-600/30 text-emerald-300 px-1.5 py-0.5 rounded">協助入場</span>
+      </div>
+
+      {/* 價格 */}
+      <div className="bg-gray-900/50 rounded-lg p-2 flex justify-between items-center">
+        <div>
+          <span className="text-[10px] text-gray-400 block">分攤</span>
+          <span className="text-base font-bold text-emerald-400">¥{listing.askingPriceJpy.toLocaleString()}</span>
+        </div>
+        <div className="text-right">
+          <span className="text-[10px] text-gray-500 block">01/17</span>
+          <span className="text-xs text-gray-400">{listing.seatGrade}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 方案 C: 緊湊列表項目
+function MobileListItem({ listing, host }: { listing: typeof mockListing; host: typeof mockHost }) {
+  return (
+    <div className="bg-gray-800/60 backdrop-blur rounded-lg px-3 py-2 border border-gray-700/50 hover:border-purple-500/50 transition-all flex items-center gap-3">
+      {/* 頭像 */}
+      <img src={host.avatarUrl} className="w-10 h-10 rounded-full flex-shrink-0" alt="" />
+
+      {/* 主要資訊 */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-bold text-white truncate">{listing.eventName.substring(0, 15)}...</span>
+          <span className="text-[10px] bg-gray-700 text-gray-400 px-1.5 py-0.5 rounded flex-shrink-0">{listing.seatGrade.split(' ')[0]}</span>
+        </div>
+        <div className="flex items-center gap-2 mt-0.5">
+          <span className="text-xs text-gray-500">{host.username}</span>
+          <span className="text-[10px] text-yellow-400">★{host.rating}</span>
+          <span className="text-[10px] text-gray-600">•</span>
+          <span className="text-[10px] text-gray-500">01/17</span>
+        </div>
+      </div>
+
+      {/* 價格 */}
+      <div className="text-right flex-shrink-0">
+        <span className="text-base font-bold text-emerald-400 block">¥{(listing.askingPriceJpy / 1000).toFixed(0)}K</span>
+        <span className="text-[10px] text-gray-500">{listing.ticketCountType === 'duo' ? '二人' : '一人'}</span>
       </div>
     </div>
   );
