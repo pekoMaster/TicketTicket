@@ -15,18 +15,39 @@ export default function DisclaimerModal() {
   const [isScrolledToEnd, setIsScrolledToEnd] = useState(false);
   const [countdown, setCountdown] = useState(5);
   const [mounted, setMounted] = useState(false);
+  const [hasSeenLoginPrompt, setHasSeenLoginPrompt] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    // 檢查是否已看過登入提示
+    const seen = localStorage.getItem('hasSeenLoginPrompt') === 'true';
+    setHasSeenLoginPrompt(seen);
+  }, []);
+
+  // 監聽 localStorage 變化（當登入提示關閉時）
+  useEffect(() => {
+    const checkLoginPrompt = () => {
+      const seen = localStorage.getItem('hasSeenLoginPrompt') === 'true';
+      setHasSeenLoginPrompt(seen);
+    };
+
+    // 使用 storage event 或定期檢查
+    window.addEventListener('storage', checkLoginPrompt);
+    const interval = setInterval(checkLoginPrompt, 500);
+
+    return () => {
+      window.removeEventListener('storage', checkLoginPrompt);
+      clearInterval(interval);
+    };
   }, []);
 
   // 倒計時
   useEffect(() => {
-    if (mounted && !hasAgreedToDisclaimer && hasSelectedLanguage && countdown > 0) {
+    if (mounted && !hasAgreedToDisclaimer && hasSelectedLanguage && hasSeenLoginPrompt && countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
       return () => clearTimeout(timer);
     }
-  }, [countdown, hasAgreedToDisclaimer, hasSelectedLanguage, mounted]);
+  }, [countdown, hasAgreedToDisclaimer, hasSelectedLanguage, hasSeenLoginPrompt, mounted]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
@@ -37,8 +58,8 @@ export default function DisclaimerModal() {
 
   const canAgree = isScrolledToEnd || countdown === 0;
 
-  // 先選語言，再顯示免責聲明
-  if (!mounted || hasAgreedToDisclaimer || !hasSelectedLanguage) return null;
+  // 顯示條件：已選語言 + 已看過登入提示 + 還沒同意規約
+  if (!mounted || hasAgreedToDisclaimer || !hasSelectedLanguage || !hasSeenLoginPrompt) return null;
 
   return (
     <Modal isOpen={true} preventClose size="lg">

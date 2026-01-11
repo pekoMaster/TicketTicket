@@ -40,7 +40,7 @@ type DateFilter = 'all' | 'week' | 'month' | '3months';
 
 export default function HomePage() {
   const { data: session, status: sessionStatus } = useSession();
-  const { listings, isLoadingListings } = useApp();
+  const { listings, isLoadingListings, hasAgreedToDisclaimer } = useApp();
   const { events } = useAdmin();
   const t = useTranslations('home');
   const tFilter = useTranslations('filter');
@@ -72,7 +72,7 @@ export default function HomePage() {
     }
   }, [sessionStatus]);
 
-  // 檢查是否需要顯示教學（登入後或訪客選擇繼續後）
+  // 檢查是否需要顯示教學（規約視窗關閉後）
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -88,6 +88,9 @@ export default function HomePage() {
     // 不要在登入提示顯示時同時顯示教學
     if (showLoginPrompt) return;
 
+    // 必須先同意規約才顯示教學
+    if (!hasAgreedToDisclaimer) return;
+
     // 條件：還沒完成教學 + (已登入 或 訪客已看過登入提示)
     const shouldShowTutorial = !hasCompletedTutorial && (
       sessionStatus === 'authenticated' ||
@@ -101,7 +104,7 @@ export default function HomePage() {
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [sessionStatus, isLoadingListings, showLoginPrompt]);
+  }, [sessionStatus, isLoadingListings, showLoginPrompt, hasAgreedToDisclaimer]);
 
   // 搜尋和篩選狀態
   const [searchQuery, setSearchQuery] = useState('');
