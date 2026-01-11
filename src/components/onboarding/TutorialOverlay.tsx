@@ -34,11 +34,14 @@ export function TutorialOverlay({ onComplete, hasListings }: TutorialOverlayProp
     const steps: TutorialStep[] = useMemo(() => {
         const result: TutorialStep[] = [];
 
-        // 步驟 1：刊登卡片（只在有刊登時顯示）
+        // 步驟 1：刊登項目（只在有刊登時顯示）
+        // 手機版使用列表項目，PC版使用卡片
         if (hasListings) {
             result.push({
-                targetSelector: '[data-tutorial="listing-card"]',
-                message: t('tutorialStep1'),
+                targetSelector: isMobile
+                    ? '[data-tutorial="mobile-listing-item"]'
+                    : '[data-tutorial="listing-card"]',
+                message: isMobile ? t('tutorialStep1Mobile') : t('tutorialStep1'),
                 position: 'bottom',
             });
         }

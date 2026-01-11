@@ -673,11 +673,12 @@ export default function HomePage() {
             <>
               {/* 手機版：緊湊列表視圖 */}
               <div className="lg:hidden space-y-2">
-                {displayedListings.map((listing) => (
+                {displayedListings.map((listing, index) => (
                   <MobileListingItem
                     key={listing.id}
                     listing={listing}
                     host={listing.host}
+                    isFirstItem={index === 0}
                   />
                 ))}
               </div>

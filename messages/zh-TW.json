@@ -1103,6 +1103,7 @@
     "loginWithGoogle": "使用 Google 登入",
     "continueAsGuest": "作為訪客繼續",
     "tutorialStep1": "這是當前有人舉辦活動的卡片，有興趣時點擊「詳細」就能進入查看並申請同行",
+    "tutorialStep1Mobile": "這是刊登列表，點擊任一項目就能查看詳情並申請同行",
     "tutorialStep2": "當您有票想轉讓時，點擊這裡發布刊登",
     "skipTutorial": "略過教學",
     "nextStep": "確定",

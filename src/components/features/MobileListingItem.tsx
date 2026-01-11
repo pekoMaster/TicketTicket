@@ -9,9 +9,10 @@ import { Listing, User, LANGUAGE_OPTIONS, TICKET_COUNT_TYPE_INFO, TICKET_SOURCE_
 interface MobileListingItemProps {
     listing: Listing;
     host?: User;
+    isFirstItem?: boolean;
 }
 
-export default function MobileListingItem({ listing, host }: MobileListingItemProps) {
+export default function MobileListingItem({ listing, host, isFirstItem }: MobileListingItemProps) {
     const t = useTranslations('listing');
     const tTicket = useTranslations('ticketType');
     const tFilter = useTranslations('filter');
@@ -57,7 +58,7 @@ export default function MobileListingItem({ listing, host }: MobileListingItemPr
     };
 
     return (
-        <Link href={`/listings/${listing.id}`} className="block">
+        <Link href={`/listings/${listing.id}`} className="block" {...(isFirstItem ? { 'data-tutorial': 'mobile-listing-item' } : {})}>
             <div className="bg-white/90 dark:bg-gray-800/60 backdrop-blur rounded-lg px-3 py-2.5 border border-gray-200/50 dark:border-gray-700/50 hover:border-pink-300 dark:hover:border-purple-500/50 transition-all active:scale-[0.99] overflow-hidden">
                 {/* 第一列：頭像 + 活動名稱 */}
                 <div className="flex items-center gap-2 mb-1.5">

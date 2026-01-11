@@ -1103,6 +1103,7 @@
     "loginWithGoogle": "Googleでログイン",
     "continueAsGuest": "ゲストとして続ける",
     "tutorialStep1": "こちらは現在募集中のイベントカードです。興味があれば「詳細」をクリックして申請できます",
+    "tutorialStep1Mobile": "こちらは掲載リストです。タップすると詳細を確認して同行申請ができます",
     "tutorialStep2": "チケットを譲りたい時はここをクリックして掲載を作成",
     "skipTutorial": "チュートリアルをスキップ",
     "nextStep": "確認",
