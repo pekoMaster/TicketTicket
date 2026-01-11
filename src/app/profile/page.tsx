@@ -297,42 +297,73 @@ export default function ProfilePage() {
       <Header title={t('title')} />
 
       <div className="pt-20 pb-20 px-4 space-y-6">
-        {/* 個人資訊卡片 */}
-        <Card variant="glass">
-          <div className="flex items-center gap-4">
-            <Avatar src={currentUser.customAvatarUrl || currentUser.avatarUrl} size="xl" />
-            <div className="flex-1">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                {currentUser.username}
-              </h2>
-              <StarRating
-                value={currentUser.rating}
-                readonly
-                size="sm"
-                showValue
-                totalReviews={currentUser.reviewCount}
-              />
-              {currentUser.isVerified && (
-                <Tag variant="success" className="mt-2">
-                  {t('verified')}
-                </Tag>
-              )}
-            </div>
-          </div>
+        {/* 個人資訊卡片 - 名片風格 */}
+        <Card variant="glass" className="relative overflow-hidden">
+          {/* 背景裝飾 */}
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-pink-500/10" />
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-purple-500/20 to-transparent rounded-full blur-2xl" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-pink-500/20 to-transparent rounded-full blur-xl" />
 
-          {/* 統計數據 */}
-          <div className="grid grid-cols-3 gap-4 mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{myListings.length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{t('listings')}</p>
+          <div className="relative">
+            {/* 頭像與基本資訊 */}
+            <div className="flex items-center gap-5">
+              {/* 頭像區域 - 帶光環效果 */}
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-pink-500 rounded-full blur-sm opacity-50 scale-105" />
+                <div className="relative ring-4 ring-white/50 dark:ring-gray-700/50 rounded-full">
+                  <Avatar src={currentUser.customAvatarUrl || currentUser.avatarUrl} size="xl" />
+                </div>
+              </div>
+
+              <div className="flex-1 min-w-0">
+                {/* 用戶名 - 加強視覺 */}
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-indigo-900 to-gray-900 dark:from-white dark:via-indigo-200 dark:to-white bg-clip-text text-transparent truncate">
+                  {currentUser.username}
+                </h2>
+
+                {/* 評分區域 */}
+                <div className="mt-1">
+                  <StarRating
+                    value={currentUser.rating}
+                    readonly
+                    size="sm"
+                    showValue
+                    totalReviews={currentUser.reviewCount}
+                  />
+                </div>
+
+                {/* 驗證標籤 */}
+                {currentUser.isVerified && (
+                  <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gradient-to-r from-emerald-500/20 to-green-500/20 border border-emerald-500/30">
+                    <Check className="w-3.5 h-3.5 text-emerald-500" />
+                    <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                      {t('verified')}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{myApplications.length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{t('applications')}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{userReviews.length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{t('reviews')}</p>
+
+            {/* 統計數據 - 漸層數字 */}
+            <div className="grid grid-cols-3 gap-4 mt-6 pt-5 border-t border-gray-200/50 dark:border-gray-700/50">
+              <div className="text-center group cursor-default">
+                <p className="text-3xl font-bold bg-gradient-to-br from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
+                  {myListings.length}
+                </p>
+                <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">{t('listings')}</p>
+              </div>
+              <div className="text-center group cursor-default">
+                <p className="text-3xl font-bold bg-gradient-to-br from-pink-600 to-rose-600 dark:from-pink-400 dark:to-rose-400 bg-clip-text text-transparent">
+                  {myApplications.length}
+                </p>
+                <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">{t('applications')}</p>
+              </div>
+              <div className="text-center group cursor-default">
+                <p className="text-3xl font-bold bg-gradient-to-br from-amber-600 to-orange-600 dark:from-amber-400 dark:to-orange-400 bg-clip-text text-transparent">
+                  {userReviews.length}
+                </p>
+                <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">{t('reviews')}</p>
+              </div>
             </div>
           </div>
         </Card>
@@ -348,25 +379,25 @@ export default function ProfilePage() {
 
           {/* 分頁標籤 */}
           {myListings.length > 0 && (
-            <div className="flex gap-2 mb-3">
+            <div className="flex gap-2 mb-4 p-1 bg-gray-100/80 dark:bg-gray-800/80 rounded-xl backdrop-blur">
               <button
                 onClick={() => setListingsTab('active')}
-                className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${listingsTab === 'active'
-                  ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300'
-                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
+                className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${listingsTab === 'active'
+                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md'
+                  : 'text-gray-600 hover:bg-white/50 dark:text-gray-400 dark:hover:bg-gray-700/50'
                   }`}
               >
-                <Ticket className="w-3.5 h-3.5 inline mr-1" />
+                <Ticket className="w-3.5 h-3.5 inline mr-1.5" />
                 {t('activeListings')} ({activeListings.length})
               </button>
               <button
                 onClick={() => setListingsTab('history')}
-                className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${listingsTab === 'history'
-                  ? 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
-                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
+                className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${listingsTab === 'history'
+                  ? 'bg-gradient-to-r from-gray-500 to-gray-600 text-white shadow-md'
+                  : 'text-gray-600 hover:bg-white/50 dark:text-gray-400 dark:hover:bg-gray-700/50'
                   }`}
               >
-                <History className="w-3.5 h-3.5 inline mr-1" />
+                <History className="w-3.5 h-3.5 inline mr-1.5" />
                 {t('historyListings')} ({expiredListings.length})
               </button>
             </div>
@@ -376,7 +407,7 @@ export default function ProfilePage() {
           {listingsTab === 'active' && activeListings.length > 0 && (
             <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
               {activeListings.map((listing) => (
-                <Card key={listing.id} className="dark:bg-gray-800 dark:border-gray-700">
+                <Card key={listing.id} className="dark:bg-gray-800 dark:border-gray-700 hover:shadow-lg hover:border-indigo-200 dark:hover:border-indigo-600/50 transition-all duration-200 cursor-pointer">
                   <Link href={`/listing/${listing.id}`}>
                     <div className="flex items-center gap-3">
                       <div className="flex-1 min-w-0">
@@ -457,7 +488,7 @@ export default function ProfilePage() {
           {listingsTab === 'history' && expiredListings.length > 0 && (
             <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
               {expiredListings.map((listing) => (
-                <Card key={listing.id} className="dark:bg-gray-800 dark:border-gray-700 opacity-75">
+                <Card key={listing.id} className="dark:bg-gray-800 dark:border-gray-700 opacity-60 hover:opacity-80 transition-all duration-200 cursor-pointer">
                   <Link href={`/listing/${listing.id}`}>
                     <div className="flex items-center gap-3">
                       <div className="flex-1 min-w-0">
