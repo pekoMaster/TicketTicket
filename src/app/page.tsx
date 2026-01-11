@@ -377,7 +377,7 @@ export default function HomePage() {
 
       {/* Desktop Header - Glassmorphism Style */}
       <header className="hidden lg:block bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/10 px-6 py-6">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
+        <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('subtitle')}</h1>
           {successfulMeetups !== null && successfulMeetups > 0 && (
             <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 transition-shadow">
@@ -391,7 +391,7 @@ export default function HomePage() {
 
       {/* 搜尋與篩選區 - Glassmorphism Style */}
       <div className="bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/10 px-4 lg:px-6 py-4">
-        <div className="max-w-7xl mx-auto">
+        <div className="w-full">
           {/* 搜尋列 */}
           <div className="flex gap-3">
             <div className="flex-1">
@@ -659,9 +659,9 @@ export default function HomePage() {
       </div>
 
       <div className="flex-1 px-4 lg:px-6 py-6">
-        <div className="w-full max-w-[2000px]">
+        <div className="w-full">
           {isLoadingListings ? (
-            <div className="space-y-4 lg:grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 lg:gap-4 lg:space-y-0">
+            <div className="space-y-4 lg:grid lg:gap-4 lg:space-y-0" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
               {[...Array(8)].map((_, i) => (
                 <ListingCardSkeleton key={i} />
               ))}
@@ -670,7 +670,8 @@ export default function HomePage() {
             <>
               {/* Card View - 手機用卡片，PC 根據螢幕寬度自動增加欄數 */}
               <div
-                className={`space-y-4 lg:grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 lg:gap-4 lg:space-y-0 ${viewMode === 'list' ? 'lg:hidden' : ''}`}
+                className={`space-y-4 lg:grid lg:gap-4 lg:space-y-0 ${viewMode === 'list' ? 'lg:hidden' : ''}`}
+                style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}
               >
                 {displayedListings.map((listing, index) => (
                   <ListingCard
