@@ -655,24 +655,24 @@ function MobileSwipeCard({ listing, host }: { listing: typeof mockListing; host:
 function MobileListItem({ listing, host }: { listing: typeof mockListing; host: typeof mockHost }) {
   return (
     <div className="bg-gray-800/60 backdrop-blur rounded-lg px-3 py-2.5 border border-gray-700/50 hover:border-purple-500/50 transition-all">
-      {/* 第一列：頭像 + 活動名稱 + 座位 */}
+      {/* 第一列：頭像 + 活動名稱 */}
       <div className="flex items-center gap-2 mb-1.5">
         <img src={host.avatarUrl} className="w-8 h-8 rounded-full flex-shrink-0" alt="" />
-        <span className="text-sm font-bold text-white truncate flex-1">{listing.eventName.substring(0, 18)}...</span>
-        <span className="text-[10px] bg-gray-700 text-gray-400 px-1.5 py-0.5 rounded flex-shrink-0">{listing.seatGrade}</span>
+        <span className="text-sm font-bold text-white truncate flex-1">{listing.eventName.substring(0, 22)}...</span>
       </div>
 
-      {/* 第二列：用戶名 + 評分 + 日期 */}
+      {/* 第二列：用戶名 + 評分 + 日期 + 價格 */}
       <div className="flex items-center gap-2 mb-1.5 pl-10">
         <span className="text-xs text-gray-500">{host.username}</span>
         <span className="text-[10px] text-yellow-400">★{host.rating}</span>
         <span className="text-[10px] text-gray-600">•</span>
         <span className="text-[10px] text-gray-500">01/17</span>
+        <span className="text-sm font-bold text-emerald-400 ml-auto">¥{listing.askingPriceJpy.toLocaleString()}</span>
       </div>
 
-      {/* 第三列：價格 + 票種 + 標籤 */}
+      {/* 第三列：座位 + 票種 + 標籤 */}
       <div className="flex items-center gap-2 pl-10 flex-wrap">
-        <span className="text-sm font-bold text-emerald-400">¥{listing.askingPriceJpy.toLocaleString()}</span>
+        <span className="text-[10px] bg-gray-700 text-gray-400 px-1.5 py-0.5 rounded">{listing.seatGrade}</span>
         <span className="text-[10px] bg-purple-600/30 text-purple-300 px-1.5 py-0.5 rounded">{listing.ticketCountType === 'duo' ? '二人票' : '一人票'}</span>
         <span className="text-[10px] bg-blue-600/30 text-blue-300 px-1.5 py-0.5 rounded">ZAIKO</span>
         <span className="text-[10px] bg-emerald-600/30 text-emerald-300 px-1.5 py-0.5 rounded">協助入場</span>
