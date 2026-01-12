@@ -512,7 +512,11 @@
     "applyConfirmMessage": "確定要申請加入這個同行嗎？申請後主辦方將收到通知。",
     "emailVerificationRequired": "需要先驗證 Email 才能申請",
     "cancellationPending": "對方希望取消同行",
-    "respond": "回應"
+    "respond": "回應",
+    "coordinationNote": "集合時間與地點由雙方自行協調",
+    "venueUnknown": "場館待定",
+    "referencePrice": "參考票價原價",
+    "referencePriceNote": "僅供參考"
   },
   "profile": {
     "title": "我的",

@@ -512,7 +512,11 @@
     "applyConfirmMessage": "确定要申请加入这个同行吗？申请后主办方将收到通知。",
     "emailVerificationRequired": "需要先验证 Email 才能申请",
     "cancellationPending": "对方希望取消同行",
-    "respond": "回应"
+    "respond": "回应",
+    "coordinationNote": "集合时间与地点由双方自行协调",
+    "venueUnknown": "场馆待定",
+    "referencePrice": "参考票价原价",
+    "referencePriceNote": "仅供参考"
   },
   "profile": {
     "title": "我的",

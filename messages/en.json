@@ -512,7 +512,11 @@
     "applyConfirmMessage": "Are you sure you want to apply to join? The host will be notified.",
     "emailVerificationRequired": "Email verification required before applying",
     "cancellationPending": "The other party wants to cancel",
-    "respond": "Respond"
+    "respond": "Respond",
+    "coordinationNote": "Meeting time and location will be coordinated between both parties",
+    "venueUnknown": "Venue TBD",
+    "referencePrice": "Reference Price",
+    "referencePriceNote": "For reference only"
   },
   "profile": {
     "title": "Profile",

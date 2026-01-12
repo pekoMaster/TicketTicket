@@ -512,7 +512,11 @@
     "applyConfirmMessage": "この同行に申請しますか？申請後、主催者に通知されます。",
     "emailVerificationRequired": "申請するにはまずメールを認証してください",
     "cancellationPending": "相手がキャンセルを希望しています",
-    "respond": "回答する"
+    "respond": "回答する",
+    "coordinationNote": "集合時間と場所は双方で調整してください",
+    "venueUnknown": "会場未定",
+    "referencePrice": "参考定価",
+    "referencePriceNote": "参考のみ"
   },
   "profile": {
     "title": "マイページ",
