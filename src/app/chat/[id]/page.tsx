@@ -540,8 +540,8 @@ export default function ChatPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col relative">
-      {/* Aurora 背景效果 */}
-      <AuroraBackground />
+      {/* Aurora 背景效果 - DEBUG: REMOVED */}
+      {/* <AuroraBackground /> */}
 
       {/* Header */}
       <Header
@@ -839,8 +839,21 @@ export default function ChatPage() {
         </div>
       )}
 
-      {/* 訊息區域 - DEBUG: Added bg-green-500/20 and min-h-[200px] */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-green-500/20 min-h-[200px]">
+      {/* 訊息區域 - DEBUG EXTREME: Yellow Border, Z-Index 9999, Fixed Height Check */}
+      <div
+        className="flex-1 overflow-y-auto px-4 py-4 space-y-4"
+        style={{
+          border: '5px solid yellow',
+          background: 'rgba(255, 0, 0, 0.1)',
+          minHeight: '300px',
+          position: 'relative',
+          zIndex: 9999
+        }}
+      >
+        <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'red', color: 'white', padding: '20px', zIndex: 10000 }}>
+          IF YOU SEE THIS, RENDER IS WORKING
+        </div>
+
         {(() => {
           console.log('[Chat Render] rendering messages:', messages.length, messages);
           return null;
@@ -852,56 +865,10 @@ export default function ChatPage() {
         ) : (
           messages.map((msg) => {
             const isMe = msg.sender_id === currentUserId;
-            // 獲取對話對象，用於顯示頭像
-            const sender = isMe
-              ? (conversation.isHost ? conversation.host : conversation.guest)
-              : otherUser;
-
+            // 暫時使用最簡單的渲染來測試可見性
             return (
-              <div
-                key={msg.id}
-                className={`flex items-end gap-2 ${isMe ? 'flex-row-reverse' : ''}`}
-              >
-                {!isMe && <Avatar src={sender?.custom_avatar_url || sender?.avatar_url} size="sm" />}
-
-                <div
-                  className={`
-                      max-w-[70%] rounded-2xl px-4 py-2.5
-                      ${isMe
-                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-br-md'
-                      : 'bg-white/80 dark:bg-white/10 text-gray-900 dark:text-white rounded-bl-md shadow-sm backdrop-blur-sm'}
-                    `}
-                >
-                  <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                  {/* 翻譯結果 */}
-                  {translations[msg.id] && (
-                    <div className={`mt-2 pt-2 border-t ${isMe ? 'border-white/30' : 'border-gray-200 dark:border-white/10'}`}>
-                      <p className={`text-xs mb-1 ${isMe ? 'text-white/70' : 'text-gray-400 dark:text-gray-500'}`}>
-                        {tChat('translated')}
-                      </p>
-                      <p className="text-sm whitespace-pre-wrap">{translations[msg.id]}</p>
-                    </div>
-                  )}
-                  <p className={`text-xs mt-1 ${isMe ? 'text-white/70' : 'text-gray-400 dark:text-gray-500'}`}>
-                    {formatTime(msg.created_at)}
-                  </p>
-                </div>
-
-                {/* 翻譯按鈕 - 只有接收方才顯示 */}
-                {!isMe && (
-                  <button
-                    onClick={() => handleTranslate(msg.id, msg.content)}
-                    disabled={translatingIds.has(msg.id)}
-                    className="text-xs text-cyan-500 dark:text-cyan-400 hover:text-cyan-600 dark:hover:text-cyan-300 flex items-center gap-1 p-1 transition-colors opacity-50 hover:opacity-100"
-                    title={tChat('translate')}
-                  >
-                    {translatingIds.has(msg.id) ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    ) : (
-                      <Languages className="w-3.5 h-3.5" />
-                    )}
-                  </button>
-                )}
+              <div key={msg.id} style={{ padding: '10px', margin: '5px', border: '1px solid red', color: 'red', background: 'white' }}>
+                DEBUG MESSAGE: {msg.content} (ID: {msg.id})
               </div>
             );
           })
