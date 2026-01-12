@@ -540,8 +540,8 @@ export default function ChatPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col relative">
-      {/* Aurora 背景效果 - DEBUG: REMOVED */}
-      {/* <AuroraBackground /> */}
+      {/* Aurora 背景效果 */}
+      <AuroraBackground />
 
       {/* Header */}
       <Header
@@ -839,25 +839,8 @@ export default function ChatPage() {
         </div>
       )}
 
-      {/* 訊息區域 - DEBUG EXTREME: Yellow Border, Z-Index 9999, Fixed Height Check */}
-      <div
-        className="flex-1 overflow-y-auto px-4 py-4 space-y-4"
-        style={{
-          border: '5px solid yellow',
-          background: 'rgba(255, 0, 0, 0.1)',
-          minHeight: '300px',
-          position: 'relative',
-          zIndex: 9999
-        }}
-      >
-        <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'red', color: 'white', padding: '20px', zIndex: 10000 }}>
-          IF YOU SEE THIS, RENDER IS WORKING
-        </div>
-
-        {(() => {
-          console.log('[Chat Render] rendering messages:', messages.length, messages);
-          return null;
-        })()}
+      {/* 訊息區域 - Restored with Z-Index Fix */}
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 relative z-20">
         {messages.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-gray-400 dark:text-gray-500 text-sm">{tChat('startConversation')}</p>
@@ -865,16 +848,63 @@ export default function ChatPage() {
         ) : (
           messages.map((msg) => {
             const isMe = msg.sender_id === currentUserId;
-            // 暫時使用最簡單的渲染來測試可見性
+            // 獲取對話對象，用於顯示頭像
+            const sender = isMe
+              ? (conversation.isHost ? conversation.host : conversation.guest)
+              : otherUser;
+
             return (
-              <div key={msg.id} style={{ padding: '10px', margin: '5px', border: '1px solid red', color: 'red', background: 'white' }}>
-                DEBUG MESSAGE: {msg.content} (ID: {msg.id})
+              <div
+                key={msg.id}
+                className={`flex items-end gap-2 ${isMe ? 'flex-row-reverse' : ''}`}
+              >
+                {!isMe && <Avatar src={sender?.custom_avatar_url || sender?.avatar_url} size="sm" />}
+
+                <div
+                  className={`
+                      max-w-[70%] rounded-2xl px-4 py-2.5
+                      ${isMe
+                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-br-md'
+                      : 'bg-white/80 dark:bg-white/10 text-gray-900 dark:text-white rounded-bl-md shadow-sm backdrop-blur-sm'}
+                    `}
+                >
+                  <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                  {/* 翻譯結果 */}
+                  {translations[msg.id] && (
+                    <div className={`mt-2 pt-2 border-t ${isMe ? 'border-white/30' : 'border-gray-200 dark:border-white/10'}`}>
+                      <p className={`text-xs mb-1 ${isMe ? 'text-white/70' : 'text-gray-400 dark:text-gray-500'}`}>
+                        {tChat('translated')}
+                      </p>
+                      <p className="text-sm whitespace-pre-wrap">{translations[msg.id]}</p>
+                    </div>
+                  )}
+                  <p className={`text-xs mt-1 ${isMe ? 'text-white/70' : 'text-gray-400 dark:text-gray-500'}`}>
+                    {formatTime(msg.created_at)}
+                  </p>
+                </div>
+
+                {/* 翻譯按鈕 - 只有接收方才顯示 */}
+                {!isMe && (
+                  <button
+                    onClick={() => handleTranslate(msg.id, msg.content)}
+                    disabled={translatingIds.has(msg.id)}
+                    className="text-xs text-cyan-500 dark:text-cyan-400 hover:text-cyan-600 dark:hover:text-cyan-300 flex items-center gap-1 p-1 transition-colors opacity-50 hover:opacity-100"
+                    title={tChat('translate')}
+                  >
+                    {translatingIds.has(msg.id) ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Languages className="w-3.5 h-3.5" />
+                    )}
+                  </button>
+                )}
               </div>
             );
           })
         )}
         <div ref={messagesEndRef} />
       </div>
+
 
       {/* 輸入區域 - Glassmorphism Style */}
       <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/50 dark:border-white/10 px-4 py-4 pb-6 safe-area-bottom">
@@ -946,39 +976,41 @@ export default function ChatPage() {
       </div>
 
       {/* 申請確認對話框 */}
-      {showApplyConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl max-w-sm w-full p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
-              {tChat('applyConfirmTitle', { defaultValue: '確認申請' })}
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              {tChat('applyConfirmMessage', { defaultValue: '確定要申請加入這個同行嗎？申請後主辦方將收到通知。' })}
-            </p>
-            <div className="flex gap-3">
-              <Button
-                variant="secondary"
-                className="flex-1"
-                onClick={() => setShowApplyConfirm(false)}
-                disabled={isApplying}
-              >
-                {tCommon('cancel')}
-              </Button>
-              <Button
-                variant="primary"
-                className="flex-1"
-                onClick={handleApply}
-                disabled={isApplying}
-              >
-                {isApplying ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : null}
-                {tCommon('confirm')}
-              </Button>
+      {
+        showApplyConfirm && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-xl max-w-sm w-full p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                {tChat('applyConfirmTitle', { defaultValue: '確認申請' })}
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                {tChat('applyConfirmMessage', { defaultValue: '確定要申請加入這個同行嗎？申請後主辦方將收到通知。' })}
+              </p>
+              <div className="flex gap-3">
+                <Button
+                  variant="secondary"
+                  className="flex-1"
+                  onClick={() => setShowApplyConfirm(false)}
+                  disabled={isApplying}
+                >
+                  {tCommon('cancel')}
+                </Button>
+                <Button
+                  variant="primary"
+                  className="flex-1"
+                  onClick={handleApply}
+                  disabled={isApplying}
+                >
+                  {isApplying ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : null}
+                  {tCommon('confirm')}
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* 評價彈窗 */}
       <ReviewModal
@@ -1038,6 +1070,6 @@ export default function ChatPage() {
           router.push('/messages');
         }}
       />
-    </div>
+    </div >
   );
 }
