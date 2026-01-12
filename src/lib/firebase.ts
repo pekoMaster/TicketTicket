@@ -18,12 +18,21 @@ const missingKeys = requiredKeys.filter(key => !firebaseConfig[key]);
 
 if (missingKeys.length > 0) {
   console.error('[Firebase] Missing required config keys:', missingKeys);
+} else {
+  // 顯示目前的配置（隱藏敏感資訊）
+  console.log('[Firebase] Config loaded:', {
+    authDomain: firebaseConfig.authDomain,
+    projectId: firebaseConfig.projectId,
+    hasApiKey: !!firebaseConfig.apiKey,
+    hasAppId: !!firebaseConfig.appId
+  });
 }
 
 // 初始化 Firebase（避免重複初始化）
 let app;
 try {
   app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+  console.log('[Firebase] App initialized successfully');
 } catch (e) {
   console.error('[Firebase] Failed to initialize app:', e);
   throw e;
