@@ -12,8 +12,23 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
+// 驗證必要的環境變數
+const requiredKeys = ['apiKey', 'authDomain', 'projectId', 'appId'] as const;
+const missingKeys = requiredKeys.filter(key => !firebaseConfig[key]);
+
+if (missingKeys.length > 0) {
+  console.error('[Firebase] Missing required config keys:', missingKeys);
+}
+
 // 初始化 Firebase（避免重複初始化）
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+let app;
+try {
+  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+} catch (e) {
+  console.error('[Firebase] Failed to initialize app:', e);
+  throw e;
+}
+
 const auth = getAuth(app);
 
 // 設定語言（跟隨瀏覽器）
@@ -32,23 +47,33 @@ export function initRecaptcha(containerId: string): RecaptchaVerifier {
     return recaptchaVerifier;
   }
 
-  // 清理舊的 reCAPTCHA widget（如果存在）
+  // 檢查容器是否存在
   const container = document.getElementById(containerId);
-  if (container) {
-    container.innerHTML = '';
+  if (!container) {
+    console.error('[Firebase] reCAPTCHA container not found:', containerId);
+    throw new Error(`reCAPTCHA container "${containerId}" not found`);
   }
 
-  recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
-    size: 'invisible',
-    callback: () => {
-      console.log('reCAPTCHA verified');
-    },
-    'expired-callback': () => {
-      console.log('reCAPTCHA expired');
-      // 過期時重置
-      recaptchaVerifier = null;
-    }
-  });
+  // 清理舊的 reCAPTCHA widget
+  container.innerHTML = '';
+
+  try {
+    console.log('[Firebase] Initializing reCAPTCHA...');
+    recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
+      size: 'invisible',
+      callback: () => {
+        console.log('[Firebase] reCAPTCHA verified');
+      },
+      'expired-callback': () => {
+        console.log('[Firebase] reCAPTCHA expired');
+        recaptchaVerifier = null;
+      }
+    });
+    console.log('[Firebase] reCAPTCHA initialized successfully');
+  } catch (e) {
+    console.error('[Firebase] Failed to create RecaptchaVerifier:', e);
+    throw e;
+  }
 
   return recaptchaVerifier;
 }
