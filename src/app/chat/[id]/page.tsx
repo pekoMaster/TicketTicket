@@ -392,7 +392,11 @@ export default function ChatPage() {
   };
 
   const handleSend = async () => {
-    if (!inputMessage.trim() || isSending || !session?.user?.dbId) return;
+    console.log('[Chat] handleSend called', { inputMessage: inputMessage.trim(), isSending, dbId: session?.user?.dbId });
+    if (!inputMessage.trim() || isSending || !session?.user?.dbId) {
+      console.log('[Chat] handleSend early return - validation failed');
+      return;
+    }
 
     const messageContent = inputMessage.trim();
     setInputMessage('');
@@ -409,6 +413,7 @@ export default function ChatPage() {
       created_at: new Date().toISOString(),
     };
 
+    console.log('[Chat] Adding optimistic message:', optimisticMessage);
     setConversationData((prev) => {
       if (!prev) return prev;
       return {
@@ -418,14 +423,17 @@ export default function ChatPage() {
     });
 
     try {
+      console.log('[Chat] Sending to API...');
       const response = await fetch(`/api/conversations/${conversationId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: messageContent }),
       });
 
+      console.log('[Chat] API response status:', response.status);
       if (response.ok) {
         const data = await response.json();
+        console.log('[Chat] API success, replacing temp message with:', data);
         // 用真實訊息替換臨時訊息
         setConversationData((prev) => {
           if (!prev) return prev;
@@ -437,6 +445,8 @@ export default function ChatPage() {
           };
         });
       } else {
+        const errorText = await response.text();
+        console.error('[Chat] API failed:', response.status, errorText);
         // 發送失敗，移除臨時訊息
         setConversationData((prev) => {
           if (!prev) return prev;
@@ -447,7 +457,7 @@ export default function ChatPage() {
         });
       }
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('[Chat] Error sending message:', error);
       // 發送失敗，移除臨時訊息
       setConversationData((prev) => {
         if (!prev) return prev;
