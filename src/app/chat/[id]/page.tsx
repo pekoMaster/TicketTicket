@@ -120,6 +120,8 @@ export default function ChatPage() {
   const [cancellationMode, setCancellationMode] = useState<'request' | 'respond'>('request');
   const [showBlockModal, setShowBlockModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  // 追蹤最近發送的訊息 ID，用來防止輪詢覆蓋
+  const recentlySentIds = useRef<Set<string>>(new Set());
   const { locale } = useLanguage();
   const router = useRouter();
 
@@ -228,31 +230,43 @@ export default function ChatPage() {
         const data = await response.json();
         console.log('[Chat] fetchConversation received', {
           messageCount: data.messages?.length || 0,
-          messages: data.messages?.map((m: Message) => ({ id: m.id.slice(0, 10), content: m.content.slice(0, 20) }))
+          recentlySentCount: recentlySentIds.current.size
         });
 
         setConversationData((prev) => {
           // 如果沒有舊資料，直接使用新資料
           if (!prev) {
             console.log('[Chat] No prev data, using fetched data directly');
+            // 清除已經出現在 API 回應中的 recentlySentIds
+            data.messages?.forEach((m: Message) => recentlySentIds.current.delete(m.id));
             return data;
           }
 
           // 保留正在發送的臨時訊息 (optimistic updates)
           const pendingMessages = prev.messages.filter(m => m.id.startsWith('temp-'));
-          console.log('[Chat] Pending temp messages:', pendingMessages.length);
 
-          // 如果沒有臨時訊息，直接使用新資料
-          if (pendingMessages.length === 0) {
-            console.log('[Chat] No pending messages, using fetched data');
+          // 保留最近發送但尚未出現在 API 回應中的訊息
+          const apiMessageIds = new Set(data.messages?.map((m: Message) => m.id) || []);
+          const recentMessages = prev.messages.filter(m =>
+            recentlySentIds.current.has(m.id) && !apiMessageIds.has(m.id)
+          );
+
+          console.log('[Chat] Pending temp messages:', pendingMessages.length, 'Recent unsync messages:', recentMessages.length);
+
+          // 清除已經同步的 recentlySentIds
+          data.messages?.forEach((m: Message) => recentlySentIds.current.delete(m.id));
+
+          // 如果沒有需要保留的訊息，直接使用新資料
+          if (pendingMessages.length === 0 && recentMessages.length === 0) {
+            console.log('[Chat] No messages to preserve, using fetched data');
             return data;
           }
 
-          // 如果有臨時訊息，確保它們不會被覆蓋，同時避免重複
-          console.log('[Chat] Preserving pending messages');
+          // 合併：API 資料 + 未同步的最近訊息 + 臨時訊息
+          console.log('[Chat] Preserving messages');
           return {
             ...data,
-            messages: [...data.messages, ...pendingMessages]
+            messages: [...data.messages, ...recentMessages, ...pendingMessages]
           };
         });
       }
@@ -445,6 +459,10 @@ export default function ChatPage() {
       if (response.ok) {
         const data = await response.json();
         console.log('[Chat] API success, replacing temp message with:', data);
+
+        // 加入到最近發送列表，防止輪詢覆蓋
+        recentlySentIds.current.add(data.id);
+
         // 用真實訊息替換臨時訊息
         setConversationData((prev) => {
           if (!prev) return prev;
