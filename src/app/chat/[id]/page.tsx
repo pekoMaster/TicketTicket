@@ -226,19 +226,30 @@ export default function ChatPage() {
       const response = await fetch(`/api/conversations/${conversationId}`);
       if (response.ok) {
         const data = await response.json();
+        console.log('[Chat] fetchConversation received', {
+          messageCount: data.messages?.length || 0,
+          messages: data.messages?.map((m: Message) => ({ id: m.id.slice(0, 10), content: m.content.slice(0, 20) }))
+        });
 
         setConversationData((prev) => {
           // 如果沒有舊資料，直接使用新資料
-          if (!prev) return data;
+          if (!prev) {
+            console.log('[Chat] No prev data, using fetched data directly');
+            return data;
+          }
 
           // 保留正在發送的臨時訊息 (optimistic updates)
           const pendingMessages = prev.messages.filter(m => m.id.startsWith('temp-'));
+          console.log('[Chat] Pending temp messages:', pendingMessages.length);
 
           // 如果沒有臨時訊息，直接使用新資料
-          if (pendingMessages.length === 0) return data;
+          if (pendingMessages.length === 0) {
+            console.log('[Chat] No pending messages, using fetched data');
+            return data;
+          }
 
           // 如果有臨時訊息，確保它們不會被覆蓋，同時避免重複
-          // 這裡假設後端回傳的訊息不包含 temp- 開頭的 ID
+          console.log('[Chat] Preserving pending messages');
           return {
             ...data,
             messages: [...data.messages, ...pendingMessages]
