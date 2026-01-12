@@ -398,7 +398,10 @@
     "goVerifyEmail": "前往验证电子邮件",
     "goVerifyPhone": "前往验证手机号码",
     "confirmPublish": "确认发布信息",
-    "confirmSubmitHint": "请确认以上信息正确无误，点击下方「发布」按钮完成发布。"
+    "confirmSubmitHint": "请确认以上信息正确无误，点击下方「发布」按钮完成发布。",
+    "shareToTwitter": "📢 分享到 X (Twitter)",
+    "shareToTwitterDesc": "通过 X 分享让更多人看到你的发布！",
+    "shareNow": "立即分享"
   },
   "ticketType": {
     "findCompanion": "寻找同行者",

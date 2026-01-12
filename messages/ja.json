@@ -398,7 +398,10 @@
     "goVerifyEmail": "メールアドレスを確認する",
     "goVerifyPhone": "電話番号を確認する",
     "confirmPublish": "投稿内容の確認",
-    "confirmSubmitHint": "上記の情報が正しいことを確認し、下の「投稿」ボタンをクリックしてください。"
+    "confirmSubmitHint": "上記の情報が正しいことを確認し、下の「投稿」ボタンをクリックしてください。",
+    "shareToTwitter": "📢 X (Twitter) でシェア",
+    "shareToTwitterDesc": "X でシェアしてもっと多くの人に見てもらおう！",
+    "shareNow": "今すぐシェア"
   },
   "ticketType": {
     "findCompanion": "同行者募集",

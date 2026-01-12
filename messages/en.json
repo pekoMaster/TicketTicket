@@ -398,7 +398,10 @@
     "goVerifyEmail": "Go to Verify Email",
     "goVerifyPhone": "Go to Verify Phone",
     "confirmPublish": "Confirm Publish Info",
-    "confirmSubmitHint": "Please confirm the above information is correct, then click Publish button below."
+    "confirmSubmitHint": "Please confirm the above information is correct, then click Publish button below.",
+    "shareToTwitter": "📢 Share on X (Twitter)",
+    "shareToTwitterDesc": "Share on X to let more people see your listing!",
+    "shareNow": "Share Now"
   },
   "ticketType": {
     "findCompanion": "Find Companion",
