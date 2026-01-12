@@ -110,13 +110,24 @@ export default function VerifyPhonePage() {
       clearRecaptcha();
 
       // 等待 DOM 更新
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 200));
+
+      // 確保容器存在
+      const container = document.getElementById('recaptcha-container');
+      if (!container) {
+        throw new Error('reCAPTCHA container not found');
+      }
 
       // 初始化 reCAPTCHA
       const recaptcha = initRecaptcha('recaptcha-container');
 
+      // 顯式渲染 reCAPTCHA (重要！)
+      await recaptcha.render();
+      console.log('[Phone] reCAPTCHA rendered');
+
       // 格式化電話號碼
       const fullPhoneNumber = `${countryCode}${phoneNumber.replace(/^0+/, '')}`;
+      console.log('[Phone] Sending to:', fullPhoneNumber);
 
       // 發送驗證碼
       const result = await sendPhoneVerificationCode(fullPhoneNumber, recaptcha);
@@ -135,7 +146,7 @@ export default function VerifyPhonePage() {
         cooldownEnd: Date.now() + cooldownSeconds * 1000,
       }));
     } catch (error: any) {
-      console.error('Failed to send verification code:', error);
+      console.error('[Phone] Failed to send verification code:', error);
       // 顯示詳細錯誤以便除錯
       setErrorMessage(error.message || t('errors.sendFailed'));
       clearRecaptcha();
