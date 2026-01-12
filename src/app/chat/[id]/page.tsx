@@ -841,6 +841,10 @@ export default function ChatPage() {
 
       {/* 訊息區域 */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+        {(() => {
+          console.log('[Chat Render] rendering messages:', messages.length, messages);
+          return null;
+        })()}
         {messages.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-gray-400 dark:text-gray-500 text-sm">{tChat('startConversation')}</p>
