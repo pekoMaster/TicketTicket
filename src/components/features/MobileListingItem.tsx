@@ -58,7 +58,7 @@ export default function MobileListingItem({ listing, host, isFirstItem }: Mobile
     };
 
     return (
-        <Link href={`/listings/${listing.id}`} className="block" {...(isFirstItem ? { 'data-tutorial': 'mobile-listing-item' } : {})}>
+        <Link href={`/listing/${listing.id}`} className="block" {...(isFirstItem ? { 'data-tutorial': 'mobile-listing-item' } : {})}>
             <div className="bg-white/90 dark:bg-gray-800/60 backdrop-blur rounded-lg px-3 py-2.5 border border-gray-200/50 dark:border-gray-700/50 hover:border-pink-300 dark:hover:border-purple-500/50 transition-all active:scale-[0.99] overflow-hidden">
                 {/* 第一列：頭像 + 活動名稱 */}
                 <div className="flex items-center gap-2 mb-1.5">
