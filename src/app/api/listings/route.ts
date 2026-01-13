@@ -214,14 +214,29 @@ export async function POST(request: NextRequest) {
 
     // 發送 Discord 頻道通知（新刊登公告）
     try {
-      const endpoint = process.env.DISCORD_BOT_DM_API?.replace('/api/dm', '/api/channel');
+      const dmApi = process.env.DISCORD_BOT_DM_API;
+      let endpoint: string | undefined;
+
+      if (dmApi) {
+        // 嘗試更穩健的 URL 替換邏輯
+        if (dmApi.includes('/api/dm')) {
+          endpoint = dmApi.replace('/api/dm', '/api/channel');
+        } else if (dmApi.endsWith('/dm')) {
+          endpoint = dmApi.replace(/\/dm\/?$/, '/channel');
+        } else {
+          // Fallback: 如果都不是，嘗試直接替換最後的 dm
+          endpoint = dmApi.replace(/dm\/?$/, 'channel');
+        }
+      }
+
       const secret = process.env.DISCORD_BOT_DM_SECRET;
       const channelId = process.env.DISCORD_LISTING_CHANNEL_ID;
 
       console.log('[Discord] Attempting channel notification:', {
-        endpoint: endpoint ? 'SET' : 'NOT SET',
-        secret: secret ? 'SET' : 'NOT SET',
-        channelId: channelId || 'NOT SET',
+        dmApiConfigured: !!dmApi,
+        endpointDerived: endpoint,
+        secretConfigured: !!secret,
+        channelIdConfigured: !!channelId,
       });
 
       if (endpoint && secret && channelId) {
@@ -236,23 +251,28 @@ export async function POST(request: NextRequest) {
             listing: {
               id: data.id,
               eventName: body.eventName,
+              // 確保這些欄位存在
+              venue: body.venue || '',
               ticketType: body.ticketType,
               seatGrade: body.seatGrade,
               ticketCountType: body.ticketCountType,
               askingPriceJpy: body.askingPriceJpy,
-              originalPriceJpy: body.originalPriceJpy,
-              description: body.description,
+              description: body.description || '',
             },
           }),
         });
 
-        const responseText = await response.text();
-        console.log('[Discord] Channel notification response:', response.status, responseText);
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('[Discord] Channel notification HTTP error:', response.status, errorText);
+        } else {
+          console.log('[Discord] Channel notification sent successfully for listing', data.id);
+        }
       } else {
-        console.log('[Discord] Skipped - missing environment variables');
+        console.log('[Discord] Skipped - missing environment variables or invalid endpoint derivation');
       }
     } catch (discordError) {
-      console.error('[Discord] Channel notification failed:', discordError);
+      console.error('[Discord] Channel notification exception:', discordError);
     }
 
     return NextResponse.json(data);
