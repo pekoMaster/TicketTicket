@@ -1,4 +1,17 @@
 {
+    "redirects": [
+        {
+            "source": "/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "www.ticketticket.live"
+                }
+            ],
+            "destination": "https://ticketticket.live/:path*",
+            "permanent": true
+        }
+    ],
     "crons": [
         {
             "path": "/api/reviews/auto-complete",
