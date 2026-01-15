@@ -99,6 +99,31 @@ export default function VerifyPhonePage() {
     }
   }, [status, router]);
 
+  // 檢查 Email 驗證狀態
+  useEffect(() => {
+    const checkVerificationLevel = async () => {
+      if (status !== 'authenticated' || !session?.user?.dbId) return;
+
+      try {
+        const response = await fetch('/api/profile');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.verification_level === 'unverified') {
+            // 尚未驗證 Email，導向 Email 驗證頁面
+            router.replace('/verify-email?from=phone');
+          } else if (data.verification_level === 'host') {
+            // 已經是 host（電話已驗證），導向首頁
+            router.replace('/');
+          }
+        }
+      } catch (error) {
+        console.error('Failed to check verification level:', error);
+      }
+    };
+
+    checkVerificationLevel();
+  }, [status, session?.user?.dbId, router]);
+
   const handleSendCode = async () => {
     if (!phoneNumber || isLoading || cooldown > 0) return;
 
