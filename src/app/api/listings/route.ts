@@ -131,6 +131,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    console.log('[Listings] Listing created successfully:', data.id);
+
     // Send Discord webhook notifications (background job via Inngest)
     try {
       // Get event's admin webhook URL
