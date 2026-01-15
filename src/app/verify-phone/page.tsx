@@ -108,10 +108,10 @@ export default function VerifyPhonePage() {
         const response = await fetch('/api/profile');
         if (response.ok) {
           const data = await response.json();
-          if (data.verification_level === 'unverified') {
+          if (data.verificationLevel === 'unverified') {
             // 尚未驗證 Email，導向 Email 驗證頁面
             router.replace('/verify-email?from=phone');
-          } else if (data.verification_level === 'host') {
+          } else if (data.verificationLevel === 'host') {
             // 已經是 host（電話已驗證），導向首頁
             router.replace('/');
           }
