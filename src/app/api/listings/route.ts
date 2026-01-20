@@ -261,6 +261,9 @@ export async function POST(request: NextRequest) {
               originalPriceJpy: body.originalPriceJpy || 0,
               askingPriceJpy: body.askingPriceJpy,
               description: body.description || '',
+              // 換票專用欄位
+              exchangeEventName: body.exchangeEventName || '',
+              exchangeSeatGrades: body.exchangeSeatGrades || [],
             },
           }),
         });
