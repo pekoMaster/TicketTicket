@@ -258,6 +258,7 @@ export async function POST(request: NextRequest) {
               ticketType: body.ticketType,
               seatGrade: body.seatGrade,
               ticketCountType: body.ticketCountType,
+              originalPriceJpy: body.originalPriceJpy || 0,
               askingPriceJpy: body.askingPriceJpy,
               description: body.description || '',
             },
