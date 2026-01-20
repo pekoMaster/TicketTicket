@@ -137,29 +137,44 @@ app.post('/api/channel', authMiddleware, async (req, res) => {
 
         const typeInfo = ticketTypeInfo[listing.ticketType] || { color: 0x6366f1, label: '🎫 票券', emoji: '🎫' };
 
+        // 構建 Embed fields
+        const fields = [
+            {
+                name: '🎫 類型',
+                value: typeInfo.label,
+                inline: true,
+            },
+            {
+                name: '💺 座位',
+                value: `${listing.seatGrade} / ${listing.ticketCountType === 'duo' ? '二人票' : '一人票'}`,
+                inline: true,
+            },
+            {
+                name: '💰 價格（希望/原價）',
+                value: `¥${listing.askingPriceJpy?.toLocaleString() || 0} / ¥${listing.originalPriceJpy?.toLocaleString() || 0}`,
+                inline: true,
+            },
+        ];
+
+        // 換票類型：顯示想換的活動和座位
+        if (listing.ticketType === 'ticket_exchange' && listing.exchangeEventName) {
+            const seatGrades = listing.exchangeSeatGrades?.length > 0
+                ? listing.exchangeSeatGrades.join(', ')
+                : '任意';
+            fields.push({
+                name: '🔄 想換成',
+                value: `${listing.exchangeEventName}\n座位: ${seatGrades}`,
+                inline: false,
+            });
+        }
+
         // 構建 Embed
         const embed = {
             title: `${typeInfo.emoji} ${listing.eventName}`,
             description: listing.description || '快來看看這個刊登！',
             color: typeInfo.color,
             url: `https://ticketticket.live/listing/${listing.id}`,
-            fields: [
-                {
-                    name: '🎫 類型',
-                    value: typeInfo.label,
-                    inline: true,
-                },
-                {
-                    name: '💺 座位',
-                    value: `${listing.seatGrade} / ${listing.ticketCountType === 'duo' ? '二人票' : '一人票'}`,
-                    inline: true,
-                },
-                {
-                    name: '💰 價格（希望/原價）',
-                    value: `¥${listing.askingPriceJpy?.toLocaleString() || 0} / ¥${listing.originalPriceJpy?.toLocaleString() || 0}`,
-                    inline: true,
-                },
-            ],
+            fields: fields,
             footer: {
                 text: 'TicketTicket - 找到你的演唱會同行夥伴',
             },

@@ -1137,6 +1137,23 @@ export default function CreateListingPage() {
                   <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">¥{askingPriceJpy.toLocaleString()}</p>
                 </div>
 
+                {/* 換票資訊摘要 - 只在換票模式顯示 */}
+                {isExchangeMode && exchangeEventName && (
+                  <div className="p-4 bg-orange-50 dark:bg-orange-500/10 rounded-xl border border-orange-200 dark:border-orange-500/30 space-y-2">
+                    <p className="text-sm text-orange-600 dark:text-orange-400 flex items-center gap-1">
+                      🔄 {t('exchangeTarget', { defaultValue: '想換成' })}
+                    </p>
+                    <p className="font-semibold text-gray-900 dark:text-white">{exchangeEventName}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {exchangeSeatGrades.map((grade) => (
+                        <span key={grade} className="px-2 py-1 bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-300 rounded text-sm">
+                          {grade === 'any' ? t('anyGrade', { defaultValue: '任意' }) : grade}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* 發布者資訊摘要 */}
                 <div className="p-4 bg-gray-50 dark:bg-white/5 rounded-xl space-y-2">
                   <p className="text-sm text-gray-500 dark:text-gray-400">{t('publisherInfo')}</p>
