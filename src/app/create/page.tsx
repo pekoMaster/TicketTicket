@@ -140,8 +140,14 @@ export default function CreateListingPage() {
 
   // 從管理員活動獲取選項（含刊登上限資訊）
   const eventOptions = useMemo(() => {
+    const now = new Date();
     return events
-      .filter((e) => e.isActive)
+      .filter((e) => {
+        if (!e.isActive) return false;
+        // 使用 eventEndDate（多日活動）或 eventDate（單日活動）判斷過期
+        const expirationDate = e.eventEndDate || e.eventDate;
+        return expirationDate > now;
+      })
       .map((event) => {
         const currentCount = userListingsCountByEvent[event.name] || 0;
         const maxAllowed = event.maxListingsPerUser || 2;
@@ -230,7 +236,7 @@ export default function CreateListingPage() {
       seatGrade !== '' &&
       ticketCountType !== '' &&
       hostNationality !== '' &&
-      askingPriceJpy > 0
+      (ticketType === 'ticket_exchange' ? askingPriceJpy >= 0 : askingPriceJpy > 0)
     );
 
     if (isExchangeMode) {
@@ -258,7 +264,8 @@ export default function CreateListingPage() {
       case 1: // 活動資訊
         return eventName.trim() !== '';
       case 2: // 票券資訊
-        return seatGrade !== '' && ticketCountType !== '' && ticketType !== '' && askingPriceJpy > 0;
+        const priceValid = ticketType === 'ticket_exchange' ? askingPriceJpy >= 0 : askingPriceJpy > 0;
+        return seatGrade !== '' && ticketCountType !== '' && ticketType !== '' && priceValid;
       case 3: // 發布者資訊
         return hostNationality !== '' && hostLanguages.length > 0;
       case 4: // 確認發佈

@@ -178,8 +178,14 @@ export default function EditListingPage() {
 
   // === 活動選項 ===
   const eventOptions = useMemo(() => {
+    const now = new Date();
     return events
-      .filter((e) => e.isActive)
+      .filter((e) => {
+        if (!e.isActive) return false;
+        // 使用 eventEndDate（多日活動）或 eventDate（單日活動）判斷過期
+        const expirationDate = e.eventEndDate || e.eventDate;
+        return expirationDate > now;
+      })
       .map((event) => ({
         value: event.name,
         label: event.name,
