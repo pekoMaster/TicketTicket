@@ -359,6 +359,7 @@
     "exchangeEvent": "Desired Event",
     "selectExchangeEvent": "Select desired event",
     "exchangeSeatGrade": "Desired Seat Grade",
+    "exchangeTarget": "Exchange For",
     "anyGrade": "Any",
     "subsidyAmount": "Subsidy Amount (JPY)",
     "subsidyAmountPlaceholder": "Max ¥{max} (half of ticket price)",

@@ -359,6 +359,7 @@
     "exchangeEvent": "想換的活動",
     "selectExchangeEvent": "選擇想換的活動",
     "exchangeSeatGrade": "想換的票種等級",
+    "exchangeTarget": "想換成",
     "anyGrade": "任意",
     "subsidyAmount": "補貼金額（日圓）",
     "subsidyAmountPlaceholder": "最高 ¥{max}（票價一半）",
