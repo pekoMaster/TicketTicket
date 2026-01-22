@@ -35,6 +35,7 @@ import {
   X,
   Check,
   History,
+  Bell,
 } from 'lucide-react';
 import { isListingExpired } from '@/lib/listing-utils';
 
@@ -742,6 +743,11 @@ export default function ProfilePage() {
           <Card padding="none" className="dark:bg-gray-800 dark:border-gray-700">
             <ThemeSwitcher variant="menu-item" />
             <LanguageSwitcher variant="menu-item" />
+            <MenuItem
+              icon={<Bell className="w-5 h-5" />}
+              label={t('mySubscriptions', { defaultValue: '我的訂閱' })}
+              href="/profile/subscriptions"
+            />
             <MenuItem
               icon={<Settings className="w-5 h-5" />}
               label={t('accountSettings')}
