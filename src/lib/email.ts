@@ -517,3 +517,40 @@ export async function sendNotificationEmail(
     };
   }
 }
+
+/**
+ * 發送訂閱通知郵件（當有符合條件的新刊登時）
+ */
+export async function sendSubscriptionEmail({
+  to,
+  subject,
+  html,
+}: {
+  to: string;
+  subject: string;
+  html: string;
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'TicketTicket <onboarding@resend.dev>';
+
+    const { error } = await getResend().emails.send({
+      from: fromEmail,
+      to: [to],
+      subject,
+      html,
+    });
+
+    if (error) {
+      console.error('Resend subscription email error:', error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to send subscription email:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    };
+  }
+}

@@ -132,3 +132,21 @@ export interface DbEvent {
   created_at: string;
   updated_at: string;
 }
+
+export interface DbTicketSubscription {
+  id: string;
+  user_id: string;
+  event_id?: string;
+  event_name: string;
+  seat_grades: string[];          // 想要的座位等級（空 = 任意）
+  max_price_jpy: number;          // 價格上限（0 = 不限）
+  ticket_types: string[];         // 票券類型（空 = 任意）
+  notify_email: boolean;
+  notify_discord: boolean;
+  notify_line: boolean;
+  is_active: boolean;
+  triggered_count: number;
+  last_triggered_at?: string;
+  created_at: string;
+  updated_at: string;
+}

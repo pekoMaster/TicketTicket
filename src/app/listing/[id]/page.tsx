@@ -42,10 +42,12 @@ import {
   Languages,
   Flag,
   Share2,
+  Bell,
 } from 'lucide-react';
 import ReviewModal from '@/components/features/ReviewModal';
 import ReportModal from '@/components/ui/ReportModal';
 import ShareModal from '@/components/ui/ShareModal';
+import SubscriptionModal from '@/components/ui/SubscriptionModal';
 
 export default function ListingDetailPage() {
   const params = useParams();
@@ -100,6 +102,10 @@ export default function ListingDetailPage() {
 
   // Share state
   const [showShareModal, setShowShareModal] = useState(false);
+
+  // Subscription state
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const tSub = useTranslations('subscription');
 
   const listing = listings.find((l) => l.id === params.id);
   const host = listing?.host;
@@ -407,12 +413,25 @@ export default function ListingDetailPage() {
           {/* 活動名稱 */}
           <div className="flex items-start justify-between gap-3 mb-4">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{listing.eventName}</h1>
-            <button
-              onClick={() => setShowShareModal(true)}
-              className="flex-shrink-0 p-2 rounded-lg text-gray-400 dark:text-gray-400 hover:text-pink-500 dark:hover:text-white hover:bg-pink-50 dark:hover:bg-white/10 transition-all"
-            >
-              <Share2 className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-1">
+              {/* 訂閱按鈕 */}
+              {!isHost && session?.user && (
+                <button
+                  onClick={() => setShowSubscriptionModal(true)}
+                  className="flex-shrink-0 p-2 rounded-lg text-gray-400 dark:text-gray-400 hover:text-indigo-500 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all"
+                  title={tSub('subscribeButton')}
+                >
+                  <Bell className="w-5 h-5" />
+                </button>
+              )}
+              {/* 分享按鈕 */}
+              <button
+                onClick={() => setShowShareModal(true)}
+                className="flex-shrink-0 p-2 rounded-lg text-gray-400 dark:text-gray-400 hover:text-pink-500 dark:hover:text-white hover:bg-pink-50 dark:hover:bg-white/10 transition-all"
+              >
+                <Share2 className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           {/* 場館資訊 */}
@@ -969,6 +988,23 @@ export default function ListingDetailPage() {
           const callToAction = `\n\n👉 ${t('shareCallToAction', { defaultValue: '快來看看詳情！' })}`;
 
           return [typeText, dateText, venueText, seatText].filter(Boolean).join('\n') + callToAction;
+        })()}
+      />
+
+      {/* 訂閱彈窗 */}
+      <SubscriptionModal
+        isOpen={showSubscriptionModal}
+        onClose={() => setShowSubscriptionModal(false)}
+        eventId={events.find(e => e.name === listing.eventName)?.id}
+        eventName={listing.eventName}
+        seatGrades={(() => {
+          // 從 events 中獲取該活動可用的座位等級
+          const event = events.find(e => e.name === listing.eventName);
+          if (event?.ticketPriceTiers) {
+            const grades = [...new Set(event.ticketPriceTiers.map(tier => tier.seatGrade))];
+            return grades;
+          }
+          return ['SS', 'S', 'A', 'B'];
         })()}
       />
     </div >

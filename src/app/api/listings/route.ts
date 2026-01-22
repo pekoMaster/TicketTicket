@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { auth } from '@/auth';
 import { inngest } from '@/lib/inngest';
+import { notifySubscribers } from '@/lib/subscription-notify';
 
 // GET /api/listings - 獲取所有刊登
 export async function GET() {
@@ -279,6 +280,22 @@ export async function POST(request: NextRequest) {
       }
     } catch (discordError) {
       console.error('[Discord] Channel notification exception:', discordError);
+    }
+
+    // 發送訂閱通知
+    try {
+      await notifySubscribers({
+        id: data.id,
+        eventName: body.eventName,
+        eventId: body.eventId,
+        seatGrade: body.seatGrade,
+        ticketCountType: body.ticketCountType,
+        ticketType: body.ticketType,
+        askingPriceJpy: body.askingPriceJpy,
+        venue: body.venue,
+      });
+    } catch (subError) {
+      console.error('[Subscriptions] Notification exception:', subError);
     }
 
     return NextResponse.json(data);
