@@ -1163,6 +1163,8 @@
     "deleteConfirmTitle": "确认取消订阅",
     "deleteConfirmMessage": "确定要取消此订阅吗？取消后将不再收到此活动的新票券通知。",
     "confirmDelete": "确认取消",
-    "fetchError": "无法载入订阅列表"
+    "fetchError": "无法载入订阅列表",
+    "selectEvent": "选择活动",
+    "selectEventPlaceholder": "请选择活动..."
   }
 }

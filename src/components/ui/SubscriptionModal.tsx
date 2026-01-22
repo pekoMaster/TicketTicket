@@ -1,19 +1,28 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { X, Bell, Mail, Loader2, AlertTriangle, Check } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { X, Bell, Mail, Loader2, AlertTriangle, Check, ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSession } from 'next-auth/react';
 import Modal from './Modal';
 import Button from './Button';
 
+interface EventOption {
+    id: string;
+    name: string;
+    ticketPriceTiers?: Array<{ seatGrade: string; priceJpy?: number }>;
+}
+
 interface SubscriptionModalProps {
     isOpen: boolean;
     onClose: () => void;
     eventId?: string;
-    eventName: string;
+    eventName?: string;
     seatGrades?: string[];
     onSuccess?: () => void;
+    // 新增：是否顯示活動選擇器（從首頁開啟時為 true）
+    showEventSelector?: boolean;
+    events?: EventOption[];
 }
 
 interface UserInfo {
@@ -24,14 +33,34 @@ interface UserInfo {
 export default function SubscriptionModal({
     isOpen,
     onClose,
-    eventId,
-    eventName,
-    seatGrades = [],
+    eventId: initialEventId,
+    eventName: initialEventName,
+    seatGrades: initialSeatGrades = [],
     onSuccess,
+    showEventSelector = false,
+    events = [],
 }: SubscriptionModalProps) {
     const { data: session } = useSession();
     const t = useTranslations('subscription');
     const tCommon = useTranslations('common');
+
+    // 活動選擇（當 showEventSelector 為 true 時使用）
+    const [selectedEventId, setSelectedEventId] = useState<string>(initialEventId || '');
+    const [selectedEventName, setSelectedEventName] = useState<string>(initialEventName || '');
+
+    // 動態座位等級（根據選擇的活動更新）
+    const currentSeatGrades = useMemo(() => {
+        if (!showEventSelector) {
+            return initialSeatGrades;
+        }
+        // 從選擇的活動取得座位等級
+        const selectedEvent = events.find(e => e.id === selectedEventId);
+        if (selectedEvent?.ticketPriceTiers) {
+            const grades = [...new Set(selectedEvent.ticketPriceTiers.map(tier => tier.seatGrade))];
+            return grades;
+        }
+        return [];
+    }, [showEventSelector, selectedEventId, events, initialSeatGrades]);
 
     // 表單狀態
     const [selectedGrades, setSelectedGrades] = useState<string[]>([]);
@@ -54,6 +83,15 @@ export default function SubscriptionModal({
         { value: 'ticket_exchange', label: t('ticketExchange', { defaultValue: '換票' }) },
     ];
 
+    // 處理活動選擇
+    const handleEventChange = (eventIdValue: string) => {
+        setSelectedEventId(eventIdValue);
+        const event = events.find(e => e.id === eventIdValue);
+        setSelectedEventName(event?.name || '');
+        // 重置座位選擇（因為座位選項會變）
+        setSelectedGrades([]);
+    };
+
     // 檢查用戶連結狀態
     useEffect(() => {
         if (isOpen && session?.user?.dbId) {
@@ -72,6 +110,8 @@ export default function SubscriptionModal({
     // 重置表單
     useEffect(() => {
         if (isOpen) {
+            setSelectedEventId(initialEventId || '');
+            setSelectedEventName(initialEventName || '');
             setSelectedGrades([]);
             setMaxPrice(0);
             setTicketTypes([]);
@@ -81,7 +121,7 @@ export default function SubscriptionModal({
             setError(null);
             setSuccess(false);
         }
-    }, [isOpen]);
+    }, [isOpen, initialEventId, initialEventName]);
 
     const handleGradeToggle = (grade: string) => {
         setSelectedGrades(prev =>
@@ -116,8 +156,8 @@ export default function SubscriptionModal({
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    eventId,
-                    eventName,
+                    eventId: selectedEventId,
+                    eventName: selectedEventName,
                     seatGrades: selectedGrades,
                     maxPriceJpy: maxPrice,
                     ticketTypes,
@@ -164,23 +204,46 @@ export default function SubscriptionModal({
             title={t('subscribeToEvent', { defaultValue: '🔔 訂閱活動通知' })}
         >
             <div className="p-4 space-y-5">
-                {/* 活動名稱 */}
-                <div className="bg-indigo-50 dark:bg-indigo-900/30 rounded-xl p-4">
-                    <p className="text-sm text-indigo-600 dark:text-indigo-400 mb-1">
-                        {t('subscribingTo', { defaultValue: '訂閱活動' })}
-                    </p>
-                    <p className="font-semibold text-gray-900 dark:text-gray-100">{eventName}</p>
-                </div>
+                {/* 活動選擇器（從首頁開啟時顯示） */}
+                {showEventSelector ? (
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                            {t('selectEvent', { defaultValue: '選擇活動' })}
+                            <span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <div className="relative">
+                            <select
+                                value={selectedEventId}
+                                onChange={(e) => handleEventChange(e.target.value)}
+                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none"
+                            >
+                                <option value="">{t('selectEventPlaceholder', { defaultValue: '請選擇活動...' })}</option>
+                                {events.map(event => (
+                                    <option key={event.id} value={event.id}>{event.name}</option>
+                                ))}
+                            </select>
+                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                        </div>
+                    </div>
+                ) : (
+                    /* 固定活動名稱（從刊登頁開啟時顯示） */
+                    <div className="bg-indigo-50 dark:bg-indigo-900/30 rounded-xl p-4">
+                        <p className="text-sm text-indigo-600 dark:text-indigo-400 mb-1">
+                            {t('subscribingTo', { defaultValue: '訂閱活動' })}
+                        </p>
+                        <p className="font-semibold text-gray-900 dark:text-gray-100">{selectedEventName}</p>
+                    </div>
+                )}
 
                 {/* 座位等級選擇 */}
-                {seatGrades.length > 0 && (
+                {currentSeatGrades.length > 0 && (
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                             {t('desiredSeatGrades', { defaultValue: '想要的座位等級' })}
                             <span className="text-gray-400 text-xs ml-1">{t('optional', { defaultValue: '（可選，不選=任意）' })}</span>
                         </label>
                         <div className="flex flex-wrap gap-2">
-                            {seatGrades.map(grade => (
+                            {currentSeatGrades.map((grade: string) => (
                                 <button
                                     key={grade}
                                     type="button"
@@ -265,8 +328,8 @@ export default function SubscriptionModal({
 
                         {/* Discord */}
                         <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${userInfo.hasDiscord
-                                ? 'border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                                : 'border-gray-200 dark:border-gray-700 opacity-60'
+                            ? 'border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                            : 'border-gray-200 dark:border-gray-700 opacity-60'
                             }`}>
                             <input
                                 type="checkbox"

@@ -1163,6 +1163,8 @@
     "deleteConfirmTitle": "Confirm Unsubscribe",
     "deleteConfirmMessage": "Are you sure you want to unsubscribe? You will no longer receive notifications for this event.",
     "confirmDelete": "Confirm",
-    "fetchError": "Failed to load subscriptions"
+    "fetchError": "Failed to load subscriptions",
+    "selectEvent": "Select Event",
+    "selectEventPlaceholder": "Please select an event..."
   }
 }

@@ -40,6 +40,7 @@ const TYPE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = 
     listing_expired: Clock,
     new_review: Star,
     system: Megaphone,
+    subscription_match: Bell,
 };
 
 export default function NotificationsPage() {
@@ -191,14 +192,14 @@ export default function NotificationsPage() {
                                     <div className="flex items-start gap-3">
                                         <div
                                             className={`p-2 rounded-full flex-shrink-0 ${!notification.is_read
-                                                    ? 'bg-indigo-100 dark:bg-indigo-900/50'
-                                                    : 'bg-gray-100 dark:bg-gray-700'
+                                                ? 'bg-indigo-100 dark:bg-indigo-900/50'
+                                                : 'bg-gray-100 dark:bg-gray-700'
                                                 }`}
                                         >
                                             <IconComponent
                                                 className={`w-4 h-4 ${!notification.is_read
-                                                        ? 'text-indigo-600 dark:text-indigo-400'
-                                                        : 'text-gray-500 dark:text-gray-400'
+                                                    ? 'text-indigo-600 dark:text-indigo-400'
+                                                    : 'text-gray-500 dark:text-gray-400'
                                                     }`}
                                             />
                                         </div>
@@ -208,8 +209,8 @@ export default function NotificationsPage() {
                                                 <div>
                                                     <p
                                                         className={`font-medium ${!notification.is_read
-                                                                ? 'text-gray-900 dark:text-gray-100'
-                                                                : 'text-gray-700 dark:text-gray-300'
+                                                            ? 'text-gray-900 dark:text-gray-100'
+                                                            : 'text-gray-700 dark:text-gray-300'
                                                             }`}
                                                     >
                                                         {notification.title}

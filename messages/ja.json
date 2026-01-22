@@ -1163,6 +1163,8 @@
     "deleteConfirmTitle": "購読解除の確認",
     "deleteConfirmMessage": "本当に購読を解除しますか？このイベントの通知を受け取れなくなります。",
     "confirmDelete": "確認",
-    "fetchError": "購読リストの読み込みに失敗しました"
+    "fetchError": "購読リストの読み込みに失敗しました",
+    "selectEvent": "イベントを選択",
+    "selectEventPlaceholder": "イベントを選択してください..."
   }
 }

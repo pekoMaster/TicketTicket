@@ -169,6 +169,21 @@ export async function notifySubscribers(listing: ListingInfo): Promise<number> {
                 }
             }
 
+            // In-app 通知（寫入 notifications 表）
+            try {
+                await supabaseAdmin.from('notifications').insert({
+                    user_id: sub.user_id,
+                    type: 'subscription_match',
+                    title: `🔔 有符合您訂閱的新票券！`,
+                    message: `${listing.eventName} - ${listing.seatGrade} / ¥${listing.askingPriceJpy.toLocaleString()}`,
+                    link: listingUrl,
+                    is_read: false,
+                });
+                console.log(`[Subscriptions] In-app notification created for user ${sub.user_id}`);
+            } catch (inAppError) {
+                console.error('[Subscriptions] In-app notification error:', inAppError);
+            }
+
             // 更新訂閱觸發時間和次數
             await supabaseAdmin
                 .from('ticket_subscriptions')

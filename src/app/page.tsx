@@ -10,6 +10,7 @@ import ListingListItem from '@/components/features/ListingListItem';
 import MobileListingItem from '@/components/features/MobileListingItem';
 import ListingCardSkeleton from '@/components/features/ListingCardSkeleton';
 import AuroraBackground from '@/components/ui/AuroraBackground';
+import SubscriptionModal from '@/components/ui/SubscriptionModal';
 import { LoginPromptModal, TutorialOverlay } from '@/components/onboarding';
 
 import { Input } from '@/components/ui/Input';
@@ -24,6 +25,7 @@ import {
   LayoutGrid,
   List,
   PartyPopper,
+  Bell,
 } from 'lucide-react';
 import Link from 'next/link';
 import {
@@ -131,6 +133,9 @@ export default function HomePage() {
 
   // 成功同行統計
   const [successfulMeetups, setSuccessfulMeetups] = useState<number | null>(null);
+
+  // 訂閱彈窗狀態
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
   // 獲取統計資料
   useEffect(() => {
@@ -428,6 +433,20 @@ export default function HomePage() {
               </span>
               {showFilters ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
+
+            {/* 訂閱按鈕 */}
+            {session?.user && (
+              <button
+                onClick={() => setShowSubscriptionModal(true)}
+                className="px-4 py-2.5 rounded-xl border transition-all flex items-center gap-2 bg-indigo-500/10 dark:bg-indigo-500/20 border-indigo-300 dark:border-indigo-500/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/20"
+                title={t('subscribeToEvent', { defaultValue: '訂閱活動通知' })}
+              >
+                <Bell className="w-5 h-5" />
+                <span className="hidden sm:inline">
+                  {t('subscribeToEvent', { defaultValue: '訂閱' })}
+                </span>
+              </button>
+            )}
           </div>
 
           {/* 篩選面板 */}
@@ -823,6 +842,19 @@ export default function HomePage() {
           onComplete={() => setShowTutorial(false)}
         />
       )}
+
+      {/* 訂閱彈窗（首頁版本，需選擇活動） */}
+      <SubscriptionModal
+        isOpen={showSubscriptionModal}
+        onClose={() => setShowSubscriptionModal(false)}
+        showEventSelector={true}
+        events={events.filter(e => e.isActive).map(e => ({
+          id: e.id,
+          name: e.name,
+          ticketPriceTiers: e.ticketPriceTiers,
+        }))}
+        onSuccess={() => setShowSubscriptionModal(false)}
+      />
     </div>
   );
 }
