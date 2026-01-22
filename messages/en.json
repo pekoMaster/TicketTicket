@@ -1146,6 +1146,23 @@
     "deleteSubscription": "Unsubscribe",
     "deleteConfirm": "Are you sure you want to unsubscribe?",
     "triggeredCount": "Notified {count} times",
-    "subscribeButton": "Subscribe"
+    "subscribeButton": "Subscribe",
+    "subscriptionDescription": "When new tickets matching your criteria are listed, we'll notify you. Maximum 3 subscriptions per account.",
+    "active": "Active",
+    "paused": "Paused",
+    "seatGrades": "Seats:",
+    "maxPriceLabel": "Max price:",
+    "ticketTypesLabel": "Types:",
+    "notifyVia": "Notify via:",
+    "createdAt": "Created",
+    "pause": "Pause",
+    "resume": "Resume",
+    "howToSubscribe": "Click the 🔔 bell icon on any listing to subscribe",
+    "goExplore": "Explore Listings",
+    "subscriptionCount": "Using {count} of {max} subscriptions",
+    "deleteConfirmTitle": "Confirm Unsubscribe",
+    "deleteConfirmMessage": "Are you sure you want to unsubscribe? You will no longer receive notifications for this event.",
+    "confirmDelete": "Confirm",
+    "fetchError": "Failed to load subscriptions"
   }
 }

@@ -1146,6 +1146,23 @@
     "deleteSubscription": "取消订阅",
     "deleteConfirm": "确定要取消订阅吗？",
     "triggeredCount": "已通知 {count} 次",
-    "subscribeButton": "订阅通知"
+    "subscribeButton": "订阅通知",
+    "subscriptionDescription": "当有符合您订阅条件的新票券上架时，我们会发送通知给您。每个帐号最多可订阅 3 个活动。",
+    "active": "启用中",
+    "paused": "已暂停",
+    "seatGrades": "座位：",
+    "maxPriceLabel": "价格上限：",
+    "ticketTypesLabel": "类型：",
+    "notifyVia": "通知方式：",
+    "createdAt": "建立于",
+    "pause": "暂停",
+    "resume": "启用",
+    "howToSubscribe": "前往刊登详情页点击 🔔 铃铛按钮即可订阅",
+    "goExplore": "探索刊登",
+    "subscriptionCount": "已使用 {count} / {max} 个订阅额度",
+    "deleteConfirmTitle": "确认取消订阅",
+    "deleteConfirmMessage": "确定要取消此订阅吗？取消后将不再收到此活动的新票券通知。",
+    "confirmDelete": "确认取消",
+    "fetchError": "无法载入订阅列表"
   }
 }

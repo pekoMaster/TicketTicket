@@ -1146,6 +1146,23 @@
     "deleteSubscription": "購読解除",
     "deleteConfirm": "本当に購読を解除しますか？",
     "triggeredCount": "{count}回通知済み",
-    "subscribeButton": "通知を購読"
+    "subscribeButton": "通知を購読",
+    "subscriptionDescription": "条件に一致する新しいチケットが登録されたら通知します。アカウントあたり最大3件まで購読可能です。",
+    "active": "有効",
+    "paused": "一時停止中",
+    "seatGrades": "席種：",
+    "maxPriceLabel": "価格上限：",
+    "ticketTypesLabel": "種別：",
+    "notifyVia": "通知方法：",
+    "createdAt": "作成日",
+    "pause": "一時停止",
+    "resume": "再開",
+    "howToSubscribe": "掲載詳細ページの🔔ベルアイコンをクリックして購読",
+    "goExplore": "掲載を探す",
+    "subscriptionCount": "{count}/{max}件の購読を使用中",
+    "deleteConfirmTitle": "購読解除の確認",
+    "deleteConfirmMessage": "本当に購読を解除しますか？このイベントの通知を受け取れなくなります。",
+    "confirmDelete": "確認",
+    "fetchError": "購読リストの読み込みに失敗しました"
   }
 }

@@ -1146,6 +1146,23 @@
     "deleteSubscription": "取消訂閱",
     "deleteConfirm": "確定要取消訂閱嗎？",
     "triggeredCount": "已通知 {count} 次",
-    "subscribeButton": "訂閱通知"
+    "subscribeButton": "訂閱通知",
+    "subscriptionDescription": "當有符合您訂閱條件的新票券上架時，我們會發送通知給您。每個帳號最多可訂閱 3 個活動。",
+    "active": "啟用中",
+    "paused": "已暫停",
+    "seatGrades": "座位：",
+    "maxPriceLabel": "價格上限：",
+    "ticketTypesLabel": "類型：",
+    "notifyVia": "通知方式：",
+    "createdAt": "建立於",
+    "pause": "暫停",
+    "resume": "啟用",
+    "howToSubscribe": "前往刊登詳情頁點擊 🔔 鈴鐺按鈕即可訂閱",
+    "goExplore": "探索刊登",
+    "subscriptionCount": "已使用 {count} / {max} 個訂閱額度",
+    "deleteConfirmTitle": "確認取消訂閱",
+    "deleteConfirmMessage": "確定要取消此訂閱嗎？取消後將不再收到此活動的新票券通知。",
+    "confirmDelete": "確認取消",
+    "fetchError": "無法載入訂閱列表"
   }
 }
