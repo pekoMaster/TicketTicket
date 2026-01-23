@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Work+Sans:wght@300;400;500;600;700&display=swap');
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -62,14 +63,22 @@
   --color-warning: var(--warning);
   --color-error: var(--error);
   --color-info: var(--info);
+  
+  /* 字體定義 - 優先使用新字體，CJK 作為後備 */
+  --font-sans: 'Work Sans', 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Outfit', 'Noto Sans TC', system-ui, -apple-system, sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
 }
 
 /* 安全區域適配 */
@@ -151,4 +160,22 @@ body {
 
 .animate-shrink {
   animation: shrink linear forwards;
+}
+
+/* Reduced Motion 支援 */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-pulse,
+  .animate-bounce,
+  .animate-spin,
+  .animate-fade-in,
+  .animate-slide-up {
+    animation: none !important;
+  }
 }

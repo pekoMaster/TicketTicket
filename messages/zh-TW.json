@@ -82,6 +82,7 @@
     "subtitle": "找到你的演唱會同行夥伴",
     "explore": "探索同行機會",
     "viewAll": "查看全部",
+    "subscribeToEvent": "訂閱活動通知",
     "noListings": "目前沒有開放的同行機會",
     "loadingMore": "載入更多...",
     "noMoreListings": "已顯示全部刊登",
@@ -226,7 +227,8 @@
     "aboutMeetup": "關於集合時間與地點",
     "share": "分享",
     "referencePrice": "參考原價",
-    "referencePriceNote": "僅供參考"
+    "referencePriceNote": "僅供參考",
+    "ratingStars": "5 顆星中的 {rating}"
   },
   "applicants": {
     "title": "申請者管理",
@@ -474,7 +476,8 @@
     "applicationAccepted": "您的申請已被接受",
     "applicationRejected": "您的申請已被拒絕",
     "listingExpired": "您的活動已過期",
-    "newReview": "您收到了新的評價"
+    "newReview": "您收到了新的評價",
+    "subscriptionMatch": "訂閱配對通知"
   },
   "chat": {
     "title": "與 {name} 聊天",
@@ -1165,6 +1168,8 @@
     "confirmDelete": "確認取消",
     "fetchError": "無法載入訂閱列表",
     "selectEvent": "選擇活動",
-    "selectEventPlaceholder": "請選擇活動..."
+    "selectEventPlaceholder": "請選擇活動...",
+    "selectEventFirst": "請先選擇活動",
+    "eventChanged": "已更新座位選項"
   }
 }

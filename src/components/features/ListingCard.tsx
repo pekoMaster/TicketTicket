@@ -61,11 +61,23 @@ export default function ListingCard({ listing, host, isFirstCard }: ListingCardP
 
   // 生成星星
   const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <span key={i} className={i < Math.round(rating) ? 'text-pink-400' : 'text-gray-600'}>
-        ★
-      </span>
-    )).join('');
+    return (
+      <div
+        className="flex"
+        aria-label={t('ratingStars', { rating: rating.toFixed(1) })}
+        role="img"
+      >
+        {Array.from({ length: 5 }, (_, i) => (
+          <span
+            key={i}
+            className={i < Math.round(rating) ? 'text-pink-400' : 'text-gray-300 dark:text-gray-600'}
+            aria-hidden="true"
+          >
+            ★
+          </span>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -97,9 +109,7 @@ export default function ListingCard({ listing, host, isFirstCard }: ListingCardP
             <div className="flex-1 min-w-0">
               <span className="text-sm font-semibold text-gray-800 dark:text-white block truncate">{host.username}</span>
               <div className="flex items-center gap-1 text-xs">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <span key={i} className={i <= Math.round(host.rating) ? 'text-pink-400' : 'text-gray-300 dark:text-gray-600'}>★</span>
-                ))}
+                {renderStars(host.rating)}
                 <span className="text-gray-700 dark:text-white font-medium ml-1">{host.rating.toFixed(1)}</span>
                 <span className="text-gray-400">({host.reviewCount})</span>
               </div>

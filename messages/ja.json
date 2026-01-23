@@ -82,6 +82,7 @@
     "subtitle": "コンサートの同行者を見つけよう",
     "explore": "同行募集を探す",
     "viewAll": "すべて見る",
+    "subscribeToEvent": "通知を購読",
     "noListings": "現在募集中の同行機会はありません",
     "loadingMore": "読み込み中...",
     "noMoreListings": "全て表示しました",
@@ -226,7 +227,8 @@
     "aboutMeetup": "集合時間・場所について",
     "share": "共有",
     "referencePrice": "参考定価",
-    "referencePriceNote": "参考用"
+    "referencePriceNote": "参考用",
+    "ratingStars": "5つ星のうち{rating}"
   },
   "applicants": {
     "title": "申請者管理",
@@ -474,7 +476,8 @@
     "applicationAccepted": "あなたの申請が承認されました",
     "applicationRejected": "あなたの申請が却下されました",
     "listingExpired": "あなたの投稿が期限切れになりました",
-    "newReview": "新しいレビューが届きました"
+    "newReview": "新しいレビューが届きました",
+    "subscriptionMatch": "購読マッチ通知"
   },
   "chat": {
     "title": "{name}とチャット",
@@ -1165,6 +1168,8 @@
     "confirmDelete": "確認",
     "fetchError": "購読リストの読み込みに失敗しました",
     "selectEvent": "イベントを選択",
-    "selectEventPlaceholder": "イベントを選択してください..."
+    "selectEventPlaceholder": "イベントを選択してください...",
+    "selectEventFirst": "先にイベントを選択してください",
+    "eventChanged": "座席オプションが更新されました"
   }
 }

@@ -82,6 +82,7 @@
     "subtitle": "Find your concert companion",
     "explore": "Explore Companion Opportunities",
     "viewAll": "View All",
+    "subscribeToEvent": "Subscribe to Events",
     "noListings": "No companion opportunities available",
     "loadingMore": "Loading more...",
     "noMoreListings": "All listings displayed",
@@ -226,7 +227,8 @@
     "aboutMeetup": "About Meeting Time & Location",
     "share": "Share",
     "referencePrice": "Reference Price",
-    "referencePriceNote": "For reference only"
+    "referencePriceNote": "For reference only",
+    "ratingStars": "{rating} out of 5 stars"
   },
   "applicants": {
     "title": "Manage Applicants",
@@ -474,7 +476,8 @@
     "applicationAccepted": "Your application was accepted",
     "applicationRejected": "Your application was rejected",
     "listingExpired": "Your listing has expired",
-    "newReview": "You received a new review"
+    "newReview": "You received a new review",
+    "subscriptionMatch": "Subscription Match"
   },
   "chat": {
     "title": "Chat with {name}",
@@ -1165,6 +1168,8 @@
     "confirmDelete": "Confirm",
     "fetchError": "Failed to load subscriptions",
     "selectEvent": "Select Event",
-    "selectEventPlaceholder": "Please select an event..."
+    "selectEventPlaceholder": "Please select an event...",
+    "selectEventFirst": "Please select an event first",
+    "eventChanged": "Price and seat options updated"
   }
 }
