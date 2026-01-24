@@ -11,6 +11,8 @@ import SessionProvider from '@/components/providers/SessionProvider';
 import ReCaptchaProvider from '@/components/providers/ReCaptchaProvider';
 import MainLayout from '@/components/layout/MainLayout';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/next';
+
 
 
 export const metadata: Metadata = {
@@ -61,6 +63,7 @@ export default async function RootLayout({
           </SessionProvider>
         </NextIntlClientProvider>
         <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );
