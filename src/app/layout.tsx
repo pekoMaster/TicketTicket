@@ -10,6 +10,8 @@ import { NotificationProvider } from '@/contexts/NotificationContext';
 import SessionProvider from '@/components/providers/SessionProvider';
 import ReCaptchaProvider from '@/components/providers/ReCaptchaProvider';
 import MainLayout from '@/components/layout/MainLayout';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+
 
 export const metadata: Metadata = {
   title: 'TicketTicket - 與世界的雜魚粉絲們一起使用"同行"！',
@@ -58,6 +60,7 @@ export default async function RootLayout({
             </ReCaptchaProvider>
           </SessionProvider>
         </NextIntlClientProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
