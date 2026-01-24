@@ -26,6 +26,12 @@ import {
   Trash2,
 } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
+import {
+  NotificationPreferences,
+  NotificationType,
+  DEFAULT_NOTIFICATION_PREFERENCES,
+  NOTIFICATION_TYPE_INFO,
+} from '@/types';
 
 interface UserProfile {
   id: string;
@@ -40,6 +46,7 @@ interface UserProfile {
   discordId?: string;
   showLine?: boolean;
   showDiscord?: boolean;
+  notificationPreferences?: NotificationPreferences;
 }
 
 export default function ProfileSettingsPage() {
@@ -74,6 +81,9 @@ export default function ProfileSettingsPage() {
   const [isSavingWebhook, setIsSavingWebhook] = useState(false);
   const [isTestingWebhook, setIsTestingWebhook] = useState(false);
   const [isDeletingWebhook, setIsDeletingWebhook] = useState(false);
+
+  // Notification preferences state
+  const [notificationPrefs, setNotificationPrefs] = useState<NotificationPreferences>(DEFAULT_NOTIFICATION_PREFERENCES);
 
   // Handle OAuth callback results
   useEffect(() => {
@@ -122,6 +132,7 @@ export default function ProfileSettingsPage() {
         setUsername(data.username || '');
         setShowLine(data.showLine || false);
         setShowDiscord(data.showDiscord || false);
+        setNotificationPrefs(data.notificationPreferences || DEFAULT_NOTIFICATION_PREFERENCES);
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -148,6 +159,7 @@ export default function ProfileSettingsPage() {
           username,
           showLine,
           showDiscord,
+          notificationPreferences: notificationPrefs,
         }),
       });
 
@@ -755,6 +767,97 @@ export default function ProfileSettingsPage() {
                 </p>
               </div>
             )}
+          </div>
+        </Card>
+
+        {/* Notification Preferences Section */}
+        <Card variant="glass">
+          <div className="flex items-center gap-2 mb-2">
+            <Bell className="w-5 h-5 text-indigo-500" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('notifications.title')}</h2>
+          </div>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('notifications.description')}</p>
+
+          {/* Header Row */}
+          <div className="hidden sm:grid grid-cols-[1fr_60px_60px_60px] gap-2 mb-3 px-2">
+            <div></div>
+            <div className="text-center text-xs font-medium text-gray-500 dark:text-gray-400">{t('notifications.email')}</div>
+            <div className="text-center text-xs font-medium text-gray-500 dark:text-gray-400">{t('notifications.discord')}</div>
+            <div className="text-center text-xs font-medium text-gray-500 dark:text-gray-400">{t('notifications.line')}</div>
+          </div>
+
+          <div className="space-y-2">
+            {(['new_application', 'application_accepted', 'application_rejected', 'subscription_match', 'new_review', 'listing_expired', 'system'] as NotificationType[]).map((type) => {
+              const info = NOTIFICATION_TYPE_INFO[type];
+              const prefs = notificationPrefs[type] || { email: false, discord: false, line: false };
+              const hasDiscord = !!profile?.discordId;
+
+              const updatePref = (channel: 'email' | 'discord' | 'line', value: boolean) => {
+                setNotificationPrefs(prev => ({
+                  ...prev,
+                  [type]: { ...prev[type], [channel]: value }
+                }));
+              };
+
+              return (
+                <div key={type} className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                  <div className="sm:grid sm:grid-cols-[1fr_60px_60px_60px] sm:gap-2 sm:items-center">
+                    {/* Label */}
+                    <div className="mb-2 sm:mb-0">
+                      <div className="flex items-center gap-2">
+                        <span>{info.icon}</span>
+                        <span className="font-medium text-gray-900 dark:text-gray-100 text-sm">
+                          {t(`notifications.types.${type}`)}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 ml-6">
+                        {t(`notifications.types.${type}_desc`)}
+                      </p>
+                    </div>
+
+                    {/* Toggles */}
+                    <div className="flex sm:block justify-between items-center mt-2 sm:mt-0">
+                      <span className="sm:hidden text-xs text-gray-500">Email</span>
+                      <button
+                        type="button"
+                        onClick={() => updatePref('email', !prefs.email)}
+                        className={`relative w-10 h-5 rounded-full transition-colors mx-auto ${prefs.email ? 'bg-indigo-500' : 'bg-gray-300 dark:bg-gray-600'}`}
+                      >
+                        <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${prefs.email ? 'translate-x-5' : 'translate-x-0'}`} />
+                      </button>
+                    </div>
+
+                    <div className="flex sm:block justify-between items-center mt-2 sm:mt-0">
+                      <span className="sm:hidden text-xs text-gray-500">Discord</span>
+                      {info.supportsDiscord ? (
+                        hasDiscord ? (
+                          <button
+                            type="button"
+                            onClick={() => updatePref('discord', !prefs.discord)}
+                            className={`relative w-10 h-5 rounded-full transition-colors mx-auto ${prefs.discord ? 'bg-[#5865F2]' : 'bg-gray-300 dark:bg-gray-600'}`}
+                          >
+                            <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${prefs.discord ? 'translate-x-5' : 'translate-x-0'}`} />
+                          </button>
+                        ) : (
+                          <span className="text-xs text-orange-500 mx-auto block text-center">{t('notifications.discordRequired')}</span>
+                        )
+                      ) : (
+                        <span className="text-xs text-gray-400 mx-auto block text-center">-</span>
+                      )}
+                    </div>
+
+                    <div className="flex sm:block justify-between items-center mt-2 sm:mt-0">
+                      <span className="sm:hidden text-xs text-gray-500">LINE</span>
+                      {info.supportsLine ? (
+                        <span className="text-xs text-gray-400 mx-auto block text-center">{t('notifications.lineComingSoon')}</span>
+                      ) : (
+                        <span className="text-xs text-gray-400 mx-auto block text-center">-</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </Card>
 

@@ -630,6 +630,31 @@
       "testSuccess": "測試訊息已發送，請檢查您的 Discord 頻道",
       "testFailed": "測試失敗，請確認 Webhook URL 是否正確",
       "invalidUrl": "請輸入有效的 Discord Webhook URL"
+    },
+    "notifications": {
+      "title": "通知偏好設定",
+      "description": "選擇您希望接收通知的方式",
+      "email": "Email",
+      "discord": "Discord",
+      "line": "LINE",
+      "types": {
+        "new_application": "收到新申請",
+        "new_application_desc": "當有人申請您的刊登時",
+        "application_accepted": "申請被接受",
+        "application_accepted_desc": "當您的申請被主辦人接受時",
+        "application_rejected": "申請被拒絕",
+        "application_rejected_desc": "當您的申請被主辦人拒絕時",
+        "subscription_match": "訂閱配對",
+        "subscription_match_desc": "當有符合您訂閱條件的新票券時",
+        "new_review": "收到新評價",
+        "new_review_desc": "當有人對您發表評價時",
+        "listing_expired": "刊登到期提醒",
+        "listing_expired_desc": "當您的刊登即將到期時",
+        "system": "系統公告",
+        "system_desc": "重要系統通知和公告"
+      },
+      "discordRequired": "需連結 Discord",
+      "lineComingSoon": "即將推出"
     }
   },
   "share": {

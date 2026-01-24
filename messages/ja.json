@@ -630,6 +630,31 @@
       "testSuccess": "テストメッセージを送信しました。Discord チャンネルを確認してください",
       "testFailed": "テストに失敗しました。Webhook URL を確認してください",
       "invalidUrl": "有効な Discord Webhook URL を入力してください"
+    },
+    "notifications": {
+      "title": "通知設定",
+      "description": "通知の受け取り方法を選択してください",
+      "email": "Email",
+      "discord": "Discord",
+      "line": "LINE",
+      "types": {
+        "new_application": "新規応募",
+        "new_application_desc": "あなたの出品に応募があった時",
+        "application_accepted": "応募承認",
+        "application_accepted_desc": "あなたの応募が承認された時",
+        "application_rejected": "応募却下",
+        "application_rejected_desc": "あなたの応募が却下された時",
+        "subscription_match": "購読マッチ",
+        "subscription_match_desc": "購読条件に合う新しいチケットがあった時",
+        "new_review": "新しいレビュー",
+        "new_review_desc": "誰かがあなたにレビューを書いた時",
+        "listing_expired": "出品期限通知",
+        "listing_expired_desc": "あなたの出品がまもなく期限切れになる時",
+        "system": "システム通知",
+        "system_desc": "重要なシステム通知"
+      },
+      "discordRequired": "Discord連携が必要",
+      "lineComingSoon": "近日公開"
     }
   },
   "share": {

@@ -630,6 +630,31 @@
       "testSuccess": "Test message sent, please check your Discord channel",
       "testFailed": "Test failed, please verify the Webhook URL",
       "invalidUrl": "Please enter a valid Discord Webhook URL"
+    },
+    "notifications": {
+      "title": "Notification Preferences",
+      "description": "Choose how you want to receive notifications",
+      "email": "Email",
+      "discord": "Discord",
+      "line": "LINE",
+      "types": {
+        "new_application": "New Application",
+        "new_application_desc": "When someone applies to your listing",
+        "application_accepted": "Application Accepted",
+        "application_accepted_desc": "When your application is accepted",
+        "application_rejected": "Application Rejected",
+        "application_rejected_desc": "When your application is rejected",
+        "subscription_match": "Subscription Match",
+        "subscription_match_desc": "When there's a new ticket matching your subscription",
+        "new_review": "New Review",
+        "new_review_desc": "When someone leaves you a review",
+        "listing_expired": "Listing Expiry Reminder",
+        "listing_expired_desc": "When your listing is about to expire",
+        "system": "System Announcements",
+        "system_desc": "Important system notifications"
+      },
+      "discordRequired": "Discord required",
+      "lineComingSoon": "Coming soon"
     }
   },
   "share": {

@@ -1,3 +1,53 @@
+// ==================== 通知偏好設定類型 ====================
+
+// 通知類型
+export type NotificationType =
+  | 'new_application'
+  | 'application_accepted'
+  | 'application_rejected'
+  | 'subscription_match'
+  | 'new_review'
+  | 'listing_expired'
+  | 'system';
+
+// 通知頻道偏好（每種通知類型的設定）
+export interface NotificationChannelPreference {
+  email: boolean;
+  discord: boolean;
+  line: boolean;
+}
+
+// 完整通知偏好設定
+export type NotificationPreferences = Record<NotificationType, NotificationChannelPreference>;
+
+// 預設通知偏好（重要通知預設開啟 Email 和 Discord）
+export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
+  new_application: { email: true, discord: true, line: false },
+  application_accepted: { email: true, discord: true, line: false },
+  application_rejected: { email: true, discord: true, line: false },
+  subscription_match: { email: true, discord: true, line: false },
+  new_review: { email: false, discord: false, line: false },
+  listing_expired: { email: false, discord: false, line: false },
+  system: { email: false, discord: false, line: false },
+};
+
+// 通知類型標籤（用於顯示）
+export const NOTIFICATION_TYPE_INFO: Record<NotificationType, {
+  icon: string;
+  supportsDiscord: boolean;
+  supportsLine: boolean;
+}> = {
+  new_application: { icon: '📩', supportsDiscord: true, supportsLine: true },
+  application_accepted: { icon: '✅', supportsDiscord: true, supportsLine: true },
+  application_rejected: { icon: '❌', supportsDiscord: true, supportsLine: true },
+  subscription_match: { icon: '🔔', supportsDiscord: true, supportsLine: true },
+  new_review: { icon: '⭐', supportsDiscord: true, supportsLine: true },
+  listing_expired: { icon: '⏰', supportsDiscord: true, supportsLine: true },
+  system: { icon: '📢', supportsDiscord: false, supportsLine: false },
+};
+
+// ==================== 用戶角色 ====================
+
 // 用戶角色
 export type UserRole = 'user' | 'sub_admin' | 'super_admin';
 
