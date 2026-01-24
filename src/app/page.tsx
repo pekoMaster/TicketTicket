@@ -848,11 +848,20 @@ export default function HomePage() {
         isOpen={showSubscriptionModal}
         onClose={() => setShowSubscriptionModal(false)}
         showEventSelector={true}
-        events={events.filter(e => e.isActive).map(e => ({
-          id: e.id,
-          name: e.name,
-          ticketPriceTiers: e.ticketPriceTiers,
-        }))}
+        events={events
+          .filter(e => {
+            if (!e.isActive) return false;
+            // 過濾掉已過期活動 (結束日期早於今天凌晨)
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const endDate = e.eventEndDate || e.eventDate;
+            return endDate >= today;
+          })
+          .map(e => ({
+            id: e.id,
+            name: e.name,
+            ticketPriceTiers: e.ticketPriceTiers,
+          }))}
         onSuccess={() => setShowSubscriptionModal(false)}
       />
     </div>
