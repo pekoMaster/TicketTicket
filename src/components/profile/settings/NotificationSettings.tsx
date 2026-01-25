@@ -94,6 +94,8 @@ export default function NotificationSettings({ profile, onUpdate }: Notification
                     setNotificationPrefs(newPrefs);
                 }
 
+                // Refresh parent state to prevent reversion on tab switch
+                onUpdate();
                 setMessage({ type: 'success', text: t('saveSuccess') });
             } else {
                 throw new Error('Failed to save');
@@ -284,8 +286,8 @@ export default function NotificationSettings({ profile, onUpdate }: Notification
                                                                 disabled={isLoading}
                                                                 onClick={() => updatePreference(type, ch, !isChecked)}
                                                                 className={`relative w-10 h-5 rounded-full transition-colors mx-auto ${isChecked
-                                                                        ? (ch === 'discord' ? 'bg-[#5865F2]' : 'bg-indigo-500')
-                                                                        : 'bg-gray-300 dark:bg-gray-600'
+                                                                    ? (ch === 'discord' ? 'bg-[#5865F2]' : 'bg-indigo-500')
+                                                                    : 'bg-gray-300 dark:bg-gray-600'
                                                                     } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                             >
                                                                 <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${isChecked ? 'translate-x-5' : 'translate-x-0'} flex items-center justify-center`}>
