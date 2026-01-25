@@ -143,14 +143,28 @@ export async function PATCH(request: NextRequest) {
       updateData.show_discord = Boolean(showDiscord);
     }
 
+    // 為了確保不覆蓋現有設定，我們先取得目前的設定
+    // 雖然前面 session 檢查過，但這裡需要最新的 DB 資料來做 JSONB merge
+    const { data: currentUser, error: fetchError } = await supabaseAdmin
+      .from('users')
+      .select('notification_preferences')
+      .eq('id', session.user.dbId)
+      .single();
+
+    if (fetchError) {
+      console.error('[API] Error fetching current user for merge:', fetchError);
+      // Fallback to updateData as is if fetch fails (risk of overwrite, but better than 500)
+    }
+
     if (notificationPreferences !== undefined) {
       // 驗證通知偏好設定格式
       if (typeof notificationPreferences !== 'object') {
         return NextResponse.json({ error: '通知偏好設定格式不正確' }, { status: 400 });
       }
-      // 合併現有設定與新設定（允許部分更新）
+
       const validTypes = ['new_application', 'application_accepted', 'application_rejected', 'subscription_match', 'new_review', 'listing_expired', 'system'];
       const sanitizedPrefs: Partial<NotificationPreferences> = {};
+
       for (const type of validTypes) {
         if (notificationPreferences[type]) {
           sanitizedPrefs[type as keyof NotificationPreferences] = {
@@ -160,12 +174,16 @@ export async function PATCH(request: NextRequest) {
           };
         }
       }
-      if (Object.keys(sanitizedPrefs).length > 0) {
-        updateData.notification_preferences = {
-          ...DEFAULT_NOTIFICATION_PREFERENCES,
-          ...sanitizedPrefs,
-        };
-      }
+
+      const currentPrefs = currentUser?.notification_preferences || DEFAULT_NOTIFICATION_PREFERENCES;
+      updateData.notification_preferences = {
+        ...currentPrefs, // 基於目前的設定 (Base on current DB value)
+        ...sanitizedPrefs, // 覆蓋新的變更 (Overwrite with new changes)
+      };
+
+      console.log('[API] Merging prefs - Current:', JSON.stringify(currentPrefs));
+      console.log('[API] Merging prefs - Incoming:', JSON.stringify(sanitizedPrefs));
+      console.log('[API] Merging prefs - Final:', JSON.stringify(updateData.notification_preferences));
     }
 
     if (Object.keys(updateData).length === 0) {
@@ -174,7 +192,6 @@ export async function PATCH(request: NextRequest) {
 
     // 執行更新
     console.log('[API] Updating user:', session.user.dbId);
-    console.log('[API] Update data:', JSON.stringify(updateData, null, 2));
 
     const { data: updatedUser, error } = await supabaseAdmin
       .from('users')
