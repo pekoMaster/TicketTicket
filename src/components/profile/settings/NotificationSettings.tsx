@@ -33,6 +33,9 @@ export default function NotificationSettings({ profile, onUpdate }: Notification
     const [isDeletingWebhook, setIsDeletingWebhook] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+    // Track which specific toggle is saving: "type-channel" (e.g., "new_application-email")
+    const [savingItem, setSavingItem] = useState<string | null>(null);
+
     // Sync props to state
     useEffect(() => {
         if (profile?.notificationPreferences) {
@@ -60,9 +63,19 @@ export default function NotificationSettings({ profile, onUpdate }: Notification
         if (profile?.id) fetchWebhook();
     }, [profile]);
 
-    const updatePreference = async (newPrefs: NotificationPreferences) => {
-        console.log('[Frontend] Saving prefs:', newPrefs);
-        setNotificationPrefs(newPrefs); // Optimistic visual update
+    const updatePreference = async (type: NotificationType, channel: 'email' | 'discord' | 'line', newValue: boolean) => {
+        const loadingKey = `${type}-${channel}`;
+        setSavingItem(loadingKey);
+
+        // Prepare the new state object for the API request
+        const currentTypePrefs = notificationPrefs[type] || { email: false, discord: false, line: false };
+        const newPrefs = {
+            ...notificationPrefs,
+            [type]: { ...currentTypePrefs, [channel]: newValue }
+        };
+
+        console.log(`[Frontend] Saving ${loadingKey} to ${newValue}`);
+
         try {
             const res = await fetch('/api/profile', {
                 method: 'PATCH',
@@ -71,8 +84,16 @@ export default function NotificationSettings({ profile, onUpdate }: Notification
             });
 
             if (res.ok) {
-                const data = await res.json(); // Wait for json
-                console.log('[Frontend] Save response:', data);
+                const data = await res.json();
+                console.log('[Frontend] Save response data:', data);
+
+                // CRITICAL: Update state ONLY after server confirmation
+                if (data.notificationPreferences) {
+                    setNotificationPrefs(data.notificationPreferences);
+                } else {
+                    setNotificationPrefs(newPrefs);
+                }
+
                 setMessage({ type: 'success', text: t('saveSuccess') });
             } else {
                 throw new Error('Failed to save');
@@ -80,7 +101,8 @@ export default function NotificationSettings({ profile, onUpdate }: Notification
         } catch (error) {
             console.error('Failed to update prefs:', error);
             setMessage({ type: 'error', text: t('saveError') });
-            onUpdate(); // Revert on error
+        } finally {
+            setSavingItem(null);
         }
     };
 
@@ -227,15 +249,6 @@ export default function NotificationSettings({ profile, onUpdate }: Notification
                                     const prefs = notificationPrefs[type] || { email: false, discord: false, line: false };
                                     const hasDiscord = !!profile?.discordId;
 
-                                    const togglePref = (channel: 'email' | 'discord' | 'line', value: boolean) => {
-                                        const newPrefs = {
-                                            ...notificationPrefs,
-                                            [type]: { ...notificationPrefs[type], [channel]: value }
-                                        };
-                                        updatePreference(newPrefs);
-                                    };
-
-                                    return (
                                     return (
                                         <div key={type} className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/70 transition-colors">
                                             <div className="sm:grid sm:grid-cols-[1fr_60px_60px_60px] sm:gap-2 sm:items-center">
@@ -253,13 +266,12 @@ export default function NotificationSettings({ profile, onUpdate }: Notification
                                                 </div>
 
                                                 {/* Toggles */}
-                                                {/* Helper to render toggle */}
                                                 {['email', 'discord', 'line'].map((channel) => {
                                                     const ch = channel as 'email' | 'discord' | 'line';
                                                     if (ch === 'discord' && !info.supportsDiscord) return <span key={ch} className="text-xs text-gray-400 mx-auto block text-center">-</span>;
                                                     if (ch === 'line' && !info.supportsLine) return <span key={ch} className="text-xs text-gray-400 mx-auto block text-center">-</span>;
                                                     if (ch === 'discord' && !hasDiscord) return <span key={ch} className="text-xs text-orange-500 mx-auto block text-center leading-tight">{t('notifications.discordRequired')}</span>;
-                                                    if (ch === 'line') return <span key={ch} className="text-xs text-gray-400 mx-auto block text-center transform scale-90">{t('notifications.lineComingSoon')}</span>; // LINE not ready yet
+                                                    if (ch === 'line') return <span key={ch} className="text-xs text-gray-400 mx-auto block text-center transform scale-90">{t('notifications.lineComingSoon')}</span>;
 
                                                     const isLoading = savingItem === `${type}-${ch}`;
                                                     const isChecked = !!prefs[ch];
