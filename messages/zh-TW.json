@@ -58,7 +58,11 @@
     "chatWith": "與 {name} 聊天",
     "chat": "聊天",
     "help": "幫助",
-    "report": "檢舉"
+    "help": "說明",
+    "report": "檢舉",
+    "deleteConfirmTitle": "確認刪除",
+    "deleteConfirmMessage": "確定要刪除嗎？",
+    "confirmDelete": "確認刪除"
   },
   "nav": {
     "home": "首頁",
@@ -560,6 +564,7 @@
     "editListing": "編輯活動",
     "deleteListing": "移除活動",
     "withdrawApplication": "撤回申請",
+    "confirmWithdraw": "確認撤回",
     "withdrawConfirmTitle": "確認撤回申請",
     "withdrawConfirmMessage": "確定要撤回這個申請嗎？",
     "withdrawing": "撤回中...",
@@ -631,13 +636,22 @@
     "saveSuccess": "儲存成功",
     "saveError": "儲存失敗，請稍後再試",
     "uploading": "上傳中...",
+    "appSettings": "應用程式設定",
+    "theme": "主題",
+    "language": "語言",
+    "mySubscriptions": "我的訂閱",
+    "viewMore": "查看更多",
+    "helpSupport": "幫助與支援",
+    "terms": "使用條款",
+    "privacy": "隱私權政策",
+    "legal": "法律條款",
     "webhook": {
       "title": "Discord Webhook 通知",
       "description": "設定 Discord Webhook 後，當您訂閱的活動有新刊登時會自動發送通知",
       "name": "名稱（選填）",
       "namePlaceholder": "例：我的通知頻道",
       "url": "Webhook URL",
-      "urlHint": "在 Discord 頻道設定 → 整合 → Webhook 中建立",
+      "urlHint": "在 Discord 頻道設定  整合  Webhook 中建立",
       "save": "儲存 Webhook",
       "test": "測試",
       "delete": "刪除",
@@ -655,6 +669,11 @@
       "email": "Email",
       "discord": "Discord",
       "line": "LINE",
+      "groups": {
+        "activity": "活動與申請",
+        "discovery": "探索與提醒",
+        "system": "系統與帳號"
+      },
       "types": {
         "new_application": "收到新申請",
         "new_application_desc": "當有人申請您的刊登時",

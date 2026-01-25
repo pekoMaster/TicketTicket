@@ -144,6 +144,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     // 頁面載入時檢查
     useEffect(() => {
         if (session?.user?.dbId) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             checkUnread();
         }
     }, [session?.user?.dbId, checkUnread]);

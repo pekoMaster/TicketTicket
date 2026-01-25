@@ -58,7 +58,11 @@
     "chatWith": "Chat with {name}",
     "chat": "Chat",
     "help": "Help",
-    "report": "Report"
+    "help": "Help",
+    "report": "Report",
+    "deleteConfirmTitle": "Confirm Delete",
+    "deleteConfirmMessage": "Are you sure you want to delete?",
+    "confirmDelete": "Confirm Delete"
   },
   "nav": {
     "home": "Home",
@@ -127,8 +131,7 @@
     "stars": "{n}+ Stars",
     "nationality": "Nationality",
     "allNationalities": "All Nationalities",
-    "languages": "Languages",
-    "allLanguages": "All Languages",
+    "languages": "All Languages",
     "sortBy": "Sort By",
     "byDate": "Event Date",
     "priceLowHigh": "Price: Low to High",
@@ -559,6 +562,7 @@
     "editListing": "Edit Listing",
     "deleteListing": "Delete Listing",
     "withdrawApplication": "Withdraw Application",
+    "confirmWithdraw": "Confirm Withdraw",
     "withdrawConfirmTitle": "Confirm Withdrawal",
     "withdrawConfirmMessage": "Are you sure you want to withdraw this application?",
     "withdrawing": "Withdrawing...",
@@ -630,6 +634,15 @@
     "saveSuccess": "Saved successfully",
     "saveError": "Failed to save, please try again",
     "uploading": "Uploading...",
+    "appSettings": "App Settings",
+    "theme": "Theme",
+    "language": "Language",
+    "mySubscriptions": "My Subscriptions",
+    "viewMore": "View More",
+    "helpSupport": "Help & Support",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "legal": "Legal",
     "webhook": {
       "title": "Discord Webhook Notifications",
       "description": "Set up a Discord Webhook to receive notifications when new listings are posted for events you subscribe to",
@@ -654,6 +667,11 @@
       "email": "Email",
       "discord": "Discord",
       "line": "LINE",
+      "groups": {
+        "activity": "Activity & Applications",
+        "discovery": "Discovery & Alerts",
+        "system": "System & Account"
+      },
       "types": {
         "new_application": "New Application",
         "new_application_desc": "When someone applies to your listing",

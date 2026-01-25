@@ -24,6 +24,7 @@ function formatUserResponse(user: any) {
     showDiscord: user.show_discord,
     notificationPreferences: user.notification_preferences || DEFAULT_NOTIFICATION_PREFERENCES,
     createdAt: user.created_at,
+    role: user.role || 'user',
   };
 }
 

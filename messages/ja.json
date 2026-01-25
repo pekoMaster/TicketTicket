@@ -58,7 +58,11 @@
     "chatWith": "{name}とチャット",
     "chat": "チャット",
     "help": "ヘルプ",
-    "report": "通報"
+    "help": "ヘルプ",
+    "report": "通報",
+    "deleteConfirmTitle": "削除の確認",
+    "deleteConfirmMessage": "本当に削除しますか？",
+    "confirmDelete": "削除する"
   },
   "nav": {
     "home": "ホーム",
@@ -558,9 +562,10 @@
     "goExplore": "同行募集を探す",
     "manageApplications": "申請を管理",
     "editListing": "募集を編集",
-    "deleteListing": "募集を削除",
-    "withdrawApplication": "申請を取り下げ",
-    "withdrawConfirmTitle": "取り下げの確認",
+    "deleteListing": "削除",
+    "withdrawApplication": "申請を取り消す",
+    "confirmWithdraw": "取り消しの確認",
+    "withdrawConfirmTitle": "申請の取り消し確認",
     "withdrawConfirmMessage": "この申請を取り下げてもよろしいですか？",
     "withdrawing": "取り下げ中...",
     "settings": "設定",
@@ -631,6 +636,15 @@
     "saveSuccess": "保存しました",
     "saveError": "保存に失敗しました。もう一度お試しください",
     "uploading": "アップロード中...",
+    "appSettings": "アプリ設定",
+    "theme": "テーマ",
+    "language": "言語",
+    "mySubscriptions": "購読リスト",
+    "viewMore": "もっと見る",
+    "helpSupport": "ヘルプ＆サポート",
+    "terms": "利用規約",
+    "privacy": "プライバシーポリシー",
+    "legal": "法的事項",
     "webhook": {
       "title": "Discord Webhook 通知",
       "description": "Discord Webhook を設定すると、購読しているイベントに新しい出品があった際に通知を受け取れます",
@@ -655,6 +669,11 @@
       "email": "Email",
       "discord": "Discord",
       "line": "LINE",
+      "groups": {
+        "activity": "活動と申請",
+        "discovery": "探索と通知",
+        "system": "システムとアカウント"
+      },
       "types": {
         "new_application": "新規応募",
         "new_application_desc": "あなたの出品に応募があった時",

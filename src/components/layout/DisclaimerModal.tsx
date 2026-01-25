@@ -18,6 +18,7 @@ export default function DisclaimerModal() {
   const [hasSeenLoginPrompt, setHasSeenLoginPrompt] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     // 檢查是否已看過登入提示
     const seen = localStorage.getItem('hasSeenLoginPrompt') === 'true';

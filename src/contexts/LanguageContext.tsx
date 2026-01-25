@@ -18,6 +18,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     // 從 localStorage 讀取語言設定
     const savedLocale = localStorage.getItem('locale') as Locale | null;

@@ -111,7 +111,10 @@ export interface User {
   discordId?: string;
   showLine?: boolean;
   showDiscord?: boolean;
+  notificationPreferences?: NotificationPreferences;
 }
+
+export type UserProfile = User;
 
 // 常用國碼選項
 export const PHONE_COUNTRY_CODES = [
@@ -200,6 +203,74 @@ export interface Listing {
   createdAt: Date;
   updatedAt: Date;
   host?: User;                             // 刊登者資訊（從 API 載入時附帶）
+}
+
+// API 回傳的評論格式（包含關聯資料）
+export interface ApiReview {
+  id: string;
+  rating: number;
+  comment?: string;
+  created_at: string;
+  reviewer: {
+    id: string;
+    username: string;
+    avatar_url?: string; // API snake_case
+    custom_avatar_url?: string; // API snake_case
+  };
+  listing?: {
+    id: string;
+    event_name: string;
+    event_date: string;
+  };
+}
+
+// API 回傳的申請格式（包含關聯資料）
+export interface ApiApplication {
+  id: string;
+  listing_id: string;
+  status: string; // ApplicationStatus
+  created_at: string;
+  listing: {
+    id: string;
+    event_name: string;
+    event_date: string;
+    venue: string;
+    status: string;
+    ticket_type: string;
+    seat_grade: string;
+    asking_price_jpy: number;
+    price_type?: string;
+    asking_price?: number;
+    host: {
+      id: string;
+      username: string;
+      avatar_url?: string;
+      custom_avatar_url?: string;
+    };
+  };
+}
+
+// 已完成的配對
+export interface CompletedMatch {
+  id: string;
+  listingId: string;
+  listing: {
+    event_name: string;
+    event_date: string;
+    venue: string;
+    ticket_type: string;
+  };
+  isHost: boolean;
+  otherUser: {
+    id: string;
+    username: string;
+    avatarUrl?: string; // Sometimes APIs normalize this, sometimes not. matching usage in ProfileHistory
+  };
+  completedAt: string;
+  myReview: {
+    rating: number;
+    isAuto?: boolean;
+  } | null;
 }
 
 // 申請狀態

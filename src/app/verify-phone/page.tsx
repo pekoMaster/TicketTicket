@@ -170,6 +170,7 @@ export default function VerifyPhonePage() {
         attempts: newAttempts,
         cooldownEnd: Date.now() + cooldownSeconds * 1000,
       }));
+      // eslint-disable-next-line
     } catch (error: any) {
       console.error('[Phone] Failed to send verification code:', error);
       // 顯示詳細錯誤以便除錯

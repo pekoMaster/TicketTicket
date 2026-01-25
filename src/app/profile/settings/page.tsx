@@ -1,138 +1,47 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import Header from '@/components/layout/Header';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import Avatar from '@/components/ui/Avatar';
-import {
-  User,
-  Camera,
-  MessageCircle,
-  Check,
-  Loader2,
-  X,
-  ExternalLink,
-  Unlink,
-  ShieldCheck,
-  AlertCircle,
-  Bug,
-  Bell,
-  Send,
-  Trash2,
-} from 'lucide-react';
-import Modal from '@/components/ui/Modal';
-import {
-  NotificationPreferences,
-  NotificationType,
-  DEFAULT_NOTIFICATION_PREFERENCES,
-  NOTIFICATION_TYPE_INFO,
-} from '@/types';
-
-interface UserProfile {
-  id: string;
-  username: string;
-  email: string;
-  avatarUrl?: string;
-  customAvatarUrl?: string;
-  verificationLevel?: 'unverified' | 'applicant' | 'host';
-  phoneCountryCode?: string;
-  phoneNumber?: string;
-  lineId?: string;
-  discordId?: string;
-  showLine?: boolean;
-  showDiscord?: boolean;
-  notificationPreferences?: NotificationPreferences;
-}
+import { Loader2, User, Bell, HelpCircle } from 'lucide-react';
+import { UserProfile } from '@/types';
+import GeneralSettings from '@/components/profile/settings/GeneralSettings';
+import NotificationSettings from '@/components/profile/settings/NotificationSettings';
+import SupportSettings from '@/components/profile/settings/SupportSettings';
 
 export default function ProfileSettingsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations('profileSettings');
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [isLinking, setIsLinking] = useState<'line' | 'discord' | null>(null);
-  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [activeTab, setActiveTab] = useState<'general' | 'notifications' | 'support'>('general');
 
-  // Form state
-  const [username, setUsername] = useState('');
-  const [showLine, setShowLine] = useState(false);
-  const [showDiscord, setShowDiscord] = useState(false);
-
-  // Bug report modal state
-  const [bugModalOpen, setBugModalOpen] = useState(false);
-  const [bugTitle, setBugTitle] = useState('');
-  const [bugDescription, setBugDescription] = useState('');
-  const [isSubmittingBug, setIsSubmittingBug] = useState(false);
-
-  // Discord Webhook state
-  const [webhookUrl, setWebhookUrl] = useState('');
-  const [webhookName, setWebhookName] = useState('');
-  const [webhookActive, setWebhookActive] = useState(false);
-  const [isSavingWebhook, setIsSavingWebhook] = useState(false);
-  const [isTestingWebhook, setIsTestingWebhook] = useState(false);
-  const [isDeletingWebhook, setIsDeletingWebhook] = useState(false);
-
-  // Notification preferences state
-  const [notificationPrefs, setNotificationPrefs] = useState<NotificationPreferences>(DEFAULT_NOTIFICATION_PREFERENCES);
-
-  // Handle OAuth callback results
+  // Handle direct tab link
   useEffect(() => {
-    const success = searchParams.get('success');
-    const error = searchParams.get('error');
-
-    if (success === 'line') {
-      setSaveMessage({ type: 'success', text: t('lineConnected') });
-      // Clear URL params
-      router.replace('/profile/settings');
-    } else if (success === 'discord') {
-      setSaveMessage({ type: 'success', text: t('discordConnected') });
-      router.replace('/profile/settings');
-    } else if (error?.startsWith('line_')) {
-      setSaveMessage({ type: 'error', text: t('lineConnectionFailed') });
-      router.replace('/profile/settings');
-    } else if (error?.startsWith('discord_')) {
-      setSaveMessage({ type: 'error', text: t('discordConnectionFailed') });
-      router.replace('/profile/settings');
+    const tab = searchParams.get('tab');
+    if (tab && ['general', 'notifications', 'support'].includes(tab)) {
+      setActiveTab(tab as any);
     }
-  }, [searchParams, router, t]);
+  }, [searchParams]);
 
-  // Auto-clear saveMessage after 5 seconds
-  useEffect(() => {
-    if (saveMessage) {
-      const timer = setTimeout(() => setSaveMessage(null), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [saveMessage]);
-
-  // Redirect if not logged in
+  // Auth check
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login?callbackUrl=/profile/settings');
     }
   }, [status, router]);
 
-  // Fetch profile data
   const fetchProfile = async () => {
     try {
       const response = await fetch('/api/profile');
       if (response.ok) {
         const data = await response.json();
         setProfile(data);
-        // Initialize form state
-        setUsername(data.username || '');
-        setShowLine(data.showLine || false);
-        setShowDiscord(data.showDiscord || false);
-        setNotificationPrefs(data.notificationPreferences || DEFAULT_NOTIFICATION_PREFERENCES);
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -147,835 +56,67 @@ export default function ProfileSettingsPage() {
     }
   }, [session]);
 
-  const handleSave = async () => {
-    setIsSaving(true);
-    setSaveMessage(null);
-
-    try {
-      const response = await fetch('/api/profile', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username,
-          showLine,
-          showDiscord,
-          notificationPreferences: notificationPrefs,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setProfile(data);
-        setSaveMessage({ type: 'success', text: t('saveSuccess') });
-        setTimeout(() => setSaveMessage(null), 3000);
-      } else {
-        const error = await response.json();
-        setSaveMessage({ type: 'error', text: error.error || t('saveError') });
-      }
-    } catch (error) {
-      console.error('Error saving profile:', error);
-      setSaveMessage({ type: 'error', text: t('saveError') });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleConnectLine = () => {
-    setIsLinking('line');
-    window.location.href = '/api/auth/link/line';
-  };
-
-  const handleConnectDiscord = () => {
-    setIsLinking('discord');
-    window.location.href = '/api/auth/link/discord';
-  };
-
-  const handleDisconnect = async (provider: 'line' | 'discord') => {
-    setIsLinking(provider);
-    try {
-      const response = await fetch('/api/auth/unlink', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ provider }),
-      });
-
-      if (response.ok) {
-        setSaveMessage({
-          type: 'success',
-          text: provider === 'line' ? t('lineDisconnected') : t('discordDisconnected')
-        });
-        // Refresh profile data
-        await fetchProfile();
-        setTimeout(() => setSaveMessage(null), 3000);
-      } else {
-        setSaveMessage({ type: 'error', text: t('saveError') });
-      }
-    } catch (error) {
-      console.error('Error disconnecting account:', error);
-      setSaveMessage({ type: 'error', text: t('saveError') });
-    } finally {
-      setIsLinking(null);
-    }
-  };
-
-  const handleAvatarClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      setSaveMessage({ type: 'error', text: 'Only image files are allowed' });
-      return;
-    }
-
-    // Validate file size (2MB)
-    if (file.size > 2 * 1024 * 1024) {
-      setSaveMessage({ type: 'error', text: 'Image size must be less than 2MB' });
-      return;
-    }
-
-    setIsUploading(true);
-    setSaveMessage(null);
-
-    try {
-      const formData = new FormData();
-      formData.append('avatar', file);
-
-      const response = await fetch('/api/profile/avatar', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setProfile((prev) => prev ? { ...prev, customAvatarUrl: data.avatarUrl } : null);
-        setSaveMessage({ type: 'success', text: t('saveSuccess') });
-        setTimeout(() => setSaveMessage(null), 3000);
-      } else {
-        const error = await response.json();
-        setSaveMessage({ type: 'error', text: error.error || t('saveError') });
-      }
-    } catch (error) {
-      console.error('Error uploading avatar:', error);
-      setSaveMessage({ type: 'error', text: t('saveError') });
-    } finally {
-      setIsUploading(false);
-      // Reset input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-    }
-  };
-
-  const handleRemoveAvatar = async () => {
-    setIsUploading(true);
-    setSaveMessage(null);
-
-    try {
-      const response = await fetch('/api/profile/avatar', {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        setProfile((prev) => prev ? { ...prev, customAvatarUrl: undefined } : null);
-        setSaveMessage({ type: 'success', text: t('saveSuccess') });
-        setTimeout(() => setSaveMessage(null), 3000);
-      } else {
-        const error = await response.json();
-        setSaveMessage({ type: 'error', text: error.error || t('saveError') });
-      }
-    } catch (error) {
-      console.error('Error removing avatar:', error);
-      setSaveMessage({ type: 'error', text: t('saveError') });
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  // Fetch webhook settings
-  const fetchWebhookSettings = async () => {
-    try {
-      const response = await fetch('/api/webhooks');
-      if (response.ok) {
-        const data = await response.json();
-        if (data.webhook) {
-          setWebhookUrl(data.webhook.webhook_url || '');
-          setWebhookName(data.webhook.webhook_name || '');
-          setWebhookActive(data.webhook.is_active || false);
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching webhook settings:', error);
-    }
-  };
-
-  // Save webhook settings
-  const handleSaveWebhook = async () => {
-    if (!webhookUrl.startsWith('https://discord.com/api/webhooks/')) {
-      setSaveMessage({ type: 'error', text: t('webhook.invalidUrl') });
-      return;
-    }
-
-    setIsSavingWebhook(true);
-    setSaveMessage(null);
-
-    try {
-      const response = await fetch('/api/webhooks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          webhookUrl,
-          webhookName,
-        }),
-      });
-
-      if (response.ok) {
-        setWebhookActive(true);
-        setSaveMessage({ type: 'success', text: t('webhook.saved') });
-        setTimeout(() => setSaveMessage(null), 3000);
-      } else {
-        const error = await response.json();
-        setSaveMessage({ type: 'error', text: error.error || t('saveError') });
-      }
-    } catch (error) {
-      console.error('Error saving webhook:', error);
-      setSaveMessage({ type: 'error', text: t('saveError') });
-    } finally {
-      setIsSavingWebhook(false);
-    }
-  };
-
-  // Test webhook
-  const handleTestWebhook = async () => {
-    setIsTestingWebhook(true);
-    setSaveMessage(null);
-
-    try {
-      const response = await fetch('/api/webhooks/test', {
-        method: 'POST',
-      });
-
-      if (response.ok) {
-        setSaveMessage({ type: 'success', text: t('webhook.testSuccess') });
-        setTimeout(() => setSaveMessage(null), 3000);
-      } else {
-        const error = await response.json();
-        setSaveMessage({ type: 'error', text: error.details || t('webhook.testFailed') });
-      }
-    } catch (error) {
-      console.error('Error testing webhook:', error);
-      setSaveMessage({ type: 'error', text: t('webhook.testFailed') });
-    } finally {
-      setIsTestingWebhook(false);
-    }
-  };
-
-  // Delete webhook
-  const handleDeleteWebhook = async () => {
-    setIsDeletingWebhook(true);
-    setSaveMessage(null);
-
-    try {
-      const response = await fetch('/api/webhooks', {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        setWebhookUrl('');
-        setWebhookName('');
-        setWebhookActive(false);
-        setSaveMessage({ type: 'success', text: t('webhook.deleted') });
-        setTimeout(() => setSaveMessage(null), 3000);
-      } else {
-        const error = await response.json();
-        setSaveMessage({ type: 'error', text: error.error || t('saveError') });
-      }
-    } catch (error) {
-      console.error('Error deleting webhook:', error);
-      setSaveMessage({ type: 'error', text: t('saveError') });
-    } finally {
-      setIsDeletingWebhook(false);
-    }
-  };
-
-  // Fetch webhook settings on mount
-  useEffect(() => {
-    if (session?.user?.dbId) {
-      fetchWebhookSettings();
-    }
-  }, [session]);
+  const tabs = [
+    { id: 'general', label: t('notifications.groups.system'), icon: <User className="w-4 h-4" /> }, // Borrowing keys or use new ones
+    { id: 'notifications', label: t('notifications.title'), icon: <Bell className="w-4 h-4" /> },
+    { id: 'support', label: t('helpSupport'), icon: <HelpCircle className="w-4 h-4" /> },
+  ];
 
   if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Header title={t('title')} showBack />
-        <div className="pt-14 flex items-center justify-center h-[60vh]">
+        <div className="pt-20 flex justify-center">
           <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
         </div>
       </div>
     );
   }
 
-  const displayAvatarUrl = profile?.customAvatarUrl || profile?.avatarUrl;
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header title={t('title')} showBack />
 
       <div className="pt-20 pb-24 px-4 max-w-2xl mx-auto space-y-6">
-        {/* Save Message */}
-        {saveMessage && (
-          <div
-            className={`p-3 rounded-lg flex items-center gap-2 ${saveMessage.type === 'success'
-              ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800'
-              : 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
-              }`}
+
+        {/* Segmented Control */}
+        <div className="flex p-1 bg-gray-200 dark:bg-gray-800 rounded-xl relative">
+          {/* Animated Background (Primitive implementation for now, framer-motion would be better) */}
+          <div className="absolute inset-y-1 transition-all duration-300 ease-spring"
+            style={{
+              width: `${100 / tabs.length}%`,
+              left: `${(tabs.findIndex(t => t.id === activeTab)) * (100 / tabs.length)}%`,
+            }}
           >
-            {saveMessage.type === 'success' ? (
-              <Check className="w-5 h-5" />
-            ) : (
-              <X className="w-5 h-5" />
-            )}
-            <span className="text-sm font-medium">{saveMessage.text}</span>
-          </div>
-        )}
-
-        {/* Basic Info Section */}
-        <Card variant="glass">
-          <div className="flex items-center gap-2 mb-4">
-            <User className="w-5 h-5 text-indigo-500" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('basicInfo')}</h2>
+            <div className="h-full w-full bg-white dark:bg-gray-700 rounded-lg shadow-sm"></div>
           </div>
 
-          {/* Avatar */}
-          <div className="flex flex-col items-center mb-6">
-            <div className="relative">
-              <Avatar src={displayAvatarUrl} size="xl" className="w-24 h-24" />
-              <button
-                onClick={handleAvatarClick}
-                disabled={isUploading}
-                className="absolute bottom-0 right-0 w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-indigo-600 transition-colors disabled:opacity-50"
-              >
-                {isUploading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Camera className="w-4 h-4" />
-                )}
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleAvatarUpload}
-                className="hidden"
-              />
-            </div>
-            <p className="text-xs text-gray-500 mt-2">{t('uploadHint')}</p>
-            {profile?.customAvatarUrl && (
-              <button
-                onClick={handleRemoveAvatar}
-                disabled={isUploading}
-                className="text-sm text-red-500 hover:text-red-600 mt-2"
-              >
-                {t('removeAvatar')}
-              </button>
-            )}
-          </div>
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium relative z-10 transition-colors duration-200 ${activeTab === tab.id ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'
+                }`}
+            >
+              {tab.icon}
+              <span className="hidden sm:inline">{tab.label}</span>
+            </button>
+          ))}
+        </div>
 
-          {/* Username */}
-          <Input
-            label={t('username')}
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder={t('usernamePlaceholder')}
-            maxLength={50}
-          />
-        </Card>
-
-        {/* Phone Verification Section */}
-        <Card variant="glass">
-          <div className="flex items-center gap-2 mb-2">
-            <ShieldCheck className="w-5 h-5 text-indigo-500" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('phoneVerification')}</h2>
-          </div>
-
-          {profile?.verificationLevel === 'host' ? (
-            // Verified state
-            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-              <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
-                <Check className="w-5 h-5" />
-                <span className="font-medium">{t('phoneVerified')}</span>
-              </div>
-              <p className="text-sm text-green-600 dark:text-green-400 mt-1">
-                {t('phoneVerifiedHint')}
-              </p>
-            </div>
-          ) : (
-            // Unverified state
-            <div className="space-y-4">
-              <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
-                <div className="flex items-center gap-2 text-amber-700 dark:text-amber-300">
-                  <AlertCircle className="w-5 h-5" />
-                  <span className="font-medium">{t('phoneNotVerified')}</span>
-                </div>
-                <p className="text-sm text-amber-600 dark:text-amber-400 mt-1">
-                  {t('phoneVerificationRequired')}
-                </p>
-              </div>
-              <Button
-                variant="primary"
-                fullWidth
-                onClick={() => router.push('/verify-phone')}
-              >
-                {t('verifyPhone')}
-              </Button>
-            </div>
+        {/* Content Area */}
+        <div className="animate-in slide-in-from-bottom-2 duration-300 fade-in">
+          {activeTab === 'general' && (
+            <GeneralSettings profile={profile} onUpdate={fetchProfile} />
           )}
-        </Card>
-
-        {/* Linked Accounts Section */}
-        <Card variant="glass">
-          <div className="flex items-center gap-2 mb-2">
-            <MessageCircle className="w-5 h-5 text-indigo-500" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('linkedAccounts')}</h2>
-          </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('linkedAccountsHint')}</p>
-
-          {/* LINE */}
-          <div className="space-y-4">
-            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <svg className="w-6 h-6 text-[#00B900]" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
-                  </svg>
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-gray-100">LINE</p>
-                    {profile?.lineId ? (
-                      <p className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
-                        <Check className="w-3 h-3" />
-                        {t('connected')}: {profile.lineId}
-                      </p>
-                    ) : (
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{t('notConnected')}</p>
-                    )}
-                  </div>
-                </div>
-                {profile?.lineId ? (
-                  <button
-                    onClick={() => handleDisconnect('line')}
-                    disabled={isLinking === 'line'}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
-                  >
-                    {isLinking === 'line' ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Unlink className="w-4 h-4" />
-                    )}
-                    {t('disconnect')}
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleConnectLine}
-                    disabled={isLinking === 'line'}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-[#00B900] text-white hover:bg-[#00a000] rounded-lg transition-colors disabled:opacity-50"
-                  >
-                    {isLinking === 'line' ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <ExternalLink className="w-4 h-4" />
-                    )}
-                    {t('connect')}
-                  </button>
-                )}
-              </div>
-              {profile?.lineId && (
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">{t('showOnProfile')}</span>
-                  <button
-                    type="button"
-                    onClick={() => setShowLine(!showLine)}
-                    className={`relative w-11 h-6 rounded-full transition-colors ${showLine ? 'bg-indigo-500' : 'bg-gray-300 dark:bg-gray-600'
-                      }`}
-                  >
-                    <span
-                      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${showLine ? 'translate-x-5' : 'translate-x-0'
-                        }`}
-                    />
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Discord */}
-            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <svg className="w-6 h-6 text-[#5865F2]" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z" />
-                  </svg>
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-gray-100">Discord</p>
-                    {profile?.discordId ? (
-                      <p className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
-                        <Check className="w-3 h-3" />
-                        {t('connected')}: {profile.discordId}
-                      </p>
-                    ) : (
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{t('notConnected')}</p>
-                    )}
-                  </div>
-                </div>
-                {profile?.discordId ? (
-                  <button
-                    onClick={() => handleDisconnect('discord')}
-                    disabled={isLinking === 'discord'}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
-                  >
-                    {isLinking === 'discord' ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Unlink className="w-4 h-4" />
-                    )}
-                    {t('disconnect')}
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleConnectDiscord}
-                    disabled={isLinking === 'discord'}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-[#5865F2] text-white hover:bg-[#4752c4] rounded-lg transition-colors disabled:opacity-50"
-                  >
-                    {isLinking === 'discord' ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <ExternalLink className="w-4 h-4" />
-                    )}
-                    {t('connect')}
-                  </button>
-                )}
-              </div>
-              {profile?.discordId && (
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">{t('showOnProfile')}</span>
-                  <button
-                    type="button"
-                    onClick={() => setShowDiscord(!showDiscord)}
-                    className={`relative w-11 h-6 rounded-full transition-colors ${showDiscord ? 'bg-indigo-500' : 'bg-gray-300 dark:bg-gray-600'
-                      }`}
-                  >
-                    <span
-                      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${showDiscord ? 'translate-x-5' : 'translate-x-0'
-                        }`}
-                    />
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">{t('visibilityNote')}</p>
-        </Card>
-
-        {/* Discord Webhook Section */}
-        <Card variant="glass">
-          <div className="flex items-center gap-2 mb-2">
-            <Bell className="w-5 h-5 text-indigo-500" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('webhook.title')}</h2>
-          </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('webhook.description')}</p>
-
-          <div className="space-y-4">
-            {/* Webhook Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {t('webhook.name')}
-              </label>
-              <input
-                type="text"
-                value={webhookName}
-                onChange={(e) => setWebhookName(e.target.value)}
-                placeholder={t('webhook.namePlaceholder')}
-                maxLength={100}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            {/* Webhook URL */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {t('webhook.url')} <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="url"
-                value={webhookUrl}
-                onChange={(e) => setWebhookUrl(e.target.value)}
-                placeholder="https://discord.com/api/webhooks/..."
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {t('webhook.urlHint')}
-              </p>
-            </div>
-
-            {/* Action buttons */}
-            <div className="flex gap-2">
-              <Button
-                variant="primary"
-                onClick={handleSaveWebhook}
-                loading={isSavingWebhook}
-                disabled={!webhookUrl}
-                className="flex-1"
-              >
-                {t('webhook.save')}
-              </Button>
-              {webhookActive && (
-                <>
-                  <Button
-                    variant="secondary"
-                    onClick={handleTestWebhook}
-                    loading={isTestingWebhook}
-                    disabled={!webhookActive}
-                  >
-                    <Send className="w-4 h-4 mr-1" />
-                    {t('webhook.test')}
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={handleDeleteWebhook}
-                    loading={isDeletingWebhook}
-                    className="text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </>
-              )}
-            </div>
-
-            {/* Status indicator */}
-            {webhookActive && (
-              <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
-                  <Check className="w-4 h-4" />
-                  <span className="text-sm font-medium">{t('webhook.active')}</span>
-                </div>
-                <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                  {t('webhook.activeHint')}
-                </p>
-              </div>
-            )}
-          </div>
-        </Card>
-
-        {/* Notification Preferences Section */}
-        <Card variant="glass">
-          <div className="flex items-center gap-2 mb-2">
-            <Bell className="w-5 h-5 text-indigo-500" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('notifications.title')}</h2>
-          </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('notifications.description')}</p>
-
-          {/* Header Row */}
-          <div className="hidden sm:grid grid-cols-[1fr_60px_60px_60px] gap-2 mb-3 px-2">
-            <div></div>
-            <div className="text-center text-xs font-medium text-gray-500 dark:text-gray-400">{t('notifications.email')}</div>
-            <div className="text-center text-xs font-medium text-gray-500 dark:text-gray-400">{t('notifications.discord')}</div>
-            <div className="text-center text-xs font-medium text-gray-500 dark:text-gray-400">{t('notifications.line')}</div>
-          </div>
-
-          <div className="space-y-2">
-            {(['new_application', 'application_accepted', 'application_rejected', 'subscription_match', 'new_review', 'listing_expired', 'system'] as NotificationType[]).map((type) => {
-              const info = NOTIFICATION_TYPE_INFO[type];
-              const prefs = notificationPrefs[type] || { email: false, discord: false, line: false };
-              const hasDiscord = !!profile?.discordId;
-
-              const updatePref = (channel: 'email' | 'discord' | 'line', value: boolean) => {
-                setNotificationPrefs(prev => ({
-                  ...prev,
-                  [type]: { ...prev[type], [channel]: value }
-                }));
-              };
-
-              return (
-                <div key={type} className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                  <div className="sm:grid sm:grid-cols-[1fr_60px_60px_60px] sm:gap-2 sm:items-center">
-                    {/* Label */}
-                    <div className="mb-2 sm:mb-0">
-                      <div className="flex items-center gap-2">
-                        <span>{info.icon}</span>
-                        <span className="font-medium text-gray-900 dark:text-gray-100 text-sm">
-                          {t(`notifications.types.${type}`)}
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 ml-6">
-                        {t(`notifications.types.${type}_desc`)}
-                      </p>
-                    </div>
-
-                    {/* Toggles */}
-                    <div className="flex sm:block justify-between items-center mt-2 sm:mt-0">
-                      <span className="sm:hidden text-xs text-gray-500">Email</span>
-                      <button
-                        type="button"
-                        onClick={() => updatePref('email', !prefs.email)}
-                        className={`relative w-10 h-5 rounded-full transition-colors mx-auto ${prefs.email ? 'bg-indigo-500' : 'bg-gray-300 dark:bg-gray-600'}`}
-                      >
-                        <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${prefs.email ? 'translate-x-5' : 'translate-x-0'}`} />
-                      </button>
-                    </div>
-
-                    <div className="flex sm:block justify-between items-center mt-2 sm:mt-0">
-                      <span className="sm:hidden text-xs text-gray-500">Discord</span>
-                      {info.supportsDiscord ? (
-                        hasDiscord ? (
-                          <button
-                            type="button"
-                            onClick={() => updatePref('discord', !prefs.discord)}
-                            className={`relative w-10 h-5 rounded-full transition-colors mx-auto ${prefs.discord ? 'bg-[#5865F2]' : 'bg-gray-300 dark:bg-gray-600'}`}
-                          >
-                            <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${prefs.discord ? 'translate-x-5' : 'translate-x-0'}`} />
-                          </button>
-                        ) : (
-                          <span className="text-xs text-orange-500 mx-auto block text-center">{t('notifications.discordRequired')}</span>
-                        )
-                      ) : (
-                        <span className="text-xs text-gray-400 mx-auto block text-center">-</span>
-                      )}
-                    </div>
-
-                    <div className="flex sm:block justify-between items-center mt-2 sm:mt-0">
-                      <span className="sm:hidden text-xs text-gray-500">LINE</span>
-                      {info.supportsLine ? (
-                        <span className="text-xs text-gray-400 mx-auto block text-center">{t('notifications.lineComingSoon')}</span>
-                      ) : (
-                        <span className="text-xs text-gray-400 mx-auto block text-center">-</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
-
-        {/* Bug Report Section */}
-        <Card variant="glass">
-          <div className="flex items-center gap-2 mb-2">
-            <Bug className="w-5 h-5 text-red-500" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">BUG 回報</h2>
-          </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4"></p>
-          <Button
-            variant="secondary"
-            fullWidth
-            onClick={() => setBugModalOpen(true)}
-          >
-            <Bug className="w-4 h-4 mr-2" />
-            回報問題
-          </Button>
-        </Card>
-
-        {/* Save Button */}
-        <div className="fixed bottom-16 left-0 right-0 lg:left-64 lg:bottom-0 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-3 safe-area-bottom">
-          <div className="max-w-2xl mx-auto">
-            <Button fullWidth onClick={handleSave} loading={isSaving}>
-              {isSaving ? t('saving') : t('save')}
-            </Button>
-          </div>
+          {activeTab === 'notifications' && (
+            <NotificationSettings profile={profile} onUpdate={fetchProfile} />
+          )}
+          {activeTab === 'support' && (
+            <SupportSettings profile={profile} />
+          )}
         </div>
       </div>
-
-      {/* Bug Report Modal */}
-      <Modal
-        isOpen={bugModalOpen}
-        onClose={() => {
-          setBugModalOpen(false);
-          setBugTitle('');
-          setBugDescription('');
-        }}
-        title="回報問題"
-      >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              標題 *
-            </label>
-            <input
-              type="text"
-              value={bugTitle}
-              onChange={(e) => setBugTitle(e.target.value)}
-              placeholder="簡要描述問題"
-              maxLength={200}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              問題描述 *
-            </label>
-            <textarea
-              value={bugDescription}
-              onChange={(e) => setBugDescription(e.target.value)}
-              placeholder="請詳細描述您遇到的問題，包括操作步驟和預期結果..."
-              rows={5}
-              maxLength={5000}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
-            />
-            <p className="text-xs text-gray-500 mt-1">{bugDescription.length}/5000</p>
-          </div>
-          <div className="flex gap-3 pt-2">
-            <Button
-              variant="secondary"
-              fullWidth
-              onClick={() => {
-                setBugModalOpen(false);
-                setBugTitle('');
-                setBugDescription('');
-              }}
-            >
-              取消
-            </Button>
-            <Button
-              variant="primary"
-              fullWidth
-              loading={isSubmittingBug}
-              disabled={!bugTitle.trim() || !bugDescription.trim()}
-              onClick={async () => {
-                setIsSubmittingBug(true);
-                try {
-                  const response = await fetch('/api/bug-reports', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                      title: bugTitle,
-                      description: bugDescription,
-                    }),
-                  });
-                  if (response.ok) {
-                    setSaveMessage({ type: 'success', text: '感謝您的回報！我們會盡快處理' });
-                    setBugModalOpen(false);
-                    setBugTitle('');
-                    setBugDescription('');
-                  } else {
-                    const error = await response.json();
-                    setSaveMessage({ type: 'error', text: error.error || '提交失敗' });
-                  }
-                } catch (error) {
-                  console.error('Error submitting bug report:', error);
-                  setSaveMessage({ type: 'error', text: '提交失敗' });
-                } finally {
-                  setIsSubmittingBug(false);
-                }
-              }}
-            >
-              提交回報
-            </Button>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 }

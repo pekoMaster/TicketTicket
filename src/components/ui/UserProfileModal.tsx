@@ -53,6 +53,7 @@ export default function UserProfileModal({ user, isOpen, onClose }: UserProfileM
   // 獲取用戶詳細資訊
   useEffect(() => {
     if (isOpen && user.id) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsLoading(true);
       fetch(`/api/users/${user.id}`)
         .then(res => res.json())
@@ -122,8 +123,8 @@ export default function UserProfileModal({ user, isOpen, onClose }: UserProfileM
                 <Star
                   key={i}
                   className={`w-5 h-5 ${i <= Math.round(user.rating || 0)
-                      ? 'text-yellow-400 fill-yellow-400'
-                      : 'text-gray-300 dark:text-gray-600'
+                    ? 'text-yellow-400 fill-yellow-400'
+                    : 'text-gray-300 dark:text-gray-600'
                     }`}
                 />
               ))}
@@ -160,8 +161,8 @@ export default function UserProfileModal({ user, isOpen, onClose }: UserProfileM
                 {/* LINE */}
                 <div className="flex flex-col items-center gap-1">
                   <div className={`p-2 rounded-full ${userDetails?.lineId && userDetails?.showLine
-                      ? 'bg-green-500 text-white'
-                      : 'bg-gray-200 dark:bg-gray-600 text-gray-400 dark:text-gray-500'
+                    ? 'bg-green-500 text-white'
+                    : 'bg-gray-200 dark:bg-gray-600 text-gray-400 dark:text-gray-500'
                     }`}>
                     <LineIcon />
                   </div>
@@ -171,8 +172,8 @@ export default function UserProfileModal({ user, isOpen, onClose }: UserProfileM
                 {/* Discord */}
                 <div className="flex flex-col items-center gap-1">
                   <div className={`p-2 rounded-full ${userDetails?.discordId && userDetails?.showDiscord
-                      ? 'bg-indigo-500 text-white'
-                      : 'bg-gray-200 dark:bg-gray-600 text-gray-400 dark:text-gray-500'
+                    ? 'bg-indigo-500 text-white'
+                    : 'bg-gray-200 dark:bg-gray-600 text-gray-400 dark:text-gray-500'
                     }`}>
                     <DiscordIcon />
                   </div>

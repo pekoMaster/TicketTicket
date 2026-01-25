@@ -26,7 +26,7 @@ const COOLDOWN_MINUTES = 5;
 export async function findMatchingSubscriptions(listing: ListingInfo): Promise<DbTicketSubscription[]> {
     try {
         // 基本查詢：活躍的訂閱且符合活動
-        let query = supabaseAdmin
+        const query = supabaseAdmin
             .from('ticket_subscriptions')
             .select('*')
             .eq('is_active', true)

@@ -79,6 +79,7 @@ export default function ShareModal({
 
     // Check if Web Share API is available
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setCanNativeShare(typeof navigator !== 'undefined' && !!navigator.share);
     }, []);
 
@@ -174,8 +175,8 @@ export default function ShareModal({
                 <button
                     onClick={handleCopyLink}
                     className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-colors border ${copied
-                            ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700 text-green-600 dark:text-green-400'
-                            : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600'
+                        ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700 text-green-600 dark:text-green-400'
+                        : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600'
                         }`}
                 >
                     {copied ? (
