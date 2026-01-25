@@ -236,6 +236,7 @@ export default function NotificationSettings({ profile, onUpdate }: Notification
                                     };
 
                                     return (
+                                    return (
                                         <div key={type} className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/70 transition-colors">
                                             <div className="sm:grid sm:grid-cols-[1fr_60px_60px_60px] sm:gap-2 sm:items-center">
                                                 {/* Label */}
@@ -252,44 +253,36 @@ export default function NotificationSettings({ profile, onUpdate }: Notification
                                                 </div>
 
                                                 {/* Toggles */}
-                                                <div className="flex sm:block justify-between items-center mt-2 sm:mt-0">
-                                                    <span className="sm:hidden text-xs text-gray-500">Email</span>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => togglePref('email', !prefs.email)}
-                                                        className={`relative w-10 h-5 rounded-full transition-colors mx-auto ${prefs.email ? 'bg-indigo-500' : 'bg-gray-300 dark:bg-gray-600'}`}
-                                                    >
-                                                        <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${prefs.email ? 'translate-x-5' : 'translate-x-0'}`} />
-                                                    </button>
-                                                </div>
+                                                {/* Helper to render toggle */}
+                                                {['email', 'discord', 'line'].map((channel) => {
+                                                    const ch = channel as 'email' | 'discord' | 'line';
+                                                    if (ch === 'discord' && !info.supportsDiscord) return <span key={ch} className="text-xs text-gray-400 mx-auto block text-center">-</span>;
+                                                    if (ch === 'line' && !info.supportsLine) return <span key={ch} className="text-xs text-gray-400 mx-auto block text-center">-</span>;
+                                                    if (ch === 'discord' && !hasDiscord) return <span key={ch} className="text-xs text-orange-500 mx-auto block text-center leading-tight">{t('notifications.discordRequired')}</span>;
+                                                    if (ch === 'line') return <span key={ch} className="text-xs text-gray-400 mx-auto block text-center transform scale-90">{t('notifications.lineComingSoon')}</span>; // LINE not ready yet
 
-                                                <div className="flex sm:block justify-between items-center mt-2 sm:mt-0">
-                                                    <span className="sm:hidden text-xs text-gray-500">Discord</span>
-                                                    {info.supportsDiscord ? (
-                                                        hasDiscord ? (
+                                                    const isLoading = savingItem === `${type}-${ch}`;
+                                                    const isChecked = !!prefs[ch];
+
+                                                    return (
+                                                        <div key={ch} className="flex sm:block justify-between items-center mt-2 sm:mt-0">
+                                                            <span className="sm:hidden text-xs text-gray-500 capitalize">{ch}</span>
                                                             <button
                                                                 type="button"
-                                                                onClick={() => togglePref('discord', !prefs.discord)}
-                                                                className={`relative w-10 h-5 rounded-full transition-colors mx-auto ${prefs.discord ? 'bg-[#5865F2]' : 'bg-gray-300 dark:bg-gray-600'}`}
+                                                                disabled={isLoading}
+                                                                onClick={() => updatePreference(type, ch, !isChecked)}
+                                                                className={`relative w-10 h-5 rounded-full transition-colors mx-auto ${isChecked
+                                                                        ? (ch === 'discord' ? 'bg-[#5865F2]' : 'bg-indigo-500')
+                                                                        : 'bg-gray-300 dark:bg-gray-600'
+                                                                    } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                             >
-                                                                <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${prefs.discord ? 'translate-x-5' : 'translate-x-0'}`} />
+                                                                <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${isChecked ? 'translate-x-5' : 'translate-x-0'} flex items-center justify-center`}>
+                                                                    {isLoading && <div className="w-2.5 h-2.5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />}
+                                                                </span>
                                                             </button>
-                                                        ) : (
-                                                            <span className="text-xs text-orange-500 mx-auto block text-center leading-tight">{t('notifications.discordRequired')}</span>
-                                                        )
-                                                    ) : (
-                                                        <span className="text-xs text-gray-400 mx-auto block text-center">-</span>
-                                                    )}
-                                                </div>
-
-                                                <div className="flex sm:block justify-between items-center mt-2 sm:mt-0">
-                                                    <span className="sm:hidden text-xs text-gray-500">LINE</span>
-                                                    {info.supportsLine ? (
-                                                        <span className="text-xs text-gray-400 mx-auto block text-center transform scale-90">{t('notifications.lineComingSoon')}</span>
-                                                    ) : (
-                                                        <span className="text-xs text-gray-400 mx-auto block text-center">-</span>
-                                                    )}
-                                                </div>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     );
