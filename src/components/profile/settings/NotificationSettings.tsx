@@ -61,6 +61,7 @@ export default function NotificationSettings({ profile, onUpdate }: Notification
     }, [profile]);
 
     const updatePreference = async (newPrefs: NotificationPreferences) => {
+        console.log('[Frontend] Saving prefs:', newPrefs);
         setNotificationPrefs(newPrefs); // Optimistic visual update
         try {
             const res = await fetch('/api/profile', {
@@ -70,6 +71,8 @@ export default function NotificationSettings({ profile, onUpdate }: Notification
             });
 
             if (res.ok) {
+                const data = await res.json(); // Wait for json
+                console.log('[Frontend] Save response:', data);
                 setMessage({ type: 'success', text: t('saveSuccess') });
             } else {
                 throw new Error('Failed to save');
@@ -151,8 +154,8 @@ export default function NotificationSettings({ profile, onUpdate }: Notification
     return (
         <div className="space-y-6">
             {message && (
-                <div className={`fixed bottom-4 right-4 z-50 p-3 rounded-lg flex items-center gap-2 shadow-lg ${message.type === 'success' ? 'bg-green-100 dark:bg-green-900 text-green-800' : 'bg-red-100 dark:bg-red-900 text-red-800'}`}>
-                    <span className="text-sm">{message.text}</span>
+                <div className={`fixed bottom-8 right-8 z-[100] px-4 py-3 rounded-lg flex items-center gap-3 shadow-xl transform transition-all duration-300 animate-in slide-in-from-bottom-5 border ${message.type === 'success' ? 'bg-white dark:bg-gray-800 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400' : 'bg-white dark:bg-gray-800 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400'}`}>
+                    <span className="text-base font-medium">{message.text}</span>
                 </div>
             )}
 

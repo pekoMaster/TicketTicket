@@ -173,6 +173,9 @@ export async function PATCH(request: NextRequest) {
     }
 
     // 執行更新
+    console.log('[API] Updating user:', session.user.dbId);
+    console.log('[API] Update data:', JSON.stringify(updateData, null, 2));
+
     const { data: updatedUser, error } = await supabaseAdmin
       .from('users')
       .update(updateData)
@@ -181,10 +184,11 @@ export async function PATCH(request: NextRequest) {
       .single();
 
     if (error) {
-      console.error('Error updating user:', error);
+      console.error('[API] Error updating user:', error);
       return NextResponse.json({ error: '更新用戶資料失敗' }, { status: 500 });
     }
 
+    console.log('[API] Update success. New prefs:', updatedUser?.notification_preferences);
     return NextResponse.json(formatUserResponse(updatedUser));
   } catch (error) {
     console.error('Error in PATCH /api/profile:', error);
