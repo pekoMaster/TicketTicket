@@ -632,6 +632,7 @@
     "save": "保存变更",
     "saving": "保存中...",
     "saveSuccess": "保存成功",
+    "autoSaved": "已自动保存",
     "saveError": "保存失败，请稍后再试",
     "uploading": "上传中...",
     "appSettings": "应用程序设置",

@@ -632,6 +632,7 @@
     "save": "Save Changes",
     "saving": "Saving...",
     "saveSuccess": "Saved successfully",
+    "autoSaved": "Auto-saved",
     "saveError": "Failed to save, please try again",
     "uploading": "Uploading...",
     "appSettings": "App Settings",

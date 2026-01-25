@@ -63,14 +63,20 @@ export default function NotificationSettings({ profile, onUpdate }: Notification
     const updatePreference = async (newPrefs: NotificationPreferences) => {
         setNotificationPrefs(newPrefs); // Optimistic visual update
         try {
-            await fetch('/api/profile', {
+            const res = await fetch('/api/profile', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ notificationPreferences: newPrefs }),
             });
-            // Silent update unless error
+
+            if (res.ok) {
+                setMessage({ type: 'success', text: t('saveSuccess') });
+            } else {
+                throw new Error('Failed to save');
+            }
         } catch (error) {
             console.error('Failed to update prefs:', error);
+            setMessage({ type: 'error', text: t('saveError') });
             onUpdate(); // Revert on error
         }
     };
@@ -176,7 +182,12 @@ export default function NotificationSettings({ profile, onUpdate }: Notification
                     <Bell className="w-5 h-5 text-indigo-500" />
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('notifications.title')}</h2>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('notifications.description')}</p>
+                <div className="flex items-center justify-between mb-4">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('notifications.description')}</p>
+                    <span className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full animate-in fade-in">
+                        {t('autoSaved')}
+                    </span>
+                </div>
 
                 {/* Header Row (Desktop) */}
                 <div className="hidden sm:grid grid-cols-[1fr_60px_60px_60px] gap-2 mb-3 px-2">

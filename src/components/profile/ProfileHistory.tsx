@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Check, ChevronRight, Star, History } from 'lucide-react';
+import { Check, ChevronRight, Star } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import Avatar from '@/components/ui/Avatar';
 import Tag, { TicketTypeTag } from '@/components/ui/Tag';

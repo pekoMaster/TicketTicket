@@ -161,10 +161,10 @@ export async function PATCH(request: NextRequest) {
         }
       }
       if (Object.keys(sanitizedPrefs).length > 0) {
-        updateData.notification_preferences = JSON.stringify({
+        updateData.notification_preferences = {
           ...DEFAULT_NOTIFICATION_PREFERENCES,
           ...sanitizedPrefs,
-        });
+        };
       }
     }
 

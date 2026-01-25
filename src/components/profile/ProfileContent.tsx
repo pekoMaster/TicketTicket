@@ -1,10 +1,9 @@
 'use client';
 
-import { Suspense } from 'react';
 import ProfileListings from './ProfileListings';
 import ProfileApplications from './ProfileApplications';
 import ProfileHistory from './ProfileHistory';
-import { UserProfile, CompletedMatch, ApiReview, ApiApplication } from '@/types';
+import { CompletedMatch, ApiReview } from '@/types';
 
 
 interface ProfileContentProps {
@@ -30,8 +29,11 @@ export default function ProfileContent({
     applications,
     completedMatches,
     userReviews,
+    // eslint-disable-next-line
     isMyProfile,
+    // eslint-disable-next-line
     onRefresh,
+    // eslint-disable-next-line
     onEditListing,
     onDeleteListing,
     onWithdrawApplication

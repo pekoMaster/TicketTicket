@@ -634,6 +634,7 @@
     "save": "変更を保存",
     "saving": "保存中...",
     "saveSuccess": "保存しました",
+    "autoSaved": "自動保存済み",
     "saveError": "保存に失敗しました。もう一度お試しください",
     "uploading": "アップロード中...",
     "appSettings": "アプリ設定",
