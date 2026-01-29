@@ -360,7 +360,10 @@ export default function HomePage() {
   const ticketTypes: TicketType[] = ['find_companion', 'sub_ticket_transfer', 'ticket_exchange'];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col relative overflow-x-hidden">
+    <main className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col relative overflow-x-hidden">
+      {/* SEO H1 - 螢幕閱讀器專用 */}
+      <h1 className="sr-only">TicketTicket - VTuber 演唱會票券同行配對平台</h1>
+
       {/* Aurora 背景效果 */}
       <AuroraBackground />
 
@@ -864,6 +867,6 @@ export default function HomePage() {
           }))}
         onSuccess={() => setShowSubscriptionModal(false)}
       />
-    </div>
+    </main>
   );
 }
