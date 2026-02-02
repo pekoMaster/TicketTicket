@@ -1,54 +1,13 @@
-'use client';
 
-import { useTranslations } from 'next-intl';
-import Header from '@/components/layout/Header';
-import Card from '@/components/ui/Card';
+import { Metadata } from 'next';
+import TokushohoContent from './TokushohoContent';
 
-export default function TokushohoPage() {
-  const t = useTranslations('tokushoho');
+export const metadata: Metadata = {
+    alternates: {
+        canonical: '/legal/tokushoho',
+    },
+};
 
-  const items = [
-    { label: t('businessName'), value: t('businessNameValue') },
-    { label: t('representative'), value: t('representativeValue') },
-    { label: t('address'), value: t('addressValue') },
-    { label: t('contact'), value: t('contactValue') },
-    { label: t('serviceContent'), value: t('serviceContentValue') },
-    { label: t('price'), value: t('priceValue') },
-    { label: t('paymentMethod'), value: t('paymentMethodValue') },
-    { label: t('refund'), value: t('refundValue') },
-  ];
-
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Header title={t('title')} showBack />
-
-      <div className="pt-20 pb-20 px-4 max-w-3xl mx-auto">
-        <div className="space-y-4">
-          {/* Title Card */}
-          <Card>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">{t('title')}</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{t('titleZh')}</p>
-          </Card>
-
-          {/* Information Items */}
-          <Card>
-            <div className="divide-y divide-gray-100 dark:divide-gray-700">
-              {items.map((item, index) => (
-                <div key={index} className="py-4 first:pt-0 last:pb-0">
-                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{item.label}</dt>
-                  <dd className="text-gray-900 dark:text-gray-100">{item.value}</dd>
-                </div>
-              ))}
-            </div>
-          </Card>
-
-          {/* Important Notice */}
-          <Card className="bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800">
-            <h3 className="font-semibold text-orange-800 dark:text-orange-300 mb-2">{t('importantNotice')}</h3>
-            <p className="text-sm text-orange-700 dark:text-orange-300">{t('importantNoticeContent')}</p>
-          </Card>
-        </div>
-      </div>
-    </div>
-  );
+export default function Page() {
+    return <TokushohoContent />;
 }

@@ -23,9 +23,7 @@ export const metadata: Metadata = {
   verification: {
     google: 'VasyI-zBTHn_uu8sQ8Evapg18hH-VXdID1O6VAPQI1A',
   },
-  alternates: {
-    canonical: '/',
-  },
+
   openGraph: {
     title: 'TicketTicket - 票券同行配對平台',
     description: '尋找演唱會同行夥伴，與世界的雜魚粉絲一起使用同行！VTuber 粉絲專屬票券配對服務。',

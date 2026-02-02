@@ -13,19 +13,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 1,
         },
         {
-            url: `${baseUrl}/privacy`,
+            url: `${baseUrl}/legal/privacy`,
             lastModified: now,
             changeFrequency: 'monthly',
             priority: 0.3,
         },
         {
-            url: `${baseUrl}/terms`,
+            url: `${baseUrl}/legal/terms`,
             lastModified: now,
             changeFrequency: 'monthly',
             priority: 0.3,
         },
         {
-            url: `${baseUrl}/tokushoho`,
+            url: `${baseUrl}/legal/tokushoho`,
             lastModified: now,
             changeFrequency: 'monthly',
             priority: 0.3,

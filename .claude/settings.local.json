@@ -52,7 +52,9 @@
       "Bash(node:*)",
       "Bash(git remote prune:*)",
       "Bash(cd /d \"H:\\\\OneDrive\\\\RB\\\\TRPG\\\\TicketTicket\")",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(find:*)",
+      "Bash(timeout /t 5 /nobreak)"
     ]
   }
 }
