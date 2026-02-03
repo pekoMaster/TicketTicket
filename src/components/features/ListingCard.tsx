@@ -120,7 +120,7 @@ export default function ListingCard({ listing, host, isFirstCard }: ListingCardP
         {/* Body */}
         <div className="flex flex-col gap-3 mb-4">
           {/* Event Name */}
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-2 leading-tight group-hover:text-pink-600 dark:group-hover:text-pink-100 transition-colors">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-2 h-14 group-hover:text-pink-600 dark:group-hover:text-pink-100 transition-colors">
             {listing.eventName}
           </h3>
 
