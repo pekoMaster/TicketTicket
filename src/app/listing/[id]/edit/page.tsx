@@ -45,8 +45,8 @@ const CLOTHING_TAG_KEYS = [
   'crossbodyBag', 'handbag', 'itaBag', 'merchandise', 'penlight',
 ];
 
-// 可選的票券類型
-const TICKET_TYPES: TicketType[] = ['find_companion', 'sub_ticket_transfer'];
+// 可選的票券類型 - 加入 ticket_exchange
+const TICKET_TYPES: TicketType[] = ['find_companion', 'sub_ticket_transfer', 'ticket_exchange'];
 
 export default function EditListingPage() {
   // === Hooks ===
@@ -85,6 +85,10 @@ export default function EditListingPage() {
   const [identificationFeatures, setIdentificationFeatures] = useState('');
   const [description, setDescription] = useState('');
   const [askingPriceJpy, setAskingPriceJpy] = useState<number>(0);
+
+  // 換票專用欄位
+  const [exchangeEventName, setExchangeEventName] = useState('');
+  const [exchangeSeatGrades, setExchangeSeatGrades] = useState<string[]>([]);
 
   // === 取得現有刊登 ===
   const listing = useMemo(() => {
@@ -159,6 +163,11 @@ export default function EditListingPage() {
     setHostLanguages(listing.hostLanguages || []);
     setIdentificationFeatures(listing.identificationFeatures || '');
     setDescription(listing.description || '');
+    setAskingPriceJpy(listing.askingPriceJpy || 0);
+
+    // 載入換票資料
+    setExchangeEventName(listing.exchangeEventName || '');
+    setExchangeSeatGrades(listing.exchangeSeatGrades || []);
 
     // 嘗試從事件取得 venueAddress
     const matchedEvent = events.find((e) => e.name === listing.eventName);
@@ -204,6 +213,15 @@ export default function EditListingPage() {
     return Array.from(grades) as SeatGrade[];
   }, [selectedEvent]);
 
+  // === 換票用：根據選擇的「想換的活動」獲取該活動的可用座位等級 ===
+  const exchangeEventSeatGrades = useMemo(() => {
+    if (!exchangeEventName) return [];
+    const targetEvent = events.find(e => e.name === exchangeEventName);
+    if (!targetEvent?.ticketPriceTiers) return [];
+    const grades = new Set(targetEvent.ticketPriceTiers.map(t => t.seatGrade));
+    return Array.from(grades);
+  }, [events, exchangeEventName]);
+
   // === 可用票種類型 ===
   const availableTicketCountTypes = useMemo(() => {
     if (!selectedEvent?.ticketPriceTiers || !seatGrade) return [];
@@ -221,9 +239,12 @@ export default function EditListingPage() {
     );
   }, [selectedEvent, seatGrade, ticketCountType]);
 
+  // 是否為換票模式
+  const isExchangeMode = ticketType === 'ticket_exchange';
+
   // === 表單驗證 ===
   const isFormValid = useMemo(() => {
-    return (
+    const baseValid = (
       eventName.trim() !== '' &&
       eventDate !== '' &&
       venue.trim() !== '' &&
@@ -233,8 +254,25 @@ export default function EditListingPage() {
       ticketType !== '' &&
       hostNationality !== '' &&
       hostLanguages.length > 0 &&
-      askingPriceJpy > 0
+      (ticketType === 'ticket_exchange' ? askingPriceJpy >= 0 : askingPriceJpy > 0)
     );
+
+    if (isExchangeMode) {
+      // 換票模式驗證 - 確保選擇的活動和座位等級有效
+      const targetEvent = events.find(e => e.name === exchangeEventName);
+      const hasValidGrades = exchangeSeatGrades.length > 0 && (
+        exchangeSeatGrades.includes('any') ||
+        exchangeSeatGrades.every(grade =>
+          targetEvent?.ticketPriceTiers?.some(tier => tier.seatGrade === grade)
+        )
+      );
+      return baseValid &&
+        exchangeEventName.trim() !== '' &&
+        targetEvent !== undefined &&
+        hasValidGrades;
+    } else {
+      return baseValid;
+    }
   }, [
     eventName,
     eventDate,
@@ -246,6 +284,10 @@ export default function EditListingPage() {
     hostNationality,
     hostLanguages,
     askingPriceJpy,
+    isExchangeMode,
+    exchangeEventName,
+    exchangeSeatGrades,
+    events
   ]);
 
   // === 事件處理 ===
@@ -328,6 +370,9 @@ export default function EditListingPage() {
         will_assist_entry: ticketType === 'find_companion' ? willAssistEntry : undefined,
         original_price_jpy: selectedPriceTier?.priceJpy || 0,
         asking_price_jpy: askingPriceJpy,
+        // 換票欄位
+        exchange_event_name: isExchangeMode ? exchangeEventName : null,
+        exchange_seat_grades: isExchangeMode ? exchangeSeatGrades : null,
       };
 
       const response = await fetch(`/api/listings/${listing.id}`, {
@@ -766,6 +811,93 @@ export default function EditListingPage() {
             </div>
           </Card>
 
+          {/* 換票專用欄位 - 只在換票模式顯示 */}
+          {isExchangeMode && (
+            <Card variant="glass">
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                <span className="text-orange-500 text-lg">🔄</span>
+                {t('exchangeSection', { defaultValue: '換票設定' })}
+              </h3>
+
+              <div className="space-y-4">
+                {/* 想換的活動 */}
+                <Select
+                  label={t('exchangeEvent', { defaultValue: '想換的活動' })}
+                  placeholder={t('selectExchangeEvent', { defaultValue: '選擇想換的活動' })}
+                  options={eventOptions}
+                  value={exchangeEventName}
+                  onChange={(val) => {
+                    setExchangeEventName(val);
+                    setExchangeSeatGrades([]); // 重置票種等級選擇
+                  }}
+                  searchable
+                  required
+                />
+
+                {/* 想換的票種等級 (可複選) */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                    {t('exchangeSeatGrade', { defaultValue: '想換的票種等級' })}
+                    <span className="text-gray-400 text-xs ml-1">{t('multiSelect', { defaultValue: '(可複選)' })}</span>
+                    <span className="text-red-500"> *</span>
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {/* 任意選項 */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        // 選擇「任意」時清除其他選項
+                        setExchangeSeatGrades(['any']);
+                      }}
+                      className={`
+                        py-2 px-4 rounded-lg border-2 text-sm font-medium transition-all
+                        ${exchangeSeatGrades.includes('any')
+                          ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
+                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 text-gray-700 dark:text-gray-200'}
+                      `}
+                    >
+                      {t('anyGrade', { defaultValue: '任意' })}
+                    </button>
+                    {/* 動態票種等級按鈕 */}
+                    {exchangeEventSeatGrades.map((grade: string) => {
+                      const isSelected = exchangeSeatGrades.includes(grade);
+                      return (
+                        <button
+                          key={grade}
+                          type="button"
+                          onClick={() => {
+                            if (isSelected) {
+                              // 取消選擇
+                              setExchangeSeatGrades(prev => prev.filter(g => g !== grade));
+                            } else {
+                              // 選擇時移除 'any'
+                              setExchangeSeatGrades(prev =>
+                                [...prev.filter(g => g !== 'any'), grade]
+                              );
+                            }
+                          }}
+                          className={`
+                            py-2 px-4 rounded-lg border-2 text-sm font-medium transition-all
+                            ${isSelected
+                              ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
+                              : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 text-gray-700 dark:text-gray-200'}
+                          `}
+                        >
+                          {grade}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {exchangeSeatGrades.length > 0 && (
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                      {t('selectedGrades', { defaultValue: '已選擇' })}: {exchangeSeatGrades.join(', ')}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </Card>
+          )}
+
           {/* 發布者資訊 */}
           <Card variant="glass">
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
@@ -810,7 +942,7 @@ export default function EditListingPage() {
                         px-3 py-1.5 rounded-full text-sm font-medium transition-all
                         ${hostLanguages.includes(lang.value)
                           ? 'bg-indigo-500 text-white'
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'}
                       `}
                     >
                       {lang.label}
@@ -818,115 +950,74 @@ export default function EditListingPage() {
                   ))}
                 </div>
                 {hostLanguages.length === 0 && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {t('selectAtLeastOneLanguage')}
-                  </p>
+                  <p className="text-red-500 text-sm mt-1">{t('selectAtLeastOneLanguage')}</p>
                 )}
               </div>
-
-              {/* 辨識特徵 */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1">
-                  <Shirt className="w-4 h-4" />
-                  {t('identificationFeatures')} <span className="text-red-500">*</span>
-                </label>
-                <Textarea
-                  placeholder={t('identificationPlaceholder')}
-                  value={identificationFeatures}
-                  onChange={(e) => setIdentificationFeatures(e.target.value)}
-                  rows={2}
-                  maxLength={200}
-                  showCount
-                />
-                {/* 快速標籤 */}
-                <div className="mt-2">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                    {t('quickAdd')}
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {CLOTHING_TAG_KEYS.map((tagKey) => (
-                      <button
-                        key={tagKey}
-                        type="button"
-                        onClick={() => handleAddClothingTag(t(`clothingTags.${tagKey}`))}
-                        className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md transition-colors"
-                      >
-                        + {t(`clothingTags.${tagKey}`)}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
             </div>
-          </Card >
+          </Card>
 
           {/* 其他注意事項 */}
-          < Card >
-            <Textarea
-              label={t('otherNotes')}
-              placeholder={t('otherNotesPlaceholder')}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={4}
-              maxLength={500}
-              showCount
-            />
-          </Card >
-        </div >
-      </div >
+          <Card variant="glass">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <Shirt className="w-5 h-5 text-pink-500" />
+              {t('otherNotes')}
+            </h3>
 
-      {/* 底部提交按鈕 - Glassmorphism Style */}
-      <div className="fixed bottom-16 lg:bottom-0 left-0 right-0 z-30 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/50 dark:border-white/10 px-4 py-4 safe-area-bottom">
-        <div className="max-w-2xl mx-auto">
-          <button
-            onClick={handleEditClick}
-            disabled={!isFormValid || isSubmitting}
-            className={`
-              w-full py-3.5 px-6 rounded-xl font-semibold transition-all flex items-center justify-center gap-2
-              ${isFormValid && !isSubmitting
-                ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 hover:scale-[1.02]'
-                : 'bg-gray-200 dark:bg-gray-700/50 text-gray-400 dark:text-gray-500 cursor-not-allowed'}
-            `}
-          >
-            {isSubmitting && <Loader2 className="w-5 h-5 animate-spin" />}
-            {tEdit('update')}
-          </button>
-        </div>
-      </div>
+            <div className="space-y-4">
+              <Textarea
+                placeholder={t('otherNotesPlaceholder')}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={4}
+                maxLength={500}
+                showCount
+              />
+            </div>
+          </Card>
 
-      {/* 編輯警告 Modal */}
-      < Modal
-        isOpen={showWarningModal}
-        onClose={() => setShowWarningModal(false)
-        }
-        title={tEdit('warningTitle')}
-      >
-        <div className="p-4">
-          <div className="flex items-start gap-3 mb-4">
-            <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0 mt-0.5" />
-            <p className="text-gray-600 dark:text-gray-300">
-              {tEdit('warningMessage')}
-            </p>
-          </div>
-          <div className="flex gap-3">
+          {/* 底部按鈕 */}
+          <div className="flex gap-4">
             <Button
               variant="secondary"
               fullWidth
-              onClick={() => setShowWarningModal(false)}
+              onClick={() => router.back()}
+              disabled={isSubmitting}
             >
               {tCommon('cancel')}
             </Button>
             <Button
+              variant="primary"
               fullWidth
-              onClick={handleSubmit}
+              onClick={handleEditClick}
+              disabled={!isFormValid || isSubmitting}
               loading={isSubmitting}
-              className="bg-amber-600 hover:bg-amber-700"
             >
-              {tEdit('continueEdit')}
+              {tEdit('update')}
             </Button>
           </div>
         </div>
-      </Modal >
-    </div >
+      </div>
+
+      {/* 警告 Modal */}
+      <Modal
+        isOpen={showWarningModal}
+        onClose={() => setShowWarningModal(false)}
+        title={tEdit('warning')}
+      >
+        <div className="space-y-4">
+          <p className="text-gray-600 dark:text-gray-300">
+            {tEdit('updateWarning', { count: applicantCount })}
+          </p>
+          <div className="flex gap-3 justify-end mt-6">
+            <Button variant="ghost" onClick={() => setShowWarningModal(false)}>
+              {tCommon('cancel')}
+            </Button>
+            <Button variant="danger" onClick={handleSubmit}>
+              {tEdit('stillUpdate')}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+    </div>
   );
 }

@@ -150,6 +150,34 @@ export async function POST(
             link: `/messages?conversation=${conversationId}`,
         });
 
+        // 發送 Email 給被選中的申請者
+        try {
+            const { sendNotificationEmail } = await import('@/lib/email');
+            const { data: acceptedUser } = await supabaseAdmin
+                .from('users')
+                .select('email, preferred_locale, notification_preferences')
+                .eq('id', application.guest_id)
+                .single();
+
+            const prefs = acceptedUser?.notification_preferences || {};
+            const emailEnabled = prefs.application_accepted?.email !== false;
+
+            if (acceptedUser?.email && emailEnabled) {
+                await sendNotificationEmail(
+                    acceptedUser.email,
+                    'application_accepted',
+                    {
+                        eventName: listing.event_name,
+                        conversationId: conversationId,
+                        listingId: listingId,
+                    },
+                    acceptedUser.preferred_locale || 'zh-TW'
+                );
+            }
+        } catch (emailError) {
+            console.error('Failed to send accepted email:', emailError);
+        }
+
         // 7. 通知被拒絕的申請者（包含 Discord DM）
         const { data: rejectedApps } = await supabaseAdmin
             .from('applications')
@@ -159,8 +187,11 @@ export async function POST(
             .eq('rejection_notified', false);
 
         if (rejectedApps && rejectedApps.length > 0) {
-            // 逐一發送拒絕通知（含 Discord DM）
+            // 逐一發送拒絕通知（含 Discord DM 和 Email）
+            const { sendNotificationEmail } = await import('@/lib/email');
+
             for (const app of rejectedApps) {
+                // In-App Notification
                 await createNotification({
                     user_id: app.guest_id,
                     type: 'application_rejected',
@@ -168,6 +199,32 @@ export async function POST(
                     message: `您對「${listing.event_name}」的申請未配對成功`,
                     link: '/',
                 });
+
+                // Email Notification
+                try {
+                    const { data: rejectedUser } = await supabaseAdmin
+                        .from('users')
+                        .select('email, preferred_locale, notification_preferences')
+                        .eq('id', app.guest_id)
+                        .single();
+
+                    const prefs = rejectedUser?.notification_preferences || {};
+                    const emailEnabled = prefs.application_rejected?.email !== false;
+
+                    if (rejectedUser?.email && emailEnabled) {
+                        await sendNotificationEmail(
+                            rejectedUser.email,
+                            'application_rejected',
+                            {
+                                eventName: listing.event_name,
+                                listingId: listingId,
+                            },
+                            rejectedUser.preferred_locale || 'zh-TW'
+                        );
+                    }
+                } catch (emailError) {
+                    console.error(`Failed to send rejected email to ${app.guest_id}:`, emailError);
+                }
             }
 
             // 標記已通知

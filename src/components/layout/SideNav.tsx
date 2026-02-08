@@ -102,11 +102,12 @@ export default function SideNav() {
             <span>Discord</span>
           </a>
         </div>
-        <p className="text-xs text-gray-400 dark:text-gray-500 text-center">
-          TicketTicket v1.13
-        </p>
+        <div className="p-4 text-xs text-center text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-white/5">
+          TicketTicket v1.14
+          <br />
+          &copy; 2024 TicketTicket
+        </div>
       </div>
     </aside>
   );
 }
-

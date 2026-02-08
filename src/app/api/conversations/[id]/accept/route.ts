@@ -100,33 +100,35 @@ export async function POST(
       link: `/messages?conversation=${id}`,
     });
 
-    // 6. 發送 Email 通知給申請人（背景執行）
-    (async () => {
-      try {
-        const { sendNotificationEmail } = await import('@/lib/email');
+    // 6. 發送 Email 通知給申請人
+    try {
+      const { sendNotificationEmail } = await import('@/lib/email');
 
-        const { data: guestData } = await supabaseAdmin
-          .from('users')
-          .select('email, preferred_locale')
-          .eq('id', conversation.guest_id)
-          .single();
+      const { data: guestData } = await supabaseAdmin
+        .from('users')
+        .select('email, preferred_locale, notification_preferences')
+        .eq('id', conversation.guest_id)
+        .single();
 
-        if (guestData?.email) {
-          await sendNotificationEmail(
-            guestData.email,
-            'application_accepted',
-            {
-              eventName: conversation.listing?.event_name || '',
-              conversationId: id,
-              listingId: listingId,
-            },
-            guestData.preferred_locale || 'zh-TW'
-          );
-        }
-      } catch (emailError) {
-        console.error('Failed to send acceptance email:', emailError);
+      // 檢查是否開啟此類型的 Email 通知
+      const prefs = guestData?.notification_preferences || {};
+      const emailEnabled = prefs.application_accepted?.email !== false; // 預設為 true
+
+      if (guestData?.email && emailEnabled) {
+        await sendNotificationEmail(
+          guestData.email,
+          'application_accepted',
+          {
+            eventName: conversation.listing?.event_name || '',
+            conversationId: id,
+            listingId: listingId,
+          },
+          guestData.preferred_locale || 'zh-TW'
+        );
       }
-    })();
+    } catch (emailError) {
+      console.error('Failed to send acceptance email:', emailError);
+    }
 
     return NextResponse.json({
       success: true,

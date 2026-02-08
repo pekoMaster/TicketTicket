@@ -84,34 +84,43 @@ export async function POST(
       link: `/messages?conversation=${id}`,
     });
 
-    // 發送 Email 通知給主辦方（背景執行，不阻塞回應）
-    (async () => {
-      try {
+    // 發送 Email 通知給主辦方
+    try {
+      // 獲取主辦方資訊（包含 email 和 notification_preferences）
+      const { data: hostUser } = await supabaseAdmin
+        .from('users')
+        .select('email, preferred_locale, notification_preferences, username')
+        .eq('id', conversation.host_id)
+        .single();
+
+      const { data: guestUser } = await supabaseAdmin
+        .from('users')
+        .select('username')
+        .eq('id', userId)
+        .single();
+
+      // 檢查是否開啟此類型的 Email 通知
+      const prefs = hostUser?.notification_preferences || {};
+      const emailEnabled = prefs.new_application?.email !== false; // 預設為 true (如果未設定)
+
+      if (hostUser?.email && emailEnabled) {
         const { sendNotificationEmail } = await import('@/lib/email');
-
-        // 獲取申請者和主辦方資訊
-        const [guestResult, hostResult] = await Promise.all([
-          supabaseAdmin.from('users').select('username').eq('id', userId).single(),
-          supabaseAdmin.from('users').select('email, preferred_locale').eq('id', conversation.host_id).single(),
-        ]);
-
-        if (hostResult.data?.email) {
-          await sendNotificationEmail(
-            hostResult.data.email,
-            'new_application',
-            {
-              eventName: conversation.listing?.event_name || '',
-              senderName: guestResult.data?.username || '用戶',
-              conversationId: id,
-              listingId: conversation.listing_id,
-            },
-            hostResult.data.preferred_locale || 'zh-TW'
-          );
-        }
-      } catch (emailError) {
-        console.error('Failed to send application email:', emailError);
+        await sendNotificationEmail(
+          hostUser.email,
+          'new_application',
+          {
+            eventName: conversation.listing?.event_name || '',
+            senderName: guestUser?.username || '用戶',
+            conversationId: id,
+            listingId: conversation.listing_id,
+          },
+          hostUser.preferred_locale || 'zh-TW'
+        );
       }
-    })();
+    } catch (emailError) {
+      console.error('Failed to send application email:', emailError);
+      // 不中斷流程，僅記錄錯誤
+    }
 
     return NextResponse.json({
       success: true,

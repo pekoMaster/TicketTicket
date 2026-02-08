@@ -253,39 +253,51 @@ export default function NotificationSettings({ profile, onUpdate }: Notification
 
                                     return (
                                         <div key={type} className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/70 transition-colors">
-                                            <div className="sm:grid sm:grid-cols-[1fr_60px_60px_60px] sm:gap-2 sm:items-center">
+                                            <div className="flex flex-col sm:grid sm:grid-cols-[1fr_60px_60px_60px] sm:gap-2 sm:items-center">
                                                 {/* Label */}
-                                                <div className="mb-2 sm:mb-0">
+                                                <div className="mb-3 sm:mb-0">
                                                     <div className="flex items-center gap-2">
                                                         <span>{info.icon}</span>
                                                         <span className="font-medium text-gray-900 dark:text-gray-100 text-sm">
                                                             {t(`notifications.types.${type}`)}
                                                         </span>
                                                     </div>
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400 ml-6">
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400 ml-6 mt-1">
                                                         {t(`notifications.types.${type}_desc`)}
                                                     </p>
                                                 </div>
 
                                                 {/* Toggles */}
-                                                {['email', 'discord', 'line'].map((channel) => {
-                                                    const ch = channel as 'email' | 'discord' | 'line';
-                                                    if (ch === 'discord' && !info.supportsDiscord) return <span key={ch} className="text-xs text-gray-400 mx-auto block text-center">-</span>;
-                                                    if (ch === 'line' && !info.supportsLine) return <span key={ch} className="text-xs text-gray-400 mx-auto block text-center">-</span>;
-                                                    if (ch === 'discord' && !hasDiscord) return <span key={ch} className="text-xs text-orange-500 mx-auto block text-center leading-tight">{t('notifications.discordRequired')}</span>;
-                                                    if (ch === 'line') return <span key={ch} className="text-xs text-gray-400 mx-auto block text-center transform scale-90">{t('notifications.lineComingSoon')}</span>;
+                                                <div className="grid grid-cols-[1fr_auto] gap-y-3 gap-x-4 sm:contents">
+                                                    {['email', 'discord', 'line'].map((channel) => {
+                                                        const ch = channel as 'email' | 'discord' | 'line';
 
-                                                    const isLoading = savingItem === `${type}-${ch}`;
-                                                    const isChecked = !!prefs[ch];
+                                                        // Mobile Layout Container
+                                                        const mobileWrapper = (content: React.ReactNode) => (
+                                                            <div key={ch} className="contents sm:block text-center">
+                                                                <span className="sm:hidden text-sm text-gray-600 dark:text-gray-300 capitalize flex items-center">
+                                                                    {channel === 'email' ? 'Email' : channel === 'discord' ? 'Discord' : 'LINE'}
+                                                                </span>
+                                                                <div className="flex justify-end sm:justify-center">
+                                                                    {content}
+                                                                </div>
+                                                            </div>
+                                                        );
 
-                                                    return (
-                                                        <div key={ch} className="flex sm:block justify-between items-center mt-2 sm:mt-0">
-                                                            <span className="sm:hidden text-xs text-gray-500 capitalize">{ch}</span>
+                                                        if (ch === 'discord' && !info.supportsDiscord) return mobileWrapper(<span className="text-xs text-gray-400">-</span>);
+                                                        if (ch === 'line' && !info.supportsLine) return mobileWrapper(<span className="text-xs text-gray-400">-</span>);
+                                                        if (ch === 'discord' && !hasDiscord) return mobileWrapper(<span className="text-[10px] sm:text-xs text-orange-500 leading-tight block">{t('notifications.discordRequired')}</span>);
+                                                        if (ch === 'line') return mobileWrapper(<span className="text-[10px] sm:text-xs text-gray-400 transform sm:scale-90 block">{t('notifications.lineComingSoon')}</span>);
+
+                                                        const isLoading = savingItem === `${type}-${ch}`;
+                                                        const isChecked = !!prefs[ch];
+
+                                                        return mobileWrapper(
                                                             <button
                                                                 type="button"
                                                                 disabled={isLoading}
                                                                 onClick={() => updatePreference(type, ch, !isChecked)}
-                                                                className={`relative w-10 h-5 rounded-full transition-colors mx-auto ${isChecked
+                                                                className={`relative w-10 h-5 rounded-full transition-colors ${isChecked
                                                                     ? (ch === 'discord' ? 'bg-[#5865F2]' : 'bg-indigo-500')
                                                                     : 'bg-gray-300 dark:bg-gray-600'
                                                                     } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -294,9 +306,9 @@ export default function NotificationSettings({ profile, onUpdate }: Notification
                                                                     {isLoading && <div className="w-2.5 h-2.5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />}
                                                                 </span>
                                                             </button>
-                                                        </div>
-                                                    );
-                                                })}
+                                                        );
+                                                    })}
+                                                </div>
                                             </div>
                                         </div>
                                     );
