@@ -107,6 +107,7 @@ export async function GET(request: NextRequest) {
         const offset = parseInt(searchParams.get('offset') || '0');
 
         // 取得通知列表
+        // 取得通知列表
         const { data: notifications, error } = await supabaseAdmin
             .from('notifications')
             .select('*')
@@ -118,6 +119,19 @@ export async function GET(request: NextRequest) {
             console.error('Error fetching notifications:', error);
             return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 });
         }
+
+        // Map DB columns to frontend interface
+        const mappedNotifications = (notifications || []).map((n: any) => {
+            // 解析 data JSONB 對象
+            const metaData = typeof n.data === 'string' ? JSON.parse(n.data) : (n.data || {});
+
+            return {
+                ...n,
+                message: n.message, // DB has 'message', use it directly
+                // 從 data 中取得連結資訊
+                link: metaData.link || (metaData.related_listing_id ? `/listing/${metaData.related_listing_id}` : null) || n.link
+            };
+        });
 
         // 取得未讀數量
         const { count: unreadCount, error: countError } = await supabaseAdmin
@@ -131,7 +145,7 @@ export async function GET(request: NextRequest) {
         }
 
         return NextResponse.json({
-            notifications: notifications || [],
+            notifications: mappedNotifications,
             unreadCount: unreadCount || 0,
         });
     } catch (error) {

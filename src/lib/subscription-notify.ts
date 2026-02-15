@@ -176,7 +176,7 @@ export async function notifySubscribers(listing: ListingInfo): Promise<number> {
                     type: 'subscription_match',
                     title: `🔔 有符合您訂閱的新票券！`,
                     message: `${listing.eventName} - ${listing.seatGrade} / ¥${listing.askingPriceJpy.toLocaleString()}`,
-                    link: listingUrl,
+                    data: { related_listing_id: listing.id },
                     is_read: false,
                 });
                 console.log(`[Subscriptions] In-app notification created for user ${sub.user_id}`);

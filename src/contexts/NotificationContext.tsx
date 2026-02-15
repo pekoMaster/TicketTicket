@@ -14,12 +14,14 @@ interface Toast {
 }
 
 interface NotificationContextType {
-    // 未讀狀態
+    // 未讀狀態 (是否有新活動/Toast)
     hasUnread: boolean;
     // Toast 列表
     toasts: Toast[];
     // 未讀訊息數量
     unreadMessageCount: number;
+    // 未讀通知數量 (System/Subscription)
+    unreadNotificationCount: number;
     // 添加 Toast
     addToast: (type: ToastType, message: string) => void;
     // 移除 Toast
@@ -38,6 +40,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     const { data: session } = useSession();
     const [hasUnread, setHasUnread] = useState(false);
     const [unreadMessageCount, setUnreadMessageCount] = useState(0);
+    const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
     const [toasts, setToasts] = useState<Toast[]>([]);
 
     // 添加 Toast
@@ -134,7 +137,16 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
                 }
             }
 
-            setHasUnread(hasNew);
+            // 獲取通知列表未讀數
+            const notifRes = await fetch('/api/notifications?limit=1');
+            let notifCount = 0;
+            if (notifRes.ok) {
+                const notifData = await notifRes.json();
+                notifCount = notifData.unreadCount || 0;
+                setUnreadNotificationCount(notifCount);
+            }
+
+            setHasUnread(hasNew || notifCount > 0);
 
             // 顯示 Toast（避免重複）
             const shownTypes = new Set<ToastType>();
@@ -163,6 +175,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
             value={{
                 hasUnread,
                 unreadMessageCount,
+                unreadNotificationCount,
                 toasts,
                 addToast,
                 removeToast,

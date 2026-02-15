@@ -18,12 +18,12 @@ export default function SideNav() {
   const pathname = usePathname();
   const t = useTranslations('nav');
   const tNotif = useTranslations('notifications');
-  const { hasUnread, unreadMessageCount } = useNotification();
+  const { unreadMessageCount, unreadNotificationCount } = useNotification();
 
   const navItems = [
     { href: '/', label: t('home'), icon: Home },
     { href: '/create', label: t('create'), icon: PlusCircle },
-    { href: '/notifications', label: tNotif('title'), icon: Bell, showBadge: hasUnread },
+    { href: '/notifications', label: tNotif('title'), icon: Bell, showBadge: unreadNotificationCount > 0 },
     { href: '/messages', label: t('messages'), icon: MessageCircle, showBadge: unreadMessageCount > 0, badgeCount: unreadMessageCount },
     { href: '/forum', label: t('forum'), icon: MessageSquare },
     { href: '/profile', label: t('profile'), icon: User },
@@ -77,11 +77,11 @@ export default function SideNav() {
                     />
                     {showBadge && (
                       badgeCount ? (
-                        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white border-2 border-white dark:border-gray-800">
-                          {badgeCount > 9 ? '9+' : badgeCount}
+                        <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white border-2 border-white dark:border-gray-800 z-10">
+                          {badgeCount > 99 ? '99+' : badgeCount}
                         </span>
                       ) : (
-                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-gray-800" />
+                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white dark:border-gray-800" />
                       )
                     )}
                   </div>
