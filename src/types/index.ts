@@ -20,15 +20,15 @@ export interface NotificationChannelPreference {
 // 完整通知偏好設定
 export type NotificationPreferences = Record<NotificationType, NotificationChannelPreference>;
 
-// 預設通知偏好（重要通知預設開啟 Email 和 Discord）
+// 預設通知偏好（全部預設開啟，讓用戶自行關閉）
 export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
-  new_application: { email: true, discord: true, line: false },
-  application_accepted: { email: true, discord: true, line: false },
-  application_rejected: { email: true, discord: true, line: false },
-  subscription_match: { email: true, discord: true, line: false },
-  new_review: { email: false, discord: false, line: false },
-  listing_expired: { email: false, discord: false, line: false },
-  system: { email: false, discord: false, line: false },
+  new_application: { email: true, discord: true, line: true },
+  application_accepted: { email: true, discord: true, line: true },
+  application_rejected: { email: true, discord: true, line: true },
+  subscription_match: { email: true, discord: true, line: true },
+  new_review: { email: true, discord: true, line: true },
+  listing_expired: { email: true, discord: true, line: true },
+  system: { email: true, discord: true, line: true },
 };
 
 // 通知類型標籤（用於顯示）
