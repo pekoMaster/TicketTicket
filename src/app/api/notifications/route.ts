@@ -21,60 +21,74 @@ export async function createNotification(data: NotificationData) {
             .insert(data);
 
         if (error) {
-            console.error('Error creating notification:', error);
+            console.error('[Notification] Error creating DB record:', error);
+            // 即使 DB 失敗，我們仍嘗試發送外部通知嗎？通常不需要，因為這是主要記錄。
+            // 但為了確保可靠性，如果主要是為了通知，可以繼續。
+            // 這裡保持原邏輯，失敗則返回。
             return false;
         }
 
-        // 2. 查詢用戶的 Discord ID 和通知偏好設定
+        // 2. 查詢用戶的外部帳號資訊與偏好
         const { data: user } = await supabaseAdmin
             .from('users')
-            .select('discord_id, notification_preferences')
+            .select('discord_id, line_id, notification_preferences')
             .eq('id', data.user_id)
             .single();
 
         if (!user) {
-            return true; // 站內通知已創建，用戶不存在跳過 Discord
+            console.warn(`[Notification] User ${data.user_id} not found, skipping external notifications.`);
+            return true;
         }
 
-        // 3. 檢查通知偏好 - Discord DM 是否啟用
-        const notifPrefs = user.notification_preferences || {};
+        const { DEFAULT_NOTIFICATION_PREFERENCES } = await import('@/types');
+        // 合併用戶設定與預設值
+        const notifPrefs = {
+            ...DEFAULT_NOTIFICATION_PREFERENCES,
+            ...(user.notification_preferences || {})
+        };
         const typePrefs = notifPrefs[data.type as keyof typeof notifPrefs];
-        const shouldSendDiscord = typePrefs?.discord ?? false;
 
-        // 4. 如果用戶啟用此類型的 Discord 通知，且有有效的 discord_id，發送 DM
-        if (shouldSendDiscord && user.discord_id && /^\d+$/.test(user.discord_id)) {
-            const endpoint = process.env.DISCORD_BOT_DM_API;
-            const secret = process.env.DISCORD_BOT_DM_SECRET;
+        console.log(`[Notification] Dispatching ${data.type} for user ${data.user_id}. Prefs:`, typePrefs);
 
-            if (endpoint && secret) {
-                try {
-                    await fetch(endpoint, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${secret}`,
-                        },
-                        body: JSON.stringify({
-                            discordId: user.discord_id,
-                            title: data.title,
-                            message: data.message,
-                            link: data.link || 'https://ticketticket.live',
-                            type: data.type,
-                        }),
-                    });
-                    console.log(`[Discord DM] Sent ${data.type} notification to user ${data.user_id}`);
-                } catch (dmError) {
-                    console.error('[Discord DM] Failed:', dmError);
-                    // DM 發送失敗不影響通知功能
+        // --- Discord Notification ---
+        // 檢查偏好與 Discord ID
+        const discordEnabled = typePrefs?.discord ?? false;
+        if (discordEnabled && user.discord_id) {
+            console.log(`[Notification] Attempting Discord DM to ${user.discord_id}`);
+            try {
+                // 動態導入以避免循環依賴（如果有的話），且確保使用最新環境變數
+                const { sendDiscordDM } = await import('@/lib/discord-dm');
+
+                const sent = await sendDiscordDM({
+                    discordId: user.discord_id,
+                    title: data.title,
+                    message: data.message,
+                    link: data.link || 'https://ticketticket.live', // TODO: 使用環境變數中的 BASE_URL
+                    type: data.type as any
+                });
+
+                if (sent) {
+                    console.log(`[Notification] Discord DM sent successfully.`);
+                } else {
+                    console.error(`[Notification] Discord DM failed to send.`);
                 }
+            } catch (err) {
+                console.error(`[Notification] Error sending Discord DM:`, err);
             }
         } else {
-            console.log(`[Discord DM] Skipped ${data.type} for user ${data.user_id} (preference disabled or no Discord)`);
+            console.log(`[Notification] Skipped Discord: Enabled=${discordEnabled}, HasDistordId=${!!user.discord_id}`);
+        }
+
+        // --- LINE Notification (Placeholder) ---
+        const lineEnabled = typePrefs?.line ?? false;
+        if (lineEnabled && user.line_id) {
+            // 目前尚未實作 LINE Bot 發送邏輯
+            console.log(`[Notification] LINE notification requested but not implemented yet. User: ${user.line_id}`);
         }
 
         return true;
     } catch (error) {
-        console.error('Error creating notification:', error);
+        console.error('[Notification] Critical error in createNotification:', error);
         return false;
     }
 }

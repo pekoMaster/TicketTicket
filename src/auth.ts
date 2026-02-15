@@ -62,6 +62,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             avatar_url: user.image,
             provider: account.provider,
             provider_id: account.providerAccountId,
+            // 如果是 Discord/LINE 登入，直接填入對應 ID 欄位
+            discord_id: account.provider === 'discord' ? account.providerAccountId : null,
+            line_id: account.provider === 'line' ? account.providerAccountId : null,
+            show_discord: account.provider === 'discord',
+            show_line: account.provider === 'line',
             role,
           });
         } else {
@@ -72,6 +77,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               username: user.name || user.email.split('@')[0],
               avatar_url: user.image,
               updated_at: new Date().toISOString(),
+              // 同步更新 ID（確保舊用戶再次登入時也能補上）
+              ...(account.provider === 'discord' ? { discord_id: account.providerAccountId, show_discord: true } : {}),
+              ...(account.provider === 'line' ? { line_id: account.providerAccountId, show_line: true } : {}),
             })
             .eq('provider', account.provider)
             .eq('provider_id', account.providerAccountId);
