@@ -18,13 +18,13 @@ export default function SideNav() {
   const pathname = usePathname();
   const t = useTranslations('nav');
   const tNotif = useTranslations('notifications');
-  const { hasUnread } = useNotification();
+  const { hasUnread, unreadMessageCount } = useNotification();
 
   const navItems = [
     { href: '/', label: t('home'), icon: Home },
     { href: '/create', label: t('create'), icon: PlusCircle },
     { href: '/notifications', label: tNotif('title'), icon: Bell, showBadge: hasUnread },
-    { href: '/messages', label: t('messages'), icon: MessageCircle },
+    { href: '/messages', label: t('messages'), icon: MessageCircle, showBadge: unreadMessageCount > 0, badgeCount: unreadMessageCount },
     { href: '/forum', label: t('forum'), icon: MessageSquare },
     { href: '/profile', label: t('profile'), icon: User },
     { href: '/help', label: t('help'), icon: HelpCircle },
@@ -54,7 +54,7 @@ export default function SideNav() {
       {/* Navigation */}
       <nav className="flex-1 px-4 py-6">
         <ul className="space-y-2">
-          {navItems.map(({ href, label, icon: Icon, showBadge }) => {
+          {navItems.map(({ href, label, icon: Icon, showBadge, badgeCount }) => {
             const isActive = pathname === href;
 
             return (
@@ -76,7 +76,13 @@ export default function SideNav() {
                       strokeWidth={isActive ? 2.5 : 2}
                     />
                     {showBadge && (
-                      <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-gray-800" />
+                      badgeCount ? (
+                        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white border-2 border-white dark:border-gray-800">
+                          {badgeCount > 9 ? '9+' : badgeCount}
+                        </span>
+                      ) : (
+                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-gray-800" />
+                      )
                     )}
                   </div>
                   <span className="text-sm">{label}</span>

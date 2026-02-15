@@ -18,6 +18,8 @@ interface NotificationContextType {
     hasUnread: boolean;
     // Toast 列表
     toasts: Toast[];
+    // 未讀訊息數量
+    unreadMessageCount: number;
     // 添加 Toast
     addToast: (type: ToastType, message: string) => void;
     // 移除 Toast
@@ -35,6 +37,7 @@ const LAST_READ_KEY = 'lastMessagesReadTime';
 export function NotificationProvider({ children }: { children: ReactNode }) {
     const { data: session } = useSession();
     const [hasUnread, setHasUnread] = useState(false);
+    const [unreadMessageCount, setUnreadMessageCount] = useState(0);
     const [toasts, setToasts] = useState<Toast[]>([]);
 
     // 添加 Toast
@@ -78,17 +81,23 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
             if (convRes.ok) {
                 const conversations = await convRes.json();
+                let msgCount = 0;
+
                 for (const conv of conversations) {
+                    // 累加後端計算的未讀數
+                    msgCount += (conv.unreadCount || 0);
+
+                    // 檢查是否有新訊息用於 Toast（保留原邏輯，但也可以優化）
                     const lastMessageTime = new Date(conv.last_message_at).getTime();
                     if (lastMessageTime > lastReadTime) {
-                        hasNew = true;
+                        // hasNew = true; // 不再混用 hasNew 控制紅點，改由 msgCount 控制訊息紅點
                         // 只在第一次檢測到時顯示 Toast
                         if (lastReadTime > 0) {
                             newToasts.push({ type: 'new_message', message: 'newMessage' });
                         }
-                        break;
                     }
                 }
+                setUnreadMessageCount(msgCount);
             }
 
             if (appRes.ok) {
@@ -153,6 +162,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         <NotificationContext.Provider
             value={{
                 hasUnread,
+                unreadMessageCount,
                 toasts,
                 addToast,
                 removeToast,

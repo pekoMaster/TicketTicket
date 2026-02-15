@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
                 .select('id')
                 .eq('user_id', userId)
                 .eq('topic_id', topicId)
-                .single();
+                .maybeSingle();
             existingLike = data;
         } else {
             const { data } = await supabaseAdmin
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
                 .select('id')
                 .eq('user_id', userId)
                 .eq('reply_id', replyId)
-                .single();
+                .maybeSingle();
             existingLike = data;
         }
 
