@@ -72,20 +72,48 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
     const isAdmin = session?.user?.role === 'super_admin' || session?.user?.role === 'sub_admin';
 
     const handleLike = async (topicId?: string, replyId?: string) => {
-        if (!session) return;
+        if (!session || !topic) return;
 
+        // Optimistic UI: 立即更新本地狀態
+        if (topicId) {
+            const wasLiked = topic.isLikedByMe;
+            setTopic(prev => prev ? {
+                ...prev,
+                isLikedByMe: !wasLiked,
+                likeCount: wasLiked ? Math.max(0, prev.likeCount - 1) : prev.likeCount + 1,
+            } : prev);
+        } else if (replyId) {
+            setTopic(prev => {
+                if (!prev?.replies) return prev;
+                return {
+                    ...prev,
+                    replies: prev.replies.map(r => {
+                        if (r.id === replyId) {
+                            const wasLiked = r.isLikedByMe;
+                            return {
+                                ...r,
+                                isLikedByMe: !wasLiked,
+                                likeCount: wasLiked ? Math.max(0, r.likeCount - 1) : r.likeCount + 1,
+                            };
+                        }
+                        return r;
+                    }),
+                };
+            });
+        }
+
+        // 背景同步到伺服器
         try {
-            const res = await fetch('/api/forum/likes', {
+            await fetch('/api/forum/likes', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ topicId, replyId }),
             });
-
-            if (res.ok) {
-                fetchTopic();
-            }
+            // 不需要 fetchTopic()，已用 optimistic UI 更新
         } catch (error) {
             console.error('Error toggling like:', error);
+            // 回滾：如果失敗，重新從伺服器載入
+            fetchTopic();
         }
     };
 

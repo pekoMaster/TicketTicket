@@ -15,85 +15,95 @@ export async function GET(
         const session = await auth();
         const userId = session?.user?.dbId;
 
-        // 獲取主題
-        const { data: topic, error: topicError } = await supabaseAdmin
-            .from('forum_topics')
-            .select(`
-        *,
-        author:users!forum_topics_author_id_fkey(
-          id, username, avatar_url, custom_avatar_url
-        )
-      `)
-            .eq('id', id)
-            .single();
+        // 批次 1: 並行獲取主題、回覆、投票
+        const [topicResult, repliesResult, pollResult] = await Promise.all([
+            supabaseAdmin
+                .from('forum_topics')
+                .select(`
+                    *,
+                    author:users!forum_topics_author_id_fkey(
+                      id, username, avatar_url, custom_avatar_url
+                    )
+                `)
+                .eq('id', id)
+                .single(),
+            supabaseAdmin
+                .from('forum_replies')
+                .select(`
+                    *,
+                    author:users!forum_replies_author_id_fkey(
+                      id, username, avatar_url, custom_avatar_url
+                    )
+                `)
+                .eq('topic_id', id)
+                .order('created_at', { ascending: true }),
+            supabaseAdmin
+                .from('forum_polls')
+                .select(`*, options:forum_poll_options(*)`)
+                .eq('topic_id', id)
+                .maybeSingle(),
+        ]);
 
-        if (topicError || !topic) {
+        const topic = topicResult.data;
+        if (topicResult.error || !topic) {
             return NextResponse.json({ error: 'Topic not found' }, { status: 404 });
         }
 
-        // 增加瀏覽次數
-        await supabaseAdmin
+        const replies = repliesResult.data;
+        const poll = pollResult.data;
+
+        // Fire-and-forget: 增加瀏覽次數（不阻塞回應）
+        supabaseAdmin
             .from('forum_topics')
             .update({ view_count: (topic.view_count || 0) + 1 })
-            .eq('id', id);
+            .eq('id', id)
+            .then(() => {/* ignore */ });
 
-        // 獲取回覆
-        const { data: replies } = await supabaseAdmin
-            .from('forum_replies')
-            .select(`
-        *,
-        author:users!forum_replies_author_id_fkey(
-          id, username, avatar_url, custom_avatar_url
-        )
-      `)
-            .eq('topic_id', id)
-            .order('created_at', { ascending: true });
-
-        // 獲取投票（如果有）
-        const { data: poll } = await supabaseAdmin
-            .from('forum_polls')
-            .select(`
-        *,
-        options:forum_poll_options(*)
-      `)
-            .eq('topic_id', id)
-            .single();
-
-        // 檢查用戶按讚和投票狀態
+        // 批次 2: 並行檢查用戶按讚與投票狀態
         let isLikedByMe = false;
         let likedReplyIds: string[] = [];
         let myVotes: string[] = [];
 
         if (userId) {
+            const likePromises: PromiseLike<void>[] = [];
+
             // 檢查主題按讚
-            const { data: topicLike } = await supabaseAdmin
-                .from('forum_likes')
-                .select('id')
-                .eq('user_id', userId)
-                .eq('topic_id', id)
-                .single();
-            isLikedByMe = !!topicLike;
+            likePromises.push(
+                supabaseAdmin
+                    .from('forum_likes')
+                    .select('id')
+                    .eq('user_id', userId)
+                    .eq('topic_id', id)
+                    .maybeSingle()
+                    .then(({ data }) => { isLikedByMe = !!data; })
+            );
 
             // 檢查回覆按讚
             if (replies && replies.length > 0) {
                 const replyIds = replies.map(r => r.id);
-                const { data: replyLikes } = await supabaseAdmin
-                    .from('forum_likes')
-                    .select('reply_id')
-                    .eq('user_id', userId)
-                    .in('reply_id', replyIds);
-                likedReplyIds = replyLikes?.map(l => l.reply_id) || [];
+                likePromises.push(
+                    supabaseAdmin
+                        .from('forum_likes')
+                        .select('reply_id')
+                        .eq('user_id', userId)
+                        .in('reply_id', replyIds)
+                        .then(({ data }) => { likedReplyIds = data?.map(l => l.reply_id) || []; })
+                );
             }
 
             // 檢查投票
             if (poll) {
-                const { data: votes } = await supabaseAdmin
-                    .from('forum_poll_votes')
-                    .select('option_id')
-                    .eq('poll_id', poll.id)
-                    .eq('user_id', userId);
-                myVotes = votes?.map(v => v.option_id) || [];
+                likePromises.push(
+                    supabaseAdmin
+                        .from('forum_poll_votes')
+                        .select('option_id')
+                        .eq('poll_id', poll.id)
+                        .eq('user_id', userId)
+                        .then(({ data }) => { myVotes = data?.map(v => v.option_id) || []; })
+                );
             }
+
+            await Promise.all(likePromises);
         }
 
         // 格式化回應
