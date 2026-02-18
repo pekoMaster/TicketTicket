@@ -50,7 +50,7 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
 
     const fetchTopic = async () => {
         try {
-            const res = await fetch(`/api/forum/topics/${id}`);
+            const res = await fetch(`/api/forum/topics/${id}`, { cache: 'no-store' });
             if (res.ok) {
                 const data = await res.json();
                 setTopic(data);

@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { Bell } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { useNotification } from '@/contexts/NotificationContext';
 
 interface Notification {
     id: string;
@@ -19,6 +20,7 @@ interface Notification {
 export default function NotificationBell() {
     const { data: session } = useSession();
     const t = useTranslations('notifications');
+    const { checkUnread: refreshGlobalBadge } = useNotification();
     const [unreadCount, setUnreadCount] = useState(0);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
@@ -71,6 +73,8 @@ export default function NotificationBell() {
                     prev.map((n) => ({ ...n, is_read: true }))
                 );
                 setUnreadCount(0);
+                // 同步更新 SideNav 紅點
+                refreshGlobalBadge();
             }
         } catch (error) {
             console.error('Error marking all as read:', error);

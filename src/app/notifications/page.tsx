@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import Header from '@/components/layout/Header';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
+import { useNotification } from '@/contexts/NotificationContext';
 import {
     Bell,
     BellOff,
@@ -47,6 +48,7 @@ export default function NotificationsPage() {
     const { data: session, status } = useSession();
     const router = useRouter();
     const t = useTranslations('notifications');
+    const { checkUnread } = useNotification();
 
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
@@ -91,6 +93,8 @@ export default function NotificationsPage() {
                     prev.map((n) => ({ ...n, is_read: true }))
                 );
                 setUnreadCount(0);
+                // 同步更新 SideNav 紅點
+                checkUnread();
             }
         } catch (error) {
             console.error('Error marking all as read:', error);
@@ -109,6 +113,8 @@ export default function NotificationsPage() {
                     prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
                 );
                 setUnreadCount((prev) => Math.max(0, prev - 1));
+                // 同步更新 SideNav 紅點
+                checkUnread();
             }
         } catch (error) {
             console.error('Error marking as read:', error);
@@ -125,6 +131,8 @@ export default function NotificationsPage() {
                 setNotifications((prev) => prev.filter((n) => n.id !== id));
                 if (notification && !notification.is_read) {
                     setUnreadCount((prev) => Math.max(0, prev - 1));
+                    // 同步更新 SideNav 紅點
+                    checkUnread();
                 }
             }
         } catch (error) {

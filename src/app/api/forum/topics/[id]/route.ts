@@ -3,6 +3,8 @@ import { auth } from '@/auth';
 import { supabaseAdmin } from '@/lib/supabase';
 import { ForumTopic, ForumReply, ForumCategory } from '@/types';
 
+export const dynamic = 'force-dynamic';
+
 // GET: 獲取單一主題詳情
 export async function GET(
     request: NextRequest,
