@@ -327,7 +327,7 @@
     "ticketInfo": "チケット情報",
     "ticketSource": "チケット購入先",
     "zaikoNote": "ZAIKO 電子チケットシステム",
-    "lawsonNote": "LAWSON チケットはサブチケット譲渡に対応していません",
+    "lawsonNote": "LAWSON コンビニチケット（サブチケットは実物での受け渡しが必要です）",
     "seatGrade": "座席グレード",
     "ticketCountType": "チケット種類",
     "pleaseSelectSeatGrade": "まず座席グレードを選択してください",

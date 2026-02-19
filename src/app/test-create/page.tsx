@@ -308,7 +308,7 @@ export default function TestCreatePage() {
                                         </label>
                                         <div className="space-y-2">
                                             {listingTypes.map((type) => {
-                                                const isDisabled = type.value === 'sub_ticket_transfer' && (ticketCountType === 'solo' || ticketSource === 'LAWSON');
+                                                const isDisabled = type.value === 'sub_ticket_transfer' && ticketCountType === 'solo';
                                                 return (
                                                     <button
                                                         key={type.value}

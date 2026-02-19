@@ -327,7 +327,7 @@
     "ticketInfo": "票券資訊",
     "ticketSource": "票源",
     "zaikoNote": "ZAIKO 電子票券系統",
-    "lawsonNote": "LAWSON 票券不支援子票轉讓",
+    "lawsonNote": "LAWSON 便利商店票券（子票須以實體方式交付）",
     "seatGrade": "座位等級",
     "ticketCountType": "票種類型",
     "pleaseSelectSeatGrade": "請先選擇座位等級",

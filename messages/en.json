@@ -325,7 +325,7 @@
     "ticketInfo": "Ticket Information",
     "ticketSource": "Ticket Source",
     "zaikoNote": "ZAIKO Electronic Ticket System",
-    "lawsonNote": "LAWSON tickets do not support sub-ticket transfer",
+    "lawsonNote": "LAWSON convenience store tickets (sub-tickets must be transferred physically)",
     "seatGrade": "Seat Grade",
     "ticketCountType": "Ticket Count Type",
     "pleaseSelectSeatGrade": "Please select seat grade first",

@@ -551,10 +551,6 @@ export default function EditListingPage() {
                       type="button"
                       onClick={() => {
                         setTicketSource(source);
-                        // 切換到 LAWSON 時，如果選了子票轉讓，清除刊登類型
-                        if (source === 'lawson' && ticketType === 'sub_ticket_transfer') {
-                          setTicketType('');
-                        }
                       }}
                       className={`
                         py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-300
@@ -571,7 +567,7 @@ export default function EditListingPage() {
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   {ticketSource === 'lawson'
-                    ? t('lawsonNote', { defaultValue: 'LAWSON 票券不支援子票轉讓' })
+                    ? t('lawsonNote', { defaultValue: 'LAWSON 便利商店票券（子票須以實體方式交付）' })
                     : t('zaikoNote', { defaultValue: 'ZAIKO 電子票券系統' })}
                 </p>
               </div>
@@ -745,8 +741,8 @@ export default function EditListingPage() {
                 </label>
                 <div className="space-y-2">
                   {TICKET_TYPES.map((type) => {
-                    // 轉讓子票僅限：1. 二人票以上（一人票無子票可轉讓）2. ZAIKO 票源（LAWSON 不支援子票）
-                    const isSubTicketDisabled = type === 'sub_ticket_transfer' && (ticketCountType === 'solo' || ticketSource === 'lawson');
+                    // 轉讓子票僅限二人票以上（一人票無子票可轉讓）
+                    const isSubTicketDisabled = type === 'sub_ticket_transfer' && ticketCountType === 'solo';
 
                     return (
                       <label

@@ -141,7 +141,7 @@ export type TicketType = 'find_companion' | 'sub_ticket_transfer' | 'ticket_exch
 
 // 票源類型
 // zaiko: ZAIKO 電子票券系統（支援子票）
-// lawson: LAWSON 便利商店購票（不支援子票）
+// lawson: LAWSON 便利商店購票
 export type TicketSource = 'zaiko' | 'lawson';
 
 // 票源資訊
