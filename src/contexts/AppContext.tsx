@@ -107,7 +107,9 @@ interface AppContextType {
   // 刊登
   listings: Listing[];
   isLoadingListings: boolean;
-  fetchListings: () => Promise<void>;
+  hasMoreListings: boolean;
+  fetchListings: (reset?: boolean) => Promise<void>;
+  loadMoreListings: () => Promise<void>;
   addListing: (listingData: CreateListingData) => Promise<Listing | null>;
   updateListing: (id: string, updates: Partial<Listing>) => Promise<boolean>;
   deleteListing: (id: string) => Promise<boolean>;
@@ -157,27 +159,62 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: ReactNode }) {
   const [listings, setListings] = useState<Listing[]>([]);
   const [isLoadingListings, setIsLoadingListings] = useState(true);
+  const [hasMoreListings, setHasMoreListings] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
   const [applications, setApplications] = useState<Application[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [hasAgreedToDisclaimer, setHasAgreedToDisclaimerState] = useState(false);
 
-  // 獲取刊登列表
-  const fetchListings = useCallback(async () => {
-    setIsLoadingListings(true);
+  // 獲取刊登列表 (初始化或重置)
+  const fetchListings = useCallback(async (reset: boolean = true) => {
+    if (reset) {
+      setIsLoadingListings(true);
+      setCurrentPage(1);
+    }
+    const pageToFetch = reset ? 1 : currentPage;
+
     try {
-      const response = await fetch('/api/listings');
+      const response = await fetch(`/api/listings?page=${pageToFetch}&limit=20`);
       if (response.ok) {
-        const data: ApiListing[] = await response.json();
-        setListings(data.map(convertApiListingToListing));
+        const result = await response.json();
+
+        // 處理新版 paginated response (有 data 屬性) 或舊版 array response
+        let fetchedApiListings: ApiListing[] = [];
+        let totalPages = 1;
+
+        if (result.data && Array.isArray(result.data)) {
+          fetchedApiListings = result.data;
+          totalPages = result.pagination?.totalPages || 1;
+        } else if (Array.isArray(result)) {
+          fetchedApiListings = result;
+        }
+
+        const convertedListings = fetchedApiListings.map(convertApiListingToListing);
+
+        setListings(prev => reset ? convertedListings : [...prev, ...convertedListings]);
+        setHasMoreListings(pageToFetch < totalPages);
+        if (!reset) {
+          setCurrentPage(prev => prev + 1);
+        } else {
+          setCurrentPage(2);
+        }
       } else {
         console.error('Failed to fetch listings');
       }
     } catch (error) {
       console.error('Error fetching listings:', error);
     } finally {
-      setIsLoadingListings(false);
+      if (reset) {
+        setIsLoadingListings(false);
+      }
     }
-  }, []);
+  }, [currentPage]);
+
+  // 載入更多刊登
+  const loadMoreListings = useCallback(async () => {
+    if (!hasMoreListings || isLoadingListings) return;
+    await fetchListings(false);
+  }, [fetchListings, hasMoreListings, isLoadingListings]);
 
   // 初始化資料
   useEffect(() => {
@@ -291,7 +328,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       value={{
         listings,
         isLoadingListings,
+        hasMoreListings,
         fetchListings,
+        loadMoreListings,
         addListing,
         updateListing,
         deleteListing,

@@ -43,7 +43,7 @@ type DateFilter = 'all' | 'week' | 'month' | '3months';
 
 export default function HomePage() {
   const { data: session, status: sessionStatus } = useSession();
-  const { listings, isLoadingListings, hasAgreedToDisclaimer } = useApp();
+  const { listings, isLoadingListings, hasMoreListings, loadMoreListings, hasAgreedToDisclaimer } = useApp();
   const { events } = useAdmin();
   const t = useTranslations('home');
   const tFilter = useTranslations('filter');
@@ -294,19 +294,12 @@ export default function HomePage() {
     setSortBy('date');
   };
 
-  // 無限滾動: 顯示的刊登 (根據 displayCount 切片)
-  const displayedListings = useMemo(() => {
-    return filteredListings.slice(0, displayCount);
-  }, [filteredListings, displayCount]);
-
-  const hasMore = displayCount < filteredListings.length;
-
-  // 載入更多
+  // 載入更多 (呼叫 AppContext 的 loadMoreListings)
   const loadMore = useCallback(() => {
-    if (hasMore) {
-      setDisplayCount((prev) => Math.min(prev + ITEMS_PER_PAGE, filteredListings.length));
+    if (hasMoreListings && !isLoadingListings) {
+      loadMoreListings();
     }
-  }, [hasMore, filteredListings.length]);
+  }, [hasMoreListings, isLoadingListings, loadMoreListings]);
 
   // IntersectionObserver 監聽底部元素
   useEffect(() => {
@@ -315,7 +308,7 @@ export default function HomePage() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoadingListings) {
+        if (entries[0].isIntersecting && hasMoreListings && !isLoadingListings) {
           loadMore();
         }
       },
@@ -324,7 +317,7 @@ export default function HomePage() {
 
     observer.observe(target);
     return () => observer.disconnect();
-  }, [hasMore, loadMore, isLoadingListings]);
+  }, [hasMoreListings, loadMore, isLoadingListings]);
 
   // 當篩選條件改變時，重置顯示數量
   useEffect(() => {
@@ -696,7 +689,7 @@ export default function HomePage() {
             <>
               {/* 手機版：緊湊列表視圖 */}
               <div className="lg:hidden space-y-2">
-                {displayedListings.map((listing, index) => (
+                {filteredListings.map((listing, index) => (
                   <MobileListingItem
                     key={listing.id}
                     listing={listing}
@@ -710,7 +703,7 @@ export default function HomePage() {
               <div
                 className={`hidden lg:grid lg:gap-4 lg:[grid-template-columns:repeat(auto-fill,280px)] ${viewMode === 'list' ? 'lg:hidden' : ''}`}
               >
-                {displayedListings.map((listing, index) => (
+                {filteredListings.map((listing, index) => (
                   <ListingCard
                     key={listing.id}
                     listing={listing}
@@ -724,7 +717,7 @@ export default function HomePage() {
               {viewMode === 'list' && (
                 <div className="hidden lg:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                   <div className="flex flex-col">
-                    {displayedListings.map((listing) => (
+                    {filteredListings.map((listing) => (
                       <ListingListItem
                         key={listing.id}
                         listing={listing}
@@ -736,12 +729,12 @@ export default function HomePage() {
               )}
               {/* 無限滾動觸發器 */}
               <div ref={loadMoreRef} className="py-4">
-                {hasMore ? (
+                {hasMoreListings ? (
                   <div className="flex justify-center items-center gap-2 text-gray-400 dark:text-gray-500">
                     <Loader2 className="w-5 h-5 animate-spin" />
                     <span className="text-sm">{t('loadingMore', { defaultValue: '載入更多...' })}</span>
                   </div>
-                ) : displayedListings.length > ITEMS_PER_PAGE && (
+                ) : filteredListings.length > ITEMS_PER_PAGE && (
                   <p className="text-center text-sm text-gray-400 dark:text-gray-500">
                     {t('noMoreListings', { defaultValue: '已顯示全部刊登' })}
                   </p>

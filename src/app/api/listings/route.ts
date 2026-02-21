@@ -4,28 +4,65 @@ import { auth } from '@/auth';
 import { inngest } from '@/lib/inngest';
 import { notifySubscribers } from '@/lib/subscription-notify';
 
-// GET /api/listings - 獲取所有刊登
-export async function GET() {
+// GET /api/listings - 獲取所有開放狀態刊登（支援分頁）
+export async function GET(request: NextRequest) {
   try {
-    const { data, error } = await supabaseAdmin
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = parseInt(searchParams.get('limit') || '10', 10);
+    const fetchAll = searchParams.get('all') === 'true'; // 保留取得全部的選項作向下相容或特定用途
+
+    // 若要求取得全部，或是沒有傳入分頁且沒明確要分頁 (預設不給全部，改為10筆避免效能問題)
+    // 建立 base query
+    let query = supabaseAdmin
       .from('listings')
       .select(`
         *,
         host:users!host_id(id, username, avatar_url, custom_avatar_url, rating, review_count, line_id, discord_id, show_line, show_discord)
-      `)
+      `, { count: 'exact' })
       .eq('status', 'open')
       .order('created_at', { ascending: false });
+
+    // 加入分頁邏輯
+    if (!fetchAll) {
+      const from = (page - 1) * limit;
+      const to = from + limit - 1;
+      query = query.range(from, to);
+    }
+
+    const { data, count, error } = await query;
 
     if (error) {
       console.error('Error fetching listings:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(data || [], {
-      headers: {
-        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+    if (fetchAll) {
+      // 舊版 Response 格式 (向下相容)
+      return NextResponse.json(data || [], {
+        headers: {
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+        },
+      });
+    }
+
+    // 新版 Paginated Response 格式
+    return NextResponse.json(
+      {
+        data: data || [],
+        pagination: {
+          page,
+          limit,
+          total: count || 0,
+          totalPages: count ? Math.ceil(count / limit) : 0,
+        },
       },
-    });
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+        },
+      }
+    );
   } catch (error) {
     console.error('Error in GET /api/listings:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
