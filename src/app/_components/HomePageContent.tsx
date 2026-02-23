@@ -121,7 +121,7 @@ export default function HomePage() {
   const [selectedNationality, setSelectedNationality] = useState('');
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [willAssistEntry, setWillAssistEntry] = useState(false);
-  const [sortBy, setSortBy] = useState<SortOption>('date');
+  const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
   const [minPriceFilter, setMinPriceFilter] = useState<string>('');
   const [maxPriceFilter, setMaxPriceFilter] = useState<string>('');
@@ -291,7 +291,7 @@ export default function HomePage() {
     setSelectedNationality('');
     setSelectedLanguages([]);
     setWillAssistEntry(false);
-    setSortBy('date');
+    setSortBy('newest');
   };
 
   // 載入更多 (呼叫 AppContext 的 loadMoreListings)
@@ -334,7 +334,7 @@ export default function HomePage() {
     minRating !== '' ||
     selectedNationality !== '' ||
     selectedLanguages.length > 0 ||
-    sortBy !== 'date';
+    sortBy !== 'newest';
 
   // Count active filters for badge
   const activeFilterCount = [
