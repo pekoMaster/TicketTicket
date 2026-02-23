@@ -160,7 +160,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [listings, setListings] = useState<Listing[]>([]);
   const [isLoadingListings, setIsLoadingListings] = useState(true);
   const [hasMoreListings, setHasMoreListings] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
+  const currentPageRef = React.useRef(1);
   const [applications, setApplications] = useState<Application[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [hasAgreedToDisclaimer, setHasAgreedToDisclaimerState] = useState(false);
@@ -169,9 +169,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const fetchListings = useCallback(async (reset: boolean = true) => {
     if (reset) {
       setIsLoadingListings(true);
-      setCurrentPage(1);
+      currentPageRef.current = 1;
     }
-    const pageToFetch = reset ? 1 : currentPage;
+    const pageToFetch = reset ? 1 : currentPageRef.current;
 
     try {
       const response = await fetch(`/api/listings?page=${pageToFetch}&limit=20`);
@@ -194,9 +194,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setListings(prev => reset ? convertedListings : [...prev, ...convertedListings]);
         setHasMoreListings(pageToFetch < totalPages);
         if (!reset) {
-          setCurrentPage(prev => prev + 1);
+          currentPageRef.current += 1;
         } else {
-          setCurrentPage(2);
+          currentPageRef.current = 2;
         }
       } else {
         console.error('Failed to fetch listings');
@@ -208,7 +208,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setIsLoadingListings(false);
       }
     }
-  }, [currentPage]);
+  }, []);
 
   // 載入更多刊登
   const loadMoreListings = useCallback(async () => {
