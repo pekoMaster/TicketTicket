@@ -43,7 +43,7 @@ type DateFilter = 'all' | 'week' | 'month' | '3months';
 
 export default function HomePage() {
   const { data: session, status: sessionStatus } = useSession();
-  const { listings, isLoadingListings, hasMoreListings, loadMoreListings, hasAgreedToDisclaimer } = useApp();
+  const { listings, isLoadingListings, hasMoreListings, isFetchingNextPage, loadMoreListings, hasAgreedToDisclaimer } = useApp();
   const { events } = useAdmin();
   const t = useTranslations('home');
   const tFilter = useTranslations('filter');
@@ -296,10 +296,10 @@ export default function HomePage() {
 
   // 載入更多 (呼叫 AppContext 的 loadMoreListings)
   const loadMore = useCallback(() => {
-    if (hasMoreListings && !isLoadingListings) {
+    if (hasMoreListings && !isLoadingListings && !isFetchingNextPage) {
       loadMoreListings();
     }
-  }, [hasMoreListings, isLoadingListings, loadMoreListings]);
+  }, [hasMoreListings, isLoadingListings, isFetchingNextPage, loadMoreListings]);
 
   // IntersectionObserver 監聽底部元素
   useEffect(() => {
@@ -308,7 +308,7 @@ export default function HomePage() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMoreListings && !isLoadingListings) {
+        if (entries[0].isIntersecting && hasMoreListings && !isLoadingListings && !isFetchingNextPage) {
           loadMore();
         }
       },
@@ -317,7 +317,7 @@ export default function HomePage() {
 
     observer.observe(target);
     return () => observer.disconnect();
-  }, [hasMoreListings, loadMore, isLoadingListings]);
+  }, [hasMoreListings, loadMore, isLoadingListings, isFetchingNextPage]);
 
   // 當篩選條件改變時，重置顯示數量
   useEffect(() => {
@@ -729,16 +729,16 @@ export default function HomePage() {
               )}
               {/* 無限滾動觸發器 */}
               <div ref={loadMoreRef} className="py-4">
-                {hasMoreListings ? (
+                {isFetchingNextPage ? (
                   <div className="flex justify-center items-center gap-2 text-gray-400 dark:text-gray-500">
                     <Loader2 className="w-5 h-5 animate-spin" />
                     <span className="text-sm">{t('loadingMore', { defaultValue: '載入更多...' })}</span>
                   </div>
-                ) : filteredListings.length > ITEMS_PER_PAGE && (
+                ) : !hasMoreListings && filteredListings.length > ITEMS_PER_PAGE ? (
                   <p className="text-center text-sm text-gray-400 dark:text-gray-500">
                     {t('noMoreListings', { defaultValue: '已顯示全部刊登' })}
                   </p>
-                )}
+                ) : null}
               </div>
             </>
           ) : (

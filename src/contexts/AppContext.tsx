@@ -108,6 +108,7 @@ interface AppContextType {
   listings: Listing[];
   isLoadingListings: boolean;
   hasMoreListings: boolean;
+  isFetchingNextPage: boolean;
   fetchListings: (reset?: boolean) => Promise<void>;
   loadMoreListings: () => Promise<void>;
   addListing: (listingData: CreateListingData) => Promise<Listing | null>;
@@ -160,16 +161,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [listings, setListings] = useState<Listing[]>([]);
   const [isLoadingListings, setIsLoadingListings] = useState(true);
   const [hasMoreListings, setHasMoreListings] = useState(true);
+  const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
   const currentPageRef = React.useRef(1);
+  const isFetchingRef = React.useRef(false);
   const [applications, setApplications] = useState<Application[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [hasAgreedToDisclaimer, setHasAgreedToDisclaimerState] = useState(false);
 
   // 獲取刊登列表 (初始化或重置)
   const fetchListings = useCallback(async (reset: boolean = true) => {
+    // 取得鎖，防止重複並發請求
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
+
     if (reset) {
       setIsLoadingListings(true);
       currentPageRef.current = 1;
+    } else {
+      setIsFetchingNextPage(true);
     }
     const pageToFetch = reset ? 1 : currentPageRef.current;
 
@@ -191,7 +200,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
         const convertedListings = fetchedApiListings.map(convertApiListingToListing);
 
-        setListings(prev => reset ? convertedListings : [...prev, ...convertedListings]);
+        setListings(prev => {
+          if (reset) return convertedListings;
+
+          // 過濾掉可能重複的 id，防止 React Keys 重複導致畫面閃爍崩潰
+          const prevIds = new Set(prev.map(l => l.id));
+          const newUniqueListings = convertedListings.filter(l => !prevIds.has(l.id));
+
+          return [...prev, ...newUniqueListings];
+        });
+
         setHasMoreListings(pageToFetch < totalPages);
         if (!reset) {
           currentPageRef.current += 1;
@@ -206,15 +224,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
     } finally {
       if (reset) {
         setIsLoadingListings(false);
+      } else {
+        setIsFetchingNextPage(false);
       }
+      isFetchingRef.current = false;
     }
   }, []);
 
   // 載入更多刊登
   const loadMoreListings = useCallback(async () => {
-    if (!hasMoreListings || isLoadingListings) return;
+    if (!hasMoreListings || isLoadingListings || isFetchingNextPage || isFetchingRef.current) return;
     await fetchListings(false);
-  }, [fetchListings, hasMoreListings, isLoadingListings]);
+  }, [fetchListings, hasMoreListings, isLoadingListings, isFetchingNextPage]);
 
   // 初始化資料
   useEffect(() => {
@@ -329,6 +350,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         listings,
         isLoadingListings,
         hasMoreListings,
+        isFetchingNextPage,
         fetchListings,
         loadMoreListings,
         addListing,
