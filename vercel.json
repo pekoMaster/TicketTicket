@@ -16,6 +16,10 @@
         {
             "path": "/api/reviews/auto-complete",
             "schedule": "0 0 * * *"
+        },
+        {
+            "path": "/api/youtube/pubsub/renew",
+            "schedule": "0 0 */4 * *"
         }
     ]
 }
