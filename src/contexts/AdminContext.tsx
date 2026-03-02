@@ -59,7 +59,7 @@ interface AdminContextType {
   isLoadingEvents: boolean;
   fetchEvents: () => Promise<void>;
   addEvent: (event: Omit<HololiveEvent, 'id' | 'createdAt' | 'updatedAt'>) => Promise<HololiveEvent | null>;
-  updateEvent: (id: string, updates: Partial<HololiveEvent>) => Promise<void>;
+  updateEvent: (id: string, updates: Partial<HololiveEvent> & { discordWebhookUrl?: string }) => Promise<void>;
   deleteEvent: (id: string) => Promise<void>;
   getEvent: (id: string) => HololiveEvent | undefined;
 
@@ -164,7 +164,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   };
 
   // 更新活動
-  const updateEvent = async (id: string, updates: Partial<HololiveEvent>) => {
+  const updateEvent = async (id: string, updates: Partial<HololiveEvent> & { discordWebhookUrl?: string }) => {
     try {
       // 只發送有定義的欄位，避免意外覆蓋資料
       const payload: Record<string, unknown> = {};
@@ -195,6 +195,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       if (updates.category !== undefined) payload.category = updates.category;
       if (updates.isActive !== undefined) payload.isActive = updates.isActive;
       if (updates.maxListingsPerUser !== undefined) payload.maxListingsPerUser = updates.maxListingsPerUser;
+      if (updates.discordWebhookUrl !== undefined) payload.discordWebhookUrl = updates.discordWebhookUrl;
 
       const response = await fetch(`/api/events/${id}`, {
         method: 'PATCH',

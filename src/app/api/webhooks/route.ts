@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 
 // GET: Get user's Discord webhook settings
 export async function GET(request: NextRequest) {
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const userId = session.user.id;
 
     // Get user's personal webhook
-    const { data: webhook, error: webhookError } = await supabase
+    const { data: webhook, error: webhookError } = await supabaseAdmin
       .from('user_discord_webhooks')
       .select('*')
       .eq('user_id', userId)
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user's event subscriptions
-    const { data: subscriptions, error: subError } = await supabase
+    const { data: subscriptions, error: subError } = await supabaseAdmin
       .from('user_webhook_subscriptions')
       .select(`
         *,
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if webhook already exists
-    const { data: existing } = await supabase
+    const { data: existing } = await supabaseAdmin
       .from('user_discord_webhooks')
       .select('id')
       .eq('user_id', userId)
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     let result;
     if (existing) {
       // Update existing webhook
-      result = await supabase
+      result = await supabaseAdmin
         .from('user_discord_webhooks')
         .update({
           webhook_url: webhookUrl,
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
         .single();
     } else {
       // Insert new webhook
-      result = await supabase
+      result = await supabaseAdmin
         .from('user_discord_webhooks')
         .insert({
           user_id: userId,
@@ -127,7 +127,7 @@ export async function DELETE(request: NextRequest) {
     const userId = session.user.id;
 
     // Delete webhook
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('user_discord_webhooks')
       .delete()
       .eq('user_id', userId);
@@ -138,7 +138,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Also delete all subscriptions
-    await supabase
+    await supabaseAdmin
       .from('user_webhook_subscriptions')
       .delete()
       .eq('user_id', userId);

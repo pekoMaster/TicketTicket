@@ -79,11 +79,32 @@ export async function createNotification(data: NotificationData) {
             console.log(`[Notification] Skipped Discord: Enabled=${discordEnabled}, HasDistordId=${!!user.discord_id}`);
         }
 
-        // --- LINE Notification (Placeholder) ---
+        // --- LINE Notification ---
         const lineEnabled = typePrefs?.line ?? false;
         if (lineEnabled && user.line_id) {
-            // 目前尚未實作 LINE Bot 發送邏輯
-            console.log(`[Notification] LINE notification requested but not implemented yet. User: ${user.line_id}`);
+            console.log(`[Notification] Attempting LINE message to ${user.line_id}`);
+            try {
+                // 動態導入以避免循環依賴
+                const { sendLineMessage } = await import('@/lib/line-message');
+
+                const sent = await sendLineMessage({
+                    lineId: user.line_id,
+                    title: data.title,
+                    message: data.message,
+                    link: data.link || 'https://ticketticket.live',
+                    type: data.type as any
+                });
+
+                if (sent) {
+                    console.log(`[Notification] LINE Message sent successfully.`);
+                } else {
+                    console.error(`[Notification] LINE Message failed to send.`);
+                }
+            } catch (err) {
+                console.error(`[Notification] Error sending LINE Message:`, err);
+            }
+        } else {
+            console.log(`[Notification] Skipped LINE: Enabled=${lineEnabled}, HasLineId=${!!user.line_id}`);
         }
 
         return true;
