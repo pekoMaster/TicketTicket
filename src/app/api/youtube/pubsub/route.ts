@@ -8,6 +8,12 @@ const PUBSUB_SECRET = process.env.YOUTUBE_PUBSUB_SECRET || '';
 const DISCORD_BOT_TOKEN = process.env.DISCORD_RPG_BOT_TOKEN || '';
 
 // ============================================================
+// 過濾設定：`updated` 超過此時間的通知視為 Hub 重播舊資料，跳過通知
+// （仍會寫入去重表，防止未來重複處理）
+// ============================================================
+const MAX_NOTIFY_AGE_HOURS = parseInt(process.env.PUBSUB_MAX_NOTIFY_AGE_HOURS || '48', 10);
+
+// ============================================================
 // GET: Hub 驗證回呼
 // Google Hub 訂閱/取消訂閱時會 GET 此端點進行驗證
 // 必須回傳 hub.challenge 的值
@@ -103,6 +109,9 @@ export async function POST(request: NextRequest) {
       return new NextResponse('OK', { status: 200 });
     }
 
+    const now = Date.now();
+    const maxAgeMs = MAX_NOTIFY_AGE_HOURS * 60 * 60 * 1000;
+
     for (const entry of entries) {
       const videoId = entry['yt:videoId'];
       const channelId = entry['yt:channelId'];
@@ -112,7 +121,7 @@ export async function POST(request: NextRequest) {
       const updated = entry.updated;
 
       console.log(
-        `[YT PubSub] Notification: videoId=${videoId}, channelId=${channelId}, title=${title}`
+        `[YT PubSub] Notification: videoId=${videoId}, channelId=${channelId}, title=${title}, published=${published}, updated=${updated}`
       );
 
       if (!videoId || !channelId) {
@@ -120,7 +129,11 @@ export async function POST(request: NextRequest) {
         continue;
       }
 
-      // 去重檢查：同一影片只通知一次
+      // ============================================================
+      // 去重檢查：同一影片（videoId + channel_id）只通知一次
+      // 注意：相同 videoId 的 metadata 更新會以不同 entry 格式到達，
+      //       但 videoId 相同 → 後續更新會被此處攔截，不再通知
+      // ============================================================
       const { data: existing } = await supabaseAdmin
         .from('youtube_pubsub_notifications')
         .select('id')
@@ -132,6 +145,36 @@ export async function POST(request: NextRequest) {
         console.log(`[YT PubSub] Duplicate notification skipped: ${videoId}`);
         continue;
       }
+
+      // ============================================================
+      // 時間過濾：以 `updated` 時間判斷，超過 MAX_NOTIFY_AGE_HOURS 的視為
+      // Hub 重播舊內容（常見於新訂閱建立後的初始推送）
+      // 仍寫入去重表，確保未來不再重複處理
+      // ============================================================
+      const updatedTime = updated ? new Date(updated).getTime() : 0;
+      const publishedTime = published ? new Date(published).getTime() : 0;
+      const ageMs = now - updatedTime;
+
+      if (updatedTime > 0 && ageMs > maxAgeMs) {
+        console.log(
+          `[YT PubSub] Skipping old entry: ${videoId} (updated ${Math.round(ageMs / 3600000)}h ago, threshold=${MAX_NOTIFY_AGE_HOURS}h)`
+        );
+        // 寫入去重表，避免未來重複觸發（不發通知）
+        await supabaseAdmin.from('youtube_pubsub_notifications').insert({
+          video_id: videoId,
+          channel_id: channelId,
+          title: title || 'Unknown Title',
+          link,
+          published_at: published || updated || new Date().toISOString(),
+        });
+        continue;
+      }
+
+      // 判斷通知類型：新影片 vs. 資訊更新
+      // published ≈ updated（差距 < 30 分鐘）→ 新上傳
+      // published 遠早於 updated → 標題/縮圖等 metadata 變更
+      const timeDiffMs = updatedTime - publishedTime;
+      const isNewUpload = timeDiffMs < 30 * 60 * 1000; // < 30 分鐘視為新上傳
 
       // 記錄通知（去重用）
       await supabaseAdmin.from('youtube_pubsub_notifications').insert({
@@ -162,7 +205,9 @@ export async function POST(request: NextRequest) {
           title: title || 'New Video',
           link,
           published: published || updated,
+          updated: updated || published,
           channelName: sub.youtube_channel_name || channelId,
+          isNewUpload,
         });
 
         // 更新訂閱統計
@@ -198,7 +243,9 @@ async function sendDiscordNotification(
     title: string;
     link: string;
     published?: string;
+    updated?: string;
     channelName: string;
+    isNewUpload: boolean;
   }
 ) {
   if (!DISCORD_BOT_TOKEN) {
@@ -206,31 +253,57 @@ async function sendDiscordNotification(
     return;
   }
 
+  const channelUrl = `https://www.youtube.com/channel/${video.channelId}`;
+  const publishedTs = video.published ? Math.floor(new Date(video.published).getTime() / 1000) : null;
+  const updatedTs = video.updated ? Math.floor(new Date(video.updated).getTime() / 1000) : null;
+
+  // 新上傳 vs. 資訊更新的外觀區別
+  const isNew = video.isNewUpload;
+  const embedColor = isNew ? 0xff0000 : 0x5865f2; // 新上傳=YouTube紅，更新=Discord藍
+  const embedLabel = isNew ? '🎬 頻道新上傳' : '✏️ 影片資訊更新';
+
+  const fields: Array<{ name: string; value: string; inline?: boolean }> = [];
+
+  if (isNew && publishedTs) {
+    fields.push({
+      name: '📅 發布時間',
+      value: `<t:${publishedTs}:R>`,
+      inline: true,
+    });
+  } else if (!isNew) {
+    // 更新通知：同時顯示發布時間和更新時間
+    if (publishedTs) {
+      fields.push({
+        name: '📅 發布時間',
+        value: `<t:${publishedTs}:f>`,
+        inline: true,
+      });
+    }
+    if (updatedTs) {
+      fields.push({
+        name: '🔄 更新時間',
+        value: `<t:${updatedTs}:R>`,
+        inline: true,
+      });
+    }
+  }
+
   const embed = {
-    color: 0xff0000, // YouTube 紅
+    color: embedColor,
     author: {
       name: video.channelName,
-      url: `https://www.youtube.com/channel/${video.channelId}`,
-      icon_url: `https://www.youtube.com/s/desktop/icon.png`,
+      url: channelUrl,
     },
     title: video.title,
     url: video.link,
     thumbnail: {
       url: `https://i.ytimg.com/vi/${video.videoId}/maxresdefault.jpg`,
     },
-    fields: video.published
-      ? [
-          {
-            name: '📅 發布時間',
-            value: `<t:${Math.floor(new Date(video.published).getTime() / 1000)}:R>`,
-            inline: true,
-          },
-        ]
-      : [],
+    fields,
     footer: {
-      text: 'YouTube PubSub 即時通知',
+      text: `YouTube PubSub 即時通知 · ${embedLabel}`,
     },
-    timestamp: new Date().toISOString(),
+    timestamp: video.updated || video.published || new Date().toISOString(),
   };
 
   // 組裝訊息內容
@@ -266,7 +339,7 @@ async function sendDiscordNotification(
       );
     } else {
       console.log(
-        `[YT PubSub] Notification sent to Discord channel ${subscription.discord_channel_id}`
+        `[YT PubSub] [${embedLabel}] Notification sent to Discord channel ${subscription.discord_channel_id}: "${video.title}"`
       );
     }
   } catch (error) {
