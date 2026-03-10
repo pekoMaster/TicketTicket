@@ -82,21 +82,23 @@
     "confirm": "確認選擇"
   },
   "home": {
-    "subtitle": "找到你的演唱會同行夥伴",
+    "subtitle": "尋找一起參與 VTuber 演唱會的夥伴！",
     "explore": "探索同行機會",
     "viewAll": "查看全部",
     "subscribeToEvent": "訂閱活動通知",
-    "noListings": "目前沒有開放的同行機會",
+    "noListings": "目前沒有找到符合條件的讓票",
+    "noRequests": "目前沒有找到符合條件的求票",
+    "tryAdjustingFilters": "您可以嘗試調整篩選條件或重新搜尋",
     "loadingMore": "載入更多...",
     "noMoreListings": "已顯示全部刊登",
-    "successfulMeetups": "成功配對",
+    "successfulMeetups": "次成功配對",
     "createFirst": "發布第一個同行徵求",
     "whatIs": "什麼是 TicketTicket？",
     "feature1": "專為演唱會票券持有者設計的同行配對平台",
     "feature2": "不是票券轉售，而是找同行夥伴一起入場",
     "feature3": "安全配對，現場見面，有保障",
-    "cardView": "卡片模式",
-    "listView": "列表模式",
+    "cardView": "卡片檢視 (推薦)",
+    "listView": "清單檢視 (適合快速瀏覽)",
     "event": "活動",
     "date": "日期",
     "venue": "場地",
@@ -104,7 +106,9 @@
     "ticketType": "票種",
     "price": "費用",
     "host": "主辦方",
-    "nationality": "國籍"
+    "nationality": "國籍",
+    "viewListings": "尋找同行/讓票",
+    "viewRequests": "查看求票紀錄"
   },
   "filter": {
     "searchPlaceholder": "搜尋活動、場地、關鍵字...",
@@ -831,6 +835,11 @@
     "dark": "深色模式",
     "system": "跟隨系統"
   },
+  "Options": {
+    "taiwanese": "台灣人",
+    "japanese": "日本人",
+    "other": "其他"
+  },
   "legal": {
     "terms": "使用條款",
     "privacy": "隱私權政策",
@@ -1198,10 +1207,18 @@
     "optional": "（可選，不選=任意）",
     "maxPrice": "價格上限",
     "zeroPriceNote": "（0 = 不限）",
-    "ticketTypes": "票券類型",
+    "ticketTypeLabel": "票券類型",
     "findCompanion": "尋找同行",
-    "subTicketTransfer": "子票轉讓",
-    "ticketExchange": "換票",
+    "ticketTypes": {
+      "find_companion": "尋找同行（持有連號票）",
+      "sub_ticket_transfer": "子票轉讓",
+      "ticket_exchange": "票券交換"
+    },
+    "acceptedTypes": {
+      "find_companion": "可接受同行",
+      "sub_ticket_transfer": "可接受轉讓子票",
+      "any": "皆可"
+    },
     "notificationMethod": "通知方式",
     "available": "可用",
     "linkRequired": "需連結",

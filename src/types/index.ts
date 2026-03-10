@@ -676,7 +676,7 @@ export interface TicketRequest {
   userId: string;
   eventId?: string;
   eventName: string;
-  acceptedTypes: AcceptedTicketType[];  // 可接受: 同行 / 子票轉讓
+  acceptedTypes: TicketType[];  // 可接受: 同行 / 子票轉讓
   seatGrades: string[];                // 想要的座位等級 (複選)
   quantity: number;                    // 張數 (1~上限)
   description?: string;                // 備註說明
@@ -705,19 +705,24 @@ export interface RequestApplication {
 }
 
 // 求票可接受類型資訊
-export const ACCEPTED_TICKET_TYPE_INFO: Record<AcceptedTicketType, {
+export const ACCEPTED_TICKET_TYPE_INFO: Record<TicketType, {
   label: string;
   description: string;
   color: string;
 }> = {
   find_companion: {
-    label: '接受同行',
-    description: '願意與有票的人一起入場',
-    color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+    label: '同行',
+    description: '尋找可以一起入場的同伴',
+    color: 'bg-blue-100 text-blue-800',
   },
   sub_ticket_transfer: {
-    label: '接受讓票',
-    description: '願意接收他人轉讓的子票',
-    color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+    label: '讓票',
+    description: '可以直接轉讓(如同行者票)',
+    color: 'bg-green-100 text-green-800',
+  },
+  ticket_exchange: {
+    label: '換票',
+    description: '交換不同場次或座位的票',
+    color: 'bg-purple-100 text-purple-800',
   },
 };

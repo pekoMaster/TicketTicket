@@ -88,6 +88,8 @@
     "successfulMeetups": "Successful Matches",
     "subscribeToEvent": "Subscribe to Events",
     "noListings": "No companion opportunities available",
+    "noRequests": "No ticket requests available",
+    "tryAdjustingFilters": "Try adjusting filters or searching again",
     "loadingMore": "Loading more...",
     "noMoreListings": "All listings displayed",
     "createFirst": "Create Your First Listing",
@@ -95,8 +97,8 @@
     "feature1": "A companion matching platform for concert ticket holders",
     "feature2": "Not ticket resale, but finding a partner to enter together",
     "feature3": "Safe matching, meet in person, secure",
-    "cardView": "Card View",
-    "listView": "List View",
+    "cardView": "Card View (Recommended)",
+    "listView": "List View (Quick Scan)",
     "event": "Event",
     "date": "Date",
     "venue": "Venue",
@@ -104,7 +106,9 @@
     "ticketType": "Ticket Type",
     "price": "Price",
     "host": "Host",
-    "nationality": "Nationality"
+    "nationality": "Nationality",
+    "viewListings": "Find Companion/Tickets",
+    "viewRequests": "View Requests"
   },
   "filter": {
     "searchPlaceholder": "Search events, venues, keywords...",
@@ -829,6 +833,11 @@
     "dark": "Dark Mode",
     "system": "System"
   },
+  "Options": {
+    "taiwanese": "Taiwanese",
+    "japanese": "Japanese",
+    "other": "Other"
+  },
   "legal": {
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
@@ -1196,10 +1205,18 @@
     "optional": "(Optional, none = any)",
     "maxPrice": "Max Price",
     "zeroPriceNote": "(0 = no limit)",
-    "ticketTypes": "Ticket Types",
+    "ticketTypeLabel": "Ticket Types",
     "findCompanion": "Find Companion",
-    "subTicketTransfer": "Sub-ticket Transfer",
-    "ticketExchange": "Ticket Exchange",
+    "ticketTypes": {
+      "find_companion": "Find Companion (Consecutive)",
+      "sub_ticket_transfer": "Sub-ticket Transfer",
+      "ticket_exchange": "Ticket Exchange"
+    },
+    "acceptedTypes": {
+      "find_companion": "Accept Companion",
+      "sub_ticket_transfer": "Accept Sub-ticket",
+      "any": "Any"
+    },
     "notificationMethod": "Notification Method",
     "available": "Available",
     "linkRequired": "Link Required",

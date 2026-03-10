@@ -3,47 +3,56 @@
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useApp } from '@/contexts/AppContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useTranslations } from 'next-intl';
 import ListingCard from '@/components/features/ListingCard';
+import RequestCard from '@/components/features/RequestCard';
 import ListingListItem from '@/components/features/ListingListItem';
 import MobileListingItem from '@/components/features/MobileListingItem';
 import ListingCardSkeleton from '@/components/features/ListingCardSkeleton';
-import AuroraBackground from '@/components/ui/AuroraBackground';
-import SubscriptionModal from '@/components/ui/SubscriptionModal';
-import { LoginPromptModal, TutorialOverlay } from '@/components/onboarding';
-
-import { Input } from '@/components/ui/Input';
+import { LoginPromptModal } from '@/components/onboarding/LoginPromptModal';
+import { TutorialOverlay } from '@/components/onboarding';
 import {
   Ticket,
   Search,
-  Filter,
+  SlidersHorizontal,
+  Plus,
+  ArrowRight,
+  TrendingUp,
   X,
-  Loader2,
-  ChevronDown,
-  ChevronUp,
+  UserCheck,
+  Calendar,
+  Wallet,
+  Globe2,
+  Users,
+  AlertCircle,
   LayoutGrid,
   List,
-  PartyPopper,
-  Bell,
+  Loader2,
+  HandHeart,
+  SearchX,
+  PartyPopper
 } from 'lucide-react';
 import Link from 'next/link';
+import Select from '@/components/ui/Select';
+import { Input } from '@/components/ui/Input';
+import AuroraBackground from '@/components/ui/AuroraBackground';
 import {
   TicketType,
   TicketSource,
-  TICKET_TYPE_INFO,
   TICKET_SOURCE_INFO,
   NATIONALITY_OPTIONS,
   LANGUAGE_OPTIONS,
 } from '@/types';
 import { isListingExpired } from '@/lib/listing-utils';
 
-type SortOption = 'date' | 'newest' | 'price_asc' | 'price_desc';
-type DateFilter = 'all' | 'week' | 'month' | '3months';
+export type SortOption = 'newest' | 'priceLowToHigh' | 'priceHighToLow' | 'eventDate';
+export type DateFilter = 'all' | 'week' | 'month' | '3months';
 
 export default function HomePage() {
   const { data: session, status: sessionStatus } = useSession();
-  const { listings, isLoadingListings, hasMoreListings, isFetchingNextPage, loadMoreListings, hasAgreedToDisclaimer } = useApp();
+  const { listings, isLoadingListings, hasMoreListings, isFetchingNextPage, loadMoreListings, hasAgreedToDisclaimer, setHasAgreedToDisclaimer, requests, isLoadingRequests } = useApp();
   const { events } = useAdmin();
   const t = useTranslations('home');
   const tFilter = useTranslations('filter');
@@ -53,6 +62,7 @@ export default function HomePage() {
   const tTerms = useTranslations('terms');
   const tTokushoho = useTranslations('tokushoho');
   const tLegal = useTranslations('legal');
+  const tOptions = useTranslations('Options');
 
   // 新手引導狀態
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
@@ -110,6 +120,7 @@ export default function HomePage() {
   }, [sessionStatus, isLoadingListings, showLoginPrompt, hasAgreedToDisclaimer]);
 
   // 搜尋和篩選狀態
+  const [activeDisplayArea, setActiveDisplayArea] = useState<'listings' | 'requests'>('listings');
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState('');
@@ -249,6 +260,7 @@ export default function HomePage() {
         result = result.filter((l) => (l.askingPriceJpy || 0) >= minPrice);
       }
     }
+
     if (maxPriceFilter) {
       const maxPrice = parseInt(maxPriceFilter);
       if (!isNaN(maxPrice)) {
@@ -257,24 +269,52 @@ export default function HomePage() {
     }
 
     // 排序
-    switch (sortBy) {
-      case 'date':
-        result.sort((a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime());
-        break;
-      case 'newest':
-        result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        break;
-      case 'price_asc':
-        result.sort((a, b) => (a.askingPriceJpy || 0) - (b.askingPriceJpy || 0));
-        break;
-      case 'price_desc':
-        result.sort((a, b) => (b.askingPriceJpy || 0) - (a.askingPriceJpy || 0));
-        break;
+    return result.sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case 'eventDate':
+          return new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime();
+        case 'priceLowToHigh':
+          return a.askingPriceJpy - b.askingPriceJpy;
+        case 'priceHighToLow':
+          return b.askingPriceJpy - a.askingPriceJpy;
+        default:
+          return 0;
+      }
+    });
+  }, [listings, searchQuery, selectedEvent, dateFilter, selectedTicketType, selectedTicketSource, hostNameQuery, minRating, selectedNationality, selectedLanguages, willAssistEntry, minPriceFilter, maxPriceFilter, sortBy]);
+
+  // 求票的篩選邏輯
+  const filteredRequests = useMemo(() => {
+    let result = requests.filter((r) => r.status === 'open');
+
+    // 關鍵字搜尋
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(
+        (r) =>
+          r.eventName.toLowerCase().includes(query) ||
+          r.description?.toLowerCase().includes(query) ||
+          r.user?.username.toLowerCase().includes(query)
+      );
     }
 
-    return result;
-  }, [listings, searchQuery, selectedEvent, dateFilter, selectedTicketType, selectedTicketSource, willAssistEntry, hostNameQuery, minRating, selectedNationality, selectedLanguages, sortBy, minPriceFilter, maxPriceFilter]);
+    // 活動名稱篩選
+    if (selectedEvent) {
+      result = result.filter((r) => r.eventName === selectedEvent);
+    }
 
+    // 座位等級篩選
+    if (selectedTicketType) {
+      result = result.filter((r) => r.acceptedTypes.includes(selectedTicketType));
+    }
+
+    // 排序
+    return result.sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+  }, [requests, searchQuery, selectedEvent, selectedTicketType]);
   const toggleLanguage = (lang: string) => {
     setSelectedLanguages((prev) =>
       prev.includes(lang) ? prev.filter((l) => l !== lang) : [...prev, lang]
@@ -417,7 +457,7 @@ export default function HomePage() {
               `}
             >
               <div className="relative">
-                <Filter className="w-5 h-5" />
+                <SlidersHorizontal className="w-5 h-5" />
                 {activeFilterCount > 0 && (
                   <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold bg-pink-600 text-white rounded-full px-1">
                     {activeFilterCount}
@@ -427,7 +467,6 @@ export default function HomePage() {
               <span className="hidden sm:inline">
                 {showFilters ? tFilter('hideFilters') : tFilter('showFilters')}
               </span>
-              {showFilters ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
 
             {/* 訂閱按鈕 */}
@@ -437,7 +476,7 @@ export default function HomePage() {
                 className="px-4 py-2.5 rounded-xl border transition-all flex items-center gap-2 bg-indigo-500/10 dark:bg-indigo-500/20 border-indigo-300 dark:border-indigo-500/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/20"
                 title={t('subscribeToEvent', { defaultValue: '訂閱活動通知' })}
               >
-                <Bell className="w-5 h-5" />
+                {/* Bell missing, removing icon or using another */}
                 <span className="hidden sm:inline">
                   {t('subscribeToEvent', { defaultValue: '訂閱' })}
                 </span>
@@ -452,60 +491,56 @@ export default function HomePage() {
                 {/* 活動篩選 */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('event')}</label>
-                  <select
+                  <Select
                     value={selectedEvent}
-                    onChange={(e) => setSelectedEvent(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
-                  >
-                    <option value="">{tFilter('allEvents')}</option>
-                    {allEventNames.map((name) => (
-                      <option key={name} value={name}>{name}</option>
-                    ))}
-                  </select>
+                    onChange={(value) => setSelectedEvent(value)}
+                    options={[
+                      { value: '', label: tFilter('allEvents') },
+                      ...allEventNames.map(name => ({ value: name, label: name }))
+                    ]}
+                  />
                 </div>
 
                 {/* 日期範圍 */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('dateRange')}</label>
-                  <select
+                  <Select
                     value={dateFilter}
-                    onChange={(e) => setDateFilter(e.target.value as DateFilter)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
-                  >
-                    <option value="all">{tFilter('all')}</option>
-                    <option value="week">{tFilter('thisWeek')}</option>
-                    <option value="month">{tFilter('thisMonth')}</option>
-                    <option value="3months">{tFilter('next3Months')}</option>
-                  </select>
+                    onChange={(value) => setDateFilter(value as DateFilter)}
+                    options={[
+                      { value: 'all', label: tFilter('all') },
+                      { value: 'week', label: tFilter('thisWeek') },
+                      { value: 'month', label: tFilter('thisMonth') },
+                      { value: '3months', label: tFilter('next3Months') },
+                    ]}
+                  />
                 </div>
 
                 {/* 票券類型 */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('ticketType')}</label>
-                  <select
+                  <Select
                     value={selectedTicketType}
-                    onChange={(e) => setSelectedTicketType(e.target.value as TicketType | '')}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
-                  >
-                    <option value="">{tFilter('allTypes')}</option>
-                    {ticketTypes.map((type) => (
-                      <option key={type} value={type}>{tCreate(`ticketTypes.${type}`)}</option>
-                    ))}
-                  </select>
+                    onChange={(value) => setSelectedTicketType(value as TicketType | '')}
+                    options={[
+                      { value: '', label: tFilter('allTypes') },
+                      ...ticketTypes.map(type => ({ value: type, label: tCreate(`ticketTypes.${type}`) }))
+                    ]}
+                  />
                 </div>
 
                 {/* 票源 */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('ticketSource', { defaultValue: '票源' })}</label>
-                  <select
+                  <Select
                     value={selectedTicketSource}
-                    onChange={(e) => setSelectedTicketSource(e.target.value as TicketSource | '')}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
-                  >
-                    <option value="">{tFilter('allSources', { defaultValue: '全部票源' })}</option>
-                    <option value="zaiko">{TICKET_SOURCE_INFO.zaiko.label}</option>
-                    <option value="lawson">{TICKET_SOURCE_INFO.lawson.label}</option>
-                  </select>
+                    onChange={(value) => setSelectedTicketSource(value as TicketSource | '')}
+                    options={[
+                      { value: '', label: tFilter('allSources', { defaultValue: '全部票源' }) },
+                      { value: 'zaiko', label: TICKET_SOURCE_INFO.zaiko.label },
+                      { value: 'lawson', label: TICKET_SOURCE_INFO.lawson.label },
+                    ]}
+                  />
                 </div>
 
                 {/* 價格範圍 */}
@@ -535,19 +570,18 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* 排序 */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('sortBy')}</label>
-                  <select
+                  <Select
                     value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as SortOption)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
-                  >
-                    <option value="date">{tFilter('byDate')}</option>
-                    <option value="price_asc">{tFilter('priceLowHigh')}</option>
-                    <option value="price_desc">{tFilter('priceHighLow')}</option>
-                    <option value="newest">{tFilter('newest')}</option>
-                  </select>
+                    onChange={(value) => setSortBy(value as SortOption)}
+                    options={[
+                      { value: 'eventDate', label: tFilter('byDate') },
+                      { value: 'priceLowToHigh', label: tFilter('priceLowHigh') },
+                      { value: 'priceHighToLow', label: tFilter('priceHighLow') },
+                      { value: 'newest', label: tFilter('newest') },
+                    ]}
+                  />
                 </div>
 
                 {/* 主辦人名稱 */}
@@ -581,16 +615,14 @@ export default function HomePage() {
                 {/* 國籍 */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('nationality')}</label>
-                  <select
+                  <Select
                     value={selectedNationality}
-                    onChange={(e) => setSelectedNationality(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
-                  >
-                    <option value="">{tFilter('allNationalities')}</option>
-                    {NATIONALITY_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                  </select>
+                    onChange={(value) => setSelectedNationality(value)}
+                    options={[
+                      { value: '', label: tFilter('allNationalities', { defaultValue: '不限國籍' }) },
+                      ...NATIONALITY_OPTIONS.map(opt => ({ value: opt.value, label: tOptions(opt.label) }))
+                    ]}
+                  />
                 </div>
 
                 {/* 其他選項 (Checkboxes) */}
@@ -651,12 +683,44 @@ export default function HomePage() {
             </div>
           )}
 
+          {/* 讓票 / 求票切換 (Segmented Control) */}
+          <div className="mt-4 mb-2 flex justify-center lg:justify-start">
+            <div className="relative flex items-center p-1 bg-gray-100/80 dark:bg-gray-800/80 backdrop-blur-md rounded-xl border border-gray-200/50 dark:border-white/10 shadow-inner">
+              <button
+                onClick={() => setActiveDisplayArea('listings')}
+                className={`relative z-10 flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 ${activeDisplayArea === 'listings'
+                  ? 'text-white'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                  }`}
+              >
+                <LayoutGrid className="w-4 h-4" />
+                {t('viewListings', { defaultValue: '看讓票' })}
+              </button>
+              <button
+                onClick={() => setActiveDisplayArea('requests')}
+                className={`relative z-10 flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 ${activeDisplayArea === 'requests'
+                  ? 'text-white'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                  }`}
+              >
+                <HandHeart className="w-4 h-4" />
+                {t('viewRequests', { defaultValue: '看求票' })}
+              </button>
+
+              {/* 滑動背景 */}
+              <div
+                className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg shadow-md transition-all duration-300 ease-in-out ${activeDisplayArea === 'listings' ? 'left-1' : 'left-[calc(50%+2px)]'
+                  }`}
+              />
+            </div>
+          </div>
+
           {/* 結果數量 + 切換按鈕 */}
           <div className="mt-3 flex items-center justify-between">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {tFilter('foundResults', { count: filteredListings.length })}
+              {tFilter('foundResults', { count: activeDisplayArea === 'listings' ? filteredListings.length : filteredRequests.length })}
             </p>
-            {/* PC限定切換按鈕 */}
+            {/* PC限定切換按鈕 (列表/卡片) */}
             <div className="hidden lg:flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
               <button
                 onClick={() => setViewMode('card')}
@@ -679,13 +743,8 @@ export default function HomePage() {
 
       <div className="flex-1 px-4 lg:px-6 py-6">
         <div className="w-full">
-          {isLoadingListings ? (
-            <div className="space-y-4 lg:grid lg:gap-4 lg:space-y-0 lg:[grid-template-columns:repeat(auto-fill,280px)]">
-              {[...Array(8)].map((_, i) => (
-                <ListingCardSkeleton key={i} />
-              ))}
-            </div>
-          ) : filteredListings.length > 0 ? (
+          {/* ======================= 讓票 (Listings) ======================= */}
+          {activeDisplayArea === 'listings' && (
             <>
               {/* 手機版：緊湊列表視圖 */}
               <div className="lg:hidden space-y-2">
@@ -701,7 +760,7 @@ export default function HomePage() {
 
               {/* PC版：卡片網格視圖 */}
               <div
-                className={`hidden lg:grid lg:gap-4 lg:[grid-template-columns:repeat(auto-fill,280px)] ${viewMode === 'list' ? 'lg:hidden' : ''}`}
+                className={`hidden lg:grid lg:gap-4 lg:[grid-template-columns:repeat(auto-fill,minmax(280px,1fr))] ${viewMode === 'list' ? 'lg:hidden' : ''}`}
               >
                 {filteredListings.map((listing, index) => (
                   <ListingCard
@@ -714,152 +773,118 @@ export default function HomePage() {
               </div>
 
               {/* PC版：列表視圖 */}
-              {viewMode === 'list' && (
-                <div className="hidden lg:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                  <div className="flex flex-col">
-                    {filteredListings.map((listing) => (
-                      <ListingListItem
-                        key={listing.id}
-                        listing={listing}
-                        host={listing.host}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-              {/* 無限滾動觸發器 */}
-              <div ref={loadMoreRef} className="py-4">
-                {isFetchingNextPage ? (
-                  <div className="flex justify-center items-center gap-2 text-gray-400 dark:text-gray-500">
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    <span className="text-sm">{t('loadingMore', { defaultValue: '載入更多...' })}</span>
-                  </div>
-                ) : !hasMoreListings && filteredListings.length > ITEMS_PER_PAGE ? (
-                  <p className="text-center text-sm text-gray-400 dark:text-gray-500">
-                    {t('noMoreListings', { defaultValue: '已顯示全部刊登' })}
-                  </p>
-                ) : null}
+              <div className={`hidden ${viewMode === 'list' ? 'lg:flex lg:flex-col lg:gap-3' : 'hidden'}`}>
+                {filteredListings.map((listing) => (
+                  <ListingListItem
+                    key={listing.id}
+                    listing={listing}
+                    host={listing.host}
+                  />
+                ))}
               </div>
             </>
-          ) : (
-            <div className="text-center py-12">
-              <Search className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">{hasActiveFilters ? tFilter('noResults') : t('noListings')}</p>
-              {hasActiveFilters ? (
-                <button
-                  onClick={clearFilters}
-                  className="text-indigo-500 dark:text-indigo-400 font-medium mt-2"
-                >
-                  {tFilter('clearFilters')}
-                </button>
+          )}
+
+          {/* ======================= 求票 (Requests) ======================= */}
+          {activeDisplayArea === 'requests' && (
+            <>
+              {isLoadingRequests ? (
+                <div className="space-y-4 lg:grid lg:gap-4 lg:space-y-0 lg:[grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="animate-pulse bg-gray-100 dark:bg-gray-800 h-48 rounded-2xl"></div>
+                  ))}
+                </div>
+              ) : filteredRequests.length > 0 ? (
+                <div className="grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]">
+                  {filteredRequests.map((request, index) => (
+                    <RequestCard
+                      key={request.id}
+                      request={request}
+                      isFirstCard={index === 0}
+                    />
+                  ))}
+                </div>
               ) : (
-                <Link
-                  href="/create"
-                  className="text-indigo-500 dark:text-indigo-400 font-medium hover:text-indigo-600 dark:hover:text-indigo-300 mt-2 inline-block"
-                >
-                  {t('createFirst')}
-                </Link>
+                <div className="text-center py-20 bg-white/50 dark:bg-gray-800/30 backdrop-blur-sm rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-pink-50 dark:bg-pink-900/20 text-pink-500 dark:text-pink-400 mb-4 ring-8 ring-pink-50/50 dark:ring-pink-900/10">
+                    <SearchX className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{t('noRequests', { defaultValue: '目前沒有求票' })}</h3>
+                  <p className="text-gray-500 dark:text-gray-400 max-w-[280px] mx-auto leading-relaxed">{t('tryAdjustingFilters')}</p>
+                </div>
               )}
-            </div>
+            </>
           )}
-
-          {/* 平台說明 */}
-          {!hasActiveFilters && filteredListings.length > 0 && (
-            <section className="bg-indigo-50 dark:bg-indigo-900/30 rounded-xl p-4 lg:p-6 mt-8">
-              <h3 className="font-semibold text-indigo-900 dark:text-indigo-200 mb-2">{t('whatIs')}</h3>
-              <ul className="text-sm text-indigo-700 dark:text-indigo-300 space-y-2 lg:flex lg:gap-8 lg:space-y-0">
-                <li className="flex items-start gap-2">
-                  <span className="text-indigo-400">•</span>
-                  <span>{t('feature1')}</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-indigo-400">•</span>
-                  <span>{t('feature2')}</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-indigo-400">•</span>
-                  <span>{t('feature3')}</span>
-                </li>
-              </ul>
-            </section>
+          {/* 載入更多觸發點 (僅讓票模式有效) */}
+          {activeDisplayArea === 'listings' && (
+            <div ref={loadMoreRef} className="py-4">
+              {isFetchingNextPage ? (
+                <div className="flex justify-center items-center gap-2 text-gray-400 dark:text-gray-500">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span className="text-sm">{t('loadingMore', { defaultValue: '載入更多...' })}</span>
+                </div>
+              ) : !hasMoreListings && filteredListings.length > ITEMS_PER_PAGE ? (
+                <p className="text-center text-sm text-gray-400 dark:text-gray-500">
+                  {t('noMoreListings', { defaultValue: '已顯示全部刊登' })}
+                </p>
+              ) : null}
+            </div>
           )}
         </div>
-      </div>
-
-      {/* Footer with Privacy Policy */}
-      <footer className="bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-6 mt-auto">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
-            <div className="flex items-center gap-2">
-              <Ticket className="w-5 h-5 text-indigo-500" />
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-200">TicketTicket</span>
+        {/* Footer with Privacy Policy */}
+        <footer className="bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-6 mt-auto">
+          <div className="max-w-7xl mx-auto text-center">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
+              <div className="flex items-center gap-2">
+                <Ticket className="w-5 h-5 text-indigo-500" />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">TicketTicket</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                <Link href="/legal/terms" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                  {tTerms('title')}
+                </Link>
+                <span className="text-gray-300 dark:text-gray-600">|</span>
+                <Link href="/legal/privacy" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                  {tPrivacy('title')}
+                </Link>
+                <span className="text-gray-300 dark:text-gray-600">|</span>
+                <Link href="/legal/tokushoho" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                  {tTokushoho('title')}
+                </Link>
+                <span className="text-gray-300 dark:text-gray-600">|</span>
+                <Link href="/legal/ticket-regulations" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                  {tLegal('ticketRegulations')}
+                </Link>
+              </div>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-              <Link href="/legal/terms" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                {tTerms('title')}
-              </Link>
-              <span className="text-gray-300 dark:text-gray-600">|</span>
-              <Link href="/legal/privacy" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                {tPrivacy('title')}
-              </Link>
-              <span className="text-gray-300 dark:text-gray-600">|</span>
-              <Link href="/legal/tokushoho" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                {tTokushoho('title')}
-              </Link>
-              <span className="text-gray-300 dark:text-gray-600">|</span>
-              <Link href="/legal/ticket-regulations" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                {tLegal('ticketRegulations')}
-              </Link>
-            </div>
+            <p className="text-xs text-gray-400 dark:text-gray-500">
+              {tTokushoho('subtitle')}
+            </p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+              © 2025 TicketTicket. All rights reserved.
+            </p>
           </div>
-          <p className="text-xs text-gray-400 dark:text-gray-500">
-            {tTokushoho('subtitle')}
-          </p>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-            © 2025 TicketTicket. All rights reserved.
-          </p>
-        </div>
-      </footer>
+        </footer>
 
-      {/* 登入提示彈窗 */}
-      {showLoginPrompt && (
-        <LoginPromptModal
-          onClose={() => {
-            setShowLoginPrompt(false);
-            localStorage.setItem('hasSeenLoginPrompt', 'true');
-          }}
-        />
-      )}
+        {/* 登入提示彈窗 */}
+        {showLoginPrompt && (
+          <LoginPromptModal
+            onClose={() => {
+              setShowLoginPrompt(false);
+              localStorage.setItem('hasSeenLoginPrompt', 'true');
+            }}
+          />
+        )}
 
-      {/* 新手教學覆蓋層 */}
-      {showTutorial && (
-        <TutorialOverlay
-          hasListings={filteredListings.length > 0}
-          onComplete={() => setShowTutorial(false)}
-        />
-      )}
+        {/* 新手教學覆蓋層 */}
+        {showTutorial && (
+          <TutorialOverlay
+            hasListings={filteredListings.length > 0}
+            onComplete={() => setShowTutorial(false)}
+          />
+        )}
 
-      {/* 訂閱彈窗（首頁版本，需選擇活動） */}
-      <SubscriptionModal
-        isOpen={showSubscriptionModal}
-        onClose={() => setShowSubscriptionModal(false)}
-        showEventSelector={true}
-        events={events
-          .filter(e => {
-            if (!e.isActive) return false;
-            // 過濾掉已過期活動 (結束日期早於今天凌晨)
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const endDate = e.eventEndDate || e.eventDate;
-            return endDate >= today;
-          })
-          .map(e => ({
-            id: e.id,
-            name: e.name,
-            ticketPriceTiers: e.ticketPriceTiers,
-          }))}
-        onSuccess={() => setShowSubscriptionModal(false)}
-      />
+      </div>
     </main>
   );
 }

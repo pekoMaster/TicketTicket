@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { Listing, Application, Review } from '@/types';
+import { Listing, Application, Review, TicketRequest, TicketType } from '@/types';
 
 // API 回傳的用戶類型
 interface ApiUser {
@@ -103,6 +103,52 @@ function convertApiListingToListing(apiListing: ApiListing): Listing {
   };
 }
 
+// API 回傳的求票類型
+interface ApiTicketRequest {
+  id: string;
+  user_id: string;
+  event_id?: string;
+  event_name: string;
+  accepted_types: TicketType[];
+  seat_grades: string[];
+  quantity: number;
+  description?: string;
+  status: 'open' | 'matched' | 'closed';
+  created_at: string;
+  updated_at: string;
+  user?: ApiUser;
+}
+
+// 轉換 API 資料為前端格式
+function convertApiTicketRequestToTicketRequest(apiRequest: ApiTicketRequest): TicketRequest {
+  return {
+    id: apiRequest.id,
+    userId: apiRequest.user_id,
+    eventId: apiRequest.event_id,
+    eventName: apiRequest.event_name,
+    acceptedTypes: apiRequest.accepted_types,
+    seatGrades: apiRequest.seat_grades,
+    quantity: apiRequest.quantity,
+    description: apiRequest.description || '',
+    status: apiRequest.status,
+    createdAt: new Date(apiRequest.created_at),
+    updatedAt: new Date(apiRequest.updated_at),
+    user: apiRequest.user ? {
+      id: apiRequest.user.id,
+      email: '',
+      username: apiRequest.user.username,
+      role: 'user' as const,
+      verificationLevel: 'applicant' as const,
+      avatarUrl: apiRequest.user.avatar_url || '',
+      customAvatarUrl: apiRequest.user.custom_avatar_url,
+      rating: apiRequest.user.rating,
+      reviewCount: apiRequest.user.review_count,
+      isVerified: apiRequest.user.is_verified || false,
+      createdAt: new Date(),
+    } : undefined,
+  };
+}
+
 interface AppContextType {
   // 刊登
   listings: Listing[];
@@ -114,6 +160,11 @@ interface AppContextType {
   addListing: (listingData: CreateListingData) => Promise<Listing | null>;
   updateListing: (id: string, updates: Partial<Listing>) => Promise<boolean>;
   deleteListing: (id: string) => Promise<boolean>;
+
+  // 求票
+  requests: TicketRequest[];
+  isLoadingRequests: boolean;
+  fetchRequests: (reset?: boolean) => Promise<void>;
 
   // 申請
   applications: Application[];
@@ -167,6 +218,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [applications, setApplications] = useState<Application[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [hasAgreedToDisclaimer, setHasAgreedToDisclaimerState] = useState(false);
+
+  // 求票狀態
+  const [requests, setRequests] = useState<TicketRequest[]>([]);
+  const [isLoadingRequests, setIsLoadingRequests] = useState(false);
+  const isFetchingRequestsRef = React.useRef(false);
 
   // 獲取刊登列表 (初始化或重置)
   const fetchListings = useCallback(async (reset: boolean = true) => {
@@ -231,6 +287,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // 獲取求票列表
+  const fetchRequests = useCallback(async (reset: boolean = true) => {
+    if (isFetchingRequestsRef.current) return;
+    isFetchingRequestsRef.current = true;
+
+    if (reset) {
+      setIsLoadingRequests(true);
+    }
+
+    try {
+      // 求票通常較少，我們可先一次性取得最新 open 的資料
+      const response = await fetch(`/api/requests?status=open`);
+      if (response.ok) {
+        const result = await response.json();
+        if (result.requests && Array.isArray(result.requests)) {
+          const convertedRequests = result.requests.map(convertApiTicketRequestToTicketRequest);
+          setRequests(convertedRequests);
+        }
+      } else {
+        console.error('Failed to fetch requests');
+      }
+    } catch (error) {
+      console.error('Error fetching requests:', error);
+    } finally {
+      setIsLoadingRequests(false);
+      isFetchingRequestsRef.current = false;
+    }
+  }, []);
+
   // 載入更多刊登
   const loadMoreListings = useCallback(async () => {
     if (!hasMoreListings || isLoadingListings || isFetchingNextPage || isFetchingRef.current) return;
@@ -243,9 +328,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const agreed = localStorage.getItem('disclaimerAgreed') === 'true';
     setHasAgreedToDisclaimerState(agreed);
 
-    // 載入刊登資料
+    // 載入刊登資料與求票資料
     fetchListings();
-  }, [fetchListings]);
+    fetchRequests();
+  }, [fetchListings, fetchRequests]);
 
   // 設定免責聲明同意狀態
   const setHasAgreedToDisclaimer = (agreed: boolean) => {
@@ -356,6 +442,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         addListing,
         updateListing,
         deleteListing,
+        requests,
+        isLoadingRequests,
+        fetchRequests,
         applications,
         addApplication,
         updateApplication,

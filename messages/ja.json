@@ -88,7 +88,9 @@
     "successfulMeetups": "マッチング成立",
     "viewAll": "すべて見る",
     "subscribeToEvent": "通知を購読",
-    "noListings": "現在募集中の同行機会はありません",
+    "noListings": "現在条件に合う同行募集はありません",
+    "noRequests": "現在条件に合うチケット求むはありません",
+    "tryAdjustingFilters": "フィルター条件を変更するか、再検索をお試しください",
     "loadingMore": "読み込み中...",
     "noMoreListings": "全て表示しました",
     "createFirst": "最初の募集を作成する",
@@ -96,7 +98,7 @@
     "feature1": "コンサートチケット保有者のための同行マッチングプラットフォーム",
     "feature2": "チケット転売ではなく、一緒に入場する仲間を探す",
     "feature3": "安全なマッチング、現地で会う、安心",
-    "cardView": "カード表示",
+    "cardView": "カード表示 (おすすめ)",
     "listView": "リスト表示",
     "event": "イベント",
     "date": "日付",
@@ -105,7 +107,9 @@
     "ticketType": "チケット種別",
     "price": "価格",
     "host": "主催者",
-    "nationality": "国籍"
+    "nationality": "国籍",
+    "viewListings": "同行募集を探す",
+    "viewRequests": "チケット求むを見る"
   },
   "filter": {
     "searchPlaceholder": "イベント、会場、キーワードを検索...",
@@ -829,7 +833,12 @@
     "title": "テーマ",
     "light": "ライトモード",
     "dark": "ダークモード",
-    "system": "システム設定"
+    "system": "システムに従う"
+  },
+  "Options": {
+    "taiwanese": "台湾人",
+    "japanese": "日本人",
+    "other": "その他"
   },
   "legal": {
     "terms": "利用規約",
@@ -1198,11 +1207,21 @@
     "optional": "（任意、未選択=すべて）",
     "maxPrice": "価格上限",
     "zeroPriceNote": "（0 = 制限なし）",
-    "ticketTypes": "チケット種別",
+    "ticketTypeLabel": "チケット種別",
     "findCompanion": "同行者募集",
     "subTicketTransfer": "子チケット譲渡",
     "ticketExchange": "チケット交換",
     "notificationMethod": "通知方法",
+    "ticketTypes": {
+      "find_companion": "同行者募集（連番チケットあり）",
+      "sub_ticket_transfer": "同行チケット譲渡",
+      "ticket_exchange": "チケット交換"
+    },
+    "acceptedTypes": {
+      "find_companion": "同行可",
+      "sub_ticket_transfer": "チケット譲渡可",
+      "any": "どちらでも可"
+    },
     "available": "利用可能",
     "linkRequired": "連携が必要",
     "comingSoon": "近日公開",
