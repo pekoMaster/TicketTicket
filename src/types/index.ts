@@ -333,6 +333,7 @@ export interface HololiveEvent {
   category: EventCategory;
   isActive: boolean;               // 是否啟用顯示
   maxListingsPerUser: number;      // 每帳號最多可創建刊登數量
+  maxRequestsPerUser: number;      // 每帳號每活動最多可求票數量
   createdAt: Date;
   updatedAt: Date;
 }
@@ -660,3 +661,63 @@ export interface ForumLike {
   replyId?: string;
   createdAt: Date;
 }
+
+// ==================== 求票功能 (Ticket Requests) ====================
+
+// 求票狀態
+export type TicketRequestStatus = 'open' | 'matched' | 'closed';
+
+// 可接受的票券類型（用於求票）
+export type AcceptedTicketType = 'find_companion' | 'sub_ticket_transfer';
+
+// 求票
+export interface TicketRequest {
+  id: string;
+  userId: string;
+  eventId?: string;
+  eventName: string;
+  acceptedTypes: AcceptedTicketType[];  // 可接受: 同行 / 子票轉讓
+  seatGrades: string[];                // 想要的座位等級 (複選)
+  quantity: number;                    // 張數 (1~上限)
+  description?: string;                // 備註說明
+  status: TicketRequestStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  // 關聯資料
+  user?: User;
+  event?: HololiveEvent;
+}
+
+// 求票申請狀態
+export type RequestApplicationStatus = 'pending' | 'accepted' | 'rejected' | 'cancelled';
+
+// 求票申請（別人回應求票）
+export interface RequestApplication {
+  id: string;
+  requestId: string;
+  applicantId: string;
+  message?: string;
+  status: RequestApplicationStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  // 關聯資料
+  applicant?: User;
+}
+
+// 求票可接受類型資訊
+export const ACCEPTED_TICKET_TYPE_INFO: Record<AcceptedTicketType, {
+  label: string;
+  description: string;
+  color: string;
+}> = {
+  find_companion: {
+    label: '接受同行',
+    description: '願意與有票的人一起入場',
+    color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+  },
+  sub_ticket_transfer: {
+    label: '接受讓票',
+    description: '願意接收他人轉讓的子票',
+    color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+  },
+};

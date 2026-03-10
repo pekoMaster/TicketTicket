@@ -44,6 +44,7 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
     category: initialData?.category || 'concert',
     isActive: initialData?.isActive ?? true,
     maxListingsPerUser: initialData?.maxListingsPerUser || 2,
+    maxRequestsPerUser: initialData?.maxRequestsPerUser || 2,
     discordWebhookUrl: (initialData as { discordWebhookUrl?: string })?.discordWebhookUrl || '',
   });
 
@@ -146,6 +147,7 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
         category: formData.category as EventCategory,
         isActive: formData.isActive,
         maxListingsPerUser: formData.maxListingsPerUser,
+        maxRequestsPerUser: formData.maxRequestsPerUser,
         discordWebhookUrl: formData.discordWebhookUrl.trim() || undefined,
       } as Omit<HololiveEvent, 'id' | 'createdAt' | 'updatedAt'> & { discordWebhookUrl?: string });
     } finally {
@@ -482,6 +484,28 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
             </div>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               限制每個用戶在此活動可發布的票券數量（單日活動建議 1-2，多日活動可設更高）
+            </p>
+          </div>
+
+          {/* 每帳號求票上限 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+              每帳號求票上限
+            </label>
+            <div className="flex items-center gap-3">
+              <input
+                type="number"
+                name="maxRequestsPerUser"
+                value={formData.maxRequestsPerUser}
+                onChange={handleChange}
+                min={1}
+                max={10}
+                className="w-24 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              />
+              <span className="text-sm text-gray-500 dark:text-gray-400">張/帳號</span>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              限制每個用戶在此活動可提交的求票數量
             </p>
           </div>
 

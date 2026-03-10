@@ -78,6 +78,7 @@ export async function POST(request: NextRequest) {
         category: body.category || 'concert',
         is_active: body.isActive !== false,
         max_listings_per_user: body.maxListingsPerUser || 2,
+        max_requests_per_user: body.maxRequestsPerUser || 2,
         discord_webhook_url: body.discordWebhookUrl || null,
       })
       .select()

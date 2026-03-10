@@ -22,6 +22,7 @@ interface ApiEvent {
   category: 'concert' | 'fan_meeting' | 'expo' | 'streaming' | 'other';
   is_active: boolean;
   max_listings_per_user: number;
+  max_requests_per_user: number;
   discord_webhook_url?: string;
   created_at: string;
   updated_at: string;
@@ -47,6 +48,7 @@ function convertApiEventToEvent(apiEvent: ApiEvent): HololiveEvent {
     category: apiEvent.category,
     isActive: apiEvent.is_active,
     maxListingsPerUser: apiEvent.max_listings_per_user || 2,
+    maxRequestsPerUser: apiEvent.max_requests_per_user || 2,
     discordWebhookUrl: apiEvent.discord_webhook_url,
     createdAt: new Date(apiEvent.created_at),
     updatedAt: new Date(apiEvent.updated_at),
@@ -143,6 +145,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
           category: eventData.category,
           isActive: eventData.isActive,
           maxListingsPerUser: eventData.maxListingsPerUser || 2,
+          maxRequestsPerUser: eventData.maxRequestsPerUser || 2,
           discordWebhookUrl: (eventData as { discordWebhookUrl?: string }).discordWebhookUrl,
         }),
       });
@@ -195,6 +198,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       if (updates.category !== undefined) payload.category = updates.category;
       if (updates.isActive !== undefined) payload.isActive = updates.isActive;
       if (updates.maxListingsPerUser !== undefined) payload.maxListingsPerUser = updates.maxListingsPerUser;
+      if (updates.maxRequestsPerUser !== undefined) payload.maxRequestsPerUser = updates.maxRequestsPerUser;
       if (updates.discordWebhookUrl !== undefined) payload.discordWebhookUrl = updates.discordWebhookUrl;
 
       const response = await fetch(`/api/events/${id}`, {

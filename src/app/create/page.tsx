@@ -43,6 +43,8 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
+  HandHelping,
+  Search,
 } from 'lucide-react';
 import Link from 'next/link';
 import { VerificationLevel } from '@/types';
@@ -69,6 +71,9 @@ export default function CreateListingPage() {
   const { events } = useAdmin();
   const t = useTranslations('create');
   const tCommon = useTranslations('common');
+
+  // 模式選擇: null = 選擇中, 'listing' = 刊登票券, 'request' = 求票
+  const [mode, setMode] = useState<'listing' | null>(null);
 
   // 步驟狀態
   const [currentStep, setCurrentStep] = useState(1);
@@ -454,6 +459,74 @@ export default function CreateListingPage() {
             </Link>
           </Card>
         </main>
+      </div>
+    );
+  }
+
+  // 模式選擇畫面
+  if (mode === null) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 relative">
+        <AuroraBackground />
+        <Header title={t('title')} showBack />
+        <div className="relative z-10 pt-20 pb-24 px-4">
+          <div className="max-w-lg mx-auto space-y-6">
+            <div className="text-center mb-8">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                {t('chooseMode', { defaultValue: '您想做什麼？' })}
+              </h1>
+              <p className="text-gray-500 dark:text-gray-400">
+                {t('chooseModeDesc', { defaultValue: '選擇您要讓票還是求票' })}
+              </p>
+            </div>
+
+            {/* 我有票 */}
+            <button
+              onClick={() => setMode('listing')}
+              className="w-full group"
+            >
+              <Card variant="glass" className="p-6 text-left transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1 border-2 border-transparent hover:border-indigo-500/30">
+                <div className="flex items-start gap-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform">
+                    <HandHelping className="w-7 h-7 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">
+                      🎫 {t('modeHaveTicket', { defaultValue: '我有票' })}
+                    </h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {t('modeHaveTicketDesc', { defaultValue: '找同行夥伴、轉讓子票、交換票券' })}
+                    </p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-indigo-500 transition-colors mt-2" />
+                </div>
+              </Card>
+            </button>
+
+            {/* 我想要票 */}
+            <button
+              onClick={() => router.push('/request')}
+              className="w-full group"
+            >
+              <Card variant="glass" className="p-6 text-left transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-1 border-2 border-transparent hover:border-emerald-500/30">
+                <div className="flex items-start gap-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform">
+                    <Search className="w-7 h-7 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">
+                      🙋 {t('modeWantTicket', { defaultValue: '我想要票' })}
+                    </h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {t('modeWantTicketDesc', { defaultValue: '求同行、求讓票，讓有票的人找到你' })}
+                    </p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-colors mt-2" />
+                </div>
+              </Card>
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
