@@ -20,7 +20,7 @@ import Avatar from '@/components/ui/Avatar';
 import StarRating from '@/components/ui/StarRating';
 import SafetyBanner from '@/components/ui/SafetyBanner';
 import AgreementModal from '@/components/ui/AgreementModal';
-import { TicketType, Listing, LANGUAGE_OPTIONS } from '@/types';
+import { TicketType, Listing, LANGUAGE_OPTIONS, NATIONALITY_OPTIONS } from '@/types';
 import {
   Calendar,
   MapPin,
@@ -627,7 +627,7 @@ export default function ListingDetailPage() {
                     {listing.hostNationality && (
                       <span className="inline-flex items-center gap-1">
                         <Globe className="w-3.5 h-3.5" />
-                        {listing.hostNationality}
+                        {NATIONALITY_OPTIONS.find(n => n.value === listing.hostNationality)?.label || listing.hostNationality}
                       </span>
                     )}
                     {listing.hostLanguages && listing.hostLanguages.length > 0 && (

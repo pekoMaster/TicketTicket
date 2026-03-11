@@ -7,7 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Eye, Users, Armchair, Clock, Calendar, Check } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
 import UserProfileModal from '@/components/ui/UserProfileModal';
-import { Listing, User, LANGUAGE_OPTIONS, TICKET_COUNT_TYPE_INFO, TICKET_SOURCE_INFO } from '@/types';
+import { Listing, User, LANGUAGE_OPTIONS, NATIONALITY_OPTIONS, TICKET_COUNT_TYPE_INFO, TICKET_SOURCE_INFO } from '@/types';
 
 interface ListingCardProps {
   listing: Listing;
@@ -39,6 +39,12 @@ export default function ListingCard({ listing, host, isFirstCard }: ListingCardP
   const getLanguageLabel = (code: string) => {
     const lang = LANGUAGE_OPTIONS.find(l => l.value === code);
     return lang?.label || code;
+  };
+
+  // 取得國籍顯示名稱
+  const getNationalityLabel = (code: string) => {
+    const nat = NATIONALITY_OPTIONS.find(n => n.value === code);
+    return nat?.label || code;
   };
 
   // 語言排序順序
@@ -197,7 +203,7 @@ export default function ListingCard({ listing, host, isFirstCard }: ListingCardP
             {/* Nationality flag */}
             {listing.hostNationality && (
               <span className="bg-pink-100 dark:bg-pink-500/20 px-2 py-1 rounded-lg text-pink-600 dark:text-pink-300 font-medium">
-                {getLanguageLabel(listing.hostNationality)}
+                {getNationalityLabel(listing.hostNationality)}
               </span>
             )}
             {/* Date */}
