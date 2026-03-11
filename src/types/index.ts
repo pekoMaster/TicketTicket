@@ -680,6 +680,9 @@ export interface TicketRequest {
   seatGrades: string[];                // 想要的座位等級 (複選)
   quantity: number;                    // 張數 (1~上限)
   description?: string;                // 備註說明
+  ticketSource?: TicketSource;         // 期望的票源 (zaiko, lawson 等)
+  requesterNationality?: string;       // 求票者國籍
+  requesterLanguages?: string[];       // 求票者使用語言
   status: TicketRequestStatus;
   createdAt: Date;
   updatedAt: Date;

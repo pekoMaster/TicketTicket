@@ -338,6 +338,24 @@ export default function HomePage() {
       result = result.filter((r) => r.user?.username.toLowerCase().includes(query));
     }
 
+    // 票源篩選
+    if (selectedTicketSource) {
+      result = result.filter((r) => r.ticketSource === selectedTicketSource);
+    }
+
+    // 國籍篩選
+    if (selectedNationality) {
+      result = result.filter((r) => r.requesterNationality === selectedNationality);
+    }
+
+    // 語言篩選
+    if (selectedLanguages.length > 0) {
+      result = result.filter((r) =>
+        r.requesterLanguages &&
+        selectedLanguages.some((lang) => r.requesterLanguages?.includes(lang))
+      );
+    }
+
     // 評分篩選
     if (minRating) {
       const rating = parseInt(minRating);
@@ -576,21 +594,19 @@ export default function HomePage() {
                   />
                 </div>
 
-                {/* 票源 - 僅限讓票區 */}
-                {activeDisplayArea === 'listings' && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('ticketSource', { defaultValue: '票源' })}</label>
-                    <Select
-                      value={selectedTicketSource}
-                      onChange={(value) => setSelectedTicketSource(value as TicketSource | '')}
-                      options={[
-                        { value: '', label: tFilter('allSources', { defaultValue: '全部票源' }) },
-                        { value: 'zaiko', label: TICKET_SOURCE_INFO.zaiko.label },
-                        { value: 'lawson', label: TICKET_SOURCE_INFO.lawson.label },
-                      ]}
-                    />
-                  </div>
-                )}
+                {/* 票源 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('ticketSource', { defaultValue: '票源' })}</label>
+                  <Select
+                    value={selectedTicketSource}
+                    onChange={(value) => setSelectedTicketSource(value as TicketSource | '')}
+                    options={[
+                      { value: '', label: tFilter('allSources', { defaultValue: '全部票源' }) },
+                      { value: 'zaiko', label: TICKET_SOURCE_INFO.zaiko.label },
+                      { value: 'lawson', label: TICKET_SOURCE_INFO.lawson.label },
+                    ]}
+                  />
+                </div>
 
                 {/* 價格範圍 - 僅限讓票區 */}
                 {activeDisplayArea === 'listings' && (

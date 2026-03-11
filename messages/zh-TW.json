@@ -61,7 +61,15 @@
     "report": "檢舉",
     "deleteConfirmTitle": "確認刪除",
     "deleteConfirmMessage": "確定要刪除嗎？",
-    "confirmDelete": "確認刪除"
+    "confirmDelete": "確認刪除",
+    "preferences": "偏好設定",
+    "optional": "選填",
+    "ticketSource": "票源",
+    "anySource": "不限票源",
+    "nationality": "國籍",
+    "anyNationality": "不限國籍",
+    "nationalityHelp": "提供國籍有助於相同語言區的人與您聯繫。",
+    "languages": "可以使用的語言"
   },
   "nav": {
     "home": "首頁",

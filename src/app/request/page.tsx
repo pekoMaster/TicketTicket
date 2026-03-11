@@ -23,7 +23,16 @@ import {
     Phone,
 } from 'lucide-react';
 import Link from 'next/link';
-import { VerificationLevel, AcceptedTicketType, ACCEPTED_TICKET_TYPE_INFO, getSeatGradeColor } from '@/types';
+import { 
+    VerificationLevel, 
+    AcceptedTicketType, 
+    ACCEPTED_TICKET_TYPE_INFO, 
+    getSeatGradeColor,
+    TicketSource,
+    TICKET_SOURCE_INFO,
+    NATIONALITY_OPTIONS,
+    LANGUAGE_OPTIONS
+} from '@/types';
 
 export default function RequestTicketPage() {
     const router = useRouter();
@@ -38,6 +47,9 @@ export default function RequestTicketPage() {
     const [seatGrades, setSeatGrades] = useState<string[]>([]);
     const [quantity, setQuantity] = useState(1);
     const [description, setDescription] = useState('');
+    const [ticketSource, setTicketSource] = useState<TicketSource | ''>('');
+    const [requesterNationality, setRequesterNationality] = useState('');
+    const [requesterLanguages, setRequesterLanguages] = useState<string[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
 
@@ -60,6 +72,8 @@ export default function RequestTicketPage() {
                 if (response.ok) {
                     const data = await response.json();
                     setVerificationLevel(data.verification_level || 'unverified');
+                    if (data.nationality) setRequesterNationality(data.nationality);
+                    if (data.languages && Array.isArray(data.languages)) setRequesterLanguages(data.languages);
                 }
             } catch (error) {
                 console.error('Failed to check verification:', error);
@@ -182,6 +196,9 @@ export default function RequestTicketPage() {
                     seatGrades,
                     quantity,
                     description: description.trim() || undefined,
+                    ticketSource: ticketSource || undefined,
+                    requesterNationality: requesterNationality || undefined,
+                    requesterLanguages: requesterLanguages.length > 0 ? requesterLanguages : undefined,
                 }),
             });
 
@@ -403,6 +420,82 @@ export default function RequestTicketPage() {
                         </Card>
                     )}
 
+                    {/* 票源與國籍/語言 */}
+                    {eventName && acceptedTypes.length > 0 && seatGrades.length > 0 && (
+                        <Card variant="glass">
+                            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                                {tCommon('preferences', { defaultValue: '偏好設定' })} <span className="text-gray-400 text-sm font-normal">({tCommon('optional', { defaultValue: '選填' })})</span>
+                            </h3>
+                            <div className="space-y-5">
+                                {/* 票源 */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">
+                                        {tCommon('ticketSource', { defaultValue: '期望的票源' })}
+                                    </label>
+                                    <Select
+                                        value={ticketSource}
+                                        onChange={(val) => setTicketSource(val as TicketSource | '')}
+                                        options={[
+                                            { value: '', label: tCommon('anySource', { defaultValue: '不限票源' }) },
+                                            { value: 'zaiko', label: TICKET_SOURCE_INFO.zaiko.label },
+                                            { value: 'lawson', label: TICKET_SOURCE_INFO.lawson.label },
+                                        ]}
+                                    />
+                                </div>
+                                {/* 國籍 */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">
+                                        {tCommon('nationality', { defaultValue: '您的國籍' })}
+                                    </label>
+                                    <Select
+                                        value={requesterNationality}
+                                        onChange={setRequesterNationality}
+                                        options={[
+                                            { value: '', label: tCommon('anyNationality', { defaultValue: '不公開（或不設定）' }) },
+                                            ...NATIONALITY_OPTIONS.map(opt => ({ value: opt.value, label: tCommon(`nationalities.${opt.value}`, { defaultValue: opt.label }) }))
+                                        ]}
+                                    />
+                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                        {tCommon('nationalityHelp', { defaultValue: '提供國籍有助於相同語言區的人與您聯繫。' })}
+                                    </p>
+                                </div>
+                                {/* 語言 */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                                        {tCommon('languages', { defaultValue: '您可以使用的語言' })}
+                                    </label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {LANGUAGE_OPTIONS.map((lang) => {
+                                            const isSelected = requesterLanguages.includes(lang.value);
+                                            return (
+                                                <button
+                                                    key={lang.value}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setRequesterLanguages(prev => 
+                                                            prev.includes(lang.value) 
+                                                                ? prev.filter(l => l !== lang.value)
+                                                                : [...prev, lang.value]
+                                                        );
+                                                    }}
+                                                    className={`
+                                                        py-1.5 px-3 rounded-lg border-2 text-sm font-medium transition-all
+                                                        ${isSelected
+                                                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
+                                                            : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 text-gray-700 dark:text-gray-200'}
+                                                    `}
+                                                >
+                                                    {isSelected && <Check className="w-3 h-3 inline mr-1" />}
+                                                    {tCommon(`languagesList.${lang.value}`, { defaultValue: lang.label })}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                    )}
+
                     {/* 張數與備註 */}
                     {eventName && acceptedTypes.length > 0 && seatGrades.length > 0 && (
                         <Card variant="glass">
@@ -486,6 +579,12 @@ export default function RequestTicketPage() {
                                     <span className="text-gray-500 dark:text-gray-400">{t('quantityLabel', { defaultValue: '張數' })}</span>
                                     <span className="font-medium text-gray-900 dark:text-gray-100">{quantity} {t('tickets', { defaultValue: '張' })}</span>
                                 </div>
+                                {ticketSource && (
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-500 dark:text-gray-400">{tCommon('ticketSource', { defaultValue: '期望票源' })}</span>
+                                        <span className="font-medium text-gray-900 dark:text-gray-100">{TICKET_SOURCE_INFO[ticketSource as TicketSource]?.label || ticketSource}</span>
+                                    </div>
+                                )}
                                 {description && (
                                     <div className="pt-2 border-t border-gray-100 dark:border-gray-700">
                                         <span className="text-gray-500 dark:text-gray-400">{t('notesLabel', { defaultValue: '備註' })}</span>

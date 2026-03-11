@@ -61,7 +61,15 @@
     "report": "举报",
     "deleteConfirmTitle": "确认删除",
     "deleteConfirmMessage": "确定要删除吗？",
-    "confirmDelete": "确认删除"
+    "confirmDelete": "确认删除",
+    "preferences": "偏好设置",
+    "optional": "选填",
+    "ticketSource": "票源",
+    "anySource": "不限票源",
+    "nationality": "国籍",
+    "anyNationality": "不限国籍",
+    "nationalityHelp": "提供国籍有助于相同语言区的人与您联系。",
+    "languages": "可以使用的语言"
   },
   "nav": {
     "home": "首页",

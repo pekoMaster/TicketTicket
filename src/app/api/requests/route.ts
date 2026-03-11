@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { eventId, eventName, acceptedTypes, seatGrades, quantity, description } = body;
+        const { eventId, eventName, acceptedTypes, seatGrades, quantity, description, ticketSource, requesterNationality, requesterLanguages } = body;
 
         // 驗證
         if (!eventName) {
@@ -103,6 +103,9 @@ export async function POST(request: NextRequest) {
                 seat_grades: seatGrades,
                 quantity: Math.min(quantity || 1, 10),
                 description: description?.trim() || null,
+                ticket_source: ticketSource || null,
+                requester_nationality: requesterNationality || null,
+                requester_languages: requesterLanguages || null,
                 status: 'open',
             })
             .select()
