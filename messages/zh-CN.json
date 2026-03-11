@@ -438,6 +438,9 @@
     "modeWantTicketDesc": "求同行、求让票，让有票的人找到你"
   },
   "ticketType": {
+    "find_companion": "同行",
+    "sub_ticket_transfer": "子票转让",
+    "ticket_exchange": "换票",
     "findCompanion": "寻找同行者",
     "findCompanionDesc": "寻找一起入场的伙伴，费用均摊",
     "findCompanionWarning": "必须选择二人票",

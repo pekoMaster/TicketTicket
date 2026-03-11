@@ -437,6 +437,9 @@
     "modeWantTicketDesc": "Request a companion or ticket transfer"
   },
   "ticketType": {
+    "find_companion": "Companion",
+    "sub_ticket_transfer": "Sub-ticket",
+    "ticket_exchange": "Exchange",
     "findCompanion": "Find Companion",
     "findCompanionDesc": "Find a partner to enter together, split the cost",
     "findCompanionWarning": "Must select duo ticket",

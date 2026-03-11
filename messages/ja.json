@@ -439,6 +439,9 @@
     "modeWantTicketDesc": "同行募集、チケット譲渡を依頼"
   },
   "ticketType": {
+    "find_companion": "同行",
+    "sub_ticket_transfer": "子チケット",
+    "ticket_exchange": "交換",
     "findCompanion": "同行者募集",
     "findCompanionDesc": "一緒に入場する仲間を探す、費用は折半",
     "findCompanionWarning": "二人チケット必須",
