@@ -305,16 +305,63 @@ export default function HomePage() {
       result = result.filter((r) => r.eventName === selectedEvent);
     }
 
-    // 座位等級篩選
+    // 日期篩選
+    const now = new Date();
+    if (dateFilter !== 'all') {
+      result = result.filter((r) => {
+        const event = events.find(e => e.name === r.eventName);
+        if (!event || !event.eventDate) return true; // 若無日期資訊則保留
+        const eventDate = new Date(event.eventDate);
+        
+        if (dateFilter === 'week') {
+          const weekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+          return eventDate <= weekLater;
+        } else if (dateFilter === 'month') {
+          const monthLater = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+          return eventDate <= monthLater;
+        } else if (dateFilter === '3months') {
+          const threeMonthsLater = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
+          return eventDate <= threeMonthsLater;
+        }
+        return true;
+      });
+    }
+
+    // 票券類型(希望的類型)篩選
     if (selectedTicketType) {
       result = result.filter((r) => r.acceptedTypes.includes(selectedTicketType));
     }
 
+    // 求票者名稱搜尋
+    if (hostNameQuery) {
+      const query = hostNameQuery.toLowerCase();
+      result = result.filter((r) => r.user?.username.toLowerCase().includes(query));
+    }
+
+    // 評分篩選
+    if (minRating) {
+      const rating = parseInt(minRating);
+      result = result.filter((r) => (r.user?.rating || 0) >= rating);
+    }
+
     // 排序
     return result.sort((a, b) => {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      switch (sortBy) {
+        case 'newest':
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case 'eventDate': {
+          const eventA = events.find(e => e.name === a.eventName);
+          const eventB = events.find(e => e.name === b.eventName);
+          // 若無實體活動日期則排到後面
+          const dateA = eventA?.eventDate ? new Date(eventA.eventDate).getTime() : Number.MAX_SAFE_INTEGER;
+          const dateB = eventB?.eventDate ? new Date(eventB.eventDate).getTime() : Number.MAX_SAFE_INTEGER;
+          return dateA - dateB;
+        }
+        default:
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }
     });
-  }, [requests, searchQuery, selectedEvent, selectedTicketType]);
+  }, [requests, events, searchQuery, selectedEvent, dateFilter, selectedTicketType, hostNameQuery, minRating, sortBy]);
   const toggleLanguage = (lang: string) => {
     setSelectedLanguages((prev) =>
       prev.includes(lang) ? prev.filter((l) => l !== lang) : [...prev, lang]
@@ -529,46 +576,50 @@ export default function HomePage() {
                   />
                 </div>
 
-                {/* 票源 */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('ticketSource', { defaultValue: '票源' })}</label>
-                  <Select
-                    value={selectedTicketSource}
-                    onChange={(value) => setSelectedTicketSource(value as TicketSource | '')}
-                    options={[
-                      { value: '', label: tFilter('allSources', { defaultValue: '全部票源' }) },
-                      { value: 'zaiko', label: TICKET_SOURCE_INFO.zaiko.label },
-                      { value: 'lawson', label: TICKET_SOURCE_INFO.lawson.label },
-                    ]}
-                  />
-                </div>
+                {/* 票源 - 僅限讓票區 */}
+                {activeDisplayArea === 'listings' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('ticketSource', { defaultValue: '票源' })}</label>
+                    <Select
+                      value={selectedTicketSource}
+                      onChange={(value) => setSelectedTicketSource(value as TicketSource | '')}
+                      options={[
+                        { value: '', label: tFilter('allSources', { defaultValue: '全部票源' }) },
+                        { value: 'zaiko', label: TICKET_SOURCE_INFO.zaiko.label },
+                        { value: 'lawson', label: TICKET_SOURCE_INFO.lawson.label },
+                      ]}
+                    />
+                  </div>
+                )}
 
-                {/* 價格範圍 */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('priceRange')}</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="relative">
-                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 text-xs">¥</span>
-                      <input
-                        type="number"
-                        value={minPriceFilter}
-                        onChange={(e) => setMinPriceFilter(e.target.value)}
-                        placeholder={tFilter('minPrice')}
-                        className="w-full pl-6 pr-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
-                      />
-                    </div>
-                    <div className="relative">
-                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 text-xs">¥</span>
-                      <input
-                        type="number"
-                        value={maxPriceFilter}
-                        onChange={(e) => setMaxPriceFilter(e.target.value)}
-                        placeholder={tFilter('maxPrice')}
-                        className="w-full pl-6 pr-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
-                      />
+                {/* 價格範圍 - 僅限讓票區 */}
+                {activeDisplayArea === 'listings' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('priceRange')}</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="relative">
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 text-xs">¥</span>
+                        <input
+                          type="number"
+                          value={minPriceFilter}
+                          onChange={(e) => setMinPriceFilter(e.target.value)}
+                          placeholder={tFilter('minPrice')}
+                          className="w-full pl-6 pr-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
+                        />
+                      </div>
+                      <div className="relative">
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 text-xs">¥</span>
+                        <input
+                          type="number"
+                          value={maxPriceFilter}
+                          onChange={(e) => setMaxPriceFilter(e.target.value)}
+                          placeholder={tFilter('maxPrice')}
+                          className="w-full pl-6 pr-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('sortBy')}</label>
@@ -577,8 +628,10 @@ export default function HomePage() {
                     onChange={(value) => setSortBy(value as SortOption)}
                     options={[
                       { value: 'eventDate', label: tFilter('byDate') },
-                      { value: 'priceLowToHigh', label: tFilter('priceLowHigh') },
-                      { value: 'priceHighToLow', label: tFilter('priceHighLow') },
+                      ...(activeDisplayArea === 'listings' ? [
+                        { value: 'priceLowToHigh', label: tFilter('priceLowHigh') },
+                        { value: 'priceHighToLow', label: tFilter('priceHighLow') },
+                      ] : []),
                       { value: 'newest', label: tFilter('newest') },
                     ]}
                   />
@@ -626,21 +679,23 @@ export default function HomePage() {
                 </div>
 
                 {/* 其他選項 (Checkboxes) */}
-                <div className="flex items-end">
-                  <div className="h-10 flex items-center">
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={willAssistEntry}
-                        onChange={(e) => setWillAssistEntry(e.target.checked)}
-                        className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600"
-                      />
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                        {tFilter('willAssistEntry')}
-                      </span>
-                    </label>
+                {activeDisplayArea === 'listings' && (
+                  <div className="flex items-end">
+                    <div className="h-10 flex items-center">
+                      <label className="flex items-center space-x-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={willAssistEntry}
+                          onChange={(e) => setWillAssistEntry(e.target.checked)}
+                          className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600"
+                        />
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                          {tFilter('willAssistEntry')}
+                        </span>
+                      </label>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* 語言篩選（多選） */}
