@@ -104,7 +104,7 @@ export default function Select({
         </label>
       )}
 
-      <div className="relative">
+      <div className={`relative ${isOpen ? 'z-50' : ''}`}>
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
