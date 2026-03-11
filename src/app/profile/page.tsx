@@ -24,7 +24,7 @@ import { UserProfile, CompletedMatch, ApiReview, ApiApplication } from '@/types'
 export default function ProfilePage() {
   const { data: session } = useSession();
   const router = useRouter();
-  const { listings, deleteListing } = useApp();
+  const { listings, deleteListing, requests, fetchRequests } = useApp();
   const t = useTranslations('profile');
   const tCommon = useTranslations('common');
 
@@ -35,12 +35,17 @@ export default function ProfilePage() {
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
 
   // Tabs
-  const [activeTab, setActiveTab] = useState<'listings' | 'applications' | 'history'>('listings');
+  const [activeTab, setActiveTab] = useState<'listings' | 'requests' | 'applications' | 'history'>('listings');
 
   // Delete listing modal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [listingToDelete, setListingToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Delete request modal
+  const [showDeleteRequestModal, setShowDeleteRequestModal] = useState(false);
+  const [requestToDelete, setRequestToDelete] = useState<string | null>(null);
+  const [isDeletingRequest, setIsDeletingRequest] = useState(false);
 
   // Withdraw application modal
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
@@ -60,6 +65,7 @@ export default function ProfilePage() {
         fetch(`/api/reviews?userId=${session.user.dbId}`),
         fetch('/api/applications'),
         fetch('/api/profile/completed?limit=5'),
+        fetchRequests(true), // Ensure requests are fetched
       ]);
 
       if (profileRes.ok) {
@@ -133,6 +139,11 @@ export default function ProfilePage() {
     return listings.filter((l) => l.hostId === currentUser.id);
   }, [currentUser, listings]);
 
+  const myRequests = useMemo(() => {
+    if (!currentUser) return [];
+    return requests.filter((r) => r.userId === currentUser.id);
+  }, [currentUser, requests]);
+
   const handleDeleteListing = async () => {
     if (!listingToDelete) return;
     setIsDeleting(true);
@@ -143,6 +154,28 @@ export default function ProfilePage() {
       setListingToDelete(null);
     } else {
       alert(tCommon('deleteFailed'));
+    }
+  };
+
+  const handleDeleteRequest = async () => {
+    if (!requestToDelete) return;
+    setIsDeletingRequest(true);
+    try {
+      const response = await fetch(`/api/requests/${requestToDelete}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        setShowDeleteRequestModal(false);
+        setRequestToDelete(null);
+        fetchRequests(true); // Refetch requests
+      } else {
+        alert(tCommon('deleteFailed'));
+      }
+    } catch (error) {
+      console.error('Error deleting request:', error);
+      alert(tCommon('deleteFailed'));
+    } finally {
+      setIsDeletingRequest(false);
     }
   };
 
@@ -261,6 +294,7 @@ export default function ProfilePage() {
             activeTab={activeTab}
             userId={currentUser.id}
             listings={myListings}
+            requests={myRequests}
             applications={myApplications}
             completedMatches={completedMatches}
             userReviews={userReviews}
@@ -270,6 +304,10 @@ export default function ProfilePage() {
             onDeleteListing={(id) => {
               setListingToDelete(id);
               setShowDeleteModal(true);
+            }}
+            onDeleteRequest={(id) => {
+              setRequestToDelete(id);
+              setShowDeleteRequestModal(true);
             }}
             onWithdrawApplication={(id) => {
               setApplicationToWithdraw(id);
@@ -302,6 +340,35 @@ export default function ProfilePage() {
               className="bg-red-600 hover:bg-red-700"
               onClick={handleDeleteListing}
               loading={isDeleting}
+            >
+              {tCommon('confirmDelete')}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Delete Request Modal */}
+      <Modal
+        isOpen={showDeleteRequestModal}
+        onClose={() => setShowDeleteRequestModal(false)}
+        title={tCommon('deleteConfirmTitle')}
+      >
+        <div className="space-y-4">
+          <p className="text-gray-600 dark:text-gray-300">
+            {tCommon('deleteConfirmMessage')}
+          </p>
+          <div className="flex gap-3 justify-end">
+            <Button
+              variant="secondary"
+              onClick={() => setShowDeleteRequestModal(false)}
+            >
+              {tCommon('cancel')}
+            </Button>
+            <Button
+              variant="primary"
+              className="bg-red-600 hover:bg-red-700"
+              onClick={handleDeleteRequest}
+              loading={isDeletingRequest}
             >
               {tCommon('confirmDelete')}
             </Button>

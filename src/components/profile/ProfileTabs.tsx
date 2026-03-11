@@ -1,11 +1,11 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Ticket, Users, History } from 'lucide-react';
+import { Ticket, Users, History, HelpCircle } from 'lucide-react';
 
 interface ProfileTabsProps {
-    activeTab: 'listings' | 'applications' | 'history';
-    onTabChange: (tab: 'listings' | 'applications' | 'history') => void;
+    activeTab: 'listings' | 'requests' | 'applications' | 'history';
+    onTabChange: (tab: 'listings' | 'requests' | 'applications' | 'history') => void;
 }
 
 export default function ProfileTabs({ activeTab, onTabChange }: ProfileTabsProps) {
@@ -13,6 +13,7 @@ export default function ProfileTabs({ activeTab, onTabChange }: ProfileTabsProps
 
     const tabs = [
         { id: 'listings', label: t('myListings'), icon: <Ticket className="w-4 h-4" /> },
+        { id: 'requests', label: t('myRequests'), icon: <HelpCircle className="w-4 h-4" /> },
         { id: 'applications', label: t('myApplications'), icon: <Users className="w-4 h-4" /> },
         { id: 'history', label: "歷史記錄", icon: <History className="w-4 h-4" /> }, // Ensure key exists or use hardcode/fallback
     ] as const;

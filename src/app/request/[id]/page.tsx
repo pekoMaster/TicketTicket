@@ -422,9 +422,8 @@ export default function RequestDetailPage() {
         <ReportModal
           isOpen={showReportModal}
           onClose={() => setShowReportModal(false)}
-          targetType="user"
-          targetId={user?.id || ''}
-          targetName={user?.username || ''}
+          reportedUserId={user?.id || ''}
+          reportedUserName={user?.username || ''}
         />
       )}
 
@@ -433,8 +432,8 @@ export default function RequestDetailPage() {
         <ShareModal
           isOpen={showShareModal}
           onClose={() => setShowShareModal(false)}
-          eventName={request.eventName}
-          type="listing"
+          title={request.eventName}
+          url={typeof window !== 'undefined' ? window.location.href : ''}
         />
       )}
       

@@ -3,14 +3,16 @@
 import ProfileListings from './ProfileListings';
 import ProfileApplications from './ProfileApplications';
 import ProfileHistory from './ProfileHistory';
-import { CompletedMatch, ApiReview } from '@/types';
+import ProfileRequests from './ProfileRequests';
+import { CompletedMatch, ApiReview, TicketRequest } from '@/types';
 
 
 interface ProfileContentProps {
-    activeTab: 'listings' | 'applications' | 'history';
+    activeTab: 'listings' | 'requests' | 'applications' | 'history';
     userId: string;
     // eslint-disable-next-line
     listings: any[]; // Replace with specific type if available
+    requests: TicketRequest[];
     // eslint-disable-next-line
     applications: any[];
     completedMatches: CompletedMatch[];
@@ -19,6 +21,7 @@ interface ProfileContentProps {
     onRefresh: () => void;
     onEditListing: (id: string) => void;
     onDeleteListing: (id: string) => void;
+    onDeleteRequest: (id: string) => void;
     onWithdrawApplication: (id: string) => void;
 }
 
@@ -26,6 +29,7 @@ export default function ProfileContent({
     activeTab,
     userId,
     listings,
+    requests,
     applications,
     completedMatches,
     userReviews,
@@ -36,6 +40,7 @@ export default function ProfileContent({
     // eslint-disable-next-line
     onEditListing,
     onDeleteListing,
+    onDeleteRequest,
     onWithdrawApplication
 }: ProfileContentProps) {
 
@@ -44,6 +49,15 @@ export default function ProfileContent({
             <ProfileListings
                 listings={listings}
                 onDelete={onDeleteListing}
+            />
+        );
+    }
+
+    if (activeTab === 'requests') {
+        return (
+            <ProfileRequests
+                requests={requests}
+                onDelete={onDeleteRequest}
             />
         );
     }
