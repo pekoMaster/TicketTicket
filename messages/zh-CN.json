@@ -104,7 +104,11 @@
     "ticketType": "票种",
     "price": "费用",
     "host": "主办方",
-    "nationality": "国籍"
+    "nationality": "国籍",
+    "viewListings": "寻找同行/让票",
+    "viewRequests": "查看求票纪录",
+    "noRequests": "目前没有找到符合条件的求票",
+    "tryAdjustingFilters": "您可以尝试调整筛选条件或重新搜寻"
   },
   "filter": {
     "searchPlaceholder": "搜索活动、场地、关键字...",
@@ -1274,6 +1278,9 @@
     "seatGradeLabel": "座位等级",
     "quantityLabel": "张数",
     "notesLabel": "备注",
-    "submitRequest": "发布求票"
+    "submitRequest": "发布求票",
+    "ratingStars": "{rating} 颗星",
+    "needs": "需求 {count} 张",
+    "viewDetails": "查看详情"
   }
 }

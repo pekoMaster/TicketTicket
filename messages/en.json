@@ -1207,6 +1207,8 @@
     "zeroPriceNote": "(0 = no limit)",
     "ticketTypeLabel": "Ticket Types",
     "findCompanion": "Find Companion",
+    "subTicketTransfer": "Sub-ticket Transfer",
+    "ticketExchange": "Ticket Exchange",
     "ticketTypes": {
       "find_companion": "Find Companion (Consecutive)",
       "sub_ticket_transfer": "Sub-ticket Transfer",
@@ -1290,6 +1292,9 @@
     "seatGradeLabel": "Seat Grade",
     "quantityLabel": "Quantity",
     "notesLabel": "Notes",
-    "submitRequest": "Submit Request"
+    "submitRequest": "Post Request",
+    "ratingStars": "{rating} Stars",
+    "needs": "Needs {count} Tickets",
+    "viewDetails": "View Details"
   }
 }

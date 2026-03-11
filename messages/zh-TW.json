@@ -1209,6 +1209,8 @@
     "zeroPriceNote": "（0 = 不限）",
     "ticketTypeLabel": "票券類型",
     "findCompanion": "尋找同行",
+    "subTicketTransfer": "子票轉讓",
+    "ticketExchange": "票券交換",
     "ticketTypes": {
       "find_companion": "尋找同行（持有連號票）",
       "sub_ticket_transfer": "子票轉讓",
@@ -1292,6 +1294,9 @@
     "seatGradeLabel": "座位等級",
     "quantityLabel": "張數",
     "notesLabel": "備註",
-    "submitRequest": "發布求票"
+    "submitRequest": "發布求票",
+    "ratingStars": "{rating} 顆星",
+    "needs": "需求 {count} 張",
+    "viewDetails": "查看詳情"
   }
 }
