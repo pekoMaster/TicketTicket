@@ -16,6 +16,7 @@ interface RequestCardProps {
 
 export default function RequestCard({ request, isFirstCard }: RequestCardProps) {
     const t = useTranslations('request');
+    const tCommon = useTranslations('common');
     const tTicket = useTranslations('ticketType');
     const { locale } = useLanguage();
     const format = useFormatter();
@@ -148,12 +149,12 @@ export default function RequestCard({ request, isFirstCard }: RequestCardProps) 
                             {request.requesterNationality && (
                                 <span className="px-2 py-0.5 rounded text-[11px] bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-200/50 dark:border-blue-500/20 flex items-center gap-1">
                                     <Globe2 className="w-3 h-3" />
-                                    {NATIONALITY_OPTIONS.find(n => n.value === request.requesterNationality)?.label || request.requesterNationality}
+                                    {tCommon(`nationalities.${request.requesterNationality}`, { defaultValue: request.requesterNationality })}
                                 </span>
                             )}
                             {request.requesterLanguages && request.requesterLanguages.length > 0 && (
                                 <span className="px-2 py-0.5 rounded text-[11px] bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200/50 dark:border-emerald-500/20">
-                                    🗣️ {request.requesterLanguages.map(l => LANGUAGE_OPTIONS.find(lo => lo.value === l)?.label || l).join(', ')}
+                                    🗣️ {request.requesterLanguages.map(l => tCommon(`languagesList.${l}`, { defaultValue: l })).join(', ')}
                                 </span>
                             )}
                         </div>

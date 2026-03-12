@@ -69,7 +69,33 @@
     "nationality": "国籍",
     "anyNationality": "不限国籍",
     "nationalityHelp": "提供国籍有助于相同语言区的人与您联系。",
-    "languages": "可以使用的语言"
+    "languages": "可以使用的语言",
+    "nationalities": {
+      "TW": "台湾 Taiwan",
+      "JP": "日本 Japan",
+      "HK": "香港 Hong Kong",
+      "CN": "中国 China",
+      "KR": "韩国 Korea",
+      "US": "美国 USA",
+      "MY": "马来西亚 Malaysia",
+      "SG": "新加坡 Singapore",
+      "ID": "印尼 Indonesia",
+      "TH": "泰国 Thailand",
+      "PH": "菲律宾 Philippines",
+      "AU": "澳洲 Australia",
+      "UK": "英国 UK",
+      "OTHER": "其他 Other"
+    },
+    "languagesList": {
+      "zh-TW": "繁体中文",
+      "zh-CN": "简体中文",
+      "ja": "日语",
+      "en": "英语",
+      "ko": "韩语",
+      "id": "印尼语",
+      "th": "泰语",
+      "vi": "越南语"
+    }
   },
   "nav": {
     "home": "首页",

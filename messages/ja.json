@@ -68,8 +68,34 @@
     "anySource": "指定なし",
     "nationality": "国籍",
     "anyNationality": "指定なし",
-    "nationalityHelp": "国籍を提供することで、同じ言語を使用するユーザーが連絡を取りやすくなります。",
-    "languages": "使用可能な言語"
+    "nationalityHelp": "国籍を提供することで、同じ言語圏のユーザーがあなたと連絡を取りやすくなります。",
+    "languages": "対応言語",
+    "nationalities": {
+      "TW": "台湾 Taiwan",
+      "JP": "日本 Japan",
+      "HK": "香港 Hong Kong",
+      "CN": "中国 China",
+      "KR": "韓国 Korea",
+      "US": "アメリカ USA",
+      "MY": "マレーシア Malaysia",
+      "SG": "シンガポール Singapore",
+      "ID": "インドネシア Indonesia",
+      "TH": "タイ Thailand",
+      "PH": "フィリピン Philippines",
+      "AU": "オーストラリア Australia",
+      "UK": "イギリス UK",
+      "OTHER": "その他 Other"
+    },
+    "languagesList": {
+      "zh-TW": "繁体字中国語",
+      "zh-CN": "簡体字中国語",
+      "ja": "日本語",
+      "en": "英語",
+      "ko": "韓国語",
+      "id": "インドネシア語",
+      "th": "タイ語",
+      "vi": "ベトナム語"
+    }
   },
   "nav": {
     "home": "ホーム",

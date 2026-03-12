@@ -1128,7 +1128,7 @@ export default function CreateListingPage() {
                       <option value="">{t('selectNationality')}</option>
                       {NATIONALITY_OPTIONS.map((opt) => (
                         <option key={opt.value} value={opt.value}>
-                          {opt.label}
+                          {t(`common.nationalities.${opt.value}`, { defaultValue: opt.label })}
                         </option>
                       ))}
                     </select>
@@ -1153,7 +1153,7 @@ export default function CreateListingPage() {
                               : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'}
                       `}
                         >
-                          {lang.label}
+                          {t(`common.languagesList.${lang.value}`, { defaultValue: lang.label })}
                         </button>
                       ))}
                     </div>
@@ -1227,8 +1227,8 @@ export default function CreateListingPage() {
                 <div className="p-4 bg-gray-50 dark:bg-white/5 rounded-xl space-y-2">
                   <p className="text-sm text-gray-500 dark:text-gray-400">{t('publisherInfo')}</p>
                   <div className="flex flex-wrap gap-2 text-sm">
-                    {hostNationality && <span className="flex items-center gap-1 text-gray-700 dark:text-gray-300"><Globe className="w-4 h-4" />{NATIONALITY_OPTIONS.find(n => n.value === hostNationality)?.label}</span>}
-                    {hostLanguages.length > 0 && <span className="flex items-center gap-1 text-gray-700 dark:text-gray-300"><Languages className="w-4 h-4" />{hostLanguages.map(l => LANGUAGE_OPTIONS.find(lo => lo.value === l)?.label).join(', ')}</span>}
+                    {hostNationality && <span className="flex items-center gap-1 text-gray-700 dark:text-gray-300"><Globe className="w-4 h-4" />{t(`common.nationalities.${hostNationality}`, { defaultValue: hostNationality })}</span>}
+                    {hostLanguages.length > 0 && <span className="flex items-center gap-1 text-gray-700 dark:text-gray-300"><Languages className="w-4 h-4" />{hostLanguages.map(l => t(`common.languagesList.${l}`, { defaultValue: l })).join(', ')}</span>}
                   </div>
                 </div>
 

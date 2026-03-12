@@ -452,7 +452,10 @@ export default function RequestTicketPage() {
                                         onChange={setRequesterNationality}
                                         options={[
                                             { value: '', label: tCommon('anyNationality', { defaultValue: '不公開（或不設定）' }) },
-                                            ...NATIONALITY_OPTIONS.map(opt => ({ value: opt.value, label: tCommon(`nationalities.${opt.value}`, { defaultValue: opt.label }) }))
+                                            ...NATIONALITY_OPTIONS.map(opt => ({ 
+                                                value: opt.value, 
+                                                label: tCommon(`nationalities.${opt.value}`, { defaultValue: opt.label }) 
+                                            }))
                                         ]}
                                     />
                                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">

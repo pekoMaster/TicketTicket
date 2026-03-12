@@ -18,6 +18,7 @@ interface ListingCardProps {
 export default function ListingCard({ listing, host, isFirstCard }: ListingCardProps) {
   const t = useTranslations('listing');
   const tTicket = useTranslations('ticketType');
+  const tCommon = useTranslations('common');
   const { locale } = useLanguage();
   const format = useFormatter();
   const [showUserModal, setShowUserModal] = useState(false);
@@ -37,14 +38,12 @@ export default function ListingCard({ listing, host, isFirstCard }: ListingCardP
 
   // 取得語言顯示名稱
   const getLanguageLabel = (code: string) => {
-    const lang = LANGUAGE_OPTIONS.find(l => l.value === code);
-    return lang?.label || code;
+    return tCommon(`languagesList.${code}`, { defaultValue: code });
   };
 
   // 取得國籍顯示名稱
   const getNationalityLabel = (code: string) => {
-    const nat = NATIONALITY_OPTIONS.find(n => n.value === code);
-    return nat?.label || code;
+    return tCommon(`nationalities.${code}`, { defaultValue: code });
   };
 
   // 語言排序順序

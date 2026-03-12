@@ -69,7 +69,33 @@
     "nationality": "國籍",
     "anyNationality": "不限國籍",
     "nationalityHelp": "提供國籍有助於相同語言區的人與您聯繫。",
-    "languages": "可以使用的語言"
+    "languages": "可以使用的語言",
+    "nationalities": {
+      "TW": "台灣 Taiwan",
+      "JP": "日本 Japan",
+      "HK": "香港 Hong Kong",
+      "CN": "中國 China",
+      "KR": "韓國 Korea",
+      "US": "美國 USA",
+      "MY": "馬來西亞 Malaysia",
+      "SG": "新加坡 Singapore",
+      "ID": "印尼 Indonesia",
+      "TH": "泰國 Thailand",
+      "PH": "菲律賓 Philippines",
+      "AU": "澳洲 Australia",
+      "UK": "英國 UK",
+      "OTHER": "其他 Other"
+    },
+    "languagesList": {
+      "zh-TW": "繁體中文",
+      "zh-CN": "簡體中文",
+      "ja": "日本語",
+      "en": "English",
+      "ko": "韓國語",
+      "id": "印尼語",
+      "th": "泰語",
+      "vi": "越南語"
+    }
   },
   "nav": {
     "home": "首頁",

@@ -627,16 +627,13 @@ export default function ListingDetailPage() {
                     {listing.hostNationality && (
                       <span className="inline-flex items-center gap-1">
                         <Globe className="w-3.5 h-3.5" />
-                        {NATIONALITY_OPTIONS.find(n => n.value === listing.hostNationality)?.label || listing.hostNationality}
+                        {t(`common.nationalities.${listing.hostNationality}`, { defaultValue: listing.hostNationality })}
                       </span>
                     )}
                     {listing.hostLanguages && listing.hostLanguages.length > 0 && (
                       <span className="inline-flex items-center gap-1">
                         <Languages className="w-3.5 h-3.5" />
-                        {listing.hostLanguages.map(code => {
-                          const lang = LANGUAGE_OPTIONS.find(l => l.value === code);
-                          return lang?.label || code;
-                        }).join(', ')}
+                        {listing.hostLanguages.map(code => t(`common.languagesList.${code}`, { defaultValue: code })).join(', ')}
                       </span>
                     )}
                   </div>

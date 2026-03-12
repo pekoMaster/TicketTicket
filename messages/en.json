@@ -69,7 +69,33 @@
     "nationality": "Nationality",
     "anyNationality": "Any Nationality",
     "nationalityHelp": "Providing your nationality helps people from the same language region connect with you.",
-    "languages": "Spoken Languages"
+    "languages": "Spoken Languages",
+    "nationalities": {
+      "TW": "Taiwan",
+      "JP": "Japan",
+      "HK": "Hong Kong",
+      "CN": "China",
+      "KR": "Korea",
+      "US": "USA",
+      "MY": "Malaysia",
+      "SG": "Singapore",
+      "ID": "Indonesia",
+      "TH": "Thailand",
+      "PH": "Philippines",
+      "AU": "Australia",
+      "UK": "UK",
+      "OTHER": "Other"
+    },
+    "languagesList": {
+      "zh-TW": "Traditional Chinese",
+      "zh-CN": "Simplified Chinese",
+      "ja": "Japanese",
+      "en": "English",
+      "ko": "Korean",
+      "id": "Indonesian",
+      "th": "Thai",
+      "vi": "Vietnamese"
+    }
   },
   "nav": {
     "home": "Home",
