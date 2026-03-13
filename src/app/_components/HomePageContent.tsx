@@ -142,6 +142,22 @@ export default function HomePage() {
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const ITEMS_PER_PAGE = 10;
 
+  // Tab 切換 - 動態滑動背景
+  const tabListingsRef = useRef<HTMLButtonElement>(null);
+  const tabRequestsRef = useRef<HTMLButtonElement>(null);
+  const [tabIndicatorStyle, setTabIndicatorStyle] = useState<React.CSSProperties>({ left: 4, width: 0 });
+
+  // 根據 active tab 動態測量按鈕大小並更新 indicator 位置
+  useEffect(() => {
+    const activeRef = activeDisplayArea === 'listings' ? tabListingsRef : tabRequestsRef;
+    if (activeRef.current) {
+      setTabIndicatorStyle({
+        left: activeRef.current.offsetLeft,
+        width: activeRef.current.offsetWidth,
+      });
+    }
+  }, [activeDisplayArea]);
+
   // 成功同行統計
   const [successfulMeetups, setSuccessfulMeetups] = useState<number | null>(null);
 
@@ -758,8 +774,9 @@ export default function HomePage() {
           <div className="mt-4 mb-2 flex justify-center lg:justify-start">
             <div className="relative flex items-center p-1 bg-gray-100/80 dark:bg-gray-800/80 backdrop-blur-md rounded-xl border border-gray-200/50 dark:border-white/10 shadow-inner">
               <button
+                ref={tabListingsRef}
                 onClick={() => setActiveDisplayArea('listings')}
-                className={`relative z-10 flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 ${activeDisplayArea === 'listings'
+                className={`relative z-10 flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 whitespace-nowrap ${activeDisplayArea === 'listings'
                   ? 'text-white'
                   : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
                   }`}
@@ -768,8 +785,9 @@ export default function HomePage() {
                 {t('viewListings', { defaultValue: '看讓票' })}
               </button>
               <button
+                ref={tabRequestsRef}
                 onClick={() => setActiveDisplayArea('requests')}
-                className={`relative z-10 flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 ${activeDisplayArea === 'requests'
+                className={`relative z-10 flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 whitespace-nowrap ${activeDisplayArea === 'requests'
                   ? 'text-white'
                   : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
                   }`}
@@ -778,10 +796,10 @@ export default function HomePage() {
                 {t('viewRequests', { defaultValue: '看求票' })}
               </button>
 
-              {/* 滑動背景 */}
+              {/* 滑動背景 - 動態寬度 */}
               <div
-                className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg shadow-md transition-all duration-300 ease-in-out ${activeDisplayArea === 'listings' ? 'left-1' : 'left-[calc(50%+2px)]'
-                  }`}
+                className="absolute top-1 bottom-1 bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg shadow-md transition-all duration-300 ease-in-out"
+                style={tabIndicatorStyle}
               />
             </div>
           </div>
