@@ -4,10 +4,11 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useTranslations, useFormatter } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Eye, Clock, Calendar, HandHeart, CheckCircle2, Globe2 } from 'lucide-react';
+import { useAdmin } from '@/contexts/AdminContext';
+import { Eye, Clock, Calendar, HandHeart, CheckCircle2, Globe2, MapPin, AlignLeft } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
 import UserProfileModal from '@/components/ui/UserProfileModal';
-import { TicketRequest, User, ACCEPTED_TICKET_TYPE_INFO, NATIONALITY_OPTIONS, LANGUAGE_OPTIONS } from '@/types';
+import { TicketRequest, User, ACCEPTED_TICKET_TYPE_INFO, NATIONALITY_OPTIONS, LANGUAGE_OPTIONS, TicketType } from '@/types';
 
 interface RequestCardProps {
     request: TicketRequest;
@@ -20,7 +21,11 @@ export default function RequestCard({ request, isFirstCard }: RequestCardProps) 
     const tTicket = useTranslations('ticketType');
     const { locale } = useLanguage();
     const format = useFormatter();
+    const { events } = useAdmin();
     const [showUserModal, setShowUserModal] = useState(false);
+
+    // 查找活動資訊
+    const event = events.find(e => e.name === request.eventName || e.id === request.eventId);
 
     const formatDate = (date: Date) => {
         return new Date(date).toLocaleDateString(locale, {
@@ -97,6 +102,32 @@ export default function RequestCard({ request, isFirstCard }: RequestCardProps) 
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-2 h-14 group-hover:text-pink-600 dark:group-hover:text-pink-100 transition-colors">
                         {request.eventName}
                     </h3>
+
+                    {/* Event Date & Venue */}
+                    {(event?.eventDate || event?.venue) && (
+                        <div className="flex flex-col gap-1.5 -mt-1 mb-1">
+                            {event.eventDate && (
+                                <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+                                    <Calendar className="w-3.5 h-3.5 text-pink-500/70" />
+                                    <span>{formatDate(event.eventDate)}</span>
+                                </div>
+                            )}
+                            {event.venue && (
+                                <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+                                    <MapPin className="w-3.5 h-3.5 text-pink-500/70" />
+                                    <span className="truncate">{event.venue}</span>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Description Preview */}
+                    {request.description && (
+                        <div className="flex items-start gap-1.5 p-2.5 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/5 line-clamp-2 text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                            <AlignLeft className="w-3.5 h-3.5 mt-0.5 shrink-0 text-gray-400" />
+                            <span>{request.description}</span>
+                        </div>
+                    )}
 
                     {/* Wanted Ticket Conditions */}
                     <div className="flex flex-col gap-2">

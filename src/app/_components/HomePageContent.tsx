@@ -8,6 +8,8 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { useTranslations } from 'next-intl';
 import ListingCard from '@/components/features/ListingCard';
 import RequestCard from '@/components/features/RequestCard';
+import RequestListItem from '@/components/features/RequestListItem';
+import MobileRequestItem from '@/components/features/MobileRequestItem';
 import ListingListItem from '@/components/features/ListingListItem';
 import MobileListingItem from '@/components/features/MobileListingItem';
 import ListingCardSkeleton from '@/components/features/ListingCardSkeleton';
@@ -878,21 +880,53 @@ export default function HomePage() {
           {activeDisplayArea === 'requests' && (
             <>
               {isLoadingRequests ? (
-                <div className="space-y-4 lg:grid lg:gap-4 lg:space-y-0 lg:[grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]">
+                <div className={`space-y-4 ${viewMode === 'list' ? '' : 'lg:grid lg:gap-4 lg:space-y-0 lg:[grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]'}`}>
                   {[...Array(6)].map((_, i) => (
-                    <div key={i} className="animate-pulse bg-gray-100 dark:bg-gray-800 h-48 rounded-2xl"></div>
+                    viewMode === 'list' ? (
+                      <div key={i} className="animate-pulse bg-gray-100 dark:bg-gray-800 h-20 rounded-xl mb-3"></div>
+                    ) : (
+                      <div key={i} className="animate-pulse bg-gray-100 dark:bg-gray-800 h-48 rounded-2xl"></div>
+                    )
                   ))}
                 </div>
               ) : filteredRequests.length > 0 ? (
-                <div className="grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]">
-                  {filteredRequests.map((request, index) => (
-                    <RequestCard
-                      key={request.id}
-                      request={request}
-                      isFirstCard={index === 0}
-                    />
-                  ))}
-                </div>
+                <>
+                  {/* 手機版列表 (隱藏於 LG+ 且 viewMode 為 card 時) */}
+                  <div className={`flex flex-col gap-3 lg:hidden ${viewMode === 'card' ? 'hidden' : ''}`}>
+                    {filteredRequests.map((request, index) => (
+                      <MobileRequestItem
+                        key={request.id}
+                        request={request}
+                        user={request.user}
+                        isFirstItem={index === 0}
+                      />
+                    ))}
+                  </div>
+
+                  {/* PC版/手機版：卡片網格視圖 */}
+                  <div
+                    className={`grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(280px,1fr))] ${viewMode === 'list' ? 'hidden' : ''}`}
+                  >
+                    {filteredRequests.map((request, index) => (
+                      <RequestCard
+                        key={request.id}
+                        request={request}
+                        isFirstCard={index === 0}
+                      />
+                    ))}
+                  </div>
+
+                  {/* PC版：列表視圖 */}
+                  <div className={`hidden ${viewMode === 'list' ? 'lg:flex lg:flex-col lg:gap-3' : 'hidden'}`}>
+                    {filteredRequests.map((request) => (
+                      <RequestListItem
+                        key={request.id}
+                        request={request}
+                        user={request.user}
+                      />
+                    ))}
+                  </div>
+                </>
               ) : (
                 <div className="text-center py-20 bg-white/50 dark:bg-gray-800/30 backdrop-blur-sm rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
                   <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-pink-50 dark:bg-pink-900/20 text-pink-500 dark:text-pink-400 mb-4 ring-8 ring-pink-50/50 dark:ring-pink-900/10">

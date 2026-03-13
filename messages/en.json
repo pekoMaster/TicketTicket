@@ -1338,6 +1338,14 @@
     "submitRequest": "Post Request",
     "ratingStars": "{rating} Stars",
     "needs": "Needs {count} Tickets",
-    "viewDetails": "View Details"
+    "viewDetails": "View Details",
+    "requester": "Requester",
+    "yourRequest": "Your Request",
+    "contacted": "Contacted Requester",
+    "iCanHelp": "I can help (Contact)",
+    "contactRequester": "Contact Requester",
+    "contactConfirmDesc": "You are about to message {username} regarding their request for \"{eventName}\".",
+    "deleteRequest": "Delete Request",
+    "deleteConfirm": "Are you sure you want to delete this ticket request? This action cannot be undone!"
   }
 }

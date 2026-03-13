@@ -1340,6 +1340,14 @@
     "submitRequest": "募集を投稿する",
     "ratingStars": "星 {rating}",
     "needs": "希望 {count} 枚",
-    "viewDetails": "詳細を見る"
+    "viewDetails": "詳細を見る",
+    "requester": "求票者",
+    "yourRequest": "あなたの求票",
+    "contacted": "求票者に連絡済み",
+    "iCanHelp": "お手伝いできます (連絡する)",
+    "contactRequester": "求票者に連絡",
+    "contactConfirmDesc": "{username} さんに「{eventName}」の求票についてメッセージを送信します。",
+    "deleteRequest": "求票を削除",
+    "deleteConfirm": "この求票を削除してもよろしいですか？この操作は取り消せません。"
   }
 }

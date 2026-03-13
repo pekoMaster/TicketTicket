@@ -1340,6 +1340,14 @@
     "submitRequest": "發布求票",
     "ratingStars": "{rating} 顆星",
     "needs": "需求 {count} 張",
-    "viewDetails": "查看詳情"
+    "viewDetails": "查看詳情",
+    "requester": "求票者",
+    "yourRequest": "您的求票",
+    "contacted": "已聯絡求票人",
+    "iCanHelp": "我可以幫忙 (聯絡對方)",
+    "contactRequester": "聯絡求票人",
+    "contactConfirmDesc": "即將私訊給 {username} 關於「{eventName}」的求票。",
+    "deleteRequest": "刪除求票",
+    "deleteConfirm": "確定要刪除這筆求票活動嗎？這個動作無法復原喔！"
   }
 }

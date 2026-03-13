@@ -5,8 +5,9 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useApp } from '@/contexts/AppContext';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useFormatter } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAdmin } from '@/contexts/AdminContext';
 import Header from '@/components/layout/Header';
 import Card from '@/components/ui/Card';
 import GlassCard from '@/components/ui/GlassCard';
@@ -28,6 +29,9 @@ import {
   MoreVertical,
   Flag,
   Share2,
+  MapPin,
+  Globe2,
+  Users,
 } from 'lucide-react';
 import ReportModal from '@/components/ui/ReportModal';
 import ShareModal from '@/components/ui/ShareModal';
@@ -43,6 +47,8 @@ export default function RequestDetailPage() {
   const tCommon = useTranslations('common');
   const tApply = useTranslations('apply');
   const { locale } = useLanguage();
+  const format = useFormatter();
+  const { events } = useAdmin();
 
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [showApplyAgreement, setShowApplyAgreement] = useState(false);
@@ -60,8 +66,9 @@ export default function RequestDetailPage() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
 
-  // Find the request
+  // Find the request and event
   const request = requests.find((r) => r.id === params.id);
+  const event = events.find(e => e.name === request?.eventName || e.id === request?.eventId);
   const user = request?.user;
   const currentUserId = session?.user?.dbId;
 
@@ -213,7 +220,7 @@ export default function RequestDetailPage() {
                     className="w-full px-4 py-2.5 text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2"
                   >
                     <Trash2 className="w-4 h-4" />
-                    {t('viewDetails')} (刪除)
+                    {tCommon('delete')}
                   </button>
                 </div>
               </>
@@ -243,14 +250,34 @@ export default function RequestDetailPage() {
             </div>
           </div>
           
-          <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 rounded-xl p-4 flex gap-3">
-              <AlertTriangle className="w-5 h-5 text-blue-500 dark:text-blue-400 shrink-0 mt-0.5" />
-              <div className="text-sm text-blue-700 dark:text-blue-200">
-                <p className="font-medium">{t('requestInfo')}</p>
-                <p className="text-blue-600 dark:text-blue-300/80 mt-1">
-                  {t('requestInfoDesc')}
-                </p>
+          <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 rounded-xl p-4 flex flex-col gap-3">
+              <div className="flex gap-3">
+                <AlertTriangle className="w-5 h-5 text-blue-500 dark:text-blue-400 shrink-0 mt-0.5" />
+                <div className="text-sm text-blue-700 dark:text-blue-200">
+                  <p className="font-medium">{t('requestInfo')}</p>
+                  <p className="text-blue-600 dark:text-blue-300/80 mt-1">
+                    {t('requestInfoDesc')}
+                  </p>
+                </div>
               </div>
+
+              {/* Event Date & Venue */}
+              {(event?.eventDate || event?.venue) && (
+                <div className="pt-3 mt-1 border-t border-blue-200/50 dark:border-blue-500/20 flex flex-wrap gap-x-6 gap-y-2">
+                  {event.eventDate && (
+                    <div className="flex items-center gap-2 text-xs text-blue-700 dark:text-blue-300">
+                      <Calendar className="w-4 h-4 text-blue-500" />
+                      <span>{format.dateTime(new Date(event.eventDate), { dateStyle: 'long', timeStyle: 'short' })}</span>
+                    </div>
+                  )}
+                  {event.venue && (
+                    <div className="flex items-center gap-2 text-xs text-blue-700 dark:text-blue-300">
+                      <MapPin className="w-4 h-4 text-blue-500" />
+                      <span>{event.venue}</span>
+                    </div>
+                  )}
+                </div>
+              )}
           </div>
         </GlassCard>
 
@@ -294,6 +321,41 @@ export default function RequestDetailPage() {
                   </div>
                 </div>
               )}
+
+              {/* Preferences (Source, Nationality, Language) */}
+              {(request.ticketSource || request.requesterNationality || (request.requesterLanguages && request.requesterLanguages.length > 0)) && (
+                <div className="pt-3 mt-1 border-t border-gray-100 dark:border-gray-700 space-y-3">
+                  {request.ticketSource && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-500 dark:text-gray-400 text-xs">{tCommon('ticketSource')}</span>
+                      <span className="text-xs font-bold px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border border-amber-200/50 dark:border-amber-500/20">
+                        🎫 {request.ticketSource === 'zaiko' ? 'ZAIKO' : 'LAWSON'}
+                      </span>
+                    </div>
+                  )}
+                  {request.requesterNationality && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-500 dark:text-gray-400 text-xs">{tCommon('nationality')}</span>
+                      <span className="text-xs font-medium flex items-center gap-1 text-gray-700 dark:text-gray-300">
+                        <Globe2 className="w-3 h-3 text-blue-500" />
+                        {tCommon(`nationalities.${request.requesterNationality}`, { defaultValue: request.requesterNationality })}
+                      </span>
+                    </div>
+                  )}
+                  {request.requesterLanguages && request.requesterLanguages.length > 0 && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-500 dark:text-gray-400 text-xs">{tCommon('languages')}</span>
+                      <div className="flex flex-wrap gap-1 justify-end">
+                        {request.requesterLanguages.map(l => (
+                          <span key={l} className="text-[10px] px-1.5 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200/50">
+                            {tCommon(`languagesList.${l}`, { defaultValue: l })}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </GlassCard>
         </div>
@@ -313,7 +375,7 @@ export default function RequestDetailPage() {
           <div className="px-4 pb-4">
             <GlassCard>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="font-bold text-gray-900 dark:text-white">求票者</h3>
+                <h3 className="font-bold text-gray-900 dark:text-white">{t('requester')}</h3>
                  {!isCreator && session?.user && (
                   <button
                     onClick={() => setShowReportModal(true)}
@@ -347,13 +409,13 @@ export default function RequestDetailPage() {
         <div className="max-w-3xl mx-auto">
           {isCreator ? (
              <div className="flex-1 py-3.5 px-6 rounded-xl font-semibold bg-gray-200 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 flex items-center justify-center">
-               您的求票
+               {t('yourRequest')}
              </div>
           ) : hasApplied ? (
             <div className="flex gap-3">
                <div className="flex-1 py-3.5 px-6 rounded-xl font-semibold bg-gray-200 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 flex items-center justify-center gap-2">
                  <Check className="w-5 h-5" />
-                 已聯絡求票人
+                 {t('contacted')}
                </div>
             </div>
           ) : (
@@ -363,7 +425,7 @@ export default function RequestDetailPage() {
                 className="flex-1 py-3.5 px-6 rounded-xl font-semibold bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
               >
                 <MessageCircle className="w-5 h-5" />
-                我可以幫忙 (聯絡對方)
+                {t('iCanHelp')}
               </button>
             </div>
           )}
@@ -383,12 +445,12 @@ export default function RequestDetailPage() {
       <Modal
         isOpen={showApplyModal}
         onClose={() => setShowApplyModal(false)}
-        title="聯絡求票人"
+        title={t('contactRequester')}
       >
         <div className="p-4">
           <div className="mb-4">
             <p className="text-gray-600 dark:text-gray-300 text-sm">
-              即將私訊給 {user?.username} 關於「{request.eventName}」的求票。
+              {t('contactConfirmDesc', { username: user?.username || tCommon('defaultUser'), eventName: request.eventName })}
             </p>
           </div>
           <Textarea
@@ -411,7 +473,7 @@ export default function RequestDetailPage() {
               disabled={isApplying}
               className="flex-1 px-4 py-2.5 rounded-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center"
             >
-              {isApplying ? <Loader2 className="w-5 h-5 animate-spin" /> : '發送訊息'}
+              {isApplying ? <Loader2 className="w-5 h-5 animate-spin" /> : tCommon('sendMessage')}
             </button>
           </div>
         </div>
@@ -441,24 +503,24 @@ export default function RequestDetailPage() {
       <Modal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
-        title="刪除求票"
+        title={t('deleteRequest')}
       >
         <div className="p-4 text-center">
            <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-           <p className="text-gray-600 dark:text-gray-300 mb-6">確定要刪除這筆求票活動嗎？這個動作無法復原喔！</p>
+           <p className="text-gray-600 dark:text-gray-300 mb-6">{t('deleteConfirm')}</p>
            <div className="flex gap-3">
               <button
                 onClick={() => setShowDeleteModal(false)}
                 className="flex-[1] px-4 py-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
               >
-                取消
+                {tCommon('cancel')}
               </button>
               <button
                 onClick={handleDelete}
                 disabled={isDeleting}
                 className="flex-[2] px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors flex items-center justify-center disabled:opacity-50"
               >
-                {isDeleting ? <Loader2 className="animate-spin w-5 h-5" /> : '確認刪除'}
+                {isDeleting ? <Loader2 className="animate-spin w-5 h-5" /> : tCommon('confirmDelete')}
               </button>
            </div>
         </div>

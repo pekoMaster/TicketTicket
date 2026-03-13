@@ -113,6 +113,9 @@ interface ApiTicketRequest {
   seat_grades: string[];
   quantity: number;
   description?: string;
+  ticket_source?: 'zaiko' | 'lawson';
+  requester_nationality?: string;
+  requester_languages?: string[];
   status: 'open' | 'matched' | 'closed';
   created_at: string;
   updated_at: string;
@@ -130,6 +133,9 @@ function convertApiTicketRequestToTicketRequest(apiRequest: ApiTicketRequest): T
     seatGrades: apiRequest.seat_grades,
     quantity: apiRequest.quantity,
     description: apiRequest.description || '',
+    ticketSource: apiRequest.ticket_source,
+    requesterNationality: apiRequest.requester_nationality,
+    requesterLanguages: apiRequest.requester_languages,
     status: apiRequest.status,
     createdAt: new Date(apiRequest.created_at),
     updatedAt: new Date(apiRequest.updated_at),
