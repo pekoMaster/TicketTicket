@@ -109,7 +109,7 @@ export default function SideNav() {
           </a>
         </div>
         <div className="p-4 text-xs text-center text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-white/5">
-          TicketTicket v1.22
+          TicketTicket v1.23
           <br />
           &copy; 2024 TicketTicket
         </div>

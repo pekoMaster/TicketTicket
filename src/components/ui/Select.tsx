@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDown, Search, X } from 'lucide-react';
 
 interface SelectOption {
@@ -22,6 +23,13 @@ interface SelectProps {
   error?: string;
 }
 
+interface DropdownPosition {
+  top: number;
+  left: number;
+  width: number;
+  openUpward: boolean;
+}
+
 export default function Select({
   label,
   placeholder = 'Select...',
@@ -38,7 +46,10 @@ export default function Select({
   const [search, setSearch] = useState('');
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [customValue, setCustomValue] = useState('');
+  const [dropdownPos, setDropdownPos] = useState<DropdownPosition>({ top: 0, left: 0, width: 0, openUpward: false });
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Check if current value is a custom value (not in options)
@@ -51,10 +62,47 @@ export default function Select({
     )
     : options;
 
-  // Close dropdown when clicking outside
+  // 計算 dropdown 位置（基於 trigger button 的 bounding rect）
+  const updatePosition = useCallback(() => {
+    if (!triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    const dropdownMaxHeight = 280; // max-h-64 = 16rem ≈ 256px + 搜尋框
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    const openUpward = spaceBelow < dropdownMaxHeight && spaceAbove > spaceBelow;
+
+    setDropdownPos({
+      top: openUpward ? rect.top + window.scrollY : rect.bottom + window.scrollY,
+      left: rect.left + window.scrollX,
+      width: rect.width,
+      openUpward,
+    });
+  }, []);
+
+  // 開啟時計算位置，並監聽 scroll / resize
   useEffect(() => {
+    if (!isOpen) return;
+    updatePosition();
+
+    const handleScrollOrResize = () => updatePosition();
+    window.addEventListener('scroll', handleScrollOrResize, true);
+    window.addEventListener('resize', handleScrollOrResize);
+    return () => {
+      window.removeEventListener('scroll', handleScrollOrResize, true);
+      window.removeEventListener('resize', handleScrollOrResize);
+    };
+  }, [isOpen, updatePosition]);
+
+  // Close dropdown when clicking outside (check both trigger and portal dropdown)
+  useEffect(() => {
+    if (!isOpen) return;
+
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (
+        containerRef.current && !containerRef.current.contains(target) &&
+        dropdownRef.current && !dropdownRef.current.contains(target)
+      ) {
         setIsOpen(false);
         setSearch('');
       }
@@ -62,12 +110,15 @@ export default function Select({
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [isOpen]);
 
   // Focus input when dropdown opens
   useEffect(() => {
     if (isOpen && searchable && inputRef.current) {
-      inputRef.current.focus();
+      // 短暫延遲以確保 portal 已渲染
+      requestAnimationFrame(() => {
+        inputRef.current?.focus();
+      });
     }
   }, [isOpen, searchable]);
 
@@ -95,6 +146,127 @@ export default function Select({
     ? options.find(opt => opt.value === value)?.label || value
     : '';
 
+  // Dropdown 內容（透過 Portal 渲染到 body）
+  const dropdownContent = isOpen && typeof window !== 'undefined' ? createPortal(
+    <div
+      ref={dropdownRef}
+      className="fixed bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl max-h-64 overflow-hidden"
+      style={{
+        zIndex: 99999,
+        top: dropdownPos.openUpward ? 'auto' : `${dropdownPos.top}px`,
+        bottom: dropdownPos.openUpward ? `${window.innerHeight - dropdownPos.top + window.scrollY}px` : 'auto',
+        left: `${dropdownPos.left}px`,
+        width: `${dropdownPos.width}px`,
+        marginTop: dropdownPos.openUpward ? 0 : 4,
+        marginBottom: dropdownPos.openUpward ? 4 : 0,
+      }}
+    >
+      {/* Search input */}
+      {searchable && (
+        <div className="p-2 border-b border-gray-100 dark:border-gray-700">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
+            <input
+              ref={inputRef}
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search..."
+              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-600 rounded"
+              >
+                <X className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Options list */}
+      <div className="max-h-48 overflow-y-auto">
+        {filteredOptions.length > 0 ? (
+          filteredOptions.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => !option.disabled && handleSelect(option.value)}
+              disabled={option.disabled}
+              className={`
+                w-full px-4 py-2.5 text-left text-sm
+                ${option.disabled
+                  ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed bg-gray-50 dark:bg-gray-800'
+                  : `hover:bg-indigo-50 dark:hover:bg-indigo-900/30 ${value === option.value ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-medium' : 'text-gray-700 dark:text-gray-200'}`
+                }
+              `}
+            >
+              {option.label}
+            </button>
+          ))
+        ) : (
+          <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 text-center">
+            No results found
+          </div>
+        )}
+
+        {/* Custom option */}
+        {allowCustom && (
+          <>
+            <div className="border-t border-gray-100 dark:border-gray-700" />
+            {showCustomInput ? (
+              <div className="p-2">
+                <input
+                  type="text"
+                  value={customValue}
+                  onChange={(e) => setCustomValue(e.target.value)}
+                  placeholder="Enter custom value..."
+                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleCustomSubmit();
+                    }
+                  }}
+                />
+                <div className="flex gap-2 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowCustomInput(false)}
+                    className="flex-1 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCustomSubmit}
+                    className="flex-1 px-3 py-1.5 text-sm text-white bg-indigo-500 rounded-md hover:bg-indigo-600"
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={handleCustomSelect}
+                className={`
+                  w-full px-4 py-2.5 text-left text-sm hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400
+                  ${isCustomValue ? 'bg-indigo-50 dark:bg-indigo-900/30 font-medium' : ''}
+                `}
+              >
+                + {customLabel}
+              </button>
+            )}
+          </>
+        )}
+      </div>
+    </div>,
+    document.body
+  ) : null;
+
   return (
     <div className="w-full" ref={containerRef}>
       {label && (
@@ -104,8 +276,9 @@ export default function Select({
         </label>
       )}
 
-      <div className={`relative ${isOpen ? 'z-[9999]' : ''}`}>
+      <div className="relative">
         <button
+          ref={triggerRef}
           type="button"
           onClick={() => setIsOpen(!isOpen)}
           className={`
@@ -121,114 +294,10 @@ export default function Select({
           <span className="truncate">{displayValue || placeholder}</span>
           <ChevronDown className={`w-5 h-5 text-gray-400 dark:text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </button>
-
-        {isOpen && (
-          <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-64 overflow-hidden">
-            {/* Search input */}
-            {searchable && (
-              <div className="p-2 border-b border-gray-100 dark:border-gray-700">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search..."
-                    className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                  />
-                  {search && (
-                    <button
-                      onClick={() => setSearch('')}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-600 rounded"
-                    >
-                      <X className="w-3 h-3 text-gray-400 dark:text-gray-500" />
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Options list */}
-            <div className="max-h-48 overflow-y-auto">
-              {filteredOptions.length > 0 ? (
-                filteredOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => !option.disabled && handleSelect(option.value)}
-                    disabled={option.disabled}
-                    className={`
-                      w-full px-4 py-2.5 text-left text-sm
-                      ${option.disabled
-                        ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed bg-gray-50 dark:bg-gray-800'
-                        : `hover:bg-indigo-50 dark:hover:bg-indigo-900/30 ${value === option.value ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-medium' : 'text-gray-700 dark:text-gray-200'}`
-                      }
-                    `}
-                  >
-                    {option.label}
-                  </button>
-                ))
-              ) : (
-                <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 text-center">
-                  No results found
-                </div>
-              )}
-
-              {/* Custom option */}
-              {allowCustom && (
-                <>
-                  <div className="border-t border-gray-100 dark:border-gray-700" />
-                  {showCustomInput ? (
-                    <div className="p-2">
-                      <input
-                        type="text"
-                        value={customValue}
-                        onChange={(e) => setCustomValue(e.target.value)}
-                        placeholder="Enter custom value..."
-                        className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                        autoFocus
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            handleCustomSubmit();
-                          }
-                        }}
-                      />
-                      <div className="flex gap-2 mt-2">
-                        <button
-                          type="button"
-                          onClick={() => setShowCustomInput(false)}
-                          className="flex-1 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleCustomSubmit}
-                          className="flex-1 px-3 py-1.5 text-sm text-white bg-indigo-500 rounded-md hover:bg-indigo-600"
-                        >
-                          OK
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleCustomSelect}
-                      className={`
-                        w-full px-4 py-2.5 text-left text-sm hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400
-                        ${isCustomValue ? 'bg-indigo-50 dark:bg-indigo-900/30 font-medium' : ''}
-                      `}
-                    >
-                      + {customLabel}
-                    </button>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Portal dropdown */}
+      {dropdownContent}
 
       {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
     </div>
