@@ -9,6 +9,7 @@ interface AvatarProps {
   alt?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
+  priority?: boolean;
 }
 
 const SIZE_MAP = {
@@ -25,7 +26,7 @@ const ICON_SIZES = {
   xl: 'w-8 h-8',
 };
 
-export default function Avatar({ src, alt = '', size = 'md', className = '' }: AvatarProps) {
+export default function Avatar({ src, alt = '', size = 'md', className = '', priority = false }: AvatarProps) {
   const [hasError, setHasError] = useState(false);
   const sizeInfo = SIZE_MAP[size];
 
@@ -39,7 +40,8 @@ export default function Avatar({ src, alt = '', size = 'md', className = '' }: A
           width={sizeInfo.pixels}
           height={sizeInfo.pixels}
           className="rounded-full object-cover w-full h-full"
-          loading="lazy"
+          priority={priority}
+          loading={priority ? undefined : "lazy"}
           onError={() => setHasError(true)}
           unoptimized={src.startsWith('data:')} // data URL 不需要優化
         />

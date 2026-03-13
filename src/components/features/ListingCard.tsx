@@ -107,6 +107,7 @@ export default function ListingCard({ listing, host, isFirstCard }: ListingCardP
                 src={getDisplayAvatar(host)}
                 size="md"
                 className="transition-all"
+                priority={isFirstCard}
               />
               {/* 上線狀態指示器 */}
               <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900" />

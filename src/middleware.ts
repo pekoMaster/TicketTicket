@@ -1,40 +1,27 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
-// 公開路由（不需要登入）
+// 公開路由（不需要進入 auth 流程）
 const publicRoutes = [
   "/login",
   "/api/auth",
   "/legal",
-  "/_next",
-  "/favicon.ico",
 ];
 
-export default auth((req) => {
+export default function middleware(req: any) {
   const { pathname } = req.nextUrl;
 
-  // 檢查是否為公開路由
-  const isPublicRoute = publicRoutes.some(route =>
-    pathname.startsWith(route) || pathname === "/"
-  );
-
-  // 檢查是否為靜態檔案
+  // 1. 快速過濾靜態資源與公開路由
   const isStaticFile = pathname.includes(".") && !pathname.endsWith(".html");
+  const isPublicRoute = pathname === "/" || publicRoutes.some(route => pathname.startsWith(route));
 
-  // 如果是公開路由或靜態檔案，允許通過
-  if (isPublicRoute || isStaticFile) {
+  if (isStaticFile || isPublicRoute) {
     return NextResponse.next();
   }
 
-  // 如果用戶未登入，重導向到登入頁面
-  if (!req.auth) {
-    const loginUrl = new URL("/login", req.url);
-    loginUrl.searchParams.set("callbackUrl", pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  return NextResponse.next();
-});
+  // 2. 只有非公開路由才進入 NextAuth 認證流程
+  return auth(req);
+}
 
 export const config = {
   // 匹配所有路由，但排除 API routes、_next/static、_next/image、favicon.ico
