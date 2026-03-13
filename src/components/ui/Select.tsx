@@ -72,8 +72,8 @@ export default function Select({
     const openUpward = spaceBelow < dropdownMaxHeight && spaceAbove > spaceBelow;
 
     setDropdownPos({
-      top: openUpward ? rect.top + window.scrollY : rect.bottom + window.scrollY,
-      left: rect.left + window.scrollX,
+      top: openUpward ? rect.top : rect.bottom,
+      left: rect.left,
       width: rect.width,
       openUpward,
     });
@@ -154,7 +154,7 @@ export default function Select({
       style={{
         zIndex: 99999,
         top: dropdownPos.openUpward ? 'auto' : `${dropdownPos.top}px`,
-        bottom: dropdownPos.openUpward ? `${window.innerHeight - dropdownPos.top + window.scrollY}px` : 'auto',
+        bottom: dropdownPos.openUpward ? `${window.innerHeight - dropdownPos.top}px` : 'auto',
         left: `${dropdownPos.left}px`,
         width: `${dropdownPos.width}px`,
         marginTop: dropdownPos.openUpward ? 0 : 4,
