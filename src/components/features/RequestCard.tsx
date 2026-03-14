@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useTranslations, useFormatter } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAdmin } from '@/contexts/AdminContext';
-import { Eye, Clock, Calendar, HandHeart, CheckCircle2, Globe2, MapPin, AlignLeft } from 'lucide-react';
+import { Eye, Clock, Calendar, HandHeart, CheckCircle2, Globe2, MapPin, AlignLeft, Armchair } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
 import UserProfileModal from '@/components/ui/UserProfileModal';
 import { TicketRequest, User, ACCEPTED_TICKET_TYPE_INFO, NATIONALITY_OPTIONS, LANGUAGE_OPTIONS, TicketType } from '@/types';
@@ -33,6 +33,12 @@ export default function RequestCard({ request, isFirstCard }: RequestCardProps) 
             month: '2-digit',
             day: '2-digit',
         });
+    };
+
+    // 取得顯示頭像
+    const getDisplayAvatar = (user?: User) => {
+        if (!user) return undefined;
+        return user.customAvatarUrl || user.avatarUrl;
     };
 
   // 取得語言顯示名稱
