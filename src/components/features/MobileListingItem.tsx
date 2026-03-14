@@ -16,6 +16,7 @@ export default function MobileListingItem({ listing, host, isFirstItem }: Mobile
     const t = useTranslations('listing');
     const tTicket = useTranslations('ticketType');
     const tFilter = useTranslations('filter');
+    const tCommon = useTranslations('common');
     const { locale } = useLanguage();
     const format = useFormatter();
 
@@ -110,11 +111,15 @@ export default function MobileListingItem({ listing, host, isFirstItem }: Mobile
                     )}
 
                     {/* 票源 */}
-                    {ticketSourceInfo && (
-                        <span className="text-[10px] bg-blue-100 dark:bg-blue-600/30 text-blue-600 dark:text-blue-300 px-1.5 py-0.5 rounded">
-                            {ticketSourceInfo.label}
-                        </span>
-                    )}
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded text-white ${
+                        !listing.ticketSource 
+                            ? 'bg-gray-500'
+                            : listing.ticketSource === 'lawson'
+                                ? 'bg-green-600'
+                                : 'bg-blue-600'
+                    }`}>
+                        {!listing.ticketSource ? tCommon('anySource') : TICKET_SOURCE_INFO[listing.ticketSource].label}
+                    </span>
 
                     {/* 協助入場 */}
                     {listing.willAssistEntry && (

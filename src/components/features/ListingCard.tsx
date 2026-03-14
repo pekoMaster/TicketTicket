@@ -149,11 +149,14 @@ export default function ListingCard({ listing, host, isFirstCard }: ListingCardP
           {/* Tags (Ticket Source + Entry Assist) */}
           <div className="flex gap-2 flex-wrap">
             {/* Ticket Source */}
-            <span className={`px-2.5 py-1 rounded-lg text-xs font-bold shadow-lg ${listing.ticketSource === 'lawson'
-              ? 'bg-gradient-to-r from-green-600 to-green-500 text-white shadow-green-500/20'
-              : 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-blue-500/20'
-              }`}>
-              {TICKET_SOURCE_INFO[listing.ticketSource || 'zaiko'].label}
+            <span className={`px-2.5 py-1 rounded-lg text-xs font-bold shadow-lg ${
+              !listing.ticketSource 
+                ? 'bg-gradient-to-r from-gray-600 to-gray-500 text-white shadow-gray-500/20'
+                : listing.ticketSource === 'lawson'
+                  ? 'bg-gradient-to-r from-green-600 to-green-500 text-white shadow-green-500/20'
+                  : 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-blue-500/20'
+            }`}>
+              {!listing.ticketSource ? tCommon('anySource') : TICKET_SOURCE_INFO[listing.ticketSource].label}
             </span>
 
             {/* Entry Assist */}

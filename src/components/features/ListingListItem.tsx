@@ -17,6 +17,7 @@ interface ListingListItemProps {
 export default function ListingListItem({ listing, host }: ListingListItemProps) {
     const t = useTranslations('listing');
     const tTicket = useTranslations('ticketType');
+    const tCommon = useTranslations('common');
     const { locale } = useLanguage();
     const format = useFormatter();
     const [showUserModal, setShowUserModal] = useState(false);
@@ -97,11 +98,14 @@ export default function ListingListItem({ listing, host }: ListingListItemProps)
                             {/* Tags */}
                             <div className="flex gap-2 flex-shrink-0 flex-wrap sm:flex-nowrap">
                                 {/* Ticket Source - Gradient */}
-                                <span className={`px-2.5 py-1 rounded-lg text-xs font-bold shadow-sm ${listing.ticketSource === 'lawson'
-                                        ? 'bg-gradient-to-r from-green-600 to-green-500 text-white'
-                                        : 'bg-gradient-to-r from-blue-600 to-blue-500 text-white'
+                                <span className={`px-2.5 py-1 rounded-lg text-xs font-bold shadow-sm ${
+                                    !listing.ticketSource 
+                                        ? 'bg-gradient-to-r from-gray-600 to-gray-500 text-white shadow-gray-500/20'
+                                        : listing.ticketSource === 'lawson'
+                                            ? 'bg-gradient-to-r from-green-600 to-green-500 text-white shadow-green-500/20'
+                                            : 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-blue-500/20'
                                     }`}>
-                                    {TICKET_SOURCE_INFO[listing.ticketSource || 'zaiko'].label}
+                                    {!listing.ticketSource ? tCommon('anySource') : TICKET_SOURCE_INFO[listing.ticketSource].label}
                                 </span>
 
                                 {/* Entry Assist */}

@@ -86,6 +86,17 @@ export default function RequestListItem({ request, user }: RequestListItemProps)
 
                             {/* Tags */}
                             <div className="flex gap-2 flex-shrink-0 flex-wrap sm:flex-nowrap">
+                                {/* Ticket Source - Gradient */}
+                                <span className={`px-2.5 py-1 rounded-lg text-xs font-bold shadow-sm ${
+                                    !request.ticketSource 
+                                        ? 'bg-gradient-to-r from-gray-600 to-gray-500 text-white shadow-gray-500/20'
+                                        : request.ticketSource === 'lawson'
+                                            ? 'bg-gradient-to-r from-green-600 to-green-500 text-white shadow-green-500/20'
+                                            : 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-blue-500/20'
+                                    }`}>
+                                    {!request.ticketSource ? tCommon('anySource') : request.ticketSource === 'lawson' ? 'LAWSON' : 'ZAIKO'}
+                                </span>
+
                                 {request.acceptedTypes && request.acceptedTypes.map(type => {
                                     const labelKey = type === 'find_companion' ? 'findCompanion' : 
                                                    type === 'sub_ticket_transfer' ? 'subTicketTransfer' : 'ticketExchange';

@@ -144,14 +144,15 @@ export default function RequestCard({ request, isFirstCard }: RequestCardProps) 
           {/* Tags (Ticket Source + Accepted Types 對齊 ListingCard 漸層) */}
           <div className="flex gap-2 flex-wrap">
             {/* Ticket Source */}
-            {request.ticketSource && (
-              <span className={`px-2.5 py-1 rounded-lg text-xs font-bold shadow-lg ${request.ticketSource === 'lawson'
-                ? 'bg-gradient-to-r from-green-600 to-green-500 text-white shadow-green-500/20'
-                : 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-blue-500/20'
-                }`}>
-                {request.ticketSource === 'lawson' ? 'LAWSON' : 'ZAIKO'}
-              </span>
-            )}
+            <span className={`px-2.5 py-1 rounded-lg text-xs font-bold shadow-lg ${
+              !request.ticketSource 
+                ? 'bg-gradient-to-r from-gray-600 to-gray-500 text-white shadow-gray-500/20'
+                : request.ticketSource === 'lawson'
+                  ? 'bg-gradient-to-r from-green-600 to-green-500 text-white shadow-green-500/20'
+                  : 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-blue-500/20'
+            }`}>
+              {!request.ticketSource ? tCommon('anySource') : request.ticketSource === 'lawson' ? 'LAWSON' : 'ZAIKO'}
+            </span>
 
             {/* Accepted Types */}
             {request.acceptedTypes && request.acceptedTypes[0] && (

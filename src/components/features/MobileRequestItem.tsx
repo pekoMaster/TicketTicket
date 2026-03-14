@@ -16,6 +16,7 @@ interface MobileRequestItemProps {
 export default function MobileRequestItem({ request, user, isFirstItem }: MobileRequestItemProps) {
     const t = useTranslations('request');
     const tTicket = useTranslations('ticketType');
+    const tCommon = useTranslations('common');
     const { locale } = useLanguage();
     const format = useFormatter();
     const { events } = useAdmin();
@@ -74,6 +75,28 @@ export default function MobileRequestItem({ request, user, isFirstItem }: Mobile
 
                 {/* 第三列：座位 + 方式標籤 */}
                 <div className="flex items-center gap-1.5 pl-10 flex-wrap">
+                    {/* 票源 */}
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded text-white ${
+                        !request.ticketSource 
+                            ? 'bg-gray-500'
+                            : request.ticketSource === 'lawson'
+                                ? 'bg-green-600'
+                                : 'bg-blue-600'
+                    }`}>
+                        {!request.ticketSource ? tCommon('anySource') : request.ticketSource === 'lawson' ? 'LAWSON' : 'ZAIKO'}
+                    </span>
+
+                    {/* 票源 */}
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded text-white ${
+                        !request.ticketSource 
+                            ? 'bg-gray-500'
+                            : request.ticketSource === 'lawson'
+                                ? 'bg-green-600'
+                                : 'bg-blue-600'
+                    }`}>
+                        {!request.ticketSource ? tCommon('anySource') : request.ticketSource === 'lawson' ? 'LAWSON' : 'ZAIKO'}
+                    </span>
+
                     {/* 座位等級 */}
                     {request.seatGrades && request.seatGrades.length > 0 && (
                         <span className="text-[10px] bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-1.5 py-0.5 rounded">
