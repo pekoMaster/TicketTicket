@@ -1341,6 +1341,7 @@
     "ratingStars": "星 {rating}",
     "needs": "希望 {count} 枚",
     "viewDetails": "詳細を見る",
+    "view": "見る",
     "requester": "求票者",
     "yourRequest": "あなたの求票",
     "contacted": "求票者に連絡済み",

@@ -1339,6 +1339,7 @@
     "ratingStars": "{rating} Stars",
     "needs": "Needs {count} Tickets",
     "viewDetails": "View Details",
+    "view": "View",
     "requester": "Requester",
     "yourRequest": "Your Request",
     "contacted": "Contacted Requester",

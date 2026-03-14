@@ -1341,6 +1341,7 @@
     "ratingStars": "{rating} 顆星",
     "needs": "需求 {count} 張",
     "viewDetails": "查看詳情",
+    "view": "查看",
     "requester": "求票者",
     "yourRequest": "您的求票",
     "contacted": "已聯絡求票人",
