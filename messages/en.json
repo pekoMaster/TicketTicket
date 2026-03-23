@@ -248,9 +248,7 @@
     "subsidyToApplicant": "Subsidy to Applicant",
     "subsidyToHost": "Subsidy to Host",
     "ticketInfo": "Ticket Information",
-    "ticketCountType": "Ticket Type",
-    "duoTicket": "Duo Ticket",
-    "soloTicket": "Solo Ticket",
+    "ticketPeopleCount": "Ticket Capacity",
     "ticketTypeLabel": "Ticket Category",
     "askingPrice": "Asking Price",
     "originalPrice": "Original Price",
@@ -365,7 +363,7 @@
     "zaikoNote": "ZAIKO Electronic Ticket System",
     "lawsonNote": "LAWSON convenience store tickets (sub-tickets must be transferred physically)",
     "seatGrade": "Seat Grade",
-    "ticketCountType": "Ticket Count Type",
+    "ticketPeopleCount": "Ticket Capacity",
     "pleaseSelectSeatGrade": "Please select seat grade first",
     "noPriceSet": "No price set for this event",
     "referencePrice": "Reference Price",
@@ -476,7 +474,7 @@
     "ticket_exchange": "Exchange",
     "findCompanion": "Find Companion",
     "findCompanionDesc": "Find a partner to enter together, split the cost",
-    "findCompanionWarning": "Must select duo ticket",
+    "findCompanionWarning": "Attendees will enter together",
     "mainTicketTransfer": "Main Ticket Transfer",
     "mainTicketTransferDesc": "Transfer main ticket, cannot transfer online, please arrange your own method",
     "mainTicketTransferWarning": "Main ticket transfer violates ZAIKO and event organizer policies. This website is not responsible for any consequences after the transfer",
@@ -557,11 +555,6 @@
     "notFound": "Conversation not found",
     "expectedPrice": "Expected Price",
     "hostContactMethods": "Host can be contacted via:",
-    "ticketCount": {
-      "solo": "Solo Ticket",
-      "duo": "Duo Ticket",
-      "family": "Family Ticket"
-    },
     "listingType": {
       "find_companion": "Find Companion",
       "main_ticket_transfer": "Main Ticket Transfer",
@@ -570,7 +563,7 @@
     },
     "labels": {
       "seatGrade": "Seat Grade",
-      "ticketCount": "Count",
+      "ticketCount": "Ticket Capacity",
       "listingType": "Type"
     },
     "seatGrade": {

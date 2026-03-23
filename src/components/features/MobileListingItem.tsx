@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useTranslations, useFormatter } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Avatar from '@/components/ui/Avatar';
-import { Listing, User, LANGUAGE_OPTIONS, TICKET_COUNT_TYPE_INFO, TICKET_SOURCE_INFO } from '@/types';
+import { Listing, User, LANGUAGE_OPTIONS, TICKET_SOURCE_INFO } from '@/types';
 
 interface MobileListingItemProps {
     listing: Listing;
@@ -44,7 +44,6 @@ export default function MobileListingItem({ listing, host, isFirstItem }: Mobile
     };
 
     // 票種資訊
-    const ticketCountInfo = TICKET_COUNT_TYPE_INFO[listing.ticketCountType as keyof typeof TICKET_COUNT_TYPE_INFO];
     const ticketSourceInfo = TICKET_SOURCE_INFO[listing.ticketSource as keyof typeof TICKET_SOURCE_INFO];
 
     // 計算相對時間
@@ -104,9 +103,9 @@ export default function MobileListingItem({ listing, host, isFirstItem }: Mobile
                     )}
 
                     {/* 票種 */}
-                    {ticketCountInfo && (
+                    {listing.ticketPeopleCount > 0 && (
                         <span className="text-[10px] bg-purple-100 dark:bg-purple-600/30 text-purple-600 dark:text-purple-300 px-1.5 py-0.5 rounded">
-                            {ticketCountInfo.label}
+                            {listing.ticketPeopleCount}人票
                         </span>
                     )}
 

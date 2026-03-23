@@ -250,9 +250,7 @@
     "subsidyToApplicant": "補貼申請人",
     "subsidyToHost": "補貼主辦人",
     "ticketInfo": "票種資訊",
-    "ticketCountType": "票種",
-    "duoTicket": "二人票",
-    "soloTicket": "一人票",
+    "ticketPeopleCount": "購票人數",
     "ticketTypeLabel": "券種類型",
     "askingPrice": "希望分攤",
     "originalPrice": "原價",
@@ -367,7 +365,7 @@
     "zaikoNote": "ZAIKO 電子票券系統",
     "lawsonNote": "LAWSON 便利商店票券（子票須以實體方式交付）",
     "seatGrade": "座位等級",
-    "ticketCountType": "票種類型",
+    "ticketPeopleCount": "購票人數",
     "pleaseSelectSeatGrade": "請先選擇座位等級",
     "noPriceSet": "此活動尚未設定票價",
     "referencePrice": "參考原價",
@@ -478,7 +476,7 @@
     "ticket_exchange": "換票",
     "findCompanion": "尋找同行者",
     "findCompanionDesc": "尋找一起入場的夥伴，費用均攤",
-    "findCompanionWarning": "必須選擇二人票",
+    "findCompanionWarning": "尋找同行夥伴一起入場",
     "mainTicketTransfer": "母票轉讓",
     "mainTicketTransferDesc": "轉讓主票，無法線上讓渡，請自行連絡同行辦法",
     "mainTicketTransferWarning": "轉讓主票為違反 ZAIKO 與相關舉辦單位之行為，本網站不負責任何換票後的後果",
@@ -559,11 +557,6 @@
     "notFound": "找不到此對話",
     "expectedPrice": "希望分攤",
     "hostContactMethods": "主辦方可透過以下方式聯繫：",
-    "ticketCount": {
-      "solo": "一人票",
-      "duo": "二人票",
-      "family": "家庭票"
-    },
     "listingType": {
       "find_companion": "尋找同行",
       "main_ticket_transfer": "母票轉讓",
@@ -572,7 +565,7 @@
     },
     "labels": {
       "seatGrade": "座位等級",
-      "ticketCount": "票種",
+      "ticketCount": "購票人數",
       "listingType": "類型"
     },
     "seatGrade": {

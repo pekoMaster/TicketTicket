@@ -47,7 +47,7 @@ interface Listing {
   meeting_location: string;
   meeting_time: string;
   ticket_type: string;
-  ticket_count_type: string;
+  ticket_people_count?: number;
   seat_grade?: string;
   will_assist_entry?: boolean;
   status: string;
@@ -629,11 +629,8 @@ export default function ChatPage() {
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
               <TagIcon className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
               <span className="text-gray-500 dark:text-gray-400">{tChat('labels.ticketCount')}:</span>
-              <Tag
-                variant={listing.ticket_count_type === 'solo' ? 'default' : listing.ticket_count_type === 'duo' ? 'info' : 'purple'}
-                size="sm"
-              >
-                {tChat(`ticketCount.${listing.ticket_count_type || 'duo'}`)}
+              <Tag variant="purple" size="sm">
+                {listing.ticket_people_count ? `${listing.ticket_people_count}人票` : '-'}
               </Tag>
             </div>
 
@@ -662,7 +659,7 @@ export default function ChatPage() {
           {(() => {
             const selectedEvent = events.find(e => e.name === listing.event_name);
             const priceTier = selectedEvent?.ticketPriceTiers?.find(
-              tier => tier.seatGrade === listing.seat_grade && tier.ticketCountType === listing.ticket_count_type
+              tier => tier.seatGrade === listing.seat_grade
             );
             if (priceTier?.priceJpy) {
               return (

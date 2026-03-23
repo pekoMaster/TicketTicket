@@ -7,8 +7,6 @@ import {
   EventCategory,
   EVENT_CATEGORY_INFO,
   TicketPriceTier,
-  TicketCountType,
-  TICKET_COUNT_TYPE_INFO,
 } from '@/types';
 import { Calendar, MapPin, Ticket, FileText, Plus, Trash2, Settings, Bell } from 'lucide-react';
 
@@ -18,13 +16,12 @@ interface EventFormProps {
   isEditing?: boolean;
 }
 
-// 預設票種等級列（5列）- 座位等級現在是自訂字串
+// 預設票種等級列（4列）- 座位等級自訂字串，人數統一由 maxTicketsPerPerson 決定
 const createDefaultPriceTiers = (): TicketPriceTier[] => [
-  { seatGrade: 'SS', ticketCountType: 'solo', priceJpy: undefined },
-  { seatGrade: 'S', ticketCountType: 'solo', priceJpy: undefined },
-  { seatGrade: 'A', ticketCountType: 'solo', priceJpy: undefined },
-  { seatGrade: 'A', ticketCountType: 'duo', priceJpy: undefined },
-  { seatGrade: 'B', ticketCountType: 'solo', priceJpy: undefined },
+  { seatGrade: 'SS', priceJpy: undefined },
+  { seatGrade: 'S', priceJpy: undefined },
+  { seatGrade: 'A', priceJpy: undefined },
+  { seatGrade: 'B', priceJpy: undefined },
 ];
 
 export default function EventForm({ initialData, onSubmit, isEditing }: EventFormProps) {
@@ -43,7 +40,7 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
     description: initialData?.description || '',
     category: initialData?.category || 'concert',
     isActive: initialData?.isActive ?? true,
-    maxListingsPerUser: initialData?.maxListingsPerUser || 2,
+    maxTicketsPerPerson: initialData?.maxTicketsPerPerson || 2,
     maxRequestsPerUser: initialData?.maxRequestsPerUser || 2,
     discordWebhookUrl: (initialData as { discordWebhookUrl?: string })?.discordWebhookUrl || '',
   });
@@ -80,7 +77,7 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
   };
 
   const addPriceTier = () => {
-    setPriceTiers((prev) => [...prev, { seatGrade: '', ticketCountType: 'solo', priceJpy: undefined }]);
+    setPriceTiers((prev) => [...prev, { seatGrade: '', priceJpy: undefined }]);
   };
 
   const removePriceTier = (index: number) => {
@@ -146,7 +143,7 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
         ticketPriceTiers: validPriceTiers,
         category: formData.category as EventCategory,
         isActive: formData.isActive,
-        maxListingsPerUser: formData.maxListingsPerUser,
+        maxTicketsPerPerson: formData.maxTicketsPerPerson,
         maxRequestsPerUser: formData.maxRequestsPerUser,
         discordWebhookUrl: formData.discordWebhookUrl.trim() || undefined,
       } as Omit<HololiveEvent, 'id' | 'createdAt' | 'updatedAt'> & { discordWebhookUrl?: string });
@@ -155,7 +152,6 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
     }
   };
 
-  const ticketCountTypes: TicketCountType[] = ['solo', 'duo'];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 lg:space-y-8 w-full max-w-none">
@@ -336,9 +332,8 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
         <div className="space-y-3">
           {/* 表頭 - 只在桌面顯示 */}
           <div className="hidden sm:grid grid-cols-12 gap-2 text-sm font-medium text-gray-600 dark:text-gray-300 pb-2 border-b dark:border-gray-700">
-            <div className="col-span-4">座位等級名稱（自訂）</div>
-            <div className="col-span-3">票種類型</div>
-            <div className="col-span-3">原價（日圓）</div>
+            <div className="col-span-6">座位等級名稱（自訂）</div>
+            <div className="col-span-4">原價（日圓）</div>
             <div className="col-span-2"></div>
           </div>
 
@@ -358,7 +353,7 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">座位等級</label>
                     <input
@@ -368,20 +363,6 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
                       placeholder="SS、S..."
                       className="w-full px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
                     />
-                  </div>
-                  <div>
-                    <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">票種</label>
-                    <select
-                      value={tier.ticketCountType}
-                      onChange={(e) => handlePriceTierChange(index, 'ticketCountType', e.target.value)}
-                      className="w-full px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
-                    >
-                      {ticketCountTypes.map((type) => (
-                        <option key={type} value={type}>
-                          {TICKET_COUNT_TYPE_INFO[type].label}
-                        </option>
-                      ))}
-                    </select>
                   </div>
                   <div>
                     <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">原價(¥)</label>
@@ -398,7 +379,7 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
 
               {/* 桌面版 - 表格式 */}
               <div className="hidden sm:grid grid-cols-12 gap-2 items-center">
-                <div className="col-span-4">
+                <div className="col-span-6">
                   <input
                     type="text"
                     value={tier.seatGrade}
@@ -407,20 +388,7 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
                   />
                 </div>
-                <div className="col-span-3">
-                  <select
-                    value={tier.ticketCountType}
-                    onChange={(e) => handlePriceTierChange(index, 'ticketCountType', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
-                  >
-                    {ticketCountTypes.map((type) => (
-                      <option key={type} value={type}>
-                        {TICKET_COUNT_TYPE_INFO[type].label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="col-span-3">
+                <div className="col-span-4">
                   <input
                     type="number"
                     value={tier.priceJpy ?? ''}
@@ -465,25 +433,25 @@ export default function EventForm({ initialData, onSubmit, isEditing }: EventFor
         </h2>
         <div className="grid gap-4 lg:gap-6">
 
-          {/* 每帳號刊登上限 */}
+          {/* 每人最多購票張數 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-              每帳號刊登上限 <span className="text-red-500">*</span>
+              每人最多購票張數 <span className="text-red-500">*</span>
             </label>
             <div className="flex items-center gap-3">
               <input
                 type="number"
-                name="maxListingsPerUser"
-                value={formData.maxListingsPerUser}
+                name="maxTicketsPerPerson"
+                value={formData.maxTicketsPerPerson}
                 onChange={handleChange}
                 min={1}
                 max={10}
                 className="w-24 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
-              <span className="text-sm text-gray-500 dark:text-gray-400">張/帳號</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">張/人</span>
             </div>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              限制每個用戶在此活動可發布的票券數量（單日活動建議 1-2，多日活動可設更高）
+              決定用戶發布刊登時可選擇的最大人數（例如設為 4，則可選 1～4 人票）
             </p>
           </div>
 

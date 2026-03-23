@@ -56,9 +56,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     // 轉換 ticketPriceTiers 從 camelCase 到 snake_case
-    const ticketPriceTiers = (body.ticketPriceTiers || []).map((tier: { seatGrade: string; ticketCountType: string; priceJpy?: number }) => ({
+    const ticketPriceTiers = (body.ticketPriceTiers || []).map((tier: { seatGrade: string; priceJpy?: number }) => ({
       seat_grade: tier.seatGrade,
-      ticket_count_type: tier.ticketCountType,
       price_jpy: tier.priceJpy,
     }));
 
@@ -77,7 +76,7 @@ export async function POST(request: NextRequest) {
         ticket_price_tiers: ticketPriceTiers,
         category: body.category || 'concert',
         is_active: body.isActive !== false,
-        max_listings_per_user: body.maxListingsPerUser || 2,
+        max_tickets_per_person: body.maxTicketsPerPerson || 2,
         max_requests_per_user: body.maxRequestsPerUser || 2,
         discord_webhook_url: body.discordWebhookUrl || null,
       })

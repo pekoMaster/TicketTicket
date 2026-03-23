@@ -17,9 +17,7 @@ import {
   TicketType,
   TicketSource,
   SeatGrade,
-  TicketCountType,
   SEAT_GRADE_INFO,
-  TICKET_COUNT_TYPE_INFO,
   TICKET_SOURCE_INFO,
   NATIONALITY_OPTIONS,
   LANGUAGE_OPTIONS,
@@ -76,7 +74,7 @@ export default function EditListingPage() {
   const [meetingTime, setMeetingTime] = useState('');
   const [meetingLocation, setMeetingLocation] = useState('');
   const [seatGrade, setSeatGrade] = useState<SeatGrade | ''>('');
-  const [ticketCountType, setTicketCountType] = useState<TicketCountType | ''>('');
+  const [ticketPeopleCount, setTicketPeopleCount] = useState<number>(0);
   const [ticketSource, setTicketSource] = useState<TicketSource>('zaiko');
   const [ticketType, setTicketType] = useState<TicketType | ''>('');
   const [willAssistEntry, setWillAssistEntry] = useState(false);
@@ -155,7 +153,7 @@ export default function EditListingPage() {
 
     setMeetingLocation(listing.meetingLocation || '');
     setSeatGrade(listing.seatGrade || '');
-    setTicketCountType(listing.ticketCountType || '');
+    setTicketPeopleCount(listing.ticketPeopleCount || 1);
     setTicketSource(listing.ticketSource || 'zaiko');
     setTicketType(listing.ticketType || '');
     setWillAssistEntry(listing.willAssistEntry || false);
@@ -222,22 +220,21 @@ export default function EditListingPage() {
     return Array.from(grades);
   }, [events, exchangeEventName]);
 
-  // === 可用票種類型 ===
-  const availableTicketCountTypes = useMemo(() => {
-    if (!selectedEvent?.ticketPriceTiers || !seatGrade) return [];
-    const types = selectedEvent.ticketPriceTiers
-      .filter((tier) => tier.seatGrade === seatGrade)
-      .map((tier) => tier.ticketCountType);
-    return Array.from(new Set(types)) as TicketCountType[];
+  // === 最大購票人數 ===
+  const maxPeopleForEvent = useMemo(() => {
+    if (!selectedEvent?.maxTicketsPerPerson) return 4; // 無活動資料時預設4人
+    if (seatGrade && selectedEvent.ticketPriceTiers) {
+      const hasTier = selectedEvent.ticketPriceTiers.some(t => t.seatGrade === seatGrade);
+      if (!hasTier) return 0;
+    }
+    return selectedEvent.maxTicketsPerPerson;
   }, [selectedEvent, seatGrade]);
 
   // === 已選擇的價格等級 ===
   const selectedPriceTier = useMemo(() => {
-    if (!selectedEvent?.ticketPriceTiers || !seatGrade || !ticketCountType) return null;
-    return selectedEvent.ticketPriceTiers.find(
-      tier => tier.seatGrade === seatGrade && tier.ticketCountType === ticketCountType
-    );
-  }, [selectedEvent, seatGrade, ticketCountType]);
+    if (!selectedEvent?.ticketPriceTiers || !seatGrade) return null;
+    return selectedEvent.ticketPriceTiers.find(tier => tier.seatGrade === seatGrade) || null;
+  }, [selectedEvent, seatGrade]);
 
   // 是否為換票模式
   const isExchangeMode = ticketType === 'ticket_exchange';
@@ -250,7 +247,7 @@ export default function EditListingPage() {
       venue.trim() !== '' &&
       meetingTime !== '' &&
       seatGrade !== '' &&
-      ticketCountType !== '' &&
+      ticketPeopleCount > 0 &&
       ticketType !== '' &&
       hostNationality !== '' &&
       hostLanguages.length > 0 &&
@@ -279,7 +276,7 @@ export default function EditListingPage() {
     venue,
     meetingTime,
     seatGrade,
-    ticketCountType,
+    ticketPeopleCount,
     ticketType,
     hostNationality,
     hostLanguages,
@@ -297,7 +294,7 @@ export default function EditListingPage() {
     setEventName(name);
     // 清除依賴欄位
     setSeatGrade('');
-    setTicketCountType('');
+    setTicketPeopleCount(0);
     setTicketType('');
 
     const event = events.find((e) => e.name === name);
@@ -359,10 +356,10 @@ export default function EditListingPage() {
         venue,
         meeting_time: `${eventDate}T${meetingTime}:00+09:00`,
         meeting_location: '', // 欄位已移除，固定為空白
-        total_slots: ticketCountType === 'duo' ? 2 : 1,
+        total_slots: ticketPeopleCount || 1,
         ticket_type: ticketType as TicketType,
         seat_grade: seatGrade as SeatGrade,
-        ticket_count_type: ticketCountType as TicketCountType,
+        ticket_people_count: ticketPeopleCount || 1,
         host_nationality: hostNationality,
         host_languages: hostLanguages,
         identification_features: '', // 欄位已移除，固定為空白
@@ -621,56 +618,30 @@ export default function EditListingPage() {
                 )}
               </div>
 
-              {/* 票種類型 */}
+              {/* 購票人數 */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {t('ticketCountType')} <span className="text-red-500">*</span>
+                  {t('ticketPeopleCount', { defaultValue: '購票人數' })} <span className="text-red-500">*</span>
                 </label>
                 {!seatGrade ? (
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     {t('pleaseSelectSeatGrade')}
                   </p>
-                ) : !selectedEvent ? (
-                  // 無活動資料時顯示預設選項
-                  <div className="grid grid-cols-2 gap-2">
-                    {(['solo', 'duo'] as TicketCountType[]).map((type) => (
-                      <button
-                        key={type}
-                        type="button"
-                        onClick={() => setTicketCountType(type)}
-                        className={`
-                          py-3 px-4 rounded-xl text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2
-                          ${ticketCountType === type
-                            ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30 scale-105'
-                            : 'bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300'}
-                        `}
-                      >
-                        {TICKET_COUNT_TYPE_INFO[type].label}
-                      </button>
-                    ))}
-                  </div>
-                ) : availableTicketCountTypes.length === 0 ? (
+                ) : maxPeopleForEvent === 0 ? (
                   <p className="text-sm text-amber-600 dark:text-amber-400">
                     {t('seatNoPriceSet')}
                   </p>
                 ) : (
-                  <div className="grid grid-cols-2 gap-2">
-                    {availableTicketCountTypes.map((type) => (
-                      <button
-                        key={type}
-                        type="button"
-                        onClick={() => setTicketCountType(type)}
-                        className={`
-                          py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all
-                          ${ticketCountType === type
-                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300'
-                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 text-gray-700 dark:text-gray-300'}
-                        `}
-                      >
-                        {TICKET_COUNT_TYPE_INFO[type].label}
-                      </button>
+                  <select
+                    value={ticketPeopleCount || ''}
+                    onChange={(e) => setTicketPeopleCount(parseInt(e.target.value) || 0)}
+                    className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
+                  >
+                    <option value="">{t('selectPeopleCount', { defaultValue: '請選擇人數' })}</option>
+                    {Array.from({ length: maxPeopleForEvent }, (_, i) => i + 1).map((n) => (
+                      <option key={n} value={n}>{n}人票</option>
                     ))}
-                  </div>
+                  </select>
                 )}
               </div>
 
@@ -702,17 +673,17 @@ export default function EditListingPage() {
                           value={askingPriceJpy || ''}
                           onChange={(e) => {
                             const value = parseInt(e.target.value) || 0;
-                            // 計算最大價格：二人票 + (子票轉讓或尋找同行) = 原價/2
+                            // 計算最大價格：多人票子票轉讓 = 原價÷人數
                             const priceJpy = selectedPriceTier?.priceJpy || 0;
-                            const maxPrice = (ticketCountType === 'duo' &&
+                            const maxPrice = (ticketPeopleCount >= 2 &&
                               (ticketType === 'sub_ticket_transfer' || ticketType === 'find_companion'))
-                              ? Math.floor(priceJpy / 2)
+                              ? Math.floor(priceJpy / ticketPeopleCount)
                               : priceJpy;
                             setAskingPriceJpy(Math.min(value, maxPrice));
                           }}
-                          max={(ticketCountType === 'duo' &&
+                          max={(ticketPeopleCount >= 2 &&
                             (ticketType === 'sub_ticket_transfer' || ticketType === 'find_companion'))
-                            ? Math.floor((selectedPriceTier?.priceJpy || 0) / 2)
+                            ? Math.floor((selectedPriceTier?.priceJpy || 0) / ticketPeopleCount)
                             : (selectedPriceTier?.priceJpy || 0)}
                           min={0}
                           className="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-semibold"
@@ -720,13 +691,13 @@ export default function EditListingPage() {
                         />
                       </div>
                       {/* 價格上限提示 */}
-                      {ticketCountType === 'duo' && (ticketType === 'sub_ticket_transfer' || ticketType === 'find_companion') && (
+                      {ticketPeopleCount >= 2 && (ticketType === 'sub_ticket_transfer' || ticketType === 'find_companion') && (
                         <p className="text-xs text-orange-600 dark:text-orange-400 mt-1 flex items-center gap-1">
                           <AlertTriangle className="w-3 h-3" />
-                          {t('halfPriceLimit', {
-                            defaultValue: '二人票子票/同行上限為原價一半：¥',
-                            max: Math.floor(selectedPriceTier.priceJpy / 2).toLocaleString()
-                          })}{Math.floor(selectedPriceTier.priceJpy / 2).toLocaleString()}
+                          {t('splitPriceLimit', {
+                            defaultValue: `${ticketPeopleCount}人票子票轉讓上限為原價÷${ticketPeopleCount}：¥`,
+                            max: Math.floor((selectedPriceTier?.priceJpy || 0) / ticketPeopleCount).toLocaleString()
+                          })}{Math.floor((selectedPriceTier?.priceJpy || 0) / ticketPeopleCount).toLocaleString()}
                         </p>
                       )}
                     </div>
@@ -742,7 +713,7 @@ export default function EditListingPage() {
                 <div className="space-y-2">
                   {TICKET_TYPES.map((type) => {
                     // 轉讓子票僅限二人票以上（一人票無子票可轉讓）
-                    const isSubTicketDisabled = type === 'sub_ticket_transfer' && ticketCountType === 'solo';
+                    const isSubTicketDisabled = type === 'sub_ticket_transfer' && ticketPeopleCount <= 1;
 
                     return (
                       <label

@@ -16,12 +16,11 @@ interface ApiEvent {
   description?: string;
   ticket_price_tiers: {
     seat_grade: string;
-    ticket_count_type: string;
     price_jpy?: number;
   }[];
   category: 'concert' | 'fan_meeting' | 'expo' | 'streaming' | 'other';
   is_active: boolean;
-  max_listings_per_user: number;
+  max_tickets_per_person: number;
   max_requests_per_user: number;
   discord_webhook_url?: string;
   created_at: string;
@@ -42,12 +41,11 @@ function convertApiEventToEvent(apiEvent: ApiEvent): HololiveEvent {
     description: apiEvent.description,
     ticketPriceTiers: (apiEvent.ticket_price_tiers || []).map(tier => ({
       seatGrade: tier.seat_grade || '',
-      ticketCountType: (tier.ticket_count_type as 'solo' | 'duo') || 'solo',
       priceJpy: tier.price_jpy,
     })),
     category: apiEvent.category,
     isActive: apiEvent.is_active,
-    maxListingsPerUser: apiEvent.max_listings_per_user || 2,
+    maxTicketsPerPerson: apiEvent.max_tickets_per_person || 2,
     maxRequestsPerUser: apiEvent.max_requests_per_user || 2,
     discordWebhookUrl: apiEvent.discord_webhook_url,
     createdAt: new Date(apiEvent.created_at),
@@ -139,12 +137,11 @@ export function AdminProvider({ children }: { children: ReactNode }) {
           description: eventData.description,
           ticketPriceTiers: eventData.ticketPriceTiers?.map(tier => ({
             seatGrade: tier.seatGrade,
-            ticketCountType: tier.ticketCountType,
             priceJpy: tier.priceJpy,
           })),
           category: eventData.category,
           isActive: eventData.isActive,
-          maxListingsPerUser: eventData.maxListingsPerUser || 2,
+          maxTicketsPerPerson: eventData.maxTicketsPerPerson || 2,
           maxRequestsPerUser: eventData.maxRequestsPerUser || 2,
           discordWebhookUrl: (eventData as { discordWebhookUrl?: string }).discordWebhookUrl,
         }),
@@ -191,13 +188,12 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       if (updates.ticketPriceTiers !== undefined) {
         payload.ticketPriceTiers = updates.ticketPriceTiers.map(tier => ({
           seatGrade: tier.seatGrade,
-          ticketCountType: tier.ticketCountType,
           priceJpy: tier.priceJpy,
         }));
       }
       if (updates.category !== undefined) payload.category = updates.category;
       if (updates.isActive !== undefined) payload.isActive = updates.isActive;
-      if (updates.maxListingsPerUser !== undefined) payload.maxListingsPerUser = updates.maxListingsPerUser;
+      if (updates.maxTicketsPerPerson !== undefined) payload.maxTicketsPerPerson = updates.maxTicketsPerPerson;
       if (updates.maxRequestsPerUser !== undefined) payload.maxRequestsPerUser = updates.maxRequestsPerUser;
       if (updates.discordWebhookUrl !== undefined) payload.discordWebhookUrl = updates.discordWebhookUrl;
 

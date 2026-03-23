@@ -35,7 +35,7 @@ interface ApiListing {
   ticket_type: 'find_companion' | 'sub_ticket_transfer' | 'ticket_exchange';
   ticket_source?: 'zaiko' | 'lawson';
   seat_grade: string;
-  ticket_count_type: 'solo' | 'duo';
+  ticket_people_count: number;
   host_nationality: string;
   host_languages: string[];
   identification_features?: string;
@@ -69,7 +69,7 @@ function convertApiListingToListing(apiListing: ApiListing): Listing {
     ticketType: apiListing.ticket_type,
     ticketSource: apiListing.ticket_source || 'zaiko',
     seatGrade: apiListing.seat_grade,
-    ticketCountType: apiListing.ticket_count_type,
+    ticketPeopleCount: apiListing.ticket_people_count || 1,
     hostNationality: apiListing.host_nationality,
     hostLanguages: apiListing.host_languages,
     identificationFeatures: apiListing.identification_features || '',
@@ -200,7 +200,7 @@ interface CreateListingData {
   ticketSource?: 'zaiko' | 'lawson';
   ticketType: 'find_companion' | 'sub_ticket_transfer' | 'ticket_exchange';
   seatGrade: string;
-  ticketCountType: 'solo' | 'duo';
+  ticketPeopleCount: number;
   hostNationality: string;
   hostLanguages?: string[];
   identificationFeatures?: string;

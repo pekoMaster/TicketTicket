@@ -63,15 +63,14 @@ export async function PATCH(
     if (body.imageUrl !== undefined) updates.image_url = body.imageUrl;
     if (body.description !== undefined) updates.description = body.description;
     if (body.ticketPriceTiers !== undefined) {
-      updates.ticket_price_tiers = body.ticketPriceTiers.map((tier: { seatGrade: string; ticketCountType: string; priceJpy?: number }) => ({
+      updates.ticket_price_tiers = body.ticketPriceTiers.map((tier: { seatGrade: string; priceJpy?: number }) => ({
         seat_grade: tier.seatGrade,
-        ticket_count_type: tier.ticketCountType,
         price_jpy: tier.priceJpy,
       }));
     }
     if (body.category !== undefined) updates.category = body.category;
     if (body.isActive !== undefined) updates.is_active = body.isActive;
-    if (body.maxListingsPerUser !== undefined) updates.max_listings_per_user = body.maxListingsPerUser;
+    if (body.maxTicketsPerPerson !== undefined) updates.max_tickets_per_person = body.maxTicketsPerPerson;
     if (body.maxRequestsPerUser !== undefined) updates.max_requests_per_user = body.maxRequestsPerUser;
     if (body.discordWebhookUrl !== undefined) updates.discord_webhook_url = body.discordWebhookUrl;
 

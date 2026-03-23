@@ -165,8 +165,13 @@ export const TICKET_SOURCE_INFO: Record<TicketSource, {
 // 座位等級（改為動態字串，由管理員自訂）
 export type SeatGrade = string;
 
-// 票種類型（移除家庭票）
-export type TicketCountType = 'solo' | 'duo';
+// 票種人數（1~N，由活動的 max_tickets_per_person 決定上限）
+export type TicketPeopleCount = number;
+
+/** 產生 "N人票" 標籤文字 */
+export function getTicketPeopleLabel(n: number): string {
+  return `${n}人票`;
+}
 
 // 刊登狀態
 export type ListingStatus = 'open' | 'matched' | 'closed';
@@ -189,7 +194,7 @@ export interface Listing {
   ticketSource: TicketSource;               // 票源 (ZAIKO/LAWSON)
   ticketType: TicketType;
   seatGrade: SeatGrade;                    // 座位等級
-  ticketCountType: TicketCountType;        // 票種類型
+  ticketPeopleCount: number;               // 票種人數（1=一人票, 2=二人票...）
   hostNationality: string;                 // 持票人國籍
   hostLanguages: string[];                 // 可使用語言
   identificationFeatures: string;          // 辨識特徵（穿著等）
@@ -311,11 +316,10 @@ export interface Review {
 // HOLOLIVE 活動類型
 export type EventCategory = 'concert' | 'fan_meeting' | 'expo' | 'streaming' | 'other';
 
-// 票種等級（用於管理員設定可用的座位/票種組合）
+// 票價等級（座位等級 + 每張票價格，人數由活動統一設定）
 export interface TicketPriceTier {
   seatGrade: SeatGrade;
-  ticketCountType: TicketCountType;
-  priceJpy?: number; // 原價（日圓）
+  priceJpy?: number; // 每張票原價（日圓）
 }
 
 // HOLOLIVE 活動
@@ -332,7 +336,7 @@ export interface HololiveEvent {
   ticketPriceTiers: TicketPriceTier[];  // 票價等級列表
   category: EventCategory;
   isActive: boolean;               // 是否啟用顯示
-  maxListingsPerUser: number;      // 每帳號最多可創建刊登數量
+  maxTicketsPerPerson: number;     // 每人最多購票張數（同時決定刊登上限與人數下拉選項）
   maxRequestsPerUser: number;      // 每帳號每活動最多可求票數量
   createdAt: Date;
   updatedAt: Date;
@@ -419,15 +423,8 @@ export const SEAT_GRADE_INFO: Record<string, { label: string; color: string }> =
   SS: { label: 'SS', color: 'bg-yellow-100 text-yellow-800' },
 };
 
-// 票種類型資訊（移除家庭票）
-export const TICKET_COUNT_TYPE_INFO: Record<TicketCountType, {
-  label: string;
-  description: string;
-  color: string;
-}> = {
-  solo: { label: '一人票', description: '單人入場', color: 'bg-green-100 text-green-800' },
-  duo: { label: '二人票', description: '雙人同行', color: 'bg-blue-100 text-blue-800' },
-};
+// 票種人數標籤（動態，N=人數，顏色固定紫色）
+export const TICKET_PEOPLE_COLORS = 'bg-purple-100 text-purple-800 dark:bg-purple-500/20 dark:text-purple-300';
 
 // 常用國籍選項
 export const NATIONALITY_OPTIONS = [

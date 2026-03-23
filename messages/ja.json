@@ -250,9 +250,7 @@
     "subsidyToApplicant": "申請者への補填",
     "subsidyToHost": "主催者への補填",
     "ticketInfo": "チケット情報",
-    "ticketCountType": "チケット種別",
-    "duoTicket": "二人チケット",
-    "soloTicket": "一人チケット",
+    "ticketPeopleCount": "購入人数",
     "ticketTypeLabel": "券種タイプ",
     "askingPrice": "希望分攤",
     "originalPrice": "定価",
@@ -367,7 +365,7 @@
     "zaikoNote": "ZAIKO 電子チケットシステム",
     "lawsonNote": "LAWSON コンビニチケット（サブチケットは実物での受け渡しが必要です）",
     "seatGrade": "座席グレード",
-    "ticketCountType": "チケット種類",
+    "ticketPeopleCount": "購入人数",
     "pleaseSelectSeatGrade": "まず座席グレードを選択してください",
     "noPriceSet": "このイベントの価格が設定されていません",
     "referencePrice": "参考定価",
@@ -478,7 +476,7 @@
     "ticket_exchange": "交換",
     "findCompanion": "同行者募集",
     "findCompanionDesc": "一緒に入場する仲間を探す、費用は折半",
-    "findCompanionWarning": "二人チケット必須",
+    "findCompanionWarning": "同行者と一緒に入場します",
     "mainTicketTransfer": "親チケット譲渡",
     "mainTicketTransferDesc": "親チケットを譲渡、オンライン譲渡不可、同行方法は自己連絡してください",
     "mainTicketTransferWarning": "親チケット譲渡はZAIKOおよび関連主催者の規約に違反する行為です。当サイトは交換後の結果について一切責任を負いません",
@@ -559,11 +557,6 @@
     "notFound": "会話が見つかりません",
     "expectedPrice": "希望分攤",
     "hostContactMethods": "主催者への連絡方法：",
-    "ticketCount": {
-      "solo": "1人用チケット",
-      "duo": "2人用チケット",
-      "family": "ファミリーチケット"
-    },
     "listingType": {
       "find_companion": "同行者募集",
       "main_ticket_transfer": "親チケット譲渡",
@@ -572,7 +565,7 @@
     },
     "labels": {
       "seatGrade": "座席",
-      "ticketCount": "枚数",
+      "ticketCount": "購入人数",
       "listingType": "取引"
     },
     "seatGrade": {

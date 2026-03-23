@@ -98,11 +98,11 @@ export async function POST(request: NextRequest) {
     // 獲取活動的刊登上限設定
     const { data: eventData } = await supabaseAdmin
       .from('events')
-      .select('id, max_listings_per_user')
+      .select('id, max_tickets_per_person')
       .eq('name', body.eventName)
       .single();
 
-    const maxListingsPerEvent = eventData?.max_listings_per_user || 2;
+    const maxListingsPerEvent = eventData?.max_tickets_per_person || 2;
 
     // 檢查該用戶在此活動的刊登數量
     const { count: existingCount } = await supabaseAdmin
@@ -133,12 +133,12 @@ export async function POST(request: NextRequest) {
       meeting_location: body.meetingLocation || '',
       original_price_jpy: body.originalPriceJpy || 0,
       asking_price_jpy: body.askingPriceJpy || 0,
-      total_slots: body.totalSlots || 1,
-      available_slots: body.totalSlots || 1,
+      total_slots: body.ticketPeopleCount || 1,
+      available_slots: body.ticketPeopleCount || 1,
       ticket_type: body.ticketType,
       ticket_source: body.ticketSource || 'zaiko', // 票源預設為 ZAIKO
       seat_grade: body.seatGrade,
-      ticket_count_type: body.ticketCountType,
+      ticket_people_count: body.ticketPeopleCount || 1,
       host_nationality: body.hostNationality,
       host_languages: body.hostLanguages || [],
       identification_features: body.identificationFeatures || '',
@@ -295,7 +295,7 @@ export async function POST(request: NextRequest) {
               venue: body.venue || '',
               ticketType: body.ticketType,
               seatGrade: body.seatGrade,
-              ticketCountType: body.ticketCountType,
+              ticketPeopleCount: body.ticketPeopleCount || 1,
               originalPriceJpy: body.originalPriceJpy || 0,
               askingPriceJpy: body.askingPriceJpy,
               description: body.description || '',
@@ -326,7 +326,7 @@ export async function POST(request: NextRequest) {
         eventName: body.eventName,
         eventId: body.eventId,
         seatGrade: body.seatGrade,
-        ticketCountType: body.ticketCountType,
+        ticketPeopleCount: body.ticketPeopleCount || 1,
         ticketType: body.ticketType,
         askingPriceJpy: body.askingPriceJpy,
         venue: body.venue,

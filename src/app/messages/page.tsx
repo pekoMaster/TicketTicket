@@ -31,7 +31,7 @@ interface Listing {
   host_id: string;
   host?: User;
   ticket_type?: 'find_companion' | 'sub_ticket_transfer' | 'ticket_exchange';
-  ticket_count_type?: 'solo' | 'duo' | 'family';
+  ticket_people_count?: number;
   meeting_location?: string;
   seat_grade?: string;
   will_assist_entry?: boolean;
@@ -423,9 +423,9 @@ export default function MessagesPage() {
                             </span>
                           )}
                           {/* 票種資訊標籤 */}
-                          {convo.listing?.ticket_count_type && (
+                          {convo.listing?.ticket_people_count && convo.listing.ticket_people_count > 0 && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-                              {convo.listing.ticket_count_type === 'solo' ? '一人票' : convo.listing.ticket_count_type === 'duo' ? '二人票' : '家庭票'}
+                              {convo.listing.ticket_people_count}人票
                             </span>
                           )}
                           {convo.listing?.seat_grade && (

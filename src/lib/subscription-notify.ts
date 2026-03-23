@@ -12,7 +12,7 @@ interface ListingInfo {
     eventName: string;
     eventId?: string;
     seatGrade: string;
-    ticketCountType: string;
+    ticketPeopleCount?: number;
     ticketType: string;
     askingPriceJpy: number;
     venue?: string;
@@ -130,7 +130,7 @@ export async function notifySubscribers(listing: ListingInfo): Promise<number> {
                 <p>您訂閱的 <strong>${listing.eventName}</strong> 有新的票券上架了：</p>
                 
                 <div style="background: #f3f4f6; padding: 16px; border-radius: 8px; margin: 16px 0;">
-                  <p>💺 <strong>座位：</strong>${listing.seatGrade} / ${listing.ticketCountType === 'duo' ? '二人票' : '一人票'}</p>
+                  <p>💺 <strong>座位：</strong>${listing.seatGrade}${listing.ticketPeopleCount ? ` / ${listing.ticketPeopleCount}人票` : ''}</p>
                   <p>💰 <strong>價格：</strong>¥${listing.askingPriceJpy.toLocaleString()}</p>
                   <p>🏷️ <strong>類型：</strong>${ticketTypeLabels[listing.ticketType] || listing.ticketType}</p>
                 </div>
@@ -159,7 +159,7 @@ export async function notifySubscribers(listing: ListingInfo): Promise<number> {
                     await sendDiscordDM({
                         discordId: user.discord_id,
                         title: '🔔 訂閱通知',
-                        message: `您訂閱的 **${listing.eventName}** 有新的票券！\n\n💺 ${listing.seatGrade} / ${listing.ticketCountType === 'duo' ? '二人票' : '一人票'}\n💰 ¥${listing.askingPriceJpy.toLocaleString()}\n🏷️ ${ticketTypeLabels[listing.ticketType] || listing.ticketType}`,
+                        message: `您訂閱的 **${listing.eventName}** 有新的票券！\n\n💺 ${listing.seatGrade}${listing.ticketPeopleCount ? ` / ${listing.ticketPeopleCount}人票` : ''}\n💰 ¥${listing.askingPriceJpy.toLocaleString()}\n🏷️ ${ticketTypeLabels[listing.ticketType] || listing.ticketType}`,
                         link: listingUrl,
                         type: 'new_application',
                     });

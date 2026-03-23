@@ -72,7 +72,7 @@ export interface DbListing {
   available_slots: number;
   ticket_type: 'find_companion' | 'sub_ticket_transfer' | 'ticket_exchange';
   seat_grade: 'B' | 'A' | 'S' | 'SS';
-  ticket_count_type: 'solo' | 'duo';
+  ticket_people_count: number;
   host_nationality: string;
   host_languages: string[];
   identification_features: string;
@@ -126,9 +126,9 @@ export interface DbEvent {
   description?: string;
   ticket_price_tiers: {
     seat_grade: string;
-    ticket_count_type: string;
     price_jpy: number;
   }[];
+  max_tickets_per_person: number;
   category: 'concert' | 'fan_meeting' | 'expo' | 'streaming' | 'other';
   is_active: boolean;
   created_at: string;

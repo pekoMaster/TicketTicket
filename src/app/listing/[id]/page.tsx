@@ -467,9 +467,9 @@ export default function ListingDetailPage() {
 
               {/* 幾人票 */}
               <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-                <span className="text-gray-500 dark:text-gray-400">{t('ticketCountType')}</span>
+                <span className="text-gray-500 dark:text-gray-400">{t('ticketPeopleCount', { defaultValue: '購票人數' })}</span>
                 <span className="font-medium text-gray-900 dark:text-gray-100">
-                  {listing.ticketCountType === 'duo' ? t('duoTicket') : t('soloTicket')}
+                  {listing.ticketPeopleCount}人票
                 </span>
               </div>
 
@@ -477,7 +477,7 @@ export default function ListingDetailPage() {
               {(() => {
                 const selectedEvent = events.find(e => e.name === listing.eventName);
                 const priceTier = selectedEvent?.ticketPriceTiers?.find(
-                  tier => tier.seatGrade === listing.seatGrade && tier.ticketCountType === listing.ticketCountType
+                  tier => tier.seatGrade === listing.seatGrade
                 );
                 if (priceTier?.priceJpy) {
                   return (

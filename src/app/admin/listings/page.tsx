@@ -20,7 +20,7 @@ interface Listing {
   original_price_jpy: number;
   ticket_type: string;
   seat_grade: string;
-  ticket_count_type: string;
+  ticket_people_count: number;
   description: string;
   meeting_time: string;
   meeting_location: string;
@@ -232,15 +232,6 @@ export default function AdminListingsPage() {
     );
   };
 
-  const getTicketCountLabel = (type: string) => {
-    const labels: Record<string, string> = {
-      solo: '一人',
-      duo: '二人',
-      family: '家庭',
-    };
-    return labels[type] || type;
-  };
-
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('zh-TW', {
       year: 'numeric',
@@ -356,7 +347,7 @@ export default function AdminListingsPage() {
                     </td>
                     <td className="px-3 py-3">
                       <div className="text-sm text-gray-900 dark:text-gray-100 font-medium">{listing.seat_grade || '-'}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{getTicketCountLabel(listing.ticket_count_type)}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{listing.ticket_people_count ? `${listing.ticket_people_count}人票` : '-'}</div>
                     </td>
                     <td className="px-3 py-3">
                       {getStatusBadge(listing.status, listing.is_completed)}
@@ -606,7 +597,7 @@ export default function AdminListingsPage() {
                   </div>
                   <div>
                     <label className="text-xs text-gray-500 dark:text-gray-400">票種</label>
-                    <p className="text-gray-900 dark:text-gray-100">{getTicketCountLabel(detailModal.listing.ticket_count_type)}</p>
+                    <p className="text-gray-900 dark:text-gray-100">{detailModal.listing.ticket_people_count ? `${detailModal.listing.ticket_people_count}人票` : '-'}</p>
                   </div>
                   <div>
                     <label className="text-xs text-gray-500 dark:text-gray-400">申請數</label>

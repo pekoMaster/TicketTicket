@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
         original_price_jpy,
         ticket_type,
         seat_grade,
-        ticket_count_type,
+        ticket_people_count,
         description,
         meeting_time,
         meeting_location,

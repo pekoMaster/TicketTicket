@@ -7,7 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Eye, Users, Armchair, Clock, Calendar, Check } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
 import UserProfileModal from '@/components/ui/UserProfileModal';
-import { Listing, User, LANGUAGE_OPTIONS, NATIONALITY_OPTIONS, TICKET_COUNT_TYPE_INFO, TICKET_SOURCE_INFO } from '@/types';
+import { Listing, User, LANGUAGE_OPTIONS, NATIONALITY_OPTIONS, TICKET_SOURCE_INFO } from '@/types';
 
 interface ListingCardProps {
   listing: Listing;
@@ -58,11 +58,6 @@ export default function ListingCard({ listing, host, isFirstCard }: ListingCardP
     });
   };
 
-  // 取得票種數量類型標籤
-  const getTicketCountLabel = (type: string) => {
-    const info = TICKET_COUNT_TYPE_INFO[type as keyof typeof TICKET_COUNT_TYPE_INFO];
-    return info?.label || type;
-  };
 
   // 生成星星
   const renderStars = (rating: number) => {
@@ -138,10 +133,10 @@ export default function ListingCard({ listing, host, isFirstCard }: ListingCardP
                 {listing.seatGrade}
               </span>
             )}
-            {listing.ticketCountType && (
+            {listing.ticketPeopleCount > 0 && (
               <span className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-white/70 bg-gray-50 dark:bg-white/5 px-2.5 py-1 rounded-lg border border-gray-100 dark:border-white/5">
                 <Users className="w-4 h-4 text-purple-500 dark:text-purple-400" />
-                {getTicketCountLabel(listing.ticketCountType)}
+                {listing.ticketPeopleCount}人票
               </span>
             )}
           </div>

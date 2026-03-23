@@ -7,7 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { MapPin, Users, Armchair, Clock, Check } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
 import UserProfileModal from '@/components/ui/UserProfileModal';
-import { Listing, User, LANGUAGE_OPTIONS, TICKET_COUNT_TYPE_INFO, TICKET_SOURCE_INFO } from '@/types';
+import { Listing, User, LANGUAGE_OPTIONS, TICKET_SOURCE_INFO } from '@/types';
 
 interface ListingListItemProps {
     listing: Listing;
@@ -34,10 +34,6 @@ export default function ListingListItem({ listing, host }: ListingListItemProps)
         return user.customAvatarUrl || user.avatarUrl;
     };
 
-    const getTicketCountLabel = (type: string) => {
-        const info = TICKET_COUNT_TYPE_INFO[type as keyof typeof TICKET_COUNT_TYPE_INFO];
-        return info?.label || type;
-    };
 
     return (
         <>
@@ -137,10 +133,10 @@ export default function ListingListItem({ listing, host }: ListingListItemProps)
                             )}
 
                             {/* Ticket Count */}
-                            {listing.ticketCountType && (
+                            {listing.ticketPeopleCount > 0 && (
                                 <span className="flex items-center gap-1.5 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded-md">
                                     <Users className="w-3.5 h-3.5 text-purple-500 dark:text-purple-400" />
-                                    <span className="font-medium text-gray-700 dark:text-gray-300">{getTicketCountLabel(listing.ticketCountType)}</span>
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">{listing.ticketPeopleCount}人票</span>
                                 </span>
                             )}
 
