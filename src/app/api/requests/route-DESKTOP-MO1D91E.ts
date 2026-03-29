@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { supabaseAdmin } from '@/lib/supabase';
-import { revalidatePath, revalidateTag } from 'next/cache';
 
 // GET /api/requests - 取得求票列表
 export async function GET(request: NextRequest) {
@@ -116,10 +115,6 @@ export async function POST(request: NextRequest) {
             console.error('Failed to create ticket request:', insertError);
             return NextResponse.json({ error: 'Failed to create request' }, { status: 500 });
         }
-
-        // 重新驗證首頁快取 (ISR)
-        revalidatePath('/');
-        revalidateTag('listings', 'page');
 
         return NextResponse.json({ success: true, request: ticketRequest });
     } catch (error) {

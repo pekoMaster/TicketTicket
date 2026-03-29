@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { auth } from '@/auth';
+import { revalidatePath } from 'next/cache';
 
 // GET /api/listings/[id] - 獲取單一刊登
 export async function GET(
@@ -108,6 +109,9 @@ export async function PATCH(
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    // 重新驗證首頁快取 (ISR)
+    revalidatePath('/');
+
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error in PATCH /api/listings/[id]:', error);
@@ -148,6 +152,9 @@ export async function DELETE(
       console.error('Error deleting listing:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
+
+    // 重新驗證首頁快取 (ISR)
+    revalidatePath('/');
 
     return NextResponse.json({ success: true });
   } catch (error) {

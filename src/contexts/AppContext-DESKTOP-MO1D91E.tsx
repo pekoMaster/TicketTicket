@@ -184,9 +184,6 @@ interface AppContextType {
   // 免責聲明同意
   hasAgreedToDisclaimer: boolean;
   setHasAgreedToDisclaimer: (agreed: boolean) => void;
-
-  // 靜態化注入支援
-  setInitialData?: (listings: Listing[], requests: TicketRequest[], totalPages: number) => void;
 }
 
 // 創建刊登的資料類型
@@ -230,11 +227,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // 求票狀態
   const [requests, setRequests] = useState<TicketRequest[]>([]);
-  const [isLoadingRequests, setIsLoadingRequests] = useState(true);
+  const [isLoadingRequests, setIsLoadingRequests] = useState(false);
   const isFetchingRequestsRef = React.useRef(false);
-  
-  // 標記是否已從 SSR 注入初始資料
-  const hasInitialDataRef = React.useRef(false);
 
   // 獲取刊登列表 (初始化或重置)
   const fetchListings = useCallback(async (reset: boolean = true) => {
@@ -340,26 +334,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const agreed = localStorage.getItem('disclaimerAgreed') === 'true';
     setHasAgreedToDisclaimerState(agreed);
 
-    // 如果還沒有初始資料，則發起請求
-    if (!hasInitialDataRef.current) {
-      fetchListings();
-      fetchRequests();
-    }
+    // 載入刊登資料與求票資料
+    fetchListings();
+    fetchRequests();
   }, [fetchListings, fetchRequests]);
-
-  // 設定初始資料的方法 (由 HomePageContent 在 mount 時調用)
-  const setInitialData = useCallback((initialListings: Listing[], initialRequests: TicketRequest[], totalPages: number) => {
-    if (hasInitialDataRef.current) return;
-    
-    setListings(initialListings);
-    setRequests(initialRequests);
-    setHasMoreListings(1 < totalPages);
-    currentPageRef.current = 2;
-    
-    setIsLoadingListings(false);
-    setIsLoadingRequests(false);
-    hasInitialDataRef.current = true;
-  }, []);
 
   // 設定免責聲明同意狀態
   const setHasAgreedToDisclaimer = (agreed: boolean) => {
@@ -480,7 +458,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         addReview,
         hasAgreedToDisclaimer,
         setHasAgreedToDisclaimer,
-        setInitialData,
       }}
     >
       {children}

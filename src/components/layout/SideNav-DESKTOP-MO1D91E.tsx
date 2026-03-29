@@ -86,7 +86,6 @@ export default function SideNav() {
                     )}
                   </div>
                   <span className="text-sm">{label}</span>
-                  <span className="text-[10px] text-white/40 font-mono tracking-wider">v1.28</span>
                 </Link>
               </li>
             );

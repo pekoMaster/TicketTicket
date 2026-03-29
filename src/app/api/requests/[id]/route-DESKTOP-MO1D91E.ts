@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { supabaseAdmin } from '@/lib/supabase';
-import { revalidatePath } from 'next/cache';
 
 // GET /api/requests/[id] - 取得單一求票詳情
 export async function GET(
@@ -83,9 +82,6 @@ export async function PATCH(
             return NextResponse.json({ error: 'Failed to update' }, { status: 500 });
         }
 
-        // 重新驗證首頁快取 (ISR)
-        revalidatePath('/');
-
         return NextResponse.json({ success: true, request: updated });
     } catch (error) {
         console.error('Request update API error:', error);
@@ -126,9 +122,6 @@ export async function DELETE(
             console.error('Failed to delete request:', error);
             return NextResponse.json({ error: 'Failed to delete' }, { status: 500 });
         }
-
-        // 重新驗證首頁快取 (ISR)
-        revalidatePath('/');
 
         return NextResponse.json({ success: true });
     } catch (error) {

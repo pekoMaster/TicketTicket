@@ -46,41 +46,15 @@ import {
   TICKET_SOURCE_INFO,
   NATIONALITY_OPTIONS,
   LANGUAGE_OPTIONS,
-  Listing,
-  TicketRequest,
 } from '@/types';
 import { isListingExpired } from '@/lib/listing-utils';
 
 export type SortOption = 'newest' | 'priceLowToHigh' | 'priceHighToLow' | 'eventDate';
 export type DateFilter = 'all' | 'week' | 'month' | '3months';
 
-interface HomePageProps {
-  initialListings?: Listing[];
-  initialRequests?: TicketRequest[];
-  initialTotalPages?: number;
-}
-
-export default function HomePage({ initialListings = [], initialRequests = [], initialTotalPages = 1 }: HomePageProps) {
+export default function HomePage() {
   const { data: session, status: sessionStatus } = useSession();
-  const { 
-    listings, 
-    isLoadingListings, 
-    hasMoreListings, 
-    isFetchingNextPage, 
-    loadMoreListings, 
-    hasAgreedToDisclaimer, 
-    setHasAgreedToDisclaimer, 
-    requests, 
-    isLoadingRequests,
-    setInitialData // 需要在 AppContext 中新增這個方法
-  } = useApp();
-
-  // 將伺服器端注入的資料同步到 AppContext
-  useEffect(() => {
-    if (initialListings.length > 0 || initialRequests.length > 0) {
-      setInitialData?.(initialListings, initialRequests, initialTotalPages);
-    }
-  }, [initialListings, initialRequests, initialTotalPages, setInitialData]);
+  const { listings, isLoadingListings, hasMoreListings, isFetchingNextPage, loadMoreListings, hasAgreedToDisclaimer, setHasAgreedToDisclaimer, requests, isLoadingRequests } = useApp();
   const { events } = useAdmin();
   const t = useTranslations('home');
   const tFilter = useTranslations('filter');

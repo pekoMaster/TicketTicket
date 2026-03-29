@@ -3,7 +3,6 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { auth } from '@/auth';
 import { inngest } from '@/lib/inngest';
 import { notifySubscribers } from '@/lib/subscription-notify';
-import { revalidatePath, revalidateTag } from 'next/cache';
 
 // GET /api/listings - 獲取所有開放狀態刊登（支援分頁）
 export async function GET(request: NextRequest) {
@@ -171,10 +170,6 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('[Listings] Listing created successfully:', data.id);
-
-    // 重新驗證首頁快取 (ISR)
-    revalidatePath('/');
-    revalidateTag('listings', 'page');
 
     // Send Discord webhook notifications (background job via Inngest)
     try {
