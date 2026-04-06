@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { parseEventFromHtml } from '@/lib/event-scraper';
+import { parseEventWithAI } from '@/lib/event-scraper';
 
 // 管理員 email 列表
 const ADMIN_EMAILS = [
@@ -11,7 +11,7 @@ const ADMIN_EMAILS = [
   'lmm16861@gmail.com',
 ];
 
-// POST /api/events/import - 從 URL 匯入活動資料
+// POST /api/events/import - 從 URL 匯入活動資料（AI 解析）
 export async function POST(request: NextRequest) {
   try {
     // 驗證管理員權限
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     // 抓取網頁內容
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 秒超時
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
     let htmlText: string;
     try {
@@ -69,15 +69,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 解析活動資料
-    const eventData = parseEventFromHtml(htmlText, url);
+    // 使用 Gemini AI 解析活動資料
+    let eventData;
+    try {
+      eventData = await parseEventWithAI(htmlText, url);
+    } catch (aiError) {
+      console.error('AI parsing error:', aiError);
+      return NextResponse.json(
+        { error: `AI 解析失敗: ${aiError instanceof Error ? aiError.message : '未知錯誤'}` },
+        { status: 500 }
+      );
+    }
 
     // 驗證是否提取到基本資訊
     const warnings: string[] = [];
-    if (!eventData.name) warnings.push('未能自動識別活動名稱，請手動填寫');
-    if (!eventData.eventDate) warnings.push('未能自動識別活動日期，請手動選擇');
-    if (!eventData.venue) warnings.push('未能自動識別場地，請手動填寫');
-    if (eventData.ticketPriceTiers.length === 0) warnings.push('未能自動識別票價資訊，請手動新增');
+    if (!eventData.name) warnings.push('未能識別活動名稱，請手動填寫');
+    if (!eventData.eventDate) warnings.push('未能識別活動日期，請手動選擇');
+    if (!eventData.venue) warnings.push('未能識別場地，請手動填寫');
+    if (eventData.ticketPriceTiers.length === 0) warnings.push('未能識別票價資訊，請手動新增');
     
     if (eventData.originalCurrency && eventData.originalCurrency !== 'JPY') {
       warnings.push(`票價為 ${eventData.originalCurrency} 計價，已直接以數值存入。如需轉換為日圓，請手動調整金額。`);
