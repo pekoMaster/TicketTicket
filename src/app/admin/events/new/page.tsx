@@ -1,13 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAdmin } from '@/contexts/AdminContext';
 import EventForm from '@/components/admin/EventForm';
-import { ArrowLeft, Globe, Loader2, AlertTriangle, CheckCircle, X } from 'lucide-react';
+import { ArrowLeft, Globe, Loader2, AlertTriangle, CheckCircle, X, DollarSign, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import type { ScrapedEventData } from '@/lib/event-scraper';
 import type { HololiveEvent } from '@/types';
+
+interface ExchangeInfo {
+  rate: number;
+  source: string;
+  currency: string;
+  date: string;
+}
 
 export default function NewEventPage() {
   const router = useRouter();
@@ -20,9 +27,15 @@ export default function NewEventPage() {
   const [importError, setImportError] = useState('');
   const [importWarnings, setImportWarnings] = useState<string[]>([]);
   const [importedData, setImportedData] = useState<ScrapedEventData | null>(null);
+  const [exchangeInfo, setExchangeInfo] = useState<ExchangeInfo | null>(null);
+  const [showCurrencyAlert, setShowCurrencyAlert] = useState(false);
 
-  // 將匯入的資料轉換為 EventForm 需要的 initialData 格式
+  // 用來追蹤 prefill 資料（僅填空欄用）
   const [prefillData, setPrefillData] = useState<Partial<HololiveEvent> | null>(null);
+  const [prefillKey, setPrefillKey] = useState(0);
+
+  // 追蹤表單是否已有手動輸入的資料
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   const handleSubmit = async (data: Parameters<typeof addEvent>[0]) => {
     const result = await addEvent(data);
@@ -33,7 +46,7 @@ export default function NewEventPage() {
     }
   };
 
-  const handleImport = async () => {
+  const handleImport = useCallback(async () => {
     if (!importUrl.trim()) {
       setImportError('請輸入 URL');
       return;
@@ -42,6 +55,7 @@ export default function NewEventPage() {
     setIsImporting(true);
     setImportError('');
     setImportWarnings([]);
+    setExchangeInfo(null);
 
     try {
       const response = await fetch('/api/events/import', {
@@ -60,21 +74,32 @@ export default function NewEventPage() {
       const scraped: ScrapedEventData = result.data;
       setImportedData(scraped);
       setImportWarnings(result.warnings || []);
+      
+      if (result.exchangeInfo) {
+        setExchangeInfo(result.exchangeInfo);
+        setShowCurrencyAlert(true);
+      }
 
-      // 轉換為 prefill 格式
-      setPrefillData({
-        name: scraped.name,
-        artist: scraped.artist,
-        eventDate: scraped.eventDate ? new Date(scraped.eventDate) : undefined,
-        eventEndDate: scraped.eventEndDate ? new Date(scraped.eventEndDate) : undefined,
-        venue: scraped.venue,
-        venueAddress: scraped.venueAddress,
-        description: buildDescription(scraped),
-        category: scraped.category,
-        ticketPriceTiers: scraped.ticketPriceTiers,
-        isActive: true,
-      } as Partial<HololiveEvent>);
+      // 建立 prefill 資料 — 只有非空的欄位才會被填入
+      const newPrefill: Partial<HololiveEvent> = {};
+      
+      if (scraped.name) newPrefill.name = scraped.name;
+      if (scraped.artist) newPrefill.artist = scraped.artist;
+      if (scraped.eventDate) newPrefill.eventDate = new Date(scraped.eventDate) as unknown as Date;
+      if (scraped.eventEndDate) newPrefill.eventEndDate = new Date(scraped.eventEndDate) as unknown as Date;
+      if (scraped.venue) newPrefill.venue = scraped.venue;
+      if (scraped.venueAddress) newPrefill.venueAddress = scraped.venueAddress;
+      if (scraped.description) {
+        newPrefill.description = buildDescription(scraped);
+      }
+      if (scraped.category) newPrefill.category = scraped.category;
+      if (scraped.ticketPriceTiers?.length > 0) {
+        newPrefill.ticketPriceTiers = scraped.ticketPriceTiers;
+      }
+      newPrefill.isActive = true;
 
+      setPrefillData(newPrefill);
+      setPrefillKey(prev => prev + 1);
       setShowImportModal(false);
     } catch (err) {
       setImportError('網路錯誤，請稍後再試');
@@ -82,15 +107,12 @@ export default function NewEventPage() {
     } finally {
       setIsImporting(false);
     }
-  };
+  }, [importUrl]);
 
   // 組合描述文字
   const buildDescription = (data: ScrapedEventData): string => {
     const parts: string[] = [];
     if (data.description) parts.push(data.description);
-    if (data.originalCurrency && data.originalCurrency !== 'JPY') {
-      parts.push(`\n⚠️ 票價為 ${data.originalCurrency} 計價`);
-    }
     parts.push(`\n📎 來源: ${data.sourceUrl}`);
     return parts.join('\n');
   };
@@ -123,6 +145,85 @@ export default function NewEventPage() {
         </button>
       </div>
 
+      {/* ========== 幣值換算警告 ========== */}
+      {showCurrencyAlert && exchangeInfo && (
+        <div className="relative overflow-hidden rounded-xl border-2 border-amber-400 dark:border-amber-500 bg-gradient-to-r from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-900/30 dark:via-yellow-900/20 dark:to-orange-900/30 p-5 shadow-lg">
+          {/* 閃爍邊框效果 */}
+          <div className="absolute inset-0 rounded-xl border-2 border-amber-400 animate-pulse opacity-50 pointer-events-none" />
+          
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-amber-400 dark:bg-amber-500 flex items-center justify-center shadow-md">
+              <DollarSign className="w-7 h-7 text-white" />
+            </div>
+            
+            <div className="flex-1 min-w-0">
+              <h3 className="text-lg font-bold text-amber-800 dark:text-amber-200 flex items-center gap-2">
+                ⚠️ 幣值自動換算通知
+              </h3>
+              
+              <div className="mt-2 space-y-2">
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="font-semibold text-amber-700 dark:text-amber-300">原始幣值：</span>
+                  <span className="px-2 py-0.5 bg-amber-200 dark:bg-amber-800 rounded font-mono font-bold text-amber-900 dark:text-amber-100">
+                    {exchangeInfo.currency}
+                  </span>
+                </div>
+                
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="font-semibold text-amber-700 dark:text-amber-300">換算匯率：</span>
+                  <span className="font-mono font-bold text-amber-900 dark:text-amber-100">
+                    1 {exchangeInfo.currency} = ¥{exchangeInfo.rate.toFixed(2)}
+                  </span>
+                </div>
+                
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="font-semibold text-amber-700 dark:text-amber-300">匯率來源：</span>
+                  <span className="text-amber-800 dark:text-amber-200">{exchangeInfo.source}</span>
+                  <span className="text-amber-600 dark:text-amber-400">({exchangeInfo.date})</span>
+                </div>
+
+                {/* 原始 → 換算後的票價對照表 */}
+                {importedData?.rawPriceData && importedData.rawPriceData.length > 0 && (
+                  <div className="mt-3 bg-white/60 dark:bg-black/20 rounded-lg p-3 border border-amber-200 dark:border-amber-700">
+                    <p className="text-xs font-semibold text-amber-700 dark:text-amber-300 mb-2">
+                      💰 票價換算明細：
+                    </p>
+                    <div className="space-y-1">
+                      {importedData.rawPriceData.map((item, i) => (
+                        <div key={i} className="flex justify-between text-xs font-mono">
+                          <span className="text-gray-700 dark:text-gray-300">{item.label}</span>
+                          <span className="text-amber-800 dark:text-amber-200">
+                            {item.currency} {item.price.toLocaleString()}
+                            <span className="mx-1 text-gray-400">→</span>
+                            <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                              ¥{((item as unknown as { convertedJpy?: number }).convertedJpy || Math.round(item.price * exchangeInfo.rate)).toLocaleString()}
+                            </span>
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <div className="mt-3 p-2.5 bg-red-100 dark:bg-red-900/40 rounded-lg border border-red-300 dark:border-red-700">
+                <p className="text-sm font-bold text-red-700 dark:text-red-300 flex items-center gap-1.5">
+                  <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                  匯率為即時查詢結果，可能與實際匯率有差異。請務必手動確認下方票價欄位的金額是否正確！
+                </p>
+              </div>
+            </div>
+            
+            <button
+              onClick={() => setShowCurrencyAlert(false)}
+              className="p-1.5 rounded-lg hover:bg-amber-200 dark:hover:bg-amber-800 transition-colors flex-shrink-0"
+            >
+              <X className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 匯入成功提示 */}
       {prefillData && importedData && (
         <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4">
@@ -130,7 +231,7 @@ export default function NewEventPage() {
             <CheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <p className="font-medium text-emerald-800 dark:text-emerald-200">
-                已從 URL 匯入活動資料
+                ✅ 已從 URL 匯入活動資料（僅填補空欄）
               </p>
               <p className="text-sm text-emerald-600 dark:text-emerald-400 mt-1 truncate">
                 {importedData.sourceUrl}
@@ -146,11 +247,11 @@ export default function NewEventPage() {
                 </div>
               )}
               <p className="text-xs text-emerald-500 dark:text-emerald-500 mt-2">
-                請檢查並調整下方表單後再儲存
+                已填入的欄位不會被覆蓋。請檢查並調整下方表單後再儲存。
               </p>
             </div>
             <button
-              onClick={() => { setPrefillData(null); setImportedData(null); setImportWarnings([]); }}
+              onClick={() => { setPrefillData(null); setImportedData(null); setImportWarnings([]); setShowCurrencyAlert(false); setExchangeInfo(null); }}
               className="p-1 rounded hover:bg-emerald-200 dark:hover:bg-emerald-800 transition-colors"
             >
               <X className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
@@ -161,7 +262,7 @@ export default function NewEventPage() {
 
       {/* Form - 帶有 prefill 資料 */}
       <EventForm
-        key={prefillData ? 'prefilled' : 'empty'}
+        key={prefillData ? `prefilled-${prefillKey}` : 'empty'}
         onSubmit={handleSubmit}
         initialData={prefillData as HololiveEvent | undefined}
       />
@@ -189,7 +290,7 @@ export default function NewEventPage() {
             {/* Modal Body */}
             <div className="p-6 space-y-4">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                貼入 hololive 或其他活動的票務頁面 URL，系統將自動解析活動名稱、日期、場地、票價等資訊並填入表單。
+                貼入活動票務頁面 URL，AI 將自動解析活動資訊並<strong>僅填補尚未填寫的空欄</strong>。
               </p>
 
               <div>
@@ -218,9 +319,10 @@ export default function NewEventPage() {
 
               {/* 支援提示 */}
               <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
-                <p>✔ 支援 hololive production 活動頁面</p>
+                <p>✔ 使用 AI (Gemini) 智慧解析任何活動頁面</p>
                 <p>✔ 自動解析活動名稱、日期（含多日）、場地與地址</p>
-                <p>✔ 自動解析票價等級（USD/JPY）</p>
+                <p>✔ 自動解析票價等級，非日圓幣值自動換算為日圓</p>
+                <p>🔒 僅填補空欄，不覆蓋已填寫的資料</p>
                 <p>⚠ 解析結果僅供參考，請務必檢查並修正</p>
               </div>
             </div>
@@ -244,7 +346,7 @@ export default function NewEventPage() {
                 {isImporting ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    解析中...
+                    AI 解析中...
                   </>
                 ) : (
                   <>
