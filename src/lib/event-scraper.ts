@@ -304,7 +304,6 @@ function extractPrices(text: string): {
   // 轉換為 TicketPriceTier 格式
   const priceTiers: TicketPriceTier[] = rawPriceData.map(item => ({
     seatGrade: item.label,
-    ticketCountType: 'solo' as const,
     priceJpy: item.price, // 直接存入數值，管理員可在表單中調整
   }));
 
