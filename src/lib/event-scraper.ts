@@ -39,9 +39,9 @@ interface GeminiParsedEvent {
 }
 
 /**
- * 取得一組可用的 Gemini API key（輪詢機制）
+ * 取得所有可用的 Gemini API keys
  */
-function getGeminiApiKey(): string {
+function getAllGeminiApiKeys(): string[] {
   const keys = [
     process.env.GOOGLE_GEMINI_API_KEY_1,
     process.env.GOOGLE_GEMINI_API_KEY_2,
@@ -52,18 +52,31 @@ function getGeminiApiKey(): string {
   ].filter(Boolean) as string[];
 
   if (keys.length === 0) {
-    throw new Error('未設定 GOOGLE_GEMINI_API_KEY，請在 .env.local 中設定');
+    throw new Error('未設定 GOOGLE_GEMINI_API_KEY，請在環境變數中設定');
   }
 
-  // 隨機選一組 key，分散 rate limit
-  return keys[Math.floor(Math.random() * keys.length)];
+  // 洗牌，分散 rate limit
+  for (let i = keys.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [keys[i], keys[j]] = [keys[j], keys[i]];
+  }
+
+  return keys;
 }
 
+// 依優先度排列的模型名稱
+const GEMINI_MODELS = [
+  'gemini-3.1-flash-lite-preview',
+  'gemini-2.0-flash',
+  'gemini-2.0-flash-lite',
+  'gemini-1.5-flash',
+];
+
 /**
- * 使用 Gemini AI 解析網頁內容
+ * 使用 Gemini AI 解析網頁內容（含多 key + 多模型重試）
  */
 export async function parseEventWithAI(htmlText: string, sourceUrl: string): Promise<ScrapedEventData> {
-  const apiKey = getGeminiApiKey();
+  const keys = getAllGeminiApiKeys();
 
   // 清理 HTML，移除 script/style/svg 等無用內容，減少 token 使用量
   const cleanedText = cleanHtml(htmlText);
@@ -98,45 +111,72 @@ export async function parseEventWithAI(htmlText: string, sourceUrl: string): Pro
 ${cleanedText.substring(0, 8000)}
 === 結束 ===`;
 
-  // 呼叫 Gemini API
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{ text: prompt }]
-        }],
-        generationConfig: {
-          temperature: 0.1,  // 低溫度 = 更精確
-          maxOutputTokens: 2048,
-          responseMimeType: 'application/json',
-        },
-      }),
+  // 嘗試所有 key + 模型組合
+  const errors: string[] = [];
+
+  for (const model of GEMINI_MODELS) {
+    for (const apiKey of keys) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              temperature: 0.1,
+              maxOutputTokens: 2048,
+              responseMimeType: 'application/json',
+            },
+          }),
+        });
+
+        if (!response.ok) {
+          const errText = await response.text();
+          const keyPreview = apiKey.substring(0, 10) + '...';
+          errors.push(`${model}/${keyPreview}: HTTP ${response.status}`);
+          console.warn(`Gemini API failed: model=${model}, key=${keyPreview}, status=${response.status}, body=${errText.substring(0, 200)}`);
+          
+          // 404 = 模型不存在，換下一個模型（不用再試其他 key）
+          if (response.status === 404) break;
+          // 其他錯誤（429 rate limit, 500 等）= 換下一個 key
+          continue;
+        }
+
+        const result = await response.json();
+        const rawText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+        
+        if (!rawText) {
+          errors.push(`${model}: 回傳內容為空`);
+          continue;
+        }
+
+        // 成功！解析 JSON
+        console.log(`Gemini API success: model=${model}`);
+        return parseGeminiResponse(rawText, sourceUrl);
+
+      } catch (fetchErr) {
+        errors.push(`${model}: ${fetchErr instanceof Error ? fetchErr.message : '未知錯誤'}`);
+        continue;
+      }
     }
-  );
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Gemini API error:', errorText);
-    throw new Error(`Gemini API 錯誤 (HTTP ${response.status})`);
   }
 
-  const result = await response.json();
-  
-  // 提取 Gemini 回傳的 JSON
-  const rawText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!rawText) {
-    throw new Error('Gemini API 未回傳有效內容');
-  }
+  // 所有組合都失敗
+  throw new Error(`所有 Gemini API 嘗試都失敗 (${errors.length} 次):\n${errors.slice(0, 5).join('\n')}`);
+}
 
+/**
+ * 解析 Gemini 回傳的 JSON 為 ScrapedEventData
+ */
+function parseGeminiResponse(rawText: string, sourceUrl: string): ScrapedEventData {
   // 解析 JSON（可能被包在 markdown code block 裡）
   let parsed: GeminiParsedEvent;
   try {
     const jsonStr = rawText.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
     parsed = JSON.parse(jsonStr);
-  } catch (e) {
+  } catch {
     console.error('Failed to parse Gemini response:', rawText);
     throw new Error('AI 回傳的格式無法解析，請重試');
   }
