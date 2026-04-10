@@ -7,20 +7,25 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { MapPin, Users, Armchair, Clock, Check } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
 import UserProfileModal from '@/components/ui/UserProfileModal';
-import { Listing, User, LANGUAGE_OPTIONS, TICKET_SOURCE_INFO } from '@/types';
+import CurrencyBadge from '@/components/ui/CurrencyBadge';
+import { Listing, User, LANGUAGE_OPTIONS, TICKET_SOURCE_INFO, CurrencyCode } from '@/types';
+import { getCurrencySymbol } from '@/lib/currency';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface ListingListItemProps {
     listing: Listing;
     host?: User;
+    currency?: CurrencyCode;
 }
 
-export default function ListingListItem({ listing, host }: ListingListItemProps) {
+export default function ListingListItem({ listing, host, currency = 'JPY' }: ListingListItemProps) {
     const t = useTranslations('listing');
     const tTicket = useTranslations('ticketType');
     const tCommon = useTranslations('common');
     const { locale } = useLanguage();
     const format = useFormatter();
     const [showUserModal, setShowUserModal] = useState(false);
+    const { preferredCurrency, convertPrice } = useCurrency();
 
     const formatDate = (date: Date) => {
         return new Date(date).toLocaleDateString(locale, {
@@ -73,14 +78,22 @@ export default function ListingListItem({ listing, host }: ListingListItemProps)
 
                             {/* Right: Price - Aurora Style */}
                             {listing.originalPriceJpy > 0 && (
-                                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-50 to-cyan-50 dark:from-emerald-500/10 dark:to-cyan-500/10 flex-shrink-0">
-                                    <span className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">
-                                        ¥{listing.askingPriceJpy.toLocaleString()}
-                                    </span>
-                                    <span className="text-gray-400 text-xs">/</span>
-                                    <span className="text-gray-500 dark:text-gray-400 text-sm">
-                                        ¥{listing.originalPriceJpy.toLocaleString()}
-                                    </span>
+                                <div className="flex flex-col items-end gap-1">
+                                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-50 to-cyan-50 dark:from-emerald-500/10 dark:to-cyan-500/10 flex-shrink-0">
+                                        <span className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">
+                                            {getCurrencySymbol(currency)}{listing.askingPriceJpy.toLocaleString()}
+                                        </span>
+                                        <span className="text-gray-400 text-xs">/</span>
+                                        <span className="text-gray-500 dark:text-gray-400 text-sm">
+                                            {getCurrencySymbol(currency)}{listing.originalPriceJpy.toLocaleString()}
+                                        </span>
+                                        {currency !== 'JPY' && <CurrencyBadge currency={currency} />}
+                                    </div>
+                                    {currency !== preferredCurrency && convertPrice(listing.askingPriceJpy, currency) !== null && (
+                                        <div className="text-[10px] text-gray-500 dark:text-gray-400">
+                                            約 {getCurrencySymbol(preferredCurrency)}{convertPrice(listing.askingPriceJpy, currency)?.toLocaleString()} / {getCurrencySymbol(preferredCurrency)}{convertPrice(listing.originalPriceJpy, currency)?.toLocaleString()}
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>

@@ -22,6 +22,8 @@ import {
   NATIONALITY_OPTIONS,
   LANGUAGE_OPTIONS,
 } from '@/types';
+import CurrencyBadge from '@/components/ui/CurrencyBadge';
+import { getCurrencySymbol } from '@/lib/currency';
 import {
   Calendar,
   MapPin,
@@ -238,6 +240,9 @@ export default function EditListingPage() {
 
   // 是否為換票模式
   const isExchangeMode = ticketType === 'ticket_exchange';
+
+  // 目前幣值
+  const currency = selectedEvent?.currency || 'JPY';
 
   // === 表單驗證 ===
   const isFormValid = useMemo(() => {
@@ -648,8 +653,9 @@ export default function EditListingPage() {
               {/* 價格設定 */}
               {selectedPriceTier?.priceJpy && (
                 <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                  <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                  <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
                     {t('priceSettings', { defaultValue: '價格設定' })}
+                    {currency !== 'JPY' && <CurrencyBadge currency={currency} />}
                   </h4>
                   <div className="grid grid-cols-2 gap-4">
                     {/* 原始票價（唯讀） */}
@@ -658,7 +664,7 @@ export default function EditListingPage() {
                         {t('originalPrice', { defaultValue: '原始票價' })}
                       </label>
                       <div className="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold">
-                        ¥{selectedPriceTier.priceJpy.toLocaleString()}
+                        {getCurrencySymbol(currency)}{selectedPriceTier.priceJpy.toLocaleString()}
                       </div>
                     </div>
                     {/* 希望價格（可編輯） */}
@@ -667,7 +673,7 @@ export default function EditListingPage() {
                         {t('askingPrice', { defaultValue: '希望價格' })} <span className="text-red-500">*</span>
                       </label>
                       <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">¥</span>
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">{getCurrencySymbol(currency)}</span>
                         <input
                           type="number"
                           value={askingPriceJpy || ''}
@@ -695,9 +701,9 @@ export default function EditListingPage() {
                         <p className="text-xs text-orange-600 dark:text-orange-400 mt-1 flex items-center gap-1">
                           <AlertTriangle className="w-3 h-3" />
                           {t('splitPriceLimit', {
-                            defaultValue: `${ticketPeopleCount}人票子票轉讓上限為原價÷${ticketPeopleCount}：¥`,
+                            defaultValue: `${ticketPeopleCount}人票子票轉讓上限為原價÷${ticketPeopleCount}：`,
                             max: Math.floor((selectedPriceTier?.priceJpy || 0) / ticketPeopleCount).toLocaleString()
-                          })}{Math.floor((selectedPriceTier?.priceJpy || 0) / ticketPeopleCount).toLocaleString()}
+                          })}{getCurrencySymbol(currency)}{Math.floor((selectedPriceTier?.priceJpy || 0) / ticketPeopleCount).toLocaleString()}
                         </p>
                       )}
                     </div>

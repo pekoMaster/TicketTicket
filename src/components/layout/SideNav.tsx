@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Home, PlusCircle, MessageCircle, User, Ticket, HelpCircle, Bell, MessageSquare } from 'lucide-react';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
+import CurrencySwitcher from '@/components/ui/CurrencySwitcher';
 import { useNotification } from '@/contexts/NotificationContext';
 
 // Discord SVG Icon
@@ -98,6 +99,9 @@ export default function SideNav() {
       <div className="px-4 py-4 border-t border-gray-100 dark:border-gray-700 space-y-3">
         <div className="flex gap-2">
           <LanguageSwitcher />
+        </div>
+        <div className="flex gap-2">
+          <CurrencySwitcher />
           <a
             href="https://discord.gg/KpPD9cpdH8"
             target="_blank"

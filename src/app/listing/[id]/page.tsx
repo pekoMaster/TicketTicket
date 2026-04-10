@@ -20,6 +20,9 @@ import Avatar from '@/components/ui/Avatar';
 import StarRating from '@/components/ui/StarRating';
 import SafetyBanner from '@/components/ui/SafetyBanner';
 import AgreementModal from '@/components/ui/AgreementModal';
+import CurrencyBadge from '@/components/ui/CurrencyBadge';
+import { getCurrencySymbol } from '@/lib/currency';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { TicketType, Listing, LANGUAGE_OPTIONS, NATIONALITY_OPTIONS } from '@/types';
 import {
   Calendar,
@@ -110,6 +113,9 @@ export default function ListingDetailPage() {
   const listing = listings.find((l) => l.id === params.id);
   const host = listing?.host;
   const currentUserId = session?.user?.dbId;
+  const currentEvent = events.find(e => e.name === listing?.eventName);
+  const currency = currentEvent?.currency || 'JPY';
+  const { preferredCurrency, convertPrice } = useCurrency();
 
   // 檢查是否為主辦方
   const isHost = listing?.hostId === currentUserId;
@@ -487,7 +493,7 @@ export default function ListingDetailPage() {
                         <span className="text-gray-500 dark:text-gray-400">{t('referencePrice', { defaultValue: '參考原價' })}</span>
                       </div>
                       <div className="text-right">
-                        <span className="font-semibold text-green-600 dark:text-green-400">¥{priceTier.priceJpy.toLocaleString()}</span>
+                        <span className="font-semibold text-green-600 dark:text-green-400">{getCurrencySymbol(currency)}{priceTier.priceJpy.toLocaleString()}</span>
                         <p className="text-xs text-gray-400 dark:text-gray-500">{t('referencePriceNote', { defaultValue: '僅供參考' })}</p>
                       </div>
                     </div>
@@ -556,11 +562,22 @@ export default function ListingDetailPage() {
                 <div className="relative grid grid-cols-2 divide-x divide-gray-200 dark:divide-white/10 backdrop-blur-sm">
                   <div className="p-4 text-center">
                     <span className="text-xs text-emerald-600 dark:text-emerald-300 block mb-1">{t('askingPrice', { defaultValue: '希望分攤' })}</span>
-                    <span className="text-3xl font-bold text-emerald-700 dark:text-white">¥{listing.askingPriceJpy.toLocaleString()}</span>
+                    <span className="text-3xl font-bold text-emerald-700 dark:text-white">{getCurrencySymbol(currency)}{listing.askingPriceJpy.toLocaleString()}</span>
+                    {currency !== preferredCurrency && convertPrice(listing.askingPriceJpy, currency) !== null && (
+                      <span className="text-sm text-gray-500 dark:text-gray-400 block mt-1">
+                        (約 {getCurrencySymbol(preferredCurrency)}{convertPrice(listing.askingPriceJpy, currency)?.toLocaleString()})
+                      </span>
+                    )}
+                    {currency !== 'JPY' && <CurrencyBadge currency={currency} className="mt-2" />}
                   </div>
                   <div className="p-4 text-center bg-gray-50/50 dark:bg-black/20">
                     <span className="text-xs text-gray-500 dark:text-white/50 block mb-1">{t('originalPrice', { defaultValue: '定價' })}</span>
-                    <span className="text-3xl font-medium text-gray-600 dark:text-white/70">¥{listing.originalPriceJpy.toLocaleString()}</span>
+                    <span className="text-3xl font-medium text-gray-600 dark:text-white/70">{getCurrencySymbol(currency)}{listing.originalPriceJpy.toLocaleString()}</span>
+                    {currency !== preferredCurrency && convertPrice(listing.originalPriceJpy, currency) !== null && (
+                      <span className="text-sm text-gray-500 dark:text-gray-400 block mt-1">
+                        (約 {getCurrencySymbol(preferredCurrency)}{convertPrice(listing.originalPriceJpy, currency)?.toLocaleString()})
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>

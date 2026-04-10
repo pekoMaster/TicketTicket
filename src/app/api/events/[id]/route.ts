@@ -69,6 +69,7 @@ export async function PATCH(
       }));
     }
     if (body.category !== undefined) updates.category = body.category;
+    if (body.currency !== undefined) updates.currency = body.currency;
     if (body.isActive !== undefined) updates.is_active = body.isActive;
     if (body.maxTicketsPerPerson !== undefined) updates.max_tickets_per_person = body.maxTicketsPerPerson;
     if (body.maxRequestsPerUser !== undefined) updates.max_requests_per_user = body.maxRequestsPerUser;

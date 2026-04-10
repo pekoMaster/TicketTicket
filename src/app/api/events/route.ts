@@ -75,6 +75,7 @@ export async function POST(request: NextRequest) {
         description: body.description || null,
         ticket_price_tiers: ticketPriceTiers,
         category: body.category || 'concert',
+        currency: body.currency || 'JPY',
         is_active: body.isActive !== false,
         max_tickets_per_person: body.maxTicketsPerPerson || 2,
         max_requests_per_user: body.maxRequestsPerUser || 2,

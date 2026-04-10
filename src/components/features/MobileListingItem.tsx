@@ -4,21 +4,26 @@ import Link from 'next/link';
 import { useTranslations, useFormatter } from 'next-intl';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Avatar from '@/components/ui/Avatar';
-import { Listing, User, LANGUAGE_OPTIONS, TICKET_SOURCE_INFO } from '@/types';
+import CurrencyBadge from '@/components/ui/CurrencyBadge';
+import { Listing, User, LANGUAGE_OPTIONS, TICKET_SOURCE_INFO, CurrencyCode } from '@/types';
+import { getCurrencySymbol } from '@/lib/currency';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface MobileListingItemProps {
     listing: Listing;
     host?: User;
     isFirstItem?: boolean;
+    currency?: CurrencyCode;
 }
 
-export default function MobileListingItem({ listing, host, isFirstItem }: MobileListingItemProps) {
+export default function MobileListingItem({ listing, host, isFirstItem, currency = 'JPY' }: MobileListingItemProps) {
     const t = useTranslations('listing');
     const tTicket = useTranslations('ticketType');
     const tFilter = useTranslations('filter');
     const tCommon = useTranslations('common');
     const { locale } = useLanguage();
     const format = useFormatter();
+    const { preferredCurrency, convertPrice } = useCurrency();
 
     const formatDate = (date: Date) => {
         return new Date(date).toLocaleDateString(locale, {
@@ -89,8 +94,14 @@ export default function MobileListingItem({ listing, host, isFirstItem }: Mobile
                     <span className="text-[10px] text-gray-500 dark:text-gray-400">{formatDate(listing.eventDate)}</span>
                     <span className="text-[10px] text-gray-400 dark:text-gray-500">•</span>
                     <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                        ¥{listing.askingPriceJpy?.toLocaleString() || listing.originalPriceJpy?.toLocaleString()}
+                        {getCurrencySymbol(currency)}{listing.askingPriceJpy?.toLocaleString() || listing.originalPriceJpy?.toLocaleString()}
                     </span>
+                    {currency !== 'JPY' && <CurrencyBadge currency={currency} />}
+                    {currency !== preferredCurrency && convertPrice(listing.askingPriceJpy || listing.originalPriceJpy, currency) !== null && (
+                        <span className="text-[10px] text-gray-500 dark:text-gray-400 ml-1">
+                            (約 {getCurrencySymbol(preferredCurrency)}{convertPrice(listing.askingPriceJpy || listing.originalPriceJpy, currency)?.toLocaleString()})
+                        </span>
+                    )}
                 </div>
 
                 {/* 第三列：座位 + 票種 + 標籤 */}

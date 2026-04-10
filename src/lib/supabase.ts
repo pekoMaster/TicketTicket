@@ -130,6 +130,7 @@ export interface DbEvent {
   }[];
   max_tickets_per_person: number;
   category: 'concert' | 'fan_meeting' | 'expo' | 'streaming' | 'other';
+  currency?: string;
   is_active: boolean;
   created_at: string;
   updated_at: string;

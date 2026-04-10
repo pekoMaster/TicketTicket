@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl';
 import Header from '@/components/layout/Header';
 import Card from '@/components/ui/Card';
 import AuroraBackground from '@/components/ui/AuroraBackground';
+import CurrencyBadge from '@/components/ui/CurrencyBadge';
 import Button from '@/components/ui/Button';
 import { Input, Textarea } from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
@@ -22,7 +23,10 @@ import {
   LANGUAGE_OPTIONS,
   getSeatGradeColor,
   getTicketPeopleLabel,
+  CurrencyCode,
+  CURRENCY_INFO,
 } from '@/types';
+import { getCurrencySymbol } from '@/lib/currency';
 import {
   Calendar,
   MapPin,
@@ -596,7 +600,7 @@ export default function CreateListingPage() {
               href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
                 `【譲】${eventName}\n` +
                 `【座席】${seatGrade} ${getTicketPeopleLabel(ticketPeopleCount)}\n` +
-                `【求】¥${askingPriceJpy.toLocaleString()}（相談可）\n` +
+                `【求】${getCurrencySymbol(selectedEvent?.currency || 'JPY')}${askingPriceJpy.toLocaleString()}（相談可）\n` +
                 `リプまたはDMでお願いします🙇\n\n` +
                 `https://ticketticket.live/listing/${createdListingId || ''}`
               )}`}
@@ -959,7 +963,10 @@ export default function CreateListingPage() {
                               {t('originalPrice', { defaultValue: '原始票價' })}
                             </label>
                             <div className="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold">
-                              ¥{selectedPriceTier.priceJpy.toLocaleString()}
+                              {getCurrencySymbol(selectedEvent?.currency || 'JPY')}{selectedPriceTier.priceJpy.toLocaleString()}
+                              {selectedEvent?.currency && selectedEvent.currency !== 'JPY' && (
+                                <CurrencyBadge currency={selectedEvent.currency} className="ml-2" />
+                              )}
                             </div>
                           </div>
                           {/* 希望價格（可編輯） */}
@@ -968,7 +975,7 @@ export default function CreateListingPage() {
                               {t('askingPrice', { defaultValue: '希望價格' })} <span className="text-red-500">*</span>
                             </label>
                             <div className="relative">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">¥</span>
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">{getCurrencySymbol(selectedEvent?.currency || 'JPY')}</span>
                               <input
                                 type="number"
                                 value={askingPriceJpy || ''}
@@ -994,7 +1001,7 @@ export default function CreateListingPage() {
                               <p className="text-xs text-orange-600 dark:text-orange-400 mt-1 flex items-center gap-1">
                                 <AlertTriangle className="w-3 h-3" />
                                 {t('splitPriceLimit', {
-                                  defaultValue: `${ticketPeopleCount}人票子票轉讓上限為原價÷${ticketPeopleCount}：¥`,
+                                  defaultValue: `${ticketPeopleCount}人票子票轉讓上限為原價÷${ticketPeopleCount}：${getCurrencySymbol(selectedEvent?.currency || 'JPY')}`,
                                   max: Math.floor((selectedPriceTier?.priceJpy || 0) / ticketPeopleCount).toLocaleString()
                                 })}{Math.floor((selectedPriceTier?.priceJpy || 0) / ticketPeopleCount).toLocaleString()}
                               </p>
@@ -1195,7 +1202,12 @@ export default function CreateListingPage() {
                     {ticketPeopleCount > 0 && <span className="px-2 py-1 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 rounded text-sm">{ticketPeopleCount}人票</span>}
                     {ticketType && <span className="px-2 py-1 bg-pink-100 dark:bg-pink-500/20 text-pink-700 dark:text-pink-300 rounded text-sm">{TICKET_TYPE_INFO[ticketType as TicketType]?.label}</span>}
                   </div>
-                  <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">¥{askingPriceJpy.toLocaleString()}</p>
+                  <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                    {getCurrencySymbol(selectedEvent?.currency || 'JPY')}{askingPriceJpy.toLocaleString()}
+                    {selectedEvent?.currency && selectedEvent.currency !== 'JPY' && (
+                      <CurrencyBadge currency={selectedEvent.currency} className="ml-2" />
+                    )}
+                  </p>
                 </div>
 
                 {/* 換票資訊摘要 - 只在換票模式顯示 */}

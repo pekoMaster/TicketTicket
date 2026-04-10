@@ -316,10 +316,28 @@ export interface Review {
 // HOLOLIVE 活動類型
 export type EventCategory = 'concert' | 'fan_meeting' | 'expo' | 'streaming' | 'other';
 
+// 支援的幣值
+export type CurrencyCode = 'JPY' | 'USD' | 'TWD' | 'EUR' | 'KRW' | 'IDR';
+
+// 幣值資訊（符號、名稱）
+export const CURRENCY_INFO: Record<CurrencyCode, {
+  symbol: string;
+  name: string;
+  nameZh: string;
+  locale: string;
+}> = {
+  JPY: { symbol: '¥', name: 'JPY', nameZh: '日圓', locale: 'ja-JP' },
+  USD: { symbol: '$', name: 'USD', nameZh: '美元', locale: 'en-US' },
+  TWD: { symbol: 'NT$', name: 'TWD', nameZh: '新台幣', locale: 'zh-TW' },
+  EUR: { symbol: '€', name: 'EUR', nameZh: '歐元', locale: 'de-DE' },
+  KRW: { symbol: '₩', name: 'KRW', nameZh: '韓元', locale: 'ko-KR' },
+  IDR: { symbol: 'Rp', name: 'IDR', nameZh: '印尼盾', locale: 'id-ID' },
+};
+
 // 票價等級（座位等級 + 每張票價格，人數由活動統一設定）
 export interface TicketPriceTier {
   seatGrade: SeatGrade;
-  priceJpy?: number; // 每張票原價（日圓）
+  priceJpy?: number; // 每張票原價（以活動設定的幣值計）
 }
 
 // HOLOLIVE 活動
@@ -335,6 +353,7 @@ export interface HololiveEvent {
   description?: string;            // 活動描述
   ticketPriceTiers: TicketPriceTier[];  // 票價等級列表
   category: EventCategory;
+  currency: CurrencyCode;              // 票價計價幣值
   isActive: boolean;               // 是否啟用顯示
   maxTicketsPerPerson: number;     // 每人最多購票張數（同時決定刊登上限與人數下拉選項）
   maxRequestsPerUser: number;      // 每帳號每活動最多可求票數量

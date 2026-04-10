@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/Input';
 import Avatar from '@/components/ui/Avatar';
 import ThemeSwitcher from '@/components/ui/ThemeSwitcher';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
+import CurrencySwitcher from '@/components/ui/CurrencySwitcher';
 import { UserProfile } from '@/types';
 
 interface GeneralSettingsProps {
@@ -168,6 +169,10 @@ export default function GeneralSettings({ profile, onUpdate }: GeneralSettingsPr
                     <div className="flex items-center justify-between">
                         <span className="text-gray-700 dark:text-gray-300">{t('language')}</span>
                         <LanguageSwitcher />
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <span className="text-gray-700 dark:text-gray-300">{t('currency', { defaultValue: '幣值' })}</span>
+                        <CurrencySwitcher />
                     </div>
                 </div>
             </Card>

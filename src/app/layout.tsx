@@ -5,6 +5,7 @@ import './globals.css';
 import { AppProvider } from '@/contexts/AppContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { AdminProvider } from '@/contexts/AdminContext';
+import { CurrencyProvider } from '@/contexts/CurrencyContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { NotificationProvider } from '@/contexts/NotificationContext';
 import SessionProvider from '@/components/providers/SessionProvider';
@@ -71,15 +72,17 @@ export default async function RootLayout({
             <ReCaptchaProvider>
               <ThemeProvider>
                 <LanguageProvider>
-                  <AppProvider>
-                    <AdminProvider>
-                      <NotificationProvider>
-                        <MainLayout>
-                          {children}
-                        </MainLayout>
-                      </NotificationProvider>
-                    </AdminProvider>
-                  </AppProvider>
+                  <CurrencyProvider>
+                    <AppProvider>
+                      <AdminProvider>
+                        <NotificationProvider>
+                          <MainLayout>
+                            {children}
+                          </MainLayout>
+                        </NotificationProvider>
+                      </AdminProvider>
+                    </AppProvider>
+                  </CurrencyProvider>
                 </LanguageProvider>
               </ThemeProvider>
             </ReCaptchaProvider>

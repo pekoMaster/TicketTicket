@@ -48,6 +48,7 @@ import {
   LANGUAGE_OPTIONS,
   Listing,
   TicketRequest,
+  CurrencyCode,
 } from '@/types';
 import { isListingExpired } from '@/lib/listing-utils';
 
@@ -82,6 +83,13 @@ export default function HomePage({ initialListings = [], initialRequests = [], i
     }
   }, [initialListings, initialRequests, initialTotalPages, setInitialData]);
   const { events } = useAdmin();
+
+  // 取得活動的幣值
+  const getEventCurrency = useCallback((eventName: string): CurrencyCode => {
+    const event = events.find(e => e.name === eventName);
+    return event?.currency || 'JPY';
+  }, [events]);
+
   const t = useTranslations('home');
   const tFilter = useTranslations('filter');
   const tTicket = useTranslations('ticketType');
@@ -871,6 +879,7 @@ export default function HomePage({ initialListings = [], initialRequests = [], i
                     listing={listing}
                     host={listing.host}
                     isFirstItem={index === 0}
+                    currency={getEventCurrency(listing.eventName)}
                   />
                 ))}
               </div>
@@ -885,6 +894,7 @@ export default function HomePage({ initialListings = [], initialRequests = [], i
                     listing={listing}
                     host={listing.host}
                     isFirstCard={index === 0}
+                    currency={getEventCurrency(listing.eventName)}
                   />
                 ))}
               </div>
@@ -896,6 +906,7 @@ export default function HomePage({ initialListings = [], initialRequests = [], i
                     key={listing.id}
                     listing={listing}
                     host={listing.host}
+                    currency={getEventCurrency(listing.eventName)}
                   />
                 ))}
               </div>

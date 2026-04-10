@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { HololiveEvent, UserRole } from '@/types';
+import { HololiveEvent, UserRole, CurrencyCode } from '@/types';
 
 // API 回傳的活動類型
 interface ApiEvent {
@@ -19,6 +19,7 @@ interface ApiEvent {
     price_jpy?: number;
   }[];
   category: 'concert' | 'fan_meeting' | 'expo' | 'streaming' | 'other';
+  currency?: string;
   is_active: boolean;
   max_tickets_per_person: number;
   max_requests_per_user: number;
@@ -44,6 +45,7 @@ function convertApiEventToEvent(apiEvent: ApiEvent): HololiveEvent {
       priceJpy: tier.price_jpy,
     })),
     category: apiEvent.category,
+    currency: (apiEvent.currency as CurrencyCode) || 'JPY',
     isActive: apiEvent.is_active,
     maxTicketsPerPerson: apiEvent.max_tickets_per_person || 2,
     maxRequestsPerUser: apiEvent.max_requests_per_user || 2,
@@ -140,6 +142,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
             priceJpy: tier.priceJpy,
           })),
           category: eventData.category,
+          currency: eventData.currency || 'JPY',
           isActive: eventData.isActive,
           maxTicketsPerPerson: eventData.maxTicketsPerPerson || 2,
           maxRequestsPerUser: eventData.maxRequestsPerUser || 2,
@@ -192,6 +195,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         }));
       }
       if (updates.category !== undefined) payload.category = updates.category;
+      if (updates.currency !== undefined) payload.currency = updates.currency;
       if (updates.isActive !== undefined) payload.isActive = updates.isActive;
       if (updates.maxTicketsPerPerson !== undefined) payload.maxTicketsPerPerson = updates.maxTicketsPerPerson;
       if (updates.maxRequestsPerUser !== undefined) payload.maxRequestsPerUser = updates.maxRequestsPerUser;

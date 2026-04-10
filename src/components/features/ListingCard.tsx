@@ -7,21 +7,26 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Eye, Users, Armchair, Clock, Calendar, Check } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
 import UserProfileModal from '@/components/ui/UserProfileModal';
-import { Listing, User, LANGUAGE_OPTIONS, NATIONALITY_OPTIONS, TICKET_SOURCE_INFO } from '@/types';
+import CurrencyBadge from '@/components/ui/CurrencyBadge';
+import { Listing, User, LANGUAGE_OPTIONS, NATIONALITY_OPTIONS, TICKET_SOURCE_INFO, CurrencyCode } from '@/types';
+import { getCurrencySymbol } from '@/lib/currency';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface ListingCardProps {
   listing: Listing;
   host?: User;
   isFirstCard?: boolean;
+  currency?: CurrencyCode;
 }
 
-export default function ListingCard({ listing, host, isFirstCard }: ListingCardProps) {
+export default function ListingCard({ listing, host, isFirstCard, currency = 'JPY' }: ListingCardProps) {
   const t = useTranslations('listing');
   const tTicket = useTranslations('ticketType');
   const tCommon = useTranslations('common');
   const { locale } = useLanguage();
   const format = useFormatter();
   const [showUserModal, setShowUserModal] = useState(false);
+  const { preferredCurrency, convertPrice } = useCurrency();
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString(locale, {
@@ -184,11 +189,22 @@ export default function ListingCard({ listing, host, isFirstCard }: ListingCardP
               <div className="relative grid grid-cols-2 divide-x divide-gray-200 dark:divide-white/10 backdrop-blur-sm">
                 <div className="p-3 text-center">
                   <span className="text-xs text-emerald-600 dark:text-emerald-300 block mb-1">{t('askingPrice')}</span>
-                  <span className="text-2xl font-bold text-emerald-700 dark:text-white">¥{listing.askingPriceJpy.toLocaleString()}</span>
+                  <span className="text-2xl font-bold text-emerald-700 dark:text-white">{getCurrencySymbol(currency)}{listing.askingPriceJpy.toLocaleString()}</span>
+                  {currency !== preferredCurrency && convertPrice(listing.askingPriceJpy, currency) !== null && (
+                    <span className="text-[10px] text-gray-500 dark:text-gray-400 block mt-0.5">
+                      (約 {getCurrencySymbol(preferredCurrency)}{convertPrice(listing.askingPriceJpy, currency)?.toLocaleString()})
+                    </span>
+                  )}
+                  {currency !== 'JPY' && <CurrencyBadge currency={currency} className="mt-1" />}
                 </div>
                 <div className="p-3 text-center bg-gray-50/50 dark:bg-black/20">
                   <span className="text-xs text-gray-500 dark:text-white/50 block mb-1">{t('originalPrice')}</span>
-                  <span className="text-2xl font-medium text-gray-600 dark:text-white/70">¥{listing.originalPriceJpy.toLocaleString()}</span>
+                  <span className="text-2xl font-medium text-gray-600 dark:text-white/70">{getCurrencySymbol(currency)}{listing.originalPriceJpy.toLocaleString()}</span>
+                  {currency !== preferredCurrency && convertPrice(listing.originalPriceJpy, currency) !== null && (
+                    <span className="text-[10px] text-gray-500 dark:text-gray-400 block mt-0.5">
+                      (約 {getCurrencySymbol(preferredCurrency)}{convertPrice(listing.originalPriceJpy, currency)?.toLocaleString()})
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
