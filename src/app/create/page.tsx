@@ -866,7 +866,7 @@ export default function CreateListingPage() {
                       >
                         <option value="">{t('selectPeopleCount', { defaultValue: '請選擇人數' })}</option>
                         {Array.from({ length: maxPeopleForEvent }, (_, i) => i + 1).map((n) => (
-                          <option key={n} value={n}>{n}人票</option>
+                          <option key={n} value={n}>{t('peopleTicket', { count: n, defaultValue: `${n}人票` })}</option>
                         ))}
                       </select>
                     )}

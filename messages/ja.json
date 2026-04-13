@@ -468,7 +468,10 @@
     "modeHaveTicket": "チケットを持っている",
     "modeHaveTicketDesc": "同行者を探す、サブチケットを譲る、チケットを交換",
     "modeWantTicket": "チケットが欲しい",
-    "modeWantTicketDesc": "同行募集、チケット譲渡を依頼"
+    "modeWantTicketDesc": "同行募集、チケット譲渡を依頼",
+    "selectPeopleCount": "人数を選択してください",
+    "peopleTicket": "{count}人チケット",
+    "currency": "通貨"
   },
   "ticketType": {
     "find_companion": "同行",

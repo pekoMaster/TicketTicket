@@ -467,7 +467,10 @@
     "modeHaveTicket": "我有票",
     "modeHaveTicketDesc": "找同行伙伴、转让子票、交换票券",
     "modeWantTicket": "我想要票",
-    "modeWantTicketDesc": "求同行、求让票，让有票的人找到你"
+    "modeWantTicketDesc": "求同行、求让票，让有票的人找到你",
+    "selectPeopleCount": "请选择人数",
+    "peopleTicket": "{count}人票",
+    "currency": "币值"
   },
   "ticketType": {
     "find_companion": "同行",

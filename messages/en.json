@@ -466,7 +466,10 @@
     "modeHaveTicket": "I have tickets",
     "modeHaveTicketDesc": "Find a companion, transfer sub-tickets, exchange tickets",
     "modeWantTicket": "I want tickets",
-    "modeWantTicketDesc": "Request a companion or ticket transfer"
+    "modeWantTicketDesc": "Request a companion or ticket transfer",
+    "selectPeopleCount": "Select number of people",
+    "peopleTicket": "{count}-person ticket",
+    "currency": "Currency"
   },
   "ticketType": {
     "find_companion": "Companion",
