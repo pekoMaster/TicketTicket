@@ -118,7 +118,6 @@
   "home": {
     "subtitle": "Find your concert companion",
     "explore": "Explore Companion Opportunities",
-    "findCompanion": "Find Companion",
     "successfulMeetups": "Successful Matches",
     "subscribeToEvent": "Subscribe to Events",
     "noListings": "No companion opportunities available",
@@ -142,7 +141,8 @@
     "host": "Host",
     "nationality": "Nationality",
     "viewListings": "Find Companion/Tickets",
-    "viewRequests": "View Requests"
+    "viewRequests": "View Requests",
+    "viewAll": "View All"
   },
   "filter": {
     "searchPlaceholder": "Search events, venues, keywords...",
@@ -180,7 +180,8 @@
     "activeFilters": "Active Filters",
     "willAssistEntry": "Host assists with entry",
     "ticketSource": "Ticket Source",
-    "allSources": "All Sources"
+    "allSources": "All Sources",
+    "allLanguages": "All Languages"
   },
   "explore": {
     "title": "Explore",
@@ -274,7 +275,8 @@
     "share": "Share",
     "referencePrice": "Reference Price",
     "referencePriceNote": "For reference only",
-    "ratingStars": "{rating} out of 5 stars"
+    "ratingStars": "{rating} out of 5 stars",
+    "applicationSent": "Application sent, please wait for host reply"
   },
   "applicants": {
     "title": "Manage Applicants",

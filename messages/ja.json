@@ -118,7 +118,6 @@
   "home": {
     "subtitle": "コンサートの同行者を見つけよう",
     "explore": "同行募集を探す",
-    "findCompanion": "同行者を探す",
     "successfulMeetups": "マッチング成立",
     "viewAll": "すべて見る",
     "subscribeToEvent": "通知を購読",
@@ -276,7 +275,8 @@
     "share": "共有",
     "referencePrice": "参考定価",
     "referencePriceNote": "参考用",
-    "ratingStars": "5つ星のうち{rating}"
+    "ratingStars": "5つ星のうち{rating}",
+    "applicationSent": "申し込みが送信されました。主催者の返信をお待ちください"
   },
   "applicants": {
     "title": "申請者管理",

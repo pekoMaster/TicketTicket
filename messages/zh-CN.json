@@ -275,7 +275,8 @@
     "share": "分享",
     "referencePrice": "参考原价",
     "referencePriceNote": "仅供参考",
-    "ratingStars": "5 颗星中的 {rating}"
+    "ratingStars": "5 颗星中的 {rating}",
+    "applicationSent": "已发送申请，请等待主办人回覆"
   },
   "applicants": {
     "title": "申请者管理",
@@ -1240,7 +1241,11 @@
     "optional": "（可选，不选=任意）",
     "maxPrice": "价格上限",
     "zeroPriceNote": "（0 = 不限）",
-    "ticketTypes": "票券类型",
+    "ticketTypes": {
+      "find_companion": "寻找同行（持有连号票）",
+      "sub_ticket_transfer": "子票转让",
+      "ticket_exchange": "票券交换"
+    },
     "findCompanion": "寻找同行",
     "subTicketTransfer": "子票转让",
     "ticketExchange": "换票",
@@ -1283,7 +1288,13 @@
     "selectEvent": "选择活动",
     "selectEventPlaceholder": "请选择活动...",
     "selectEventFirst": "请先选择活动",
-    "eventChanged": "已更新座位选项"
+    "eventChanged": "已更新座位选项",
+    "ticketTypeLabel": "票券类型",
+    "acceptedTypes": {
+      "find_companion": "可接受同行",
+      "sub_ticket_transfer": "可接受转让子票",
+      "any": "皆可"
+    }
   },
   "request": {
     "title": "求票",
@@ -1320,6 +1331,20 @@
     "submitRequest": "发布求票",
     "ratingStars": "{rating} 颗星",
     "needs": "需求 {count} 张",
-    "viewDetails": "查看详情"
+    "viewDetails": "查看详情",
+    "view": "查看",
+    "requester": "求票者",
+    "yourRequest": "您的求票",
+    "contacted": "已联络求票人",
+    "iCanHelp": "我可以帮忙 (联络对方)",
+    "contactRequester": "联络求票人",
+    "contactConfirmDesc": "即将私讯给 {username} 关于「{eventName}」的求票。",
+    "deleteRequest": "删除求票",
+    "deleteConfirm": "确定要删除这笔求票活动吗？这个动作无法复原喔！"
+  },
+  "Options": {
+    "taiwanese": "台湾人",
+    "japanese": "日本人",
+    "other": "其他"
   }
 }
