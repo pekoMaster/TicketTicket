@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { NotificationPreferences } from '@/types';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -52,8 +53,7 @@ export interface DbUser {
   provider: string;
   provider_id: string;
   role: 'user' | 'sub_admin' | 'super_admin';  // 用戶角色
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  notification_preferences?: any; // JSONB
+  notification_preferences?: NotificationPreferences;
   created_at: string;
   updated_at: string;
 }

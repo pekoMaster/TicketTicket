@@ -10,44 +10,30 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1', 10);
-    const limit = parseInt(searchParams.get('limit') || '10', 10);
-    const fetchAll = searchParams.get('all') === 'true'; // 保留取得全部的選項作向下相容或特定用途
+    const limit = Math.min(parseInt(searchParams.get('limit') || '10', 10), 100);
 
-    // 若要求取得全部，或是沒有傳入分頁且沒明確要分頁 (預設不給全部，改為10筆避免效能問題)
-    // 建立 base query
-    let query = supabaseAdmin
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
+    const { data, count, error } = await supabaseAdmin
       .from('listings')
       .select(`
-        *,
+        id, host_id, event_id, event_name, artist_tags, event_date, venue, meeting_time, meeting_location,
+        total_slots, available_slots, ticket_type, seat_grade, ticket_count_type, status, description,
+        host_nationality, host_languages, will_assist_entry, created_at, updated_at,
+        original_price_jpy, asking_price_jpy, ticket_source, identification_features,
+        exchange_event_name, exchange_seat_grade, exchange_seat_grades,
         host:users!host_id(id, username, avatar_url, custom_avatar_url, rating, review_count, line_id, discord_id, show_line, show_discord)
       `, { count: 'exact' })
       .eq('status', 'open')
-      .order('created_at', { ascending: false });
-
-    // 加入分頁邏輯
-    if (!fetchAll) {
-      const from = (page - 1) * limit;
-      const to = from + limit - 1;
-      query = query.range(from, to);
-    }
-
-    const { data, count, error } = await query;
+      .order('created_at', { ascending: false })
+      .range(from, to);
 
     if (error) {
       console.error('Error fetching listings:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    if (fetchAll) {
-      // 舊版 Response 格式 (向下相容)
-      return NextResponse.json(data || [], {
-        headers: {
-          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
-        },
-      });
-    }
-
-    // 新版 Paginated Response 格式
     return NextResponse.json(
       {
         data: data || [],
