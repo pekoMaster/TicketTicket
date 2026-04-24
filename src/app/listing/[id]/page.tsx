@@ -559,27 +559,33 @@ export default function ListingDetailPage() {
             {listing.originalPriceJpy > 0 && (
               <div className="relative rounded-xl overflow-hidden mt-6">
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-100 to-cyan-100 dark:from-emerald-500/20 dark:to-cyan-500/20" />
-                <div className="relative grid grid-cols-2 divide-x divide-gray-200 dark:divide-white/10 backdrop-blur-sm">
-                  <div className="p-4 text-center">
-                    <span className="text-xs text-emerald-600 dark:text-emerald-300 block mb-1">{t('askingPrice', { defaultValue: '希望分攤' })}</span>
-                    <span className="text-3xl font-bold text-emerald-700 dark:text-white">{getCurrencySymbol(currency)}{listing.askingPriceJpy.toLocaleString()}</span>
-                    {currency !== preferredCurrency && convertPrice(listing.askingPriceJpy, currency) !== null && (
-                      <span className="text-sm text-gray-500 dark:text-gray-400 block mt-1">
-                        (約 {getCurrencySymbol(preferredCurrency)}{convertPrice(listing.askingPriceJpy, currency)?.toLocaleString()})
-                      </span>
-                    )}
-                    {currency !== 'JPY' && <CurrencyBadge currency={currency} className="mt-2" />}
-                  </div>
-                  <div className="p-4 text-center bg-gray-50/50 dark:bg-black/20">
-                    <span className="text-xs text-gray-500 dark:text-white/50 block mb-1">{t('originalPrice', { defaultValue: '定價' })}</span>
-                    <span className="text-3xl font-medium text-gray-600 dark:text-white/70">{getCurrencySymbol(currency)}{listing.originalPriceJpy.toLocaleString()}</span>
-                    {currency !== preferredCurrency && convertPrice(listing.originalPriceJpy, currency) !== null && (
-                      <span className="text-sm text-gray-500 dark:text-gray-400 block mt-1">
-                        (約 {getCurrencySymbol(preferredCurrency)}{convertPrice(listing.originalPriceJpy, currency)?.toLocaleString()})
-                      </span>
-                    )}
-                  </div>
-                </div>
+                {(() => {
+                  const convertedAsking = currency !== preferredCurrency ? convertPrice(listing.askingPriceJpy, currency) : null;
+                  const convertedOriginal = currency !== preferredCurrency ? convertPrice(listing.originalPriceJpy, currency) : null;
+                  return (
+                    <div className="relative grid grid-cols-2 divide-x divide-gray-200 dark:divide-white/10 backdrop-blur-sm">
+                      <div className="p-4 text-center">
+                        <span className="text-xs text-emerald-600 dark:text-emerald-300 block mb-1">{t('askingPrice', { defaultValue: '希望分攤' })}</span>
+                        <span className="text-3xl font-bold text-emerald-700 dark:text-white">{getCurrencySymbol(currency)}{listing.askingPriceJpy.toLocaleString()}</span>
+                        {convertedAsking !== null && (
+                          <span className="text-sm text-gray-500 dark:text-gray-400 block mt-1">
+                            (約 {getCurrencySymbol(preferredCurrency)}{convertedAsking.toLocaleString()})
+                          </span>
+                        )}
+                        {currency !== 'JPY' && <CurrencyBadge currency={currency} className="mt-2" />}
+                      </div>
+                      <div className="p-4 text-center bg-gray-50/50 dark:bg-black/20">
+                        <span className="text-xs text-gray-500 dark:text-white/50 block mb-1">{t('originalPrice', { defaultValue: '定價' })}</span>
+                        <span className="text-3xl font-medium text-gray-600 dark:text-white/70">{getCurrencySymbol(currency)}{listing.originalPriceJpy.toLocaleString()}</span>
+                        {convertedOriginal !== null && (
+                          <span className="text-sm text-gray-500 dark:text-gray-400 block mt-1">
+                            (約 {getCurrencySymbol(preferredCurrency)}{convertedOriginal.toLocaleString()})
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             )}
           </GlassCard>

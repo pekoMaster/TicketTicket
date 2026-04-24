@@ -93,15 +93,23 @@ export default function MobileListingItem({ listing, host, isFirstItem, currency
                     <span className="text-[10px] text-gray-400 dark:text-gray-500">•</span>
                     <span className="text-[10px] text-gray-500 dark:text-gray-400">{formatDate(listing.eventDate)}</span>
                     <span className="text-[10px] text-gray-400 dark:text-gray-500">•</span>
-                    <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                        {getCurrencySymbol(currency)}{listing.askingPriceJpy?.toLocaleString() || listing.originalPriceJpy?.toLocaleString()}
-                    </span>
-                    {currency !== 'JPY' && <CurrencyBadge currency={currency} />}
-                    {currency !== preferredCurrency && convertPrice(listing.askingPriceJpy || listing.originalPriceJpy, currency) !== null && (
-                        <span className="text-[10px] text-gray-500 dark:text-gray-400 ml-1">
-                            (約 {getCurrencySymbol(preferredCurrency)}{convertPrice(listing.askingPriceJpy || listing.originalPriceJpy, currency)?.toLocaleString()})
-                        </span>
-                    )}
+                    {(() => {
+                        const displayPrice = listing.askingPriceJpy || listing.originalPriceJpy;
+                        const converted = currency !== preferredCurrency ? convertPrice(displayPrice, currency) : null;
+                        return (
+                            <>
+                                <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                                    {getCurrencySymbol(currency)}{displayPrice?.toLocaleString()}
+                                </span>
+                                {currency !== 'JPY' && <CurrencyBadge currency={currency} />}
+                                {converted !== null && (
+                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 ml-1">
+                                        (約 {getCurrencySymbol(preferredCurrency)}{converted.toLocaleString()})
+                                    </span>
+                                )}
+                            </>
+                        );
+                    })()}
                 </div>
 
                 {/* 第三列：座位 + 票種 + 標籤 */}

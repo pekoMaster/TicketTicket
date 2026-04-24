@@ -1,7 +1,18 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
-import { CurrencyCode } from '@/types';
+import { CurrencyCode, CURRENCY_INFO } from '@/types';
+
+const VALID_CURRENCIES = new Set(Object.keys(CURRENCY_INFO));
+
+const FALLBACK_RATES: Record<string, number> = {
+  JPY: 149.5,
+  USD: 1,
+  TWD: 32.5,
+  EUR: 0.92,
+  KRW: 1380,
+  IDR: 16200,
+};
 
 interface CurrencyContextType {
   preferredCurrency: CurrencyCode;
@@ -18,15 +29,13 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   const [exchangeRates, setExchangeRates] = useState<Record<string, number> | null>(null);
   const [isLoadingRates, setIsLoadingRates] = useState(true);
 
-  // 初始化讀取使用者偏好幣值
   useEffect(() => {
-    const savedCurrency = localStorage.getItem('preferredCurrency') as CurrencyCode;
-    if (savedCurrency) {
-      setPreferredCurrencyState(savedCurrency);
+    const saved = localStorage.getItem('preferredCurrency');
+    if (saved && VALID_CURRENCIES.has(saved)) {
+      setPreferredCurrencyState(saved as CurrencyCode);
     }
   }, []);
 
-  // 取得最新匯率
   const fetchRates = useCallback(async () => {
     try {
       setIsLoadingRates(true);
@@ -34,9 +43,12 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       if (res.ok) {
         const data = await res.json();
         setExchangeRates(data.rates);
+      } else {
+        setExchangeRates(FALLBACK_RATES);
       }
     } catch (error) {
-      console.error('Failed to fetch exchange rates', error);
+      console.error('Failed to fetch exchange rates, using fallback', error);
+      setExchangeRates(FALLBACK_RATES);
     } finally {
       setIsLoadingRates(false);
     }

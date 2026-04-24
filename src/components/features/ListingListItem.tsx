@@ -77,25 +77,29 @@ export default function ListingListItem({ listing, host, currency = 'JPY' }: Lis
                             )}
 
                             {/* Right: Price - Aurora Style */}
-                            {listing.originalPriceJpy > 0 && (
-                                <div className="flex flex-col items-end gap-1">
-                                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-50 to-cyan-50 dark:from-emerald-500/10 dark:to-cyan-500/10 flex-shrink-0">
-                                        <span className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">
-                                            {getCurrencySymbol(currency)}{listing.askingPriceJpy.toLocaleString()}
-                                        </span>
-                                        <span className="text-gray-400 text-xs">/</span>
-                                        <span className="text-gray-500 dark:text-gray-400 text-sm">
-                                            {getCurrencySymbol(currency)}{listing.originalPriceJpy.toLocaleString()}
-                                        </span>
-                                        {currency !== 'JPY' && <CurrencyBadge currency={currency} />}
-                                    </div>
-                                    {currency !== preferredCurrency && convertPrice(listing.askingPriceJpy, currency) !== null && (
-                                        <div className="text-[10px] text-gray-500 dark:text-gray-400">
-                                            約 {getCurrencySymbol(preferredCurrency)}{convertPrice(listing.askingPriceJpy, currency)?.toLocaleString()} / {getCurrencySymbol(preferredCurrency)}{convertPrice(listing.originalPriceJpy, currency)?.toLocaleString()}
+                            {listing.originalPriceJpy > 0 && (() => {
+                                const convertedAsking = currency !== preferredCurrency ? convertPrice(listing.askingPriceJpy, currency) : null;
+                                const convertedOriginal = currency !== preferredCurrency ? convertPrice(listing.originalPriceJpy, currency) : null;
+                                return (
+                                    <div className="flex flex-col items-end gap-1">
+                                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-50 to-cyan-50 dark:from-emerald-500/10 dark:to-cyan-500/10 flex-shrink-0">
+                                            <span className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">
+                                                {getCurrencySymbol(currency)}{listing.askingPriceJpy.toLocaleString()}
+                                            </span>
+                                            <span className="text-gray-400 text-xs">/</span>
+                                            <span className="text-gray-500 dark:text-gray-400 text-sm">
+                                                {getCurrencySymbol(currency)}{listing.originalPriceJpy.toLocaleString()}
+                                            </span>
+                                            {currency !== 'JPY' && <CurrencyBadge currency={currency} />}
                                         </div>
-                                    )}
-                                </div>
-                            )}
+                                        {convertedAsking !== null && (
+                                            <div className="text-[10px] text-gray-500 dark:text-gray-400">
+                                                約 {getCurrencySymbol(preferredCurrency)}{convertedAsking.toLocaleString()} / {getCurrencySymbol(preferredCurrency)}{convertedOriginal?.toLocaleString()}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })()}
                         </div>
 
                         {/* Row 2: Event Name + Tags */}

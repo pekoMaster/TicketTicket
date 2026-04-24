@@ -1,7 +1,9 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { HololiveEvent, UserRole, CurrencyCode } from '@/types';
+import { HololiveEvent, UserRole, CurrencyCode, CURRENCY_INFO } from '@/types';
+
+const VALID_CURRENCIES = new Set(Object.keys(CURRENCY_INFO));
 
 // API 回傳的活動類型
 interface ApiEvent {
@@ -45,7 +47,7 @@ function convertApiEventToEvent(apiEvent: ApiEvent): HololiveEvent {
       priceJpy: tier.price_jpy,
     })),
     category: apiEvent.category,
-    currency: (apiEvent.currency as CurrencyCode) || 'JPY',
+    currency: (apiEvent.currency && VALID_CURRENCIES.has(apiEvent.currency) ? apiEvent.currency : 'JPY') as CurrencyCode,
     isActive: apiEvent.is_active,
     maxTicketsPerPerson: apiEvent.max_tickets_per_person || 2,
     maxRequestsPerUser: apiEvent.max_requests_per_user || 2,
