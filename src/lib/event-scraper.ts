@@ -64,12 +64,16 @@ function getAllGeminiApiKeys(): string[] {
   return keys;
 }
 
-// 依優先度排列的模型名稱
+// 依優先度排列的模型（主力：Gemini 3 Flash Lite；失敗時輪調到其他可用模型）
+// 清單來源：https://ai.google.dev/gemini-api/docs/models
+// 策略：flash-lite → flash → pro（由快/便宜到慢/昂貴）
 const GEMINI_MODELS = [
-  'gemini-3.1-flash-lite-preview',
-  'gemini-2.0-flash',
-  'gemini-2.0-flash-lite',
-  'gemini-1.5-flash',
+  'gemini-3.1-flash-lite-preview',  // 主力：Gemini 3 Flash Lite（預覽）
+  'gemini-2.5-flash-lite',          // 穩定 fallback：2.5 Flash Lite
+  'gemini-3-flash-preview',         // 升級：Gemini 3 Flash（預覽）
+  'gemini-2.5-flash',               // 穩定：2.5 Flash
+  'gemini-3.1-pro-preview',         // 高階：Gemini 3 Pro（預覽，貴）
+  'gemini-2.5-pro',                 // 最終備案：2.5 Pro（穩定但最貴）
 ];
 
 /**
