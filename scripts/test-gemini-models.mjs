@@ -22,14 +22,14 @@ if (apiKeys.length === 0) {
 
 console.log(`Loaded ${apiKeys.length} API key(s)\n`);
 
-// 與 src/lib/event-scraper.ts 的 GEMINI_MODELS 保持一致
+// 與 src/lib/event-scraper.ts 的 GEMINI_MODELS 保持一致（適配 Vercel Hobby 60s 限制）
 const MODELS = [
-  { name: 'gemini-3.1-flash-lite-preview', timeoutMs: 30000 },
-  { name: 'gemini-2.5-flash-lite',          timeoutMs: 30000 },
-  { name: 'gemini-3-flash-preview',         timeoutMs: 45000 },
-  { name: 'gemini-2.5-flash',               timeoutMs: 45000 },
-  { name: 'gemini-3.1-pro-preview',         timeoutMs: 90000 },
-  { name: 'gemini-2.5-pro',                 timeoutMs: 90000 },
+  { name: 'gemini-3.1-flash-lite-preview', timeoutMs: 15000 },
+  { name: 'gemini-2.5-flash-lite',          timeoutMs: 15000 },
+  { name: 'gemini-3-flash-preview',         timeoutMs: 20000 },
+  { name: 'gemini-2.5-flash',               timeoutMs: 20000 },
+  { name: 'gemini-3.1-pro-preview',         timeoutMs: 25000 },
+  { name: 'gemini-2.5-pro',                 timeoutMs: 25000 },
 ];
 
 const prompt = '回傳純 JSON：{"ok": true, "model": "你是什麼模型"}';
@@ -66,7 +66,7 @@ async function testModel(model, apiKey, timeoutMs) {
   }
 }
 
-console.log('Testing each model with the first key (pro models get up to 90s)...\n');
+console.log('Testing each model with the first key (per-model timeout 15-25s)...\n');
 for (const { name, timeoutMs } of MODELS) {
   process.stdout.write(`[${name.padEnd(36)}] `);
   const start = Date.now();

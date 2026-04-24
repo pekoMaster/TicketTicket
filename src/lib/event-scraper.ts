@@ -72,13 +72,15 @@ interface ModelConfig {
   timeoutMs: number;  // pro 模型需要更長時間
 }
 
+// 適配 Vercel Hobby 60s 總限制：單模型 timeout 壓縮到能容納一次 fallback
+// 經驗值：flash-lite 通常 1-3s，flash 3-10s，pro 3-8s（剛測）
 const GEMINI_MODELS: ModelConfig[] = [
-  { name: 'gemini-3.1-flash-lite-preview', timeoutMs: 30000 },  // 主力
-  { name: 'gemini-2.5-flash-lite',          timeoutMs: 30000 },
-  { name: 'gemini-3-flash-preview',         timeoutMs: 45000 },
-  { name: 'gemini-2.5-flash',               timeoutMs: 45000 },
-  { name: 'gemini-3.1-pro-preview',         timeoutMs: 90000 },  // pro 回應慢
-  { name: 'gemini-2.5-pro',                 timeoutMs: 90000 },
+  { name: 'gemini-3.1-flash-lite-preview', timeoutMs: 15000 },  // 主力
+  { name: 'gemini-2.5-flash-lite',          timeoutMs: 15000 },
+  { name: 'gemini-3-flash-preview',         timeoutMs: 20000 },
+  { name: 'gemini-2.5-flash',               timeoutMs: 20000 },
+  { name: 'gemini-3.1-pro-preview',         timeoutMs: 25000 },
+  { name: 'gemini-2.5-pro',                 timeoutMs: 25000 },
 ];
 
 /**

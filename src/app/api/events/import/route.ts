@@ -3,9 +3,8 @@ import { auth } from '@/auth';
 import { parseEventWithAI } from '@/lib/event-scraper';
 
 // Vercel 函數最長執行時間（秒）
-// 此 route 最壞情況需要輪調所有 Gemini 模型，故拉長至 5 分鐘
-// 需要 Vercel Pro/Team 方案；Hobby 限制為 60 秒，升級後自動生效
-export const maxDuration = 300;
+// Hobby 方案上限 60s；Pro/Team 可拉到 300s
+export const maxDuration = 60;
 
 // 管理員 email 列表
 const ADMIN_EMAILS = [
@@ -83,9 +82,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '無效的 URL 格式' }, { status: 400 });
     }
 
-    // 抓取網頁內容（30 秒內必須取得原始 HTML）
+    // 抓取網頁內容（20 秒內必須取得原始 HTML，留足夠時間給 AI 解析）
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    const timeoutId = setTimeout(() => controller.abort(), 20000);
 
     let htmlText: string;
     try {
@@ -110,7 +109,7 @@ export async function POST(request: NextRequest) {
     } catch (fetchError) {
       clearTimeout(timeoutId);
       if (fetchError instanceof Error && fetchError.name === 'AbortError') {
-        return NextResponse.json({ error: '網頁請求逾時（30 秒）' }, { status: 504 });
+        return NextResponse.json({ error: '網頁請求逾時（20 秒）' }, { status: 504 });
       }
       return NextResponse.json(
         { error: `無法取得網頁: ${fetchError instanceof Error ? fetchError.message : '未知錯誤'}` },
