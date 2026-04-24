@@ -67,13 +67,18 @@ function getAllGeminiApiKeys(): string[] {
 // 依優先度排列的模型（主力：Gemini 3 Flash Lite；失敗時輪調到其他可用模型）
 // 清單來源：https://ai.google.dev/gemini-api/docs/models
 // 策略：flash-lite → flash → pro（由快/便宜到慢/昂貴）
-const GEMINI_MODELS = [
-  'gemini-3.1-flash-lite-preview',  // 主力：Gemini 3 Flash Lite（預覽）
-  'gemini-2.5-flash-lite',          // 穩定 fallback：2.5 Flash Lite
-  'gemini-3-flash-preview',         // 升級：Gemini 3 Flash（預覽）
-  'gemini-2.5-flash',               // 穩定：2.5 Flash
-  'gemini-3.1-pro-preview',         // 高階：Gemini 3 Pro（預覽，貴）
-  'gemini-2.5-pro',                 // 最終備案：2.5 Pro（穩定但最貴）
+interface ModelConfig {
+  name: string;
+  timeoutMs: number;  // pro 模型需要更長時間
+}
+
+const GEMINI_MODELS: ModelConfig[] = [
+  { name: 'gemini-3.1-flash-lite-preview', timeoutMs: 30000 },  // 主力
+  { name: 'gemini-2.5-flash-lite',          timeoutMs: 30000 },
+  { name: 'gemini-3-flash-preview',         timeoutMs: 45000 },
+  { name: 'gemini-2.5-flash',               timeoutMs: 45000 },
+  { name: 'gemini-3.1-pro-preview',         timeoutMs: 90000 },  // pro 回應慢
+  { name: 'gemini-2.5-pro',                 timeoutMs: 90000 },
 ];
 
 /**
@@ -118,11 +123,12 @@ ${cleanedText.substring(0, 8000)}
   // 嘗試所有 key + 模型組合
   const errors: string[] = [];
 
-  for (const model of GEMINI_MODELS) {
+  for (const { name: model, timeoutMs } of GEMINI_MODELS) {
     for (const apiKey of keys) {
+      const keyPreview = apiKey.substring(0, 10) + '...';
       try {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-        
+
         const response = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -134,14 +140,14 @@ ${cleanedText.substring(0, 8000)}
               responseMimeType: 'application/json',
             },
           }),
+          signal: AbortSignal.timeout(timeoutMs),
         });
 
         if (!response.ok) {
           const errText = await response.text();
-          const keyPreview = apiKey.substring(0, 10) + '...';
           errors.push(`${model}/${keyPreview}: HTTP ${response.status}`);
           console.warn(`Gemini API failed: model=${model}, key=${keyPreview}, status=${response.status}, body=${errText.substring(0, 200)}`);
-          
+
           // 404 = 模型不存在，換下一個模型（不用再試其他 key）
           if (response.status === 404) break;
           // 其他錯誤（429 rate limit, 500 等）= 換下一個 key
@@ -150,7 +156,7 @@ ${cleanedText.substring(0, 8000)}
 
         const result = await response.json();
         const rawText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-        
+
         if (!rawText) {
           errors.push(`${model}: 回傳內容為空`);
           continue;
@@ -161,7 +167,10 @@ ${cleanedText.substring(0, 8000)}
         return parseGeminiResponse(rawText, sourceUrl);
 
       } catch (fetchErr) {
-        errors.push(`${model}: ${fetchErr instanceof Error ? fetchErr.message : '未知錯誤'}`);
+        const msg = fetchErr instanceof Error ? fetchErr.message : '未知錯誤';
+        const isTimeout = fetchErr instanceof Error && (fetchErr.name === 'TimeoutError' || fetchErr.name === 'AbortError');
+        errors.push(`${model}/${keyPreview}: ${isTimeout ? `timeout ${timeoutMs}ms` : msg}`);
+        console.warn(`Gemini API ${isTimeout ? 'timeout' : 'error'}: model=${model}, key=${keyPreview}, msg=${msg}`);
         continue;
       }
     }
