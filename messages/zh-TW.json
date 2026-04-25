@@ -276,7 +276,9 @@
     "share": "分享",
     "referencePrice": "參考原價",
     "referencePriceNote": "僅供參考",
-    "ratingStars": "5 顆星中的 {rating}"
+    "ratingStars": "5 顆星中的 {rating}",
+    "peopleTicket": "{count}人票",
+    "assistShort": "協助"
   },
   "applicants": {
     "title": "申請者管理",
@@ -470,7 +472,6 @@
     "modeWantTicket": "我想要票",
     "modeWantTicketDesc": "求同行、求讓票，讓有票的人找到你",
     "selectPeopleCount": "請選擇人數",
-    "peopleTicket": "{count}人票",
     "currency": "幣值"
   },
   "ticketType": {
@@ -601,6 +602,7 @@
     "expired": "已過期",
     "noHistory": "沒有歷史記錄",
     "noActiveListings": "目前沒有進行中的刊登",
+    "startFirstExchange": "開始您的第一次票券交換吧！",
     "myApplications": "我的申請",
     "noListings": "還沒有發布任何刊登",
     "noApplications": "還沒有申請任何刊登",
@@ -692,8 +694,13 @@
     "theme": "主題",
     "language": "語言",
     "mySubscriptions": "我的訂閱",
+    "mySubscriptionsDesc": "管理您的活動訂閱與關鍵字通知",
     "viewMore": "查看更多",
     "helpSupport": "幫助與支援",
+    "reportBug": "回報問題 (Report Bug)",
+    "reportBugTitle": "回報問題",
+    "bugTitleLabel": "標題 *",
+    "bugDescriptionLabel": "問題描述 *",
     "terms": "使用條款",
     "privacy": "隱私權政策",
     "legal": "法律條款",

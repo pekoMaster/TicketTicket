@@ -11,6 +11,7 @@ import CurrencyBadge from '@/components/ui/CurrencyBadge';
 import { Listing, User, LANGUAGE_OPTIONS, NATIONALITY_OPTIONS, TICKET_SOURCE_INFO, CurrencyCode } from '@/types';
 import { getCurrencySymbol } from '@/lib/currency';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { getDisplayAvatar, sortLanguages } from '@/lib/listing-display-utils';
 
 interface ListingCardProps {
   listing: Listing;
@@ -36,32 +37,11 @@ export default function ListingCard({ listing, host, isFirstCard, currency = 'JP
     });
   };
 
-  // 頭像優先顯示自訂頭像，沒有才顯示 OAuth 頭像
-  const getDisplayAvatar = (user: User) => {
-    return user.customAvatarUrl || user.avatarUrl;
-  };
+  const getLanguageLabel = (code: string) =>
+    tCommon(`languagesList.${code}`, { defaultValue: code });
 
-  // 取得語言顯示名稱
-  const getLanguageLabel = (code: string) => {
-    return tCommon(`languagesList.${code}`, { defaultValue: code });
-  };
-
-  // 取得國籍顯示名稱
-  const getNationalityLabel = (code: string) => {
-    return tCommon(`nationalities.${code}`, { defaultValue: code });
-  };
-
-  // 語言排序順序
-  const LANGUAGE_ORDER = ['zh-TW', 'zh-CN', 'ja', 'en', 'ko', 'id', 'th', 'vi'];
-  const sortLanguages = (langs: string[]) => {
-    return [...langs].sort((a, b) => {
-      const orderA = LANGUAGE_ORDER.indexOf(a);
-      const orderB = LANGUAGE_ORDER.indexOf(b);
-      const idxA = orderA === -1 ? 999 : orderA;
-      const idxB = orderB === -1 ? 999 : orderB;
-      return idxA - idxB;
-    });
-  };
+  const getNationalityLabel = (code: string) =>
+    tCommon(`nationalities.${code}`, { defaultValue: code });
 
 
   // 生成星星
@@ -141,7 +121,7 @@ export default function ListingCard({ listing, host, isFirstCard, currency = 'JP
             {listing.ticketPeopleCount > 0 && (
               <span className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-white/70 bg-gray-50 dark:bg-white/5 px-2.5 py-1 rounded-lg border border-gray-100 dark:border-white/5">
                 <Users className="w-4 h-4 text-purple-500 dark:text-purple-400" />
-                {listing.ticketPeopleCount}人票
+                {t('peopleTicket', { count: listing.ticketPeopleCount })}
               </span>
             )}
           </div>

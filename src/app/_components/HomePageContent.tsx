@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useApp } from '@/contexts/AppContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -155,8 +156,24 @@ export default function HomePage({ initialListings = [], initialRequests = [], i
     }
   }, [sessionStatus, isLoadingListings, showLoginPrompt, hasAgreedToDisclaimer]);
 
-  // 搜尋和篩選狀態
-  const [activeDisplayArea, setActiveDisplayArea] = useState<'listings' | 'requests'>('listings');
+  // 搜尋和篩選狀態 — Tab 從 URL ?tab=requests 讀取
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get('tab') === 'requests' ? 'requests' : 'listings';
+  const [activeDisplayArea, setActiveDisplayArea] = useState<'listings' | 'requests'>(initialTab);
+
+  const handleTabChange = useCallback((tab: 'listings' | 'requests') => {
+    setActiveDisplayArea(tab);
+    const params = new URLSearchParams(searchParams.toString());
+    if (tab === 'requests') {
+      params.set('tab', 'requests');
+    } else {
+      params.delete('tab');
+    }
+    const queryString = params.toString();
+    router.replace(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
+  }, [searchParams, router, pathname]);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState('');
@@ -522,7 +539,7 @@ export default function HomePage({ initialListings = [], initialRequests = [], i
         <div className="px-4 py-4">
           <div className="flex items-center gap-2">
             <Ticket className="w-7 h-7 text-pink-500" />
-            <h1 className="text-xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">TicketTicket</h1>
+            <span className="text-xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">TicketTicket</span>
           </div>
           <div className="flex items-center justify-between mt-1">
             <p className="text-sm text-gray-500 dark:text-gray-400">{t('subtitle')}</p>
@@ -540,7 +557,7 @@ export default function HomePage({ initialListings = [], initialRequests = [], i
       {/* Desktop Header - Glassmorphism Style */}
       <header className="hidden lg:block bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/10 px-6 py-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('subtitle')}</h1>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white">{t('subtitle')}</p>
           {successfulMeetups !== null && successfulMeetups > 0 && (
             <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 transition-shadow">
               <PartyPopper className="w-5 h-5 text-white" />
@@ -720,17 +737,17 @@ export default function HomePage({ initialListings = [], initialRequests = [], i
                 {/* 最低評分 */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1.5">{tFilter('minRating')}</label>
-                  <select
+                  <Select
                     value={minRating}
-                    onChange={(e) => setMinRating(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
-                  >
-                    <option value="">{tFilter('allRatings')}</option>
-                    <option value="4">{tFilter('stars', { n: 4 })}</option>
-                    <option value="3">{tFilter('stars', { n: 3 })}</option>
-                    <option value="2">{tFilter('stars', { n: 2 })}</option>
-                    <option value="1">{tFilter('stars', { n: 1 })}</option>
-                  </select>
+                    onChange={(value) => setMinRating(value)}
+                    options={[
+                      { value: '', label: tFilter('allRatings') },
+                      { value: '4', label: tFilter('stars', { n: 4 }) },
+                      { value: '3', label: tFilter('stars', { n: 3 }) },
+                      { value: '2', label: tFilter('stars', { n: 2 }) },
+                      { value: '1', label: tFilter('stars', { n: 1 }) },
+                    ]}
+                  />
                 </div>
 
                 {/* 國籍 */}
@@ -811,7 +828,7 @@ export default function HomePage({ initialListings = [], initialRequests = [], i
             <div className="relative flex items-center p-1 bg-gray-100/80 dark:bg-gray-800/80 backdrop-blur-md rounded-xl border border-gray-200/50 dark:border-white/10 shadow-inner">
               <button
                 ref={tabListingsRef}
-                onClick={() => setActiveDisplayArea('listings')}
+                onClick={() => handleTabChange('listings')}
                 className={`relative z-10 flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 whitespace-nowrap ${activeDisplayArea === 'listings'
                   ? 'text-white'
                   : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
@@ -822,7 +839,7 @@ export default function HomePage({ initialListings = [], initialRequests = [], i
               </button>
               <button
                 ref={tabRequestsRef}
-                onClick={() => setActiveDisplayArea('requests')}
+                onClick={() => handleTabChange('requests')}
                 className={`relative z-10 flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 whitespace-nowrap ${activeDisplayArea === 'requests'
                   ? 'text-white'
                   : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'

@@ -192,7 +192,7 @@ export default function NotificationSettings({ profile, onUpdate }: Notification
                         </div>
                         <div>
                             <h3 className="font-medium text-gray-900 dark:text-gray-100">{t('mySubscriptions')}</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">管理您的活動訂閱與關鍵字通知</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{t('mySubscriptionsDesc')}</p>
                         </div>
                     </div>
                     <Link href="/profile/subscriptions">

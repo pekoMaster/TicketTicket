@@ -28,6 +28,7 @@ export default function BottomNav() {
 
   return (
     <nav
+      aria-label={t('home')}
       className="
         fixed bottom-0 left-0 right-0 z-40
         bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700
@@ -43,6 +44,8 @@ export default function BottomNav() {
             <Link
               key={href}
               href={href}
+              aria-current={isActive ? 'page' : undefined}
+              aria-label={label}
               data-tutorial={href === '/create' ? 'mobile-publish-button' : undefined}
               className={`
                 flex flex-col items-center justify-center

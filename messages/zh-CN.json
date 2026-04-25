@@ -276,7 +276,8 @@
     "referencePrice": "参考原价",
     "referencePriceNote": "仅供参考",
     "ratingStars": "5 颗星中的 {rating}",
-    "applicationSent": "已发送申请，请等待主办人回覆"
+    "applicationSent": "已发送申请，请等待主办人回覆",
+    "assistShort": "协助"
   },
   "applicants": {
     "title": "申请者管理",
@@ -601,6 +602,7 @@
     "expired": "已过期",
     "noHistory": "没有历史记录",
     "noActiveListings": "目前没有进行中的刊登",
+    "startFirstExchange": "开始您的第一次票券交换吧！",
     "myApplications": "我的申请",
     "noListings": "还没有发布任何刊登",
     "noApplications": "还没有申请任何刊登",
@@ -692,8 +694,13 @@
     "theme": "主题",
     "language": "语言",
     "mySubscriptions": "我的订阅",
+    "mySubscriptionsDesc": "管理您的活动订阅与关键字通知",
     "viewMore": "查看更多",
     "helpSupport": "帮助与支持",
+    "reportBug": "回报问题 (Report Bug)",
+    "reportBugTitle": "回报问题",
+    "bugTitleLabel": "标题 *",
+    "bugDescriptionLabel": "问题描述 *",
     "terms": "使用条款",
     "privacy": "隐私政策",
     "legal": "法律条款",

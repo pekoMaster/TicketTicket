@@ -16,6 +16,7 @@ export default function SupportSettings({ profile }: SupportSettingsProps) {
     const t = useTranslations('profileSettings');
     const tLegal = useTranslations('legal');
     const tProfile = useTranslations('profile');
+    const tCommon = useTranslations('common');
 
     const [bugModalOpen, setBugModalOpen] = useState(false);
     const [bugTitle, setBugTitle] = useState('');
@@ -79,7 +80,7 @@ export default function SupportSettings({ profile }: SupportSettingsProps) {
                     className="flex items-center gap-3 px-4 py-3.5 w-full text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                     <Bug className="w-5 h-5 text-red-500" />
-                    <span className="flex-1 font-medium text-gray-900 dark:text-gray-100">回報問題 (Report Bug)</span>
+                    <span className="flex-1 font-medium text-gray-900 dark:text-gray-100">{t('reportBug')}</span>
                     <ChevronRight className="w-5 h-5 text-gray-400" />
                 </button>
                 <MenuItem icon={<HelpCircle className="w-5 h-5" />} label={t('helpSupport')} href="#" />
@@ -110,11 +111,11 @@ export default function SupportSettings({ profile }: SupportSettingsProps) {
             <Modal
                 isOpen={bugModalOpen}
                 onClose={() => setBugModalOpen(false)}
-                title="回報問題"
+                title={t('reportBugTitle')}
             >
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium mb-1">標題 *</label>
+                        <label className="block text-sm font-medium mb-1">{t('bugTitleLabel')}</label>
                         <input
                             type="text"
                             value={bugTitle}
@@ -124,7 +125,7 @@ export default function SupportSettings({ profile }: SupportSettingsProps) {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-1">問題描述 *</label>
+                        <label className="block text-sm font-medium mb-1">{t('bugDescriptionLabel')}</label>
                         <textarea
                             value={bugDescription}
                             onChange={(e) => setBugDescription(e.target.value)}
@@ -134,8 +135,8 @@ export default function SupportSettings({ profile }: SupportSettingsProps) {
                         />
                     </div>
                     <div className="flex gap-2 justify-end">
-                        <Button variant="secondary" onClick={() => setBugModalOpen(false)}>取消</Button>
-                        <Button variant="primary" onClick={handleSubmitBug} loading={isSubmittingBug} disabled={!bugTitle || !bugDescription}>提交</Button>
+                        <Button variant="secondary" onClick={() => setBugModalOpen(false)}>{tCommon('cancel')}</Button>
+                        <Button variant="primary" onClick={handleSubmitBug} loading={isSubmittingBug} disabled={!bugTitle || !bugDescription}>{tCommon('submit')}</Button>
                     </div>
                 </div>
             </Modal>

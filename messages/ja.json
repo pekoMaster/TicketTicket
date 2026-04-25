@@ -118,6 +118,7 @@
   "home": {
     "subtitle": "コンサートの同行者を見つけよう",
     "explore": "同行募集を探す",
+    "findCompanion": "同行者を探す",
     "successfulMeetups": "マッチング成立",
     "viewAll": "すべて見る",
     "subscribeToEvent": "通知を購読",
@@ -276,7 +277,8 @@
     "referencePrice": "参考定価",
     "referencePriceNote": "参考用",
     "ratingStars": "5つ星のうち{rating}",
-    "applicationSent": "申し込みが送信されました。主催者の返信をお待ちください"
+    "peopleTicket": "{count}人チケット",
+    "assistShort": "入場補助"
   },
   "applicants": {
     "title": "申請者管理",
@@ -470,7 +472,6 @@
     "modeWantTicket": "チケットが欲しい",
     "modeWantTicketDesc": "同行募集、チケット譲渡を依頼",
     "selectPeopleCount": "人数を選択してください",
-    "peopleTicket": "{count}人チケット",
     "currency": "通貨"
   },
   "ticketType": {
@@ -601,6 +602,7 @@
     "expired": "終了",
     "noHistory": "履歴がありません",
     "noActiveListings": "現在進行中の投稿はありません",
+    "startFirstExchange": "最初のチケット交換を始めましょう！",
     "myApplications": "私の申請",
     "noListings": "まだ投稿がありません",
     "noApplications": "まだ申請がありません",
@@ -692,8 +694,13 @@
     "theme": "テーマ",
     "language": "言語",
     "mySubscriptions": "購読リスト",
+    "mySubscriptionsDesc": "イベント購読とキーワード通知を管理",
     "viewMore": "もっと見る",
     "helpSupport": "ヘルプ＆サポート",
+    "reportBug": "バグ報告",
+    "reportBugTitle": "バグ報告",
+    "bugTitleLabel": "タイトル *",
+    "bugDescriptionLabel": "問題の説明 *",
     "terms": "利用規約",
     "privacy": "プライバシーポリシー",
     "legal": "法的事項",

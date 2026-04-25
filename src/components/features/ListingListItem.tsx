@@ -11,6 +11,7 @@ import CurrencyBadge from '@/components/ui/CurrencyBadge';
 import { Listing, User, LANGUAGE_OPTIONS, TICKET_SOURCE_INFO, CurrencyCode } from '@/types';
 import { getCurrencySymbol } from '@/lib/currency';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { getDisplayAvatar } from '@/lib/listing-display-utils';
 
 interface ListingListItemProps {
     listing: Listing;
@@ -34,11 +35,6 @@ export default function ListingListItem({ listing, host, currency = 'JPY' }: Lis
             day: '2-digit',
         });
     };
-
-    const getDisplayAvatar = (user: User) => {
-        return user.customAvatarUrl || user.avatarUrl;
-    };
-
 
     return (
         <>
@@ -126,7 +122,7 @@ export default function ListingListItem({ listing, host, currency = 'JPY' }: Lis
                                     <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-gradient-to-r from-emerald-600 to-green-500 text-white shadow-sm flex items-center gap-1">
                                         <Check className="w-3 h-3" />
                                         <span className="hidden sm:inline">{t('canAssistEntry', { defaultValue: '可協助入場' })}</span>
-                                        <span className="sm:hidden">協助</span>
+                                        <span className="sm:hidden">{t('assistShort')}</span>
                                     </span>
                                 )}
 
@@ -153,7 +149,7 @@ export default function ListingListItem({ listing, host, currency = 'JPY' }: Lis
                             {listing.ticketPeopleCount > 0 && (
                                 <span className="flex items-center gap-1.5 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded-md">
                                     <Users className="w-3.5 h-3.5 text-purple-500 dark:text-purple-400" />
-                                    <span className="font-medium text-gray-700 dark:text-gray-300">{listing.ticketPeopleCount}人票</span>
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">{t('peopleTicket', { count: listing.ticketPeopleCount })}</span>
                                 </span>
                             )}
 

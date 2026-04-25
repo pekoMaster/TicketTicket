@@ -475,7 +475,7 @@ export default function ListingDetailPage() {
               <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
                 <span className="text-gray-500 dark:text-gray-400">{t('ticketPeopleCount', { defaultValue: '購票人數' })}</span>
                 <span className="font-medium text-gray-900 dark:text-gray-100">
-                  {listing.ticketPeopleCount}人票
+                  {t('peopleTicket', { count: listing.ticketPeopleCount })}
                 </span>
               </div>
 

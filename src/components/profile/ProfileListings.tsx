@@ -149,7 +149,7 @@ export default function ProfileListings({ listings, onDelete }: ProfileListingsP
                                 <Ticket className="w-8 h-8 text-gray-400" />
                             </div>
                             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{t('noActiveListings')}</h3>
-                            <p className="text-gray-500 dark:text-gray-400 mt-1 mb-4">開始您的第一次票券交換吧！</p>
+                            <p className="text-gray-500 dark:text-gray-400 mt-1 mb-4">{t('startFirstExchange')}</p>
                             <Link href="/create">
                                 <Button variant="primary">{t('createFirst')}</Button>
                             </Link>

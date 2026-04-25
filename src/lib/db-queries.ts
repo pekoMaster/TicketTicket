@@ -118,3 +118,59 @@ export async function getPublicRequests(status = 'open') {
     }) as unknown as TicketRequest[]
   };
 }
+
+/**
+ * 取得單一刊登的 SEO metadata（活動名稱、座位、票種等）
+ */
+export async function getListingMetadata(id: string) {
+  const { data, error } = await supabaseAdmin
+    .from('listings')
+    .select('event_name, seat_grade, ticket_type, venue, asking_price_jpy, status, description')
+    .eq('id', id)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return data;
+}
+
+/**
+ * 取得單一求票的 SEO metadata
+ */
+export async function getRequestMetadata(id: string) {
+  const { data, error } = await supabaseAdmin
+    .from('ticket_requests')
+    .select('event_name, accepted_types, status, description')
+    .eq('id', id)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return data;
+}
+
+/**
+ * 取得單一論壇主題的 SEO metadata
+ */
+export async function getForumTopicMetadata(id: string) {
+  const { data, error } = await supabaseAdmin
+    .from('forum_topics')
+    .select('title, content, category')
+    .eq('id', id)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return data;
+}
+
+/**
+ * 取得單一用戶的 SEO metadata（用於 reviews 頁）
+ */
+export async function getUserMetadata(id: string) {
+  const { data, error } = await supabaseAdmin
+    .from('users')
+    .select('username, rating, review_count')
+    .eq('id', id)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return data;
+}

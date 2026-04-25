@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Work+Sans:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -64,9 +63,9 @@
   --color-error: var(--error);
   --color-info: var(--info);
   
-  /* 字體定義 - 優先使用新字體，CJK 作為後備 */
-  --font-sans: 'Work Sans', 'Noto Sans TC', system-ui, -apple-system, sans-serif;
-  --font-heading: 'Outfit', 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+  /* 字體定義 - 優先使用新字體（next/font/google 注入），CJK 作為後備 */
+  --font-sans: var(--font-work-sans), 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-outfit), 'Noto Sans TC', system-ui, -apple-system, sans-serif;
 }
 
 body {
@@ -176,6 +175,13 @@ h1, h2, h3, h4, h5, h6 {
   .animate-spin,
   .animate-fade-in,
   .animate-slide-up {
+    animation: none !important;
+  }
+}
+
+/* Aurora 光球動畫：行動端停用 pulse 以節省 GPU/電量 */
+@media (max-width: 1023px) {
+  .aurora-orb {
     animation: none !important;
   }
 }

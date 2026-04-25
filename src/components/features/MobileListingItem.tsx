@@ -8,6 +8,7 @@ import CurrencyBadge from '@/components/ui/CurrencyBadge';
 import { Listing, User, LANGUAGE_OPTIONS, TICKET_SOURCE_INFO, CurrencyCode } from '@/types';
 import { getCurrencySymbol } from '@/lib/currency';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { getDisplayAvatar, getNationalityEmoji, getRelativeTimeKey } from '@/lib/listing-display-utils';
 
 interface MobileListingItemProps {
     listing: Listing;
@@ -32,34 +33,16 @@ export default function MobileListingItem({ listing, host, isFirstItem, currency
         });
     };
 
-    // 頭像優先顯示自訂頭像
-    const getDisplayAvatar = (user: User) => {
-        return user.customAvatarUrl || user.avatarUrl;
-    };
-
-    // 取得國籍 emoji (從語言推測)
-    const getNationalityEmoji = (code: string) => {
-        const lang = LANGUAGE_OPTIONS.find(l => l.value === code);
-        // 從語言代碼映射國旗
-        const flagMap: Record<string, string> = {
-            'zh-TW': '🇹🇼', 'zh-CN': '🇨🇳', 'ja': '🇯🇵', 'en': '🇺🇸',
-            'ko': '🇰🇷', 'id': '🇮🇩', 'th': '🇹🇭', 'vi': '🇻🇳'
-        };
-        return flagMap[code] || '';
-    };
-
     // 票種資訊
     const ticketSourceInfo = TICKET_SOURCE_INFO[listing.ticketSource as keyof typeof TICKET_SOURCE_INFO];
 
     // 計算相對時間
-    const getRelativeTime = (date: Date) => {
-        const now = new Date();
-        const eventDate = new Date(date);
-        const diffDays = Math.ceil((eventDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-        if (diffDays < 0) return t('expired');
-        if (diffDays === 0) return t('today');
-        if (diffDays === 1) return t('tomorrow');
-        return `${diffDays}${t('daysLater', { defaultValue: '天後' })}`;
+    const getRelativeTime = (date: Date | string) => {
+        const result = getRelativeTimeKey(date);
+        if (result.key === 'daysLater') {
+            return `${result.days}${t('daysLater', { defaultValue: '天後' })}`;
+        }
+        return t(result.key);
     };
 
     return (
@@ -124,7 +107,7 @@ export default function MobileListingItem({ listing, host, isFirstItem, currency
                     {/* 票種 */}
                     {listing.ticketPeopleCount > 0 && (
                         <span className="text-[10px] bg-purple-100 dark:bg-purple-600/30 text-purple-600 dark:text-purple-300 px-1.5 py-0.5 rounded">
-                            {listing.ticketPeopleCount}人票
+                            {t('peopleTicket', { count: listing.ticketPeopleCount })}
                         </span>
                     )}
 
